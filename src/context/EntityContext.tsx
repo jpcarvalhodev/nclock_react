@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import * as apiService from '../helpers/apiService';
-import { BackupDB, Entity, Logs } from '../helpers/Types';
+import * as apiService from '../api/apiService';
+import { BackupDB, Entity, Logs } from '../types/Types';
 
 // Função para baixar o arquivo usando um URL fornecido
 const downloadFile = async (url: string) => {

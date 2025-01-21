@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import "../css/Login.css";
 import { Col, Form, Row } from 'react-bootstrap';
 
-import { LicenseKey } from '../helpers/Types';
+import { LicenseKey } from '../types/Types';
 
 // Interface para as propriedades do modal
 interface LoginLicenseModalProps<T> {
@@ -27,14 +27,20 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
         }));
     };
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setFormData({ licenseKey: '' });
+        onClose();
+    }
+
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData);
-        onClose();
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" id="modal-login" >
+        <Modal show={open} onHide={handleClose} backdrop="static" id="modal-login" centered>
             <Modal.Header closeButton>
                 <Modal.Title style={{ color: 'white' }} >{title}</Modal.Title>
             </Modal.Header>
@@ -56,10 +62,10 @@ export const LoginLicenseModal = <T extends Record<string, any>>({ title, open, 
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-light" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-light" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-light" onClick={handleSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-light" onClick={handleSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

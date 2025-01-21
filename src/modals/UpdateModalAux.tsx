@@ -7,7 +7,7 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -44,6 +44,7 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
+    const { fetchTimePeriods } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -105,7 +106,7 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const timezones = await apiService.fetchAllTimePeriods();
+            const timezones = await fetchTimePeriods();
             setDropdownData({
                 timezoneId: timezones
             });
@@ -167,7 +168,7 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -278,10 +279,10 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleSave}>
+                <Button variant="outline-dark" onClick={handleSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

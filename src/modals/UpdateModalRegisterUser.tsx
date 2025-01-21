@@ -9,7 +9,7 @@ import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
 
 // Define a interface Entity
 export interface Entity {
@@ -61,8 +61,6 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
     const [showPassword, setShowPassword] = useState(false);
-    const [passwordPlaceholder, setPasswordPlaceholder] = useState('●●●●●●●●');
-    const [password, setPassword] = useState('');
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza o formData com os dados da entity
@@ -113,6 +111,11 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
             }
         });
 
+        if (formData.emailAddress && !validateEmail(formData.emailAddress as string)) {
+            isValid = false;
+            newErrors['emailAddress'] = { hasError: true, message: 'O email é inválido.' };
+        }
+
         if (formData.password && !validatePassword(formData.password as string)) {
             isValid = false;
             newErrors['password'] = { hasError: true, message: 'A password deve ter pelo menos 6 caracteres, uma letra maiúscula, uma minúscula e um caractere especial.' };
@@ -139,9 +142,15 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         setFormData({ ...formData, profileImage: '' });
     };
 
+    // Função para validar o email
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }; 
+
     // Função para validar a senha
     const validatePassword = (password: string): boolean => {
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{6,})/;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*-_])(?=.{6,})/;
         return regex.test(password);
     };
 
@@ -158,13 +167,6 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         const { name, value, type } = target;
         let parsedValue: string | number | boolean;
 
-        if (name === 'password') {
-            setPassword(value);
-            if (!value) {
-                setPasswordPlaceholder('●●●●●●●●');
-            }
-        }
-
         if (showValidationErrors) {
             setShowValidationErrors(false);
         }
@@ -174,26 +176,12 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
         } else if (type === 'number') {
             parsedValue = Number(value);
         } else {
-            parsedValue = name === 'userName' ? value.replace(/\s+/g, '') : value;
+            parsedValue = name === 'userName' || name === 'password' || name === 'confirmPassword' ? value.replace(/\s+/g, '') : value;
         }
         setFormData(prevState => ({
             ...prevState,
             [name]: parsedValue
         }));
-    };
-
-    // Função para lidar com o foco no campo de senha
-    const handleFocus = () => {
-        if (!password) {
-            setPasswordPlaceholder('');
-        }
-    };
-
-    // Função para lidar com o desfoque no campo de senha
-    const handleBlur = () => {
-        if (!password) {
-            setPasswordPlaceholder('●●●●●●●●');
-        }
     };
 
     // Define a função para acionar o popup de seleção de arquivo
@@ -250,7 +238,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -312,17 +300,14 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                                 {errors['emailAddress'] && errors['emailAddress'].hasError && <Form.Text className="text-danger">{errors['emailAddress'].message}</Form.Text>}
                             </Form.Group>
                             <Form.Group controlId="formPassword" style={{ marginBottom: '30px' }}>
-                                <Form.Label>Password <span style={{ color: 'red' }}>*</span></Form.Label>
+                                <Form.Label>Alterar Password <span style={{ color: 'red' }}>*</span></Form.Label>
                                 <InputGroup className="mb-3">
                                     <Form.Control
                                         type={showPassword ? "text" : "password"}
                                         name="password"
-                                        value={formData.password || passwordPlaceholder}
+                                        value={formData.password}
                                         onChange={handleChange}
-                                        onFocus={handleFocus}
-                                        onBlur={handleBlur}
-                                        autoComplete="off"
-                                        minLength={8}
+                                        minLength={6}
                                         className={`custom-input-height custom-select-font-size ${showValidationErrors && errors['password'] && errors['password'].hasError ? 'error-border' : ''}`}
                                         style={{ paddingRight: '40px', borderRight: 'none' }}
                                     />
@@ -402,9 +387,9 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>Duplicar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

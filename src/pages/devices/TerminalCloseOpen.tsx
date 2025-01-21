@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -12,21 +12,21 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../components/TreeViewDevice";
 import { useNavbar } from "../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import * as apiService from "../../helpers/apiService";
-import { mbDeviceCloseOpenFields } from "../../helpers/Fields";
-import { MBDeviceCloseOpen } from "../../helpers/Types";
+import { useTerminals } from "../../context/TerminalsContext";
+import * as apiService from "../../api/apiService";
+import { mbDeviceCloseOpenFields } from "../../fields/Fields";
+import { MBDeviceCloseOpen } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { TextField, TextFieldProps } from "@mui/material";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a interface para os filtros
@@ -51,7 +51,7 @@ export const TerminalCloseOpen = () => {
         mbCloseOpen,
         setMbCloseOpen,
         fetchAllMBCloseOpen
-    } = useContext(TerminalsContext) as DeviceContextType;
+    } = useTerminals();
     const { navbarColor, footerColor } = useNavbar();
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'tpId', 'fechoImage', 'aberturaImage']);
@@ -77,9 +77,67 @@ export const TerminalCloseOpen = () => {
         }
     }
 
+    // Função para buscar os pagamentos dos terminais de hoje
+    const fetchCloseOpenToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await apiService.fetchAllTPCloseOpen(start, end);
+            setMbCloseOpen(data);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error("Erro ao buscar movimentos de hoje:", error);
+        }
+    }
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchCloseOpenForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchAllTPCloseOpen(start, end);
+            setMbCloseOpen(data);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error("Erro ao buscar movimentos do dia anterior:", error);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchCloseOpenForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchAllTPCloseOpen(start, end);
+            setMbCloseOpen(data);
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error("Erro ao buscar movimentos do dia seguinte:", error);
+        }
+    };
+
     // Função para atualizar todos os dispositivos
     const refreshOpenCloseDevices = () => {
         fetchAllMBCloseOpen();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
     }
 
     // Atualiza os dados de renderização
@@ -225,99 +283,115 @@ export const TerminalCloseOpen = () => {
     };
 
     return (
-        <TerminalsProvider>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='content-container'>
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataDevice onSelectDevices={handleSelectFromTreeView} />
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataDevice onSelectDevices={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text" style={{ color: '#000000' }}>
+                            <span>Fechos e Aberturas dos Terminais Multibanco</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text" style={{ color: '#000000' }}>
-                                <span>Fechos e Aberturas dos Terminais Multibanco</span>
-                            </div>
-                            <div className="datatable-header">
-                                <div>
-                                    <CustomSearchBox
-                                        label="Pesquisa"
-                                        variant="outlined"
-                                        size='small'
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        style={{ marginTop: -5 }}
-                                    />
-                                </div>
-                                <div className="buttons-container-others">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshOpenCloseDevices} />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={filteredDeviceDataTable} selectedData={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={getSelectedFields()} />
-                                </div>
-                                <div className="date-range-search">
-                                    <input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={e => setStartDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <span> até </span>
-                                    <input
-                                        type="datetime-local"
-                                        value={endDate}
-                                        onChange={e => setEndDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-search" onClick={fetchAllDevicesBetweenDates} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-                            <div className="deviceMobile">
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredDeviceDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleDeviceRowSelected}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="timestamp"
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
                                 />
                             </div>
+                            <div className="buttons-container-others">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshOpenCloseDevices} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
+                                </OverlayTrigger>
+                                <ExportButton allData={filteredDeviceDataTable} selectedData={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedDeviceRows.length > 0 ? selectedDeviceRows : filteredDeviceDataTable} fields={getSelectedFields()} />
+                            </div>
+                            <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchCloseOpenForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchCloseOpenToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchCloseOpenForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchAllDevicesBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
+                            </div>
                         </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                {showColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={mbDeviceCloseOpenFields}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setShowColumnSelector(false)}
-                        onColumnToggle={handleColumnToggle}
-                        onResetColumns={handleResetColumns}
-                        onSelectAllColumns={handleSelectAllColumns}
-                    />
-                )}
+                        <div className="deviceMobile">
+                            <DataTable
+                                columns={columns}
+                                data={filteredDeviceDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleDeviceRowSelected}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                                defaultSortAsc={true}
+                                defaultSortFieldId="timestamp"
+                            />
+                        </div>
+                    </div>
+                </Split>
             </div>
-        </TerminalsProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            {showColumnSelector && (
+                <ColumnSelectorModal
+                    columns={mbDeviceCloseOpenFields}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setShowColumnSelector(false)}
+                    onColumnToggle={handleColumnToggle}
+                    onResetColumns={handleResetColumns}
+                    onSelectAllColumns={handleSelectAllColumns}
+                />
+            )}
+        </div>
     );
 };

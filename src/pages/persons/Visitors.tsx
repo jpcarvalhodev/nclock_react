@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -10,9 +10,8 @@ import { PrintButton } from '../../components/PrintButton';
 import { SelectFilter } from '../../components/SelectFilter';
 import { TreeViewData } from '../../components/TreeView';
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType, PersonsProvider } from '../../context/PersonsContext';
-import { employeeFields } from '../../helpers/Fields';
-import { Employee, EmployeeCard } from '../../helpers/Types';
+import { employeeFields } from '../../fields/Fields';
+import { Employee } from '../../types/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 import { DeleteModal } from '../../modals/DeleteModal';
@@ -27,6 +26,7 @@ import { customStyles } from '../../components/CustomStylesDataTable';
 
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextField, TextFieldProps } from '@mui/material';
+import { usePersons } from '../../context/PersonsContext';
 
 // Define a interface para os filtros
 interface Filters {
@@ -35,12 +35,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a página de visitantes
@@ -53,7 +53,7 @@ export const Visitors = () => {
         handleAddEmployee,
         handleUpdateEmployee,
         handleDeleteEmployee,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const { navbarColor, footerColor } = useNavbar();
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -85,19 +85,19 @@ export const Visitors = () => {
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>) => {
         await handleAddEmployee(employee as Employee);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
         await handleDeleteEmployee(employeeIds);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca os funcionários
@@ -109,7 +109,7 @@ export const Visitors = () => {
     const refreshEmployees = () => {
         fetchEmployees();
         setSelectedEmployeeIds([]);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para filtrar as presenças com base no texto de pesquisa
@@ -269,6 +269,10 @@ export const Visitors = () => {
                         return row.externalEntityName || '';
                     case 'photo':
                         return row.photo ? 'Imagem disponível' : 'Sem imagem';
+                    case 'cardNumber':
+                        return row.employeeCards?.[0]?.cardNumber || '';
+                    case 'entidadeId':
+                        return row.entidadeName || '';
                     default:
                         return row[field.key] || '';
                 }
@@ -366,121 +370,119 @@ export const Visitors = () => {
     };
 
     return (
-        <PersonsProvider>
-            <div className="main-container">
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className="content-container">
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
+        <div className="main-container">
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className="content-container">
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#000000' }}>Visitantes</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text">
-                                <span style={{ color: '#000000' }}>Visitantes</span>
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
+                                />
                             </div>
-                            <div className="datatable-header">
-                                <div>
-                                    <CustomSearchBox
-                                        label="Pesquisa"
-                                        variant="outlined"
-                                        size='small'
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        style={{ marginTop: -5 }}
-                                    />
-                                </div>
-                                <div className="buttons-container">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedEmployeesToDelete} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                </div>
+                            <div className="buttons-container">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshEmployees} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedEmployeesToDelete} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
-                            <DataTable
-                                columns={[...columns, actionColumn]}
-                                data={filteredDataTable}
-                                onRowDoubleClicked={handleEditEmployee}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={20}
-                                expandableRows
-                                expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                                selectableRows
-                                onSelectedRowsChange={handleRowSelected}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRowsHighlight
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                                defaultSortAsc={true}
-                                defaultSortFieldId="enrollNumber"
-                            />
                         </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                <CreateModalEmployees
-                    title="Adicionar Visitante"
-                    open={showAddModal}
-                    onClose={() => setShowAddModal(false)}
-                    onSave={addEmployeeAndCard}
-                    fields={employeeFields}
-                    initialValues={initialData || {}}
-                />
-                {selectedEmployee && (
-                    <UpdateModalEmployees
-                        open={showUpdateModal}
-                        onClose={() => setShowUpdateModal(false)}
-                        onDuplicate={handleDuplicate}
-                        onUpdate={updateEmployeeAndCard}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Visitante"
-                        canMoveNext={currentEmployeeIndex < data.employees.length - 1}
-                        canMovePrev={currentEmployeeIndex > 0}
-                        onNext={handleNextEmployee}
-                        onPrev={handlePrevEmployee}
-                    />
-                )}
-                <DeleteModal
-                    open={showDeleteModal}
-                    onClose={() => setShowDeleteModal(false)}
-                    onDelete={startDeletionProcess}
-                    entityId={selectedEmployeeToDelete}
-                />
-                {openColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={employeeFields}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setOpenColumnSelector(false)}
-                        onColumnToggle={toggleColumn}
-                        onResetColumns={resetColumns}
-                        onSelectAllColumns={onSelectAllColumns}
-                    />
-                )}
+                        <DataTable
+                            columns={[...columns, actionColumn]}
+                            data={filteredDataTable}
+                            onRowDoubleClicked={handleEditEmployee}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            paginationPerPage={20}
+                            expandableRows
+                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            selectableRowsHighlight
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId="enrollNumber"
+                        />
+                    </div>
+                </Split>
             </div>
-        </PersonsProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            <CreateModalEmployees
+                title="Adicionar Visitante"
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={addEmployeeAndCard}
+                fields={employeeFields}
+                initialValues={initialData || {}}
+            />
+            {selectedEmployee && (
+                <UpdateModalEmployees
+                    open={showUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
+                    onDuplicate={handleDuplicate}
+                    onUpdate={updateEmployeeAndCard}
+                    entity={selectedEmployee}
+                    fields={employeeFields}
+                    title="Atualizar Visitante"
+                    canMoveNext={currentEmployeeIndex < data.employees.length - 1}
+                    canMovePrev={currentEmployeeIndex > 0}
+                    onNext={handleNextEmployee}
+                    onPrev={handlePrevEmployee}
+                />
+            )}
+            <DeleteModal
+                open={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onDelete={startDeletionProcess}
+                entityId={selectedEmployeeToDelete}
+            />
+            {openColumnSelector && (
+                <ColumnSelectorModal
+                    columns={employeeFields}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setOpenColumnSelector(false)}
+                    onColumnToggle={toggleColumn}
+                    onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
+                />
+            )}
+        </div>
     );
 }

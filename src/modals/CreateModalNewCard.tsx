@@ -6,8 +6,9 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import * as apiService from "../helpers/apiService";
-import { LimpezasEOcorrencias, NewTransactionCard } from '../helpers/Types';
+import { NewTransactionCard } from '../types/Types';
+import { useTerminals } from '../context/TerminalsContext';
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -38,6 +39,8 @@ const initialValues: Partial<NewTransactionCard> = {
 
 // Define o componente
 export const CreateModalNewCard = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
+    const { devices } = useTerminals();
+    const { fetchAllCardData } = usePersons();
     const [formData, setFormData] = useState<Partial<T>>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -52,7 +55,7 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
         } else {
             setFormData({});
         }
-    }, [open]);
+    }, [open, devices]);
 
     // UseEffect para validar o formulário
     useEffect(() => {
@@ -101,11 +104,11 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const devices = await apiService.fetchAllDevices();
-            const employeeCard = await apiService.fetchAllEmployeeCards();
+            const employeeCard = await fetchAllCardData();
+            const sortedPin = employeeCard.sort((a: any, b: any) => a.enrollNumber - b.enrollNumber);
             setDropdownData({
                 deviceSN: devices,
-                pin: employeeCard
+                pin: sortedPin
             });
         } catch (error) {
             console.error('Erro ao buscar os dados de funcionários, cartões e dispositivos', error);
@@ -156,6 +159,13 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
         }));
     };
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setFormData({});
+        setShowValidationErrors(false);
+        onClose();
+    }
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -169,11 +179,11 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as T);
-        onClose();
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -217,7 +227,7 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
                                             switch ('pin') {
                                                 case 'pin':
                                                     optionId = option.enrollNumber;
-                                                    optionName = option.employeeName;
+                                                    optionName = option.enrollNumber + ' - ' + option.employeeName;
                                                     break;
                                                 default:
                                                     optionId = option.id;
@@ -276,10 +286,10 @@ export const CreateModalNewCard = <T extends Record<string, any>>({ title, open,
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

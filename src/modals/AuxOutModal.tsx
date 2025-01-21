@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -6,9 +6,8 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
-import * as apiService from "../helpers/apiService";
-import { AuxOut } from '../helpers/Types';
+import { useTerminals } from '../context/TerminalsContext';
+import { AuxOut } from '../types/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -51,9 +50,7 @@ const initialValues: Partial<AuxOut> = {
 
 // Define o componente
 export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fields }: AuxOutModalProps<T>) => {
-    const {
-        devices
-    } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices, fetchAllAuxData } = useTerminals();
     const [formData, setFormData] = useState<Partial<AuxOut>>({ nrAuxOut: 0, time: initialValues.time, deviceSN: '' });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -115,7 +112,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const data = await apiService.fetchOutAuxEnabled();
+            const data = await fetchAllAuxData();
             const auxWithOptions = data.map((aux: AuxOut) => ({
                 ...aux,
                 deviceSN: devices.find(device => device.zktecoDeviceID === aux.deviceId)?.serialNumber || ''
@@ -168,6 +165,13 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
         }));
     };
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setFormData({ ...initialValues });
+        setShowValidationErrors(false);
+        onClose();
+    }
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         if (!isFormValid) {
@@ -188,11 +192,11 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
             auxData: formDataToSend,
             deviceSN: formData.deviceSN
         });
-        onClose();
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -258,10 +262,10 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-success" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Abrir
                 </Button>
             </Modal.Footer>

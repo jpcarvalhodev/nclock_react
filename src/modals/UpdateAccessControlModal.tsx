@@ -1,419 +1,308 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import { toast } from 'react-toastify';
-import '../css/PagesStyles.css';
-import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import "../css/PagesStyles.css";
+import { Col, Form, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from "react-data-table-component";
+import { customStyles } from "../components/CustomStylesDataTable";
+import { Doors, Employee } from "../types/Types";
+import { doorsFields, employeeFields } from "../fields/Fields";
+import { useTerminals } from "../context/TerminalsContext";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { usePersons } from "../context/PersonsContext";
 
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
-import { Doors } from '../helpers/Types';
-
-// Define a interface para os itens de campo
-type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-
-// Define a interface Entity
-export interface Entity {
-    id: string;
-    [key: string]: any;
-}
-
-// Interface para as propriedades do modal
-interface UpdateModalProps<T extends Entity> {
+// Define as propriedades do componente
+interface Props<T> {
+    title: string;
     open: boolean;
     onClose: () => void;
-    onDuplicate?: (entity: Partial<T>) => void;
-    onUpdate: (entity: Partial<T>) => Promise<void>;
-    entity: T;
-    fields: Field[];
-    title: string;
+    onUpdate: (data: T) => void;
     onNext: () => void;
     onPrev: () => void;
     canMoveNext: boolean;
     canMovePrev: boolean;
 }
 
-// Interface para os campos do formulário
-interface Field {
-    key: string;
-    label: string;
-    type: string;
-    required?: boolean;
-    validate?: (value: any) => boolean;
-    errorMessage?: string;
-}
-
 // Define o componente
-export const UpdateAccessControlModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const [formData, setFormData] = useState<Partial<T>>({ ...entity });
-    const [errors, setErrors] = useState<Record<string, boolean>>({});
-    const [isFormValid, setIsFormValid] = useState(false);
-    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
-    const [showDoorSelectionModal, setShowDoorSelectionModal] = useState(false);
-    const [showDoorUpdateModal, setShowDoorUpdateModal] = useState(false);
-    const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
-    const [showValidationErrors, setShowValidationErrors] = useState(false);
+export const UpdateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, canMoveNext, canMovePrev, onNext, onPrev }: Props<T>) => {
+    const { employees } = usePersons();
+    const { fetchAllDoorData, period } = useTerminals();
+    const [formData, setFormData] = useState<T>({} as T);
+    const [doors, setDoors] = useState<Doors[]>([]);
+    const [loadingDoorData, setLoadingDoorData] = useState(false);
+    const [loadingEmployeeData, setLoadingEmployeeData] = useState(false);
+    const [filters, setFilters] = useState<Record<string, string>>({});
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showEmployeeAddModal, setShowEmployeeAddModal] = useState(false);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
-        if (entity.acc && entity.acc?.length > 1) {
-            setSelectedDoor(null);
-        } else if (entity.acc?.length === 1) {
-            setSelectedDoor(entity.acc[0]);
-            setFormData({
-                ...formData,
-                doorId: entity.acc[0].doorId,
-                timezoneId: entity.acc[0].timezoneId
-            });
-        }
-    }, [entity.acc]);
-
-    // UseEffect para validar o formulário
-    useEffect(() => {
-        const newErrors: Record<string, boolean> = {};
-
-        const isValid = fields.every(field => {
-            const fieldValue = formData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
-            }
-            if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
-            }
-
-            return valid;
-        });
-
-        setErrors(newErrors);
-        setIsFormValid(isValid);
-        validateForm();
-    }, [formData, fields]);
-
-    // Função para validar o formulário
-    const validateForm = () => {
-        if (!showValidationErrors) return true;
-        let newErrors: Record<string, boolean> = {};
-        let isValid = true;
-
-        fields.forEach((field) => {
-            const fieldValue = formData[field.key];
-            if (field.required && !fieldValue) {
-                isValid = false;
-                newErrors[field.key] = true;
-            } else {
-                newErrors[field.key] = false;
-            }
-        });
-
-        setErrors(newErrors);
-        setIsFormValid(isValid);
-        return isValid;
-    };
-
-    // Função para buscar as opções do dropdown
-    const fetchDropdownOptions = async () => {
-        try {
-            const employee = await apiService.fetchAllEmployees();
-            const sortedEmployee = employee.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber);
-            const door = await apiService.fetchAllDoors();
-            const timezone = await apiService.fetchAllTimePeriods();
-            const filteredDoors = door.filter((door: Doors) => door.doorNo === 3 || door.doorNo === 4);
-            setDropdownData({
-                employeesId: sortedEmployee,
-                doorId: filteredDoors,
-                timezoneId: timezone
-            });
-        } catch (error) {
-            console.error('Erro ao buscar os dados de funcionários, portas e períodos', error);
-        }
-    };
-
-    // Atualiza o estado do componente ao abrir o modal
-    useEffect(() => {
         if (open) {
-            handleOpen();
-            fetchDropdownOptions();
-            if (selectedDoor) {
-                setFormData({
-                    ...formData,
-                    doorId: selectedDoor.doorId,
-                    timezoneId: selectedDoor.timezoneId,
-                    acId: selectedDoor.acId
-                });
-            }
+            fetchDoors();
         }
-    }, [open, selectedDoor]);
+    }, [open]);
 
-    // Função para lidar com a seleção de porta caso haja mais de uma
-    const handleOpen = () => {
-        if (entity.acc && entity.acc.length > 1) {
-            setShowDoorSelectionModal(true);
-        } else if (entity.acc.length === 1) {
-            setSelectedDoor(entity.acc[0]);
-            setShowDoorUpdateModal(true);
-            setShowDoorSelectionModal(false);
-        }
+    // Função para buscar as portas
+    const fetchDoors = async () => {
+        const dataDoors = await fetchAllDoorData();
+        const filteredDoorsOrdered = dataDoors.sort((a, b) => a.doorNo - b.doorNo);
+        setDoors(filteredDoorsOrdered);
     };
 
-    // Função para lidar com a seleção de porta
-    const handleDoorSelection = (e: React.ChangeEvent<FormControlElement>) => {
-        const doorId = e.target.value;
-        const door = entity.acc.find((d: any) => d.doorId === doorId);
-        if (door) {
-            setSelectedDoor(door);
-            setShowDoorUpdateModal(true);
-            setShowDoorSelectionModal(false);
-            setFormData(prevState => ({
-                ...prevState,
-                doorId: door.doorId,
-                timezoneId: door.timezoneId,
-                acId: door.acId
-            }));
-        }
+    // Define as opções de paginação de EN para PT
+    const paginationOptions = {
+        rowsPerPageText: 'Linhas por página',
+        rangeSeparatorText: 'de',
     };
 
-    // Função para manipular o clique no botão Duplicar
-    const handleDuplicateClick = () => {
-        if (!onDuplicate) return;
-        const { acId, ...dataWithoutId } = formData;
-        onDuplicate(dataWithoutId as Partial<T>);
-    };
-
-    // Função para lidar com a confirmação da seleção de porta
-    const handleConfirmDoorSelection = () => {
-        if (selectedDoor) {
-            setShowDoorSelectionModal(false);
-            setShowDoorUpdateModal(true);
-            setFormData({
-                ...formData,
-                doorId: selectedDoor.doorId,
-                timezoneId: selectedDoor.timezoneId
-            });
-        } else {
-            toast.warn("Por favor, selecione uma porta antes de continuar.");
-        }
-    };
-
-    // Função para lidar com a mudança de valores nos campos
-    const handleChange = (e: ChangeEvent<any>) => {
+    // Função para atualizar o estado do formulário
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        if (showValidationErrors) {
-            setShowValidationErrors(false);
-        }
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
+        setFormData({ ...formData, [name]: value });
     };
 
-    // Função para lidar com a mudança do dropdown
-    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
-        const { value } = e.target;
-        const selectedOption = dropdownData[key]?.find((option: any) => {
-            switch (key) {
-                case 'employeesId':
-                    return option.employeeID === value;
-                case 'doorId':
-                    return option.id === value;
-                case 'timezoneId':
-                    return option.id === value;
-                default:
-                    return false;
-            }
+    // Filtra os dados da tabela de portas
+    const filteredDoorDataTable = doors.filter(door =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(door[key]) === String(filters[key])
+        )
+    );
+
+    // Define as colunas que serão exibidas
+    const includedColumns = ['enabled', 'name', 'doorNo', 'timezoneId'];
+
+    // Define as colunas
+    const doorColumns: TableColumn<Doors>[] = doorsFields
+        .filter(field => includedColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'timezoneId') return -1; else if (b.key === 'timezoneId') return 1; else return 0; })
+        .sort((a, b) => { if (a.key === 'name') return -1; else if (b.key === 'name') return 1; else return 0; })
+        .sort((a, b) => { if (a.key === 'enabled') return 1; else if (b.key === 'enabled') return -1; else return 0; })
+        .map(field => {
+            const formatField = (row: Doors) => {
+                switch (field.key) {
+                    case 'enabled':
+                        return row[field.key] === true ? 'Activo' : 'Inactivo';
+                    case 'timezoneId':
+                        return period.find(p => p.id === row[field.key])?.name || '';
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                id: field.key,
+                name: (
+                    <>
+                        {field.label}
+                    </>
+                ),
+                selector: (row: Doors) => {
+                    if (field.key === 'doorNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                },
+                sortable: true,
+                cell: (row: Doors) => {
+                    if (field.key === 'doorNo') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                }
+            };
         });
 
-        if (selectedOption) {
-            const idKey = key;
-            setFormData(prevState => ({
-                ...prevState,
-                [idKey]: value
-            }));
-        } else {
-            setFormData(prevState => ({
-                ...prevState,
-                [key]: value
-            }));
-        }
-    };
+    // Filtra os dados da tabela de funcionários
+    const filteredEmployeeDataTable = employees
+        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+        .filter(employee =>
+            Object.keys(filters).every(key =>
+                filters[key] === "" || String(employee[key]) === String(filters[key])
+            )
+        );
 
-    // Função de fechamento para ambos os modais, para garantir que tudo esteja fechado
-    const handleCloseAllModals = () => {
-        setShowDoorSelectionModal(false);
-        setShowDoorUpdateModal(false);
-        setSelectedDoor(null);
-        onClose();
-    };
+    // Define as colunas que serão exibidas
+    const includedEmployeeColumns = ['enrollNumber', 'name', 'cardNumber', 'type'];
 
-    // Função para filtrar os dados antes de enviar
-    const filterDataForSubmission = (data: Partial<T>): Partial<T> => {
-        const acId = data.acc && data.acc.length > 0 ? data.acc[0].acId : undefined;
-        return {
-            acId: acId,
-            employeesId: data.employeesId,
-            doorId: data.doorId,
-            timezoneId: data.timezoneId,
-            createrName: data.createrName
-        } as unknown as Partial<T>;
-    };
-
-    // Função para verificar se o formulário é válido antes de salvar
-    const handleCheckForUpdate = () => {
-        if (!isFormValid) {
-            setShowValidationErrors(true);
-            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
-            return;
-        }
-        handleUpdate();
-    }
+    // Define as colunas
+    const employeeColumns: TableColumn<Employee>[] = employeeFields
+        .filter(field => includedEmployeeColumns.includes(field.key))
+        .sort((a, b) => { if (a.key === 'name') return -1; else if (b.key === 'name') return 1; else return 0; })
+        .sort((a, b) => { if (a.key === 'cardNumber') return -1; else if (b.key === 'cardNumber') return 1; else return 0; })
+        .sort((a, b) => { if (a.key === 'type') return 1; else if (b.key === 'type') return -1; else return 0; })
+        .map(field => {
+            const formatField = (row: Employee) => {
+                switch (field.key) {
+                    case 'cardNumber':
+                        return row.employeeCards?.[0]?.cardNumber || '';
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                id: field.key,
+                name: (
+                    <>
+                        {field.label}
+                    </>
+                ),
+                selector: (row: Employee) => {
+                    if (field.key === 'enrollNumber') {
+                        return parseInt(row.enrollNumber) || 0;
+                    }
+                    return row[field.key] || '';
+                },
+                sortable: true,
+                cell: (row: Employee) => formatField(row)
+            };
+        });
 
     // Função para salvar os dados
-    const handleUpdate = () => {
-        const dataToSubmit = filterDataForSubmission(formData);
-        onUpdate(dataToSubmit as Partial<T>);
-    };
+    const handleSave = () => {
+        onUpdate({} as T);
+    }
 
     return (
-        <div>
-            <Modal show={showDoorSelectionModal} onHide={handleCloseAllModals} backdrop="static" style={{ marginTop: 100 }}>
-                <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
-                    <Modal.Title>Selecione uma Porta</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form.Group controlId="doorSelection">
-                        <Form.Label>Porta</Form.Label>
-                        <Form.Control as="select" value={selectedDoor?.doorId || ''} onChange={(e) => handleDoorSelection(e)}>
-                            <option>Selecione...</option>
-                            {entity.acc?.map((door: Doors, index: number) => (
-                                <option key={index} value={door.doorId}>{door.doorName}</option>
-                            ))}
-                        </Form.Control>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
+            <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
+                <Modal.Title>{title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="modal-body-scrollable">
+                <Col md={3}>
+                    <Form.Group controlId="formNome">
+                        <Form.Label>Nome</Form.Label>
+                        <Form.Control
+                            className="custom-input-height custom-select-font-size"
+                            type="text"
+                            name="nome"
+                            value={formData.morada}
+                            onChange={handleChange}
+                        />
                     </Form.Group>
-                </Modal.Body>
-                <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                    <Button variant="outline-secondary" onClick={handleCloseAllModals}>Fechar</Button>
-                    <Button variant="outline-primary" onClick={handleConfirmDoorSelection}>Continuar</Button>
-                </Modal.Footer>
-            </Modal>
-            <Modal show={showDoorUpdateModal} onHide={handleCloseAllModals} size="xl" backdrop="static" style={{ marginTop: 100 }}>
-                <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
-                    <Modal.Title>{title}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className="modal-body-scrollable">
-                    <div className="container-fluid">
-                        <Row>
-                            {[
-                                { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
-                                { key: 'doorId', label: 'Porta', type: 'dropdown', required: true },
-                                { key: 'timezoneId', label: 'Período', type: 'dropdown', required: true },
-                            ].map((field) => (
-                                <Col md={3} key={field.key}>
-                                    <Form.Group controlId={`form${field.key}`}>
-                                        {field.required ? (
-                                            <OverlayTrigger
-                                                placement="right"
-                                                overlay={<Tooltip id={`tooltip-${field.key}`}>Campo obrigatório</Tooltip>}
-                                            >
-                                                <Form.Label>
-                                                    {field.label}
-                                                    <span style={{ color: 'red' }}>*</span>
-                                                </Form.Label>
-                                            </OverlayTrigger>
-                                        ) : (
-                                            <Form.Label>{field.label}</Form.Label>
-                                        )}
-                                        {field.type === 'dropdown' ? (
-                                            <Form.Control
-                                                as="select"
-                                                className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                                value={formData[field.key] || ''}
-                                                onChange={(e) => handleDropdownChange(field.key, e)}
-                                                style={{ overflowY: 'auto', maxHeight: '200px' }}
-                                            >
-                                                {dropdownData[field.key]
-                                                    ? dropdownData[field.key]
-                                                        .sort((a, b) => {
-                                                            if (field.key === 'employeesId') {
-                                                                return a.enrollNumber - b.enrollNumber;
-                                                            }
-                                                            return 0;
-                                                        })
-                                                        .sort((a, b) => {
-                                                            if (field.key === 'doorId') {
-                                                                return a.doorNo - b.doorNo;
-                                                            }
-                                                            return 0;
-                                                        })
-                                                        .map((option) => {
-                                                            let optionId, optionName;
-                                                            switch (field.key) {
-                                                                case 'employeesId':
-                                                                    optionId = option.employeeID;
-                                                                    optionName = `${option.enrollNumber} - ${option.shortName}`;
-                                                                    break;
-                                                                case 'doorId':
-                                                                    optionId = option.id;
-                                                                    optionName = `${option.doorNo} - ${option.name}`;
-                                                                    break;
-                                                                case 'timezoneId':
-                                                                    optionId = option.id;
-                                                                    optionName = option.name;
-                                                                    break;
-                                                                default:
-                                                                    optionId = option.id;
-                                                                    optionName = option.name;
-                                                                    break;
-                                                            }
-                                                            return (
-                                                                <option key={optionId} value={optionId}>
-                                                                    {optionName}
-                                                                </option>
-                                                            );
-                                                        })
-                                                    : null}
-                                            </Form.Control>
-                                        ) : (
-                                            <Form.Control
-                                                type={field.type}
-                                                className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                                value={formData[field.key] || ''}
-                                                onChange={handleChange}
-                                                name={field.key}
-                                            />
-                                        )}
-                                        {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
-                                    </Form.Group>
-                                </Col>
-                            ))}
-                        </Row>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                    <OverlayTrigger
-                        placement="top"
-                        overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
-                    >
-                        <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
-                    </OverlayTrigger>
-                    <OverlayTrigger
-                        placement="top"
-                        overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
-                    >
-                        <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
-                    </OverlayTrigger>
-                    <Button variant="outline-info" onClick={handleDuplicateClick}>
-                        Duplicar
-                    </Button>
-                    <Button variant="outline-secondary" onClick={handleCloseAllModals}>
-                        Fechar
-                    </Button>
-                    <Button variant="outline-primary" onClick={handleCheckForUpdate}>
-                        Guardar
-                    </Button>
-                </Modal.Footer>
-            </Modal >
-        </div>
+                </Col>
+                <Tab.Container defaultActiveKey="geral">
+                    <Nav variant="tabs" className="nav-modal">
+                        <Nav.Item>
+                            <Nav.Link eventKey="geral">Geral</Nav.Link>
+                        </Nav.Item>
+                    </Nav>
+                    <Tab.Content>
+                        <Tab.Pane eventKey="geral">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                <Tab.Container defaultActiveKey="equipamentos">
+                                    <Nav variant="tabs" className="nav-modal">
+                                        <Nav.Item>
+                                            <Nav.Link eventKey="equipamentos">Equipamentos</Nav.Link>
+                                        </Nav.Item>
+                                        <Nav.Item>
+                                            <Nav.Link eventKey="pessoas">Pessoas</Nav.Link>
+                                        </Nav.Item>
+                                    </Nav>
+                                    <Tab.Content>
+                                        <Tab.Pane eventKey="equipamentos">
+                                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                                <Row>
+                                                    {loadingDoorData ?
+                                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                        </div> :
+                                                        <DataTable
+                                                            columns={doorColumns}
+                                                            data={filteredDoorDataTable}
+                                                            pagination
+                                                            paginationComponentOptions={paginationOptions}
+                                                            paginationPerPage={10}
+                                                            paginationRowsPerPageOptions={[5, 10]}
+                                                            selectableRows
+                                                            noDataComponent="Não existem dados disponíveis para exibir."
+                                                            customStyles={customStyles}
+                                                            striped
+                                                            defaultSortAsc={true}
+                                                            defaultSortFieldId="doorNo"
+                                                        />
+                                                    }
+                                                </Row>
+                                                <div style={{ display: 'flex', marginTop: 10 }}>
+                                                    <OverlayTrigger
+                                                        placement="top"
+                                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                                    >
+                                                        <CustomOutlineButton className="accesscontrol-buttons" icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                                    </OverlayTrigger>
+                                                    <OverlayTrigger
+                                                        placement="top"
+                                                        overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                                    >
+                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={() => console.log('delete')} iconSize='1.1em' />
+                                                    </OverlayTrigger>
+                                                </div>
+                                            </Form>
+                                        </Tab.Pane>
+                                        <Tab.Pane eventKey="pessoas">
+                                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                                <Row>
+                                                    {loadingEmployeeData ?
+                                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                        </div> :
+                                                        <DataTable
+                                                            columns={employeeColumns}
+                                                            data={filteredEmployeeDataTable}
+                                                            pagination
+                                                            paginationComponentOptions={paginationOptions}
+                                                            paginationPerPage={10}
+                                                            paginationRowsPerPageOptions={[5, 10]}
+                                                            selectableRows
+                                                            noDataComponent="Não existem dados disponíveis para exibir."
+                                                            customStyles={customStyles}
+                                                            striped
+                                                            defaultSortAsc={true}
+                                                            defaultSortFieldId="enrollNumber"
+                                                        />
+                                                    }
+                                                </Row>
+                                                <div style={{ display: 'flex', marginTop: 10 }}>
+                                                    <OverlayTrigger
+                                                        placement="top"
+                                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                                    >
+                                                        <CustomOutlineButton className="accesscontrol-buttons" icon="bi-plus" onClick={() => setShowEmployeeAddModal(true)} iconSize='1.1em' />
+                                                    </OverlayTrigger>
+                                                    <OverlayTrigger
+                                                        placement="top"
+                                                        overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                                    >
+                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={() => console.log('delete')} iconSize='1.1em' />
+                                                    </OverlayTrigger>
+                                                </div>
+                                            </Form>
+                                        </Tab.Pane>
+                                    </Tab.Content>
+                                </Tab.Container>
+                            </Form>
+                        </Tab.Pane>
+                    </Tab.Content>
+                </Tab.Container>
+            </Modal.Body>
+            <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
+                >
+                    <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
+                >
+                    <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+                </OverlayTrigger>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={onClose} >
+                    Fechar
+                </Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleSave} >
+                    Guardar
+                </Button>
+            </Modal.Footer>
+        </Modal>
     );
 };

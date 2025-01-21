@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 import '../css/PagesStyles.css';
-import { BackupDB } from '../helpers/Types';
+import { BackupDB } from '../types/Types';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -26,7 +26,7 @@ interface Props<T> {
     title: string;
 }
 
-export const BackupDBModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate, fields }: Props<T>) => {
+export const BackupDBModal = <T extends Record<string, any>>({ title, open, onClose, onSave, onUpdate }: Props<T>) => {
     const [formData, setFormData] = useState<T>({} as T);
     const [file, setFile] = useState<File | null>(null);
     const [activeKey, setActiveKey] = useState<string>('exportBackup');
@@ -56,6 +56,7 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
     // Função para lidar com o clique em guardar
     const handleSaveClick = () => {
         onSave(formData as unknown as BackupDB);
+        onClose();
     };
 
     // Função para lidar com o clique em atualizar
@@ -69,7 +70,7 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
     }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -117,9 +118,9 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                {activeKey === 'exportBackup' && <Button variant="outline-primary" onClick={handleSaveClick}>Exportar</Button>}
-                {activeKey === 'importBackup' && <Button variant="outline-primary" onClick={handleUpdateClick}>Importar</Button>}
+                <Button variant="outline-dark" onClick={onClose}>Fechar</Button>
+                {activeKey === 'exportBackup' && <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Exportar</Button>}
+                {activeKey === 'importBackup' && <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleUpdateClick}>Importar</Button>}
             </Modal.Footer>
         </Modal >
     );

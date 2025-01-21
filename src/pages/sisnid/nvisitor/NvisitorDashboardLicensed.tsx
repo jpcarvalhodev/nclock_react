@@ -1,5 +1,5 @@
-import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
-import { format, getDay, parse, startOfWeek } from 'date-fns';
+import { ArcElement, BarElement, CategoryScale, ChartData, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
+import { format, getDay, getMonth, parse, parseISO, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
@@ -10,8 +10,11 @@ import banner_nvisitor from "../../../assets/img/carousel/banner_nvisitor.jpg";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
+import { Line } from 'react-chartjs-2';
+import { useKiosk } from '../../../context/KioskContext';
+import { useTerminals } from '../../../context/TerminalsContext';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -61,30 +64,84 @@ const messages = {
     showMore: (total: number) => `+ Ver mais (${total})`
 };
 
+// Função para verificar se a resposta tem uma mensagem de erro
+const checkForErrorMessage = (response: string | any[]) => {
+    return response.length === 0 || (response[0] && response[0].message);
+};
+
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
+}
+
 export const NvisitorDashboardLicensed = () => {
+    const currentDate = new Date();
+    const currentYear = new Date().getFullYear();
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const { navbarColor, footerColor } = useNavbar();
-    const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
+    const { devices } = useTerminals();
+    const { totalMovements, setTotalMovements } = useKiosk();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
-    const deviceSN = 'AGB7234900595';
+    const [moveLineChartData, setMoveLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
+    const [todayCardLineChartData, setTodayCardLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
+    const [todayKioskLineChartData, setTodayKioskLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
+    const [todayTotalCard, setTodayTotalCard] = useState<KioskTransactionCard[]>([]);
+    const [todayTotalKiosk, setTodayTotalKiosk] = useState<KioskTransactionCard[]>([]);
     const eventDoorId3 = '3';
     const eventDoorId4 = '4';
+    const [barChartData, setBarChartData] = useState({
+        labels: ['Hoje'],
+        datasets: [
+            {
+                label: 'Exemplo de Dados 3',
+                data: [0],
+                backgroundColor: [
+                    '#0050a0',
+                ],
+                borderWidth: 1
+            }
+        ]
+    });
 
-    // Função para buscar os dados para os gráficos
+    // Função para agrupar os movimentos por mês
     const fetchAllData = async () => {
         try {
-            const cardData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, deviceSN);
-            const kioskData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, deviceSN);
+            if (devices.length === 0) {
+                console.error('Não há dispositivos para buscar dados');
+                return;
+            }
 
-            const totalMove = cardData.concat(kioskData);
+            const cardPromises = devices.map(device => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, device.serialNumber, startDate, endDate);
+            });
 
-            setTotalMovements(totalMove);
+            const kioskPromises = devices.map(device => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, device.serialNumber, startDate, endDate);
+            });
+
+            const [cardResults, kioskResults] = await Promise.all([
+                Promise.all(cardPromises),
+                Promise.all(kioskPromises)
+            ]);
+
+            const processedCardResults = checkForErrorMessage(cardResults) ? [] : cardResults.flat();
+            const processedKioskResults = checkForErrorMessage(kioskResults) ? [] : kioskResults.flat();
+
+            setTodayTotalCard(processedCardResults);
+            setTodayTotalKiosk(processedKioskResults);
 
             const eventSet = new Set();
-            const newEvents = totalMove.reduce((acc: CalendarEvent[], item: KioskTransactionCard) => {
+            const newEvents = totalMovements.reduce((acc: CalendarEvent[], item: KioskTransactionCard) => {
                 const eventDate = new Date(item.eventTime);
                 const dateKey = eventDate.toISOString().split('T')[0];
                 const eventKey = dateKey + '|' + item.eventName + '|' + item.eventDoorId;
-    
+
                 if (!eventSet.has(eventKey)) {
                     eventSet.add(eventKey);
                     acc.push({
@@ -98,86 +155,18 @@ export const NvisitorDashboardLicensed = () => {
                 }
                 return acc;
             }, [] as CalendarEvent[]);
-
             setEvents(newEvents);
+
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao buscar os dados:', error);
+            setTotalMovements([]);
         }
     };
 
-    // UseEffect para buscar os dados
+    // Busca os dados ao carregar a página
     useEffect(() => {
         fetchAllData();
-    }, []);
-
-    // Função para agrupar os dados por mês com base no campo correto
-    const groupByMonth = <T extends KioskTransactionMB | KioskTransactionCard>(
-        data: T[],
-        dateField: keyof T
-    ): number[] => {
-        const months = Array(12).fill(0);
-
-        data.forEach((item, index) => {
-            const dateValue = item[dateField];
-            let parsedDate: Date | null = null;
-
-            if (typeof dateValue === 'string') {
-                if (dateField === 'eventTime') {
-                    try {
-                        const formattedDate = dateValue.replace(' ', 'T');
-                        parsedDate = new Date(formattedDate);
-
-                        if (isNaN(parsedDate.getTime())) {
-                            console.warn(`Data inválida encontrada no campo 'eventTime' no item ${index}: ${dateValue}`);
-                            return;
-                        }
-                    } catch (error) {
-                        console.error(`Erro ao converter 'eventTime' no item ${index}: ${dateValue}`, error);
-                        return;
-                    }
-                } else {
-                    parsedDate = new Date(dateValue);
-
-                    if (isNaN(parsedDate.getTime())) {
-                        console.warn(`Data inválida encontrada no campo 'timestamp' no item ${index}: ${dateValue}`);
-                        return;
-                    }
-                }
-
-                if (parsedDate) {
-                    const monthIndex = parsedDate.getMonth();
-
-                    if ('cardNo' in item) {
-                        months[monthIndex] += 1;
-                    } else if ('amount' in item) {
-                        months[monthIndex] += parseFloat(item.amount.replace(',', '.'));
-                    }
-                }
-            } else {
-                console.warn(`Campo ${String(dateField)} inválido ou não é string no item ${index}`, item);
-            }
-        });
-
-        return months;
-    };
-
-    // Dados para o gráfico Bar
-    const barData = {
-        labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-        datasets: [
-            {
-                label: 'Total de Movimentos',
-                data: groupByMonth(totalMovements, 'eventTime'),
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(54, 162, 235, 1)',
-                ],
-                borderWidth: 1
-            }
-        ]
-    };
+    }, [devices]);
 
     // Função para renderizar os eventos no calendário
     const MyEvent = ({ event }: MyEventProps) => {
@@ -186,32 +175,144 @@ export const NvisitorDashboardLicensed = () => {
                 {event.title}
             </div>
         );
-    };    
+    };
+
+    // Calcula a quantidade total de movimentos por mês
+    const calculateMoveMonthlyCounts = (transactions: KioskTransactionCard[]) => {
+        const currentYear = new Date().getFullYear();
+        const monthlyCounts = Array(12).fill(0);
+
+        const filteredTransactions = transactions.filter(transaction => {
+            let transactionDate;
+            if (transaction.eventTime.toString().includes('-')) {
+                transactionDate = parseISO(transaction.eventTime.toString());
+            } else {
+                transactionDate = parse(
+                    transaction.eventTime.toString(),
+                    'EEE MMM dd yyyy HH:mm:ss x (zzzz)',
+                    new Date()
+                );
+            }
+            return transactionDate.getFullYear() === currentYear;
+        });
+
+        filteredTransactions.forEach(transaction => {
+            const transactionDate = transaction.eventTime.toString().includes('-')
+                ? parseISO(transaction.eventTime.toString())
+                : parse(transaction.eventTime.toString(), 'EEE MMM dd yyyy HH:mm:ss x (zzzz)', new Date());
+
+            const month = getMonth(transactionDate);
+            monthlyCounts[month] += 1;
+        });
+
+        return monthlyCounts;
+    };
+
+    // Atualiza os dados do gráfico com base nos movimentos anuais
+    useEffect(() => {
+        const monthlyMoveTotals = calculateMoveMonthlyCounts(totalMovements);
+        const newLineData = {
+            labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            datasets: [
+                {
+                    label: 'Total de Movimentos por Mês',
+                    data: monthlyMoveTotals,
+                    fill: false,
+                    borderColor: '#0050a0',
+                    tension: 0.1
+                }
+            ]
+        };
+        setMoveLineChartData(newLineData);
+    }, [totalMovements]);
+
+    // Define os dados do gráfico de linha para os torniquetes de hoje
+    useEffect(() => {
+        const chartData = {
+            labels: ["Hoje"],
+            datasets: [
+                {
+                    label: 'Movimentos no Torniquete Hoje',
+                    data: [todayTotalCard.length],
+                    backgroundColor: '#0050a0',
+                }
+            ]
+        };
+        setTodayCardLineChartData(chartData);
+    }, [todayTotalCard]);
+
+    // Define os dados do gráfico de linha para os kiosks de hoje
+    useEffect(() => {
+        const chartData = {
+            labels: ["Hoje"],
+            datasets: [
+                {
+                    label: 'Movimentos no Quiosque Hoje',
+                    data: [todayTotalKiosk.length],
+                    backgroundColor: '#0050a0',
+                }
+            ]
+        };
+        setTodayKioskLineChartData(chartData);
+    }, [todayTotalKiosk]);
 
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-content">
-                <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 108 }}>
+                <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div>
                             <img className="img-carousel-licensed" src={banner_nvisitor} alt="Nvisitor" />
                         </div>
                     </Carousel>
                 </div>
-                <div className="calendar-container" style={{ marginTop: 70 }}>
-                    <div className="dashboard-calendar" style={{ height: 495 }}>
-                        <Calendar
-                            localizer={localizer}
-                            events={events}
-                            startAccessor="start"
-                            endAccessor="end"
-                            messages={messages}
-                            culture="pt"
-                            components={{
-                                event: MyEvent
-                            }}
-                        />
+                <div className="carousel-chart-container" id="carousel-chart" style={{ marginTop: 5 }}>
+                    <Carousel infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
+                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
+                            <h2 className="departments-groups-chart-text">Total de Movimentos em {currentYear}: { }</h2>
+                            <Line className="departments-groups-chart-data" data={moveLineChartData} />
+                        </div>
+                        <div style={{ height: '28rem', maxWidth: '56rem', margin: 'auto' }}>
+                            <Calendar
+                                localizer={localizer}
+                                events={events}
+                                startAccessor="start"
+                                endAccessor="end"
+                                defaultView="month"
+                                messages={messages}
+                                culture="pt"
+                                components={{
+                                    event: MyEvent
+                                }}
+                            />
+                        </div>
+                    </Carousel>
+                </div>
+            </div>
+            <div className="dashboard-content" style={{ marginTop: 5 }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
+                        <h2 className="departments-groups-chart-text">Exemplo 3: { }</h2>
+                        <Bar className="departments-groups-chart-data" data={barChartData} />
+                    </div>
+                </div>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
+                        <h2 className="departments-groups-chart-text">Exemplo 4: { }</h2>
+                        <Bar className="departments-groups-chart-data" data={barChartData} />
+                    </div>
+                </div>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
+                        <h2 className="departments-groups-chart-text">Total do Torniquete Hoje: { }</h2>
+                        <Bar className="departments-groups-chart-data" data={todayCardLineChartData} />
+                    </div>
+                </div>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
+                        <h2 className="departments-groups-chart-text">Total do Quiosque Hoje: { }</h2>
+                        <Bar className="departments-groups-chart-data" data={todayKioskLineChartData} />
                     </div>
                 </div>
             </div>

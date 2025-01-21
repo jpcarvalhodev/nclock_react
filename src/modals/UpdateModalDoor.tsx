@@ -7,7 +7,7 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -44,6 +44,7 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
+    const { fetchAllDevices, fetchTimePeriods } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -105,8 +106,8 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const devices = await apiService.fetchAllDevices();
-            const timezones = await apiService.fetchAllTimePeriods();
+            const devices = await fetchAllDevices();
+            const timezones = await fetchTimePeriods();
             setDropdownData({
                 devId: devices,
                 timezoneId: timezones
@@ -180,7 +181,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -457,10 +458,10 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleUpdate}>
+                <Button variant="outline-dark" onClick={handleUpdate}>
                     Guardar
                 </Button>
             </Modal.Footer>

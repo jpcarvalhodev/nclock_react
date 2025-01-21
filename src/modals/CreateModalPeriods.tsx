@@ -5,8 +5,8 @@ import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 
-import * as apiService from "../helpers/apiService";
-import { TimePeriod } from '../helpers/Types';
+import { TimePeriod } from '../types/Types';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -35,6 +35,7 @@ const initialValues: Partial<TimePeriod> = {
 };
 
 export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open, onClose, onSave, fields, initialValuesData }: Props<T>) => {
+    const { fetchTimePeriods } = useTerminals();
     const [formData, setFormData] = useState<Partial<TimePeriod>>({ ...initialValues, ...initialValuesData });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -103,7 +104,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
 
     // Função para buscar o próximo ID do App
     const fetchNextAppId = async () => {
-        const apiData = await apiService.fetchAllTimePeriods();
+        const apiData = await fetchTimePeriods();
 
         if (apiData.length > 0) {
             const maxAppId = apiData.reduce((max: number, item: { appId: string; }) => Math.max(max, parseInt(item.appId, 10)), 0);
@@ -147,7 +148,8 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        window.location.reload();
+        setFormData({ ...initialValues, ...initialValuesData });
+        setShowValidationErrors(false);
         onClose();
     }
 
@@ -217,7 +219,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="modal-scrollable" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -314,8 +316,8 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
                 </Form>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

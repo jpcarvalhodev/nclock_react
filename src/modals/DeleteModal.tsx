@@ -25,7 +25,7 @@ export const DeleteModal = ({ open, onClose, onDelete, entityId, message }: Dele
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>Confirmar Eliminação</Modal.Title>
             </Modal.Header>
@@ -36,10 +36,10 @@ export const DeleteModal = ({ open, onClose, onDelete, entityId, message }: Dele
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>
                     Cancelar
                 </Button>
-                <Button variant="outline-danger" onClick={handleDelete}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDelete}>
                     Apagar
                 </Button>
             </Modal.Footer>

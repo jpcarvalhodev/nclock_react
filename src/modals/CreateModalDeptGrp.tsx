@@ -5,8 +5,8 @@ import { toast } from 'react-toastify';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { customStyles } from '../components/CustomStylesDataTable';
-import { employeeFields } from '../helpers/Fields';
-import { Department, Employee, Group } from '../helpers/Types';
+import { employeeFields } from '../fields/Fields';
+import { Department, Employee, Group } from '../types/Types';
 
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
@@ -110,7 +110,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     const addEmployeeAndCard = async (employee: Partial<Employee>) => {
         await handleAddEmployee(employee as Employee);
         setShowEmployeeModal(false);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um funcionário e um cartão
@@ -122,7 +122,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
             fetchAllGroups();
         }
         setShowUpdateEmployeeModal(false);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para lidar com a mudança de valor
@@ -211,12 +211,9 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        if (window.location.pathname.startsWith('/persons/Persons') || window.location.pathname.startsWith('/persons/Employees') || window.location.pathname.startsWith('/persons/ExternalEmployees') || window.location.pathname.startsWith('/persons/User') || window.location.pathname.startsWith('/persons/Visitors') || window.location.pathname.startsWith('/persons/Contacts') || window.location.pathname.startsWith('/persons/Temporaries')) {
-            onClose();
-        } else {
-            window.location.reload();
-            onClose();
-        }
+        setFormData(initialValues);
+        setShowValidationErrors(false);
+        onClose();
     }
 
     // Função para lidar com a mudança de valor
@@ -354,7 +351,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
     }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 115 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{entityType === 'department' ? 'Criar Departamento' : 'Criar Grupo'}</Modal.Title>
             </Modal.Header>
@@ -529,8 +526,8 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 </Form>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
             {showEmployeeModal && (
                 <CreateModalEmployees

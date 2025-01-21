@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -14,14 +14,14 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { limpezasEOcorrenciasFields } from "../../../helpers/Fields";
-import { LimpezasEOcorrencias } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { limpezasEOcorrenciasFields } from "../../../fields/Fields";
+import { LimpezasEOcorrencias } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateLimpezaOcorrenciaModal } from "../../../modals/CreateLimpezaOcorrenciaModal";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateLimpezaOcorrenciaModal } from "../../../modals/UpdateLimpezaOcorrenciaModal";
+import { useTerminals } from "../../../context/TerminalsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -48,7 +48,7 @@ export const NkioskOccurrences = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useTerminals();
     const { occurrences, setOccurrences, fetchAllOcorrencias, handleAddOcorrencia, handleUpdateOcorrencia, handleDeleteOcurrences } = useKiosk();
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -83,22 +83,90 @@ export const NkioskOccurrences = () => {
         }
     };
 
+    // Função para buscar os dados de ocorrências de hoje
+    const fetchOcurrencesToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo, start, end);
+            if (Array.isArray(data)) {
+                setOccurrences(data);
+            } else {
+                setOccurrences([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ocorrências:', error);
+        }
+    }
+
+    // Função para buscar os dados de ocorrências de ontem
+    const fetchOcurrencesForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo, start, end);
+            if (Array.isArray(data)) {
+                setOccurrences(data);
+            } else {
+                setOccurrences([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ocorrências:', error);
+        }
+    };
+
+    // Função para buscar os dados de ocorrências de amanhã
+    const fetchOcurrencesForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar ocorrências para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchAllCleaningsAndOccurrences(tipo, start, end);
+            if (Array.isArray(data)) {
+                setOccurrences(data);
+            } else {
+                setOccurrences([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ocorrências:', error);
+        }
+    };
+
     // Função para adicionar Ocorrências
     const addOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
         await handleAddOcorrencia(occurrence);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar ocorrências
     const updateOcorrencia = async (occurrence: LimpezasEOcorrencias) => {
         await handleUpdateOcorrencia(occurrence);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar Ocorrências
     const deleteOcurrences = async (id: string[]) => {
         await handleDeleteOcurrences(id);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -114,7 +182,9 @@ export const NkioskOccurrences = () => {
     // Função para atualizar as recolhas do moedeiro
     const refreshOcorrencias = () => {
         fetchAllOcorrencias();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar as colunas
@@ -192,7 +262,7 @@ export const NkioskOccurrences = () => {
 
         setShowDeleteModal(false);
         deleteOcurrences(occurrencesIds);
-    };  
+    };
 
     // Seleciona a entidade anterior
     const handleNextOccurences = () => {
@@ -348,6 +418,24 @@ export const NkioskOccurrences = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Ocorrências Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchOcurrencesForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Ocorrências Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchOcurrencesToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Ocorrências Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchOcurrencesForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}

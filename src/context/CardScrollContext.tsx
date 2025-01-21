@@ -26,7 +26,9 @@ export const CardScrollProvider = ({ children }: { children: ReactNode }) => {
 
     // Salvar posição do scroll no armazenamento local sempre que ela mudar
     useEffect(() => {
-        localStorage.setItem('scrollPosition', scrollPosition.toString());
+        if (scrollPosition > 0) {
+            localStorage.setItem('scrollPosition', scrollPosition.toString());
+        }
     }, [scrollPosition]);
 
     return (

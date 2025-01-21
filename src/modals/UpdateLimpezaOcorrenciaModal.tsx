@@ -7,8 +7,8 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
-import { LimpezasEOcorrencias } from '../helpers/Types';
+import { LimpezasEOcorrencias } from '../types/Types';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -46,6 +46,7 @@ interface Field {
 
 // Define o componente
 export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
+    const { fetchAllDevices } = useTerminals();
     const [formData, setFormData] = useState<Partial<LimpezasEOcorrencias>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -109,7 +110,7 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const devices = await apiService.fetchAllDevices();
+            const devices = await fetchAllDevices();
             setDropdownData({
                 deviceId: devices
             });
@@ -180,7 +181,7 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -290,13 +291,13 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

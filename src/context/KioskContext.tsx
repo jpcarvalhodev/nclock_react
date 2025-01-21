@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import * as apiService from '../helpers/apiService';
-import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, MBDeviceStatus, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../helpers/Types';
+import * as apiService from '../api/apiService';
+import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, MBDeviceStatus, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../types/Types';
 
 import { useTerminals } from './TerminalsContext';
 
@@ -29,7 +29,7 @@ export interface KioskContextType {
     fetchAllManualOpen: () => void;
     getCoins: RecolhaMoedeiroEContador[];
     setGetCoins: (getCoins: RecolhaMoedeiroEContador[]) => void;
-    fetchAllCoin: () => void;
+    fetchAllCoin: () => Promise<RecolhaMoedeiroEContador[]>;
     handleAddRecolhaMoedeiro: (recolhaMoedeiro: RecolhaMoedeiroEContador) => void;
     handleUpdateRecolhaMoedeiro: (recolhaMoedeiro: RecolhaMoedeiroEContador) => void;
     handleDeleteRecolhaMoedeiro: (id: string[]) => void;
@@ -46,6 +46,7 @@ export interface KioskContextType {
     handleUpdateOcorrencia: (occurrence: LimpezasEOcorrencias) => void;
     handleDeleteOcurrences: (id: string[]) => void;
     counter: Counter[];
+    setCounter: (counter: Counter[]) => void;
     fetchAllCounter: (startDate?: string, endDate?: string) => void;
     totalPayments: KioskTransactionMB[];
     setTotalPayments: (totalPayments: KioskTransactionMB[]) => void;
@@ -54,6 +55,8 @@ export interface KioskContextType {
     alerts: MBDeviceStatus[];
     setAlerts: (alerts: MBDeviceStatus[]) => void;
     fetchAllTasks: () => void;
+    unifyTotalPayments: () => void;
+    unifyTotalMovements: () => void;
 }
 
 // Cria o contexto
@@ -76,7 +79,7 @@ const convertStringToDate = (dateStr: string) => {
 
 // Provider do contexto
 export const KioskProvider = ({ children }: { children: ReactNode }) => {
-    const { devices, fetchAllDevices } = useTerminals();
+    const { devices } = useTerminals();
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
@@ -247,17 +250,20 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar as recolhas do moedeiro
-    const fetchAllCoin = async () => {
+    const fetchAllCoin = async (): Promise<RecolhaMoedeiroEContador[]> => {
         try {
             const data = await apiService.fetchRecolhasMoedeiro();
             if (Array.isArray(data)) {
                 setGetCoins(data);
+                return data;
             } else {
                 setGetCoins([]);
+                return [];
             }
         } catch (error) {
             console.error('Erro ao buscar os dados de recolha do moedeiro:', error);
         }
+        return [];
     };
 
     // Função para adicionar recolha do moedeiro
@@ -408,11 +414,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await apiService.fetchAllContador(startDate, endDate);
             if (Array.isArray(data)) {
-                const convertedData = data.map(item => ({
-                    ...item,
-                    eventTime: convertStringToDate(item.eventTime)
-                }));
-                setCounter(convertedData);
+                setCounter(data);
             } else {
                 setCounter([]);
             }
@@ -455,11 +457,16 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
 
     // Unifica os pagamentos e movimentos
     useEffect(() => {
-        if (payTerminal.length > 0 && payCoins.length > 0 && moveCard.length > 0 && moveKiosk.length > 0) {
+        if (payTerminal.length > 0 || payCoins.length > 0) {
             unifyTotalPayments();
+        }
+    }, [payTerminal, payCoins]);
+
+    useEffect(() => {
+        if (moveCard.length > 0 || moveKiosk.length > 0) {
             unifyTotalMovements();
         }
-    }, [payTerminal, payCoins, moveCard, moveKiosk]);
+    }, [moveCard, moveKiosk]);
 
     // Definindo o valor do contexto
     const contextValue = {
@@ -501,6 +508,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         handleUpdateOcorrencia,
         handleDeleteOcurrences,
         counter,
+        setCounter,
         fetchAllCounter,
         totalPayments,
         setTotalPayments,
@@ -508,7 +516,9 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         setTotalMovements,
         alerts,
         setAlerts,
-        fetchAllTasks
+        fetchAllTasks,
+        unifyTotalPayments,
+        unifyTotalMovements
     };
 
     return (

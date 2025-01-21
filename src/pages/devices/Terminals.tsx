@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
 
@@ -17,20 +17,17 @@ import { Button, Form, OverlayTrigger, Spinner, Tab, Tabs, Tooltip } from "react
 
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { AttendanceContext, AttendanceContextType } from "../../context/MovementContext";
+import { useAttendance } from "../../context/MovementContext";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import * as apiService from "../../helpers/apiService";
-import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../helpers/Fields";
-import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../helpers/Types";
+import { usePersons } from "../../context/PersonsContext";
+import { TerminalsProvider, useTerminals } from "../../context/TerminalsContext";
+import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../fields/Fields";
+import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalDevices } from "../../modals/CreateModalDevices";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { DoorModal } from "../../modals/DoorModal";
 import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
-
-import { id } from "date-fns/locale";
 
 // Define a interface para os filtros
 interface Filters {
@@ -63,13 +60,13 @@ interface Movement {
     Time: string;
 }
 
-// Define a interface para os dados de utilizadores e cartões
-interface MergedEmployeeAndCard extends Omit<Employee, 'enrollNumber'>, Partial<Omit<EmployeeCard, 'id'>> {
-    enrollNumber: string;
-}
-
 // Junta os campos de utilizadores e cartões
-const combinedEmployeeFields = [...employeeFields, ...employeeCardFields];
+const combinedEmployeeFields = [
+    ...employeeFields,
+    ...employeeCardFields
+].filter((field, index, self) =>
+    index === self.findIndex((f) => f.key === field.key)
+);
 
 // Define o componente de terminais
 export const Terminals = () => {
@@ -82,7 +79,6 @@ export const Terminals = () => {
         fetchAllKioskTransactionOnDevice,
         sendAllEmployeesToDevice,
         saveAllEmployeesOnDeviceToDB,
-        saveAllAttendancesEmployeesOnDevice,
         syncTimeManuallyToDevice,
         deleteAllUsersOnDevice,
         openDeviceDoor,
@@ -91,21 +87,21 @@ export const Terminals = () => {
         handleAddDevice,
         handleUpdateDevice,
         handleDeleteDevice,
-    } = useContext(TerminalsContext) as DeviceContextType;
+        fetchAllAux,
+        fetchAllDoorData
+    } = useTerminals();
     const {
         handleAddImportedAttendance,
-    } = useContext(AttendanceContext) as AttendanceContextType;
+    } = useAttendance();
     const {
-        fetchAllEmployees,
+        employees,
         fetchAllCardData,
         handleImportEmployeeCard,
         handleImportEmployeeFP,
         handleImportEmployeeFace
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const { navbarColor, footerColor } = useNavbar();
-    const [employees, setEmployees] = useState<EmployeeAndCard[]>([]);
     const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
-    const [employeeCards, setEmployeeCards] = useState<EmployeeAndCard[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [initialData, setInitialData] = useState<Partial<Devices> | null>(null);
@@ -159,10 +155,7 @@ export const Terminals = () => {
 
     // Função para buscar todos os utilizadores e cartões
     const fetchEmployeesAndCards = async () => {
-        const employeesData: Employee[] = await fetchAllEmployees();
-        setEmployees(employeesData);
-
-        const filteredEmployeesBio = employeesData.filter(
+        const filteredEmployeesBio = employees.filter(
             (employee) => employee.statusFprint === true || employee.statusFace === true
         );
         const sortedEmployeesBio = filteredEmployeesBio.slice().sort((a, b) => {
@@ -171,22 +164,6 @@ export const Terminals = () => {
             return aNum - bNum;
         });
         setEmployeesBio(sortedEmployeesBio);
-
-        const allEmployeeCards = employeesData.flatMap(
-            (employee) => employee.employeeCards || []
-        );
-
-        const filteredCards = allEmployeeCards.filter(
-            (card) => card.cardNumber !== "0"
-        );
-
-        const sortedCards = filteredCards.slice().sort((a, b) => {
-            const aNum = parseInt(a.cardNumber || "0", 10);
-            const bNum = parseInt(b.cardNumber || "0", 10);
-            return aNum - bNum;
-        });
-
-        setEmployeeCards(sortedCards);
     };
 
     // Função para buscar todas as transações de quiosques
@@ -233,14 +210,14 @@ export const Terminals = () => {
         await handleAddDevice(device);
         setLoadingTerminals(false);
         refreshAll();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um dispositivo
     const updateDevice = async (device: Devices) => {
         await handleUpdateDevice(device);
         refreshAll();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para excluir um dispositivo
@@ -248,16 +225,9 @@ export const Terminals = () => {
         if (selectedDeviceToDelete) {
             await handleDeleteDevice(selectedDeviceToDelete);
             refreshAll();
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     }
-
-    // Atualiza os dados de renderização
-    useEffect(() => {
-        fetchAllDevices();
-        fetchEmployeesAndCards();
-        fetchAllCardData();
-    }, []);
 
     // Atualiza a seleção ao resetar
     useEffect(() => {
@@ -270,7 +240,10 @@ export const Terminals = () => {
     const refreshAll = () => {
         fetchAllDevices();
         fetchEmployeesAndCards();
-        setClearSelectionToggle(!clearSelectionToggle);
+        fetchAllCardData();
+        fetchAllAux();
+        fetchAllDoorData();
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para resetar as colunas
@@ -467,6 +440,17 @@ export const Terminals = () => {
                         }
                     case 'deviceSN':
                         return devices.find(device => device.serialNumber === row[field.key])?.deviceName || '';
+                    case 'eventName':
+                        return (
+                            <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip>{row[field.key]}</Tooltip>}
+                            >
+                                <span style={{ cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {row[field.key]}
+                                </span>
+                            </OverlayTrigger>
+                        );
                     default:
                         return row[field.key];
                 }
@@ -790,7 +774,7 @@ export const Terminals = () => {
                 if (typeof result === 'string') {
                     const fileName = file.name;
                     const parsedData = parseAttendanceData(result, fileName);
-                    await handleAddImportedAttendance(parsedData);
+                    await handleAddImportedAttendance(parsedData as any);
                 } else {
                     console.error('Erro: o conteúdo do arquivo não é uma string ou number');
                 }
@@ -834,9 +818,7 @@ export const Terminals = () => {
             reader.onload = async (e) => {
                 const buffer = e.target?.result as ArrayBuffer;
                 const data = parseUserData(buffer);
-                for (const item of data) {
-                    await handleImportEmployeeCard(item);
-                }
+                await handleImportEmployeeCard(data);
             };
             setLoadingImportUsers(false);
             reader.readAsArrayBuffer(file);
@@ -872,7 +854,7 @@ export const Terminals = () => {
     // Função para decodificar a string
     const decodeString = (dataView: DataView, offset: number, length: number): string => {
         const bytes = new Uint8Array(dataView.buffer, offset, length);
-        return new TextDecoder('utf-8').decode(bytes).replace(/\0/g, '');
+        return new TextDecoder('windows-1252').decode(bytes).replace(/\0/g, '').trim();
     };
 
     // Função para controlar a mudança de arquivo da biometria
@@ -953,7 +935,7 @@ export const Terminals = () => {
         return results;
     };
 
-    /* // Funções para acionar o popup de seleção de arquivo dos movimentos, utilizadores e biometria
+    // Funções para acionar o popup de seleção de arquivo dos movimentos, utilizadores e biometria
     const triggerFileAttendanceSelectPopup = () => {
         fileInputAttendanceRef.current?.click();
         setLoadingImportAttendance(true);
@@ -998,7 +980,7 @@ export const Terminals = () => {
                 setLoadingImportFace(false);
             }
         }, 5000);
-    }; */
+    };
 
     // Função para enviar os utilizadores selecionados
     const handleSendSelectedUsers = async () => {
@@ -1010,7 +992,7 @@ export const Terminals = () => {
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingSendSelectedUsers(false);
             setSelectedTerminal(null);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     }
 
@@ -1024,7 +1006,7 @@ export const Terminals = () => {
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingDeleteSelectedUsers(false);
             setSelectedTerminal(null);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     }
 
@@ -1038,7 +1020,7 @@ export const Terminals = () => {
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingFetchSelectedUsers(false);
             setSelectedTerminal(null);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     }
 
@@ -1048,7 +1030,8 @@ export const Terminals = () => {
             setLoadingUser(true);
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID);
             setLoadingUser(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1060,7 +1043,8 @@ export const Terminals = () => {
             setLoadingAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingAllUser(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1072,7 +1056,8 @@ export const Terminals = () => {
             setLoadingSyncAllUser(true);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingSyncAllUser(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1084,7 +1069,8 @@ export const Terminals = () => {
             setLoadingMovements(true);
             await fetchAllKioskTransactionOnDevice(selectedTerminal.zktecoDeviceID);
             setLoadingMovements(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1096,7 +1082,8 @@ export const Terminals = () => {
             setLoadingDeleteAllUsers(true);
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingDeleteAllUsers(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1108,7 +1095,8 @@ export const Terminals = () => {
             setLoadingRestartDevice(true);
             await restartDevice(selectedTerminal.zktecoDeviceID);
             setLoadingRestartDevice(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1120,7 +1108,8 @@ export const Terminals = () => {
             setLoadingSendClock(true);
             await sendClockToDevice(selectedTerminal.serialNumber);
             setLoadingSendClock(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1130,7 +1119,8 @@ export const Terminals = () => {
     const handleOpenDoor = async (sn: string, doorData: DoorDevice) => {
         await openDeviceDoor(sn, doorData);
         setLoadingOpenDoor(false);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
+        setSelectedTerminal(null);
     }
 
     // Função para sincronizar a hora
@@ -1139,7 +1129,8 @@ export const Terminals = () => {
             setLoadingSyncTime(true);
             await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
             setLoadingSyncTime(false);
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
+            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1444,7 +1435,7 @@ export const Terminals = () => {
                         style={{ marginBottom: 10, marginTop: 10 }}
                     >
                         <Tab eventKey="users" title="Utilizadores">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button
                                     variant="outline-primary"
                                     size="sm"
@@ -1495,27 +1486,24 @@ export const Terminals = () => {
                                         label="Utilizadores"
                                         checked={showAllUsers}
                                         onChange={handleAllUsersChange}
-                                        className="mb-2"
                                     />
                                     <Form.Check
                                         type="checkbox"
                                         label="Biometria digital"
                                         checked={showFingerprintUsers}
                                         onChange={handleFingerprintUsersChange}
-                                        className="mb-2"
                                     />
                                     <Form.Check
                                         type="checkbox"
                                         label="Biometria facial"
                                         checked={showFacialRecognitionUsers}
                                         onChange={handleFacialRecognitionUsersChange}
-                                        className="mb-2"
                                     />
                                 </div>
                             </div>
                         </Tab>
                         <Tab eventKey="onOff" title="Ligação">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
                                     {loadingRestartDevice ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -1527,7 +1515,7 @@ export const Terminals = () => {
                             </div>
                         </Tab>
                         <Tab eventKey="access" title="Acessos">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSendClock}>
                                     {loadingSendClock ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -1551,7 +1539,7 @@ export const Terminals = () => {
                             </div>
                         </Tab>
                         <Tab eventKey="configuration" title="Configurações">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncTime}>
                                     {loadingSyncTime ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -1574,8 +1562,8 @@ export const Terminals = () => {
                                 </Button> */}
                             </div>
                         </Tab>
-                        {/* <Tab eventKey="files" title="Ficheiros">
-                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 10 }}>
+                        <Tab eventKey="files" title="Ficheiros">
+                            <div style={{ display: "flex", marginTop: 10, marginBottom: 10, padding: 5 }}>
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={triggerFileAttendanceSelectPopup}>
                                     {loadingImportAttendance ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -1617,7 +1605,7 @@ export const Terminals = () => {
                                     Importar movimentos do log
                                 </Button>
                             </div>
-                        </Tab> */}
+                        </Tab>
                     </Tabs>
                 </div>
                 <Footer style={{ backgroundColor: footerColor }} />

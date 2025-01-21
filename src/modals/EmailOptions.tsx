@@ -7,9 +7,20 @@ import { toast } from 'react-toastify';
 import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
 
-import { EmailUser } from '../helpers/Types';
+import { EmailUser } from '../types/Types';
 import { TestEmailModal } from './TestEmailModal';
 import { useNavbar } from '../context/NavbarContext';
+
+// Define a interface para os itens de erro
+interface ErrorDetails {
+    hasError: boolean;
+    message: string;
+}
+
+// Define a interface para os itens de erro
+interface ErrorRecord {
+    [key: string]: ErrorDetails;
+}
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {
@@ -36,7 +47,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
     const { testEmail } = useNavbar();
     const [emailFormData, setEmailFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
-    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [errors, setErrors] = useState<ErrorRecord>({});
     const [showValidationErrors, setShowValidationErrors] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showTestEmailModal, setShowTestEmailModal] = useState(false);
@@ -70,20 +81,19 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
 
     // Usa useEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, boolean> = {};
+        const newErrors: ErrorRecord = {};
+        let isValid = true;
 
-        const isValid = fields.every(field => {
+        fields.forEach(field => {
             const fieldValue = emailFormData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
+            if (field.required && (fieldValue === null || fieldValue === '')) {
+                isValid = false;
             }
+
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
+                isValid = false;
             }
 
-            return valid;
         });
 
         setErrors(newErrors);
@@ -94,18 +104,22 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
     // Função para validar o formulário
     const validateForm = () => {
         if (!showValidationErrors) return true;
-        let newErrors: Record<string, boolean> = {};
+        let newErrors: ErrorRecord = {};
         let isValid = true;
 
         fields.forEach((field) => {
             const fieldValue = emailFormData[field.key];
             if (field.required && !fieldValue) {
                 isValid = false;
-                newErrors[field.key] = true;
-            } else {
-                newErrors[field.key] = false;
+            } else if (field.validate && !field.validate(fieldValue)) {
+                isValid = false;
             }
         });
+
+        if (emailFormData.usernameEmail && !validateEmail(emailFormData.usernameEmail as string)) {
+            isValid = false;
+            newErrors['usernameEmail'] = { hasError: true, message: 'O email é inválido.' };
+        }
 
         setErrors(newErrors);
         setIsFormValid(isValid);
@@ -116,6 +130,12 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
     useEffect(() => {
         validateForm();
     }, [emailFormData, fields]);
+
+    // Função para validar o email
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -149,6 +169,13 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
         setShowPassword(!showPassword);
     };
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setEmailFormData({ ...entity });
+        setShowValidationErrors(false);
+        onClose();
+    };
+
     // Função para lidar com o clique em adicionar ou atualizar
     const handleAddOrUpdate = () => {
         if (entity.usernameEmail !== '' && entity.passwordEmail !== '' && entity.hostSMTP !== '' && entity.portSMTP !== '') {
@@ -166,7 +193,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
             return;
         }
         onSave(emailFormData as T);
-        onClose();
+        handleClose();
     };
 
     // Função para lidar com o clique em atualizar
@@ -180,7 +207,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
     }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="modal-scrollable" size='lg' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -224,7 +251,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         data-form-type="email"
                                                     />
                                                 </OverlayTrigger>
-                                                {errors.usernameEmail && <Form.Text className="text-danger">{errors.usernameEmail}</Form.Text>}
+                                                {errors['usernameEmail'] && errors['usernameEmail'].hasError && <Form.Text className="text-danger">{errors['usernameEmail'].message}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                         <Col md={6}>
@@ -261,7 +288,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         </InputGroup.Text>
                                                     </InputGroup>
                                                 </OverlayTrigger>
-                                                {errors.passwordEmail && <Form.Text className="text-danger">{errors.passwordEmail}</Form.Text>}
+                                                {errors['passwordEmail'] && errors['passwordEmail'].hasError && <Form.Text className="text-danger">{errors['passwordEmail'].message}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                         <Col md={6}>
@@ -280,7 +307,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                         data-form-type="email"
                                                     />
                                                 </OverlayTrigger>
-                                                {errors.hostSMTP && <Form.Text className="text-danger">{errors.hostSMTP}</Form.Text>}
+                                                {errors['hostSMTP'] && errors['hostSMTP'].hasError && <Form.Text className="text-danger">{errors['hostSMTP'].message}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                         <Col md={6}>
@@ -300,7 +327,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                     >
                                                     </Form.Control>
                                                 </OverlayTrigger>
-                                                {errors.portSMTP && <Form.Text className="text-danger">{errors.portSMTP}</Form.Text>}
+                                                {errors['portSMTP'] && errors['portSMTP'].hasError && <Form.Text className="text-danger">{errors['portSMTP'].message}</Form.Text>}
                                             </Form.Group>
                                         </Col>
                                     </Row>
@@ -311,9 +338,9 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-info" onClick={() => setShowTestEmailModal(true)}>Teste E-Mail</Button>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleAddOrUpdate}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={() => setShowTestEmailModal(true)}>Teste E-Mail</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleAddOrUpdate}>Guardar</Button>
             </Modal.Footer>
             <TestEmailModal
                 open={showTestEmailModal}

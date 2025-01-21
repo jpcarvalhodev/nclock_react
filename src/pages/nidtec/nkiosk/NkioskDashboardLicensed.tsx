@@ -1,25 +1,25 @@
 import { ArcElement, BarElement, CategoryScale, ChartData, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
-import { format, getDay, getMonth, parse, parseISO, set, startOfWeek } from 'date-fns';
-import { pt, ptBR } from 'date-fns/locale';
-import { useContext, useEffect, useState } from "react";
+import { format, getDay, getMonth, parse, parseISO, startOfWeek } from 'date-fns';
+import { pt } from 'date-fns/locale';
+import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { Line, Bar } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
 import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
-import * as apiService from "../../../helpers/apiService";
+import * as apiService from "../../../api/apiService";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
+import { useTerminals } from "../../../context/TerminalsContext";
+import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 import { useKiosk } from '../../../context/KioskContext';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 // Define a linguagem do calendário
 const locales = {
-    'pt': ptBR,
+    'pt': pt,
 };
 
 // Define o localizador de datas
@@ -79,7 +79,7 @@ export const NkioskDashboardLicensed = () => {
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const { navbarColor, footerColor } = useNavbar();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useTerminals();
     const { totalPayments, setTotalPayments, totalMovements, setTotalMovements } = useKiosk();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [payLineChartData, setPayLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
@@ -243,13 +243,13 @@ export const NkioskDashboardLicensed = () => {
 
     // Atualiza os dados do gráfico com base nos pagamentos anuais
     useEffect(() => {
-        const monthlyTotals = calculatePayMonthlyCounts(totalPayments);
+        const monthlyPayTotals = calculatePayMonthlyCounts(totalPayments);
         const newLineData = {
             labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
             datasets: [
                 {
                     label: 'Total de Pagamentos por Mês',
-                    data: monthlyTotals,
+                    data: monthlyPayTotals,
                     fill: false,
                     borderColor: '#009739',
                     tension: 0.1
@@ -261,13 +261,13 @@ export const NkioskDashboardLicensed = () => {
 
     // Atualiza os dados do gráfico com base nos movimentos anuais
     useEffect(() => {
-        const monthlyTotals = calculateMoveMonthlyCounts(totalMovements);
+        const monthlyMoveTotals = calculateMoveMonthlyCounts(totalMovements);
         const newLineData = {
             labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
             datasets: [
                 {
-                    label: 'Total de Pagamentos por Mês',
-                    data: monthlyTotals,
+                    label: 'Total de Movimentos por Mês',
+                    data: monthlyMoveTotals,
                     fill: false,
                     borderColor: '#009739',
                     tension: 0.1
@@ -284,7 +284,7 @@ export const NkioskDashboardLicensed = () => {
             datasets: [
                 {
                     label: 'Pagamentos com Multibanco Hoje',
-                    data: [todayTotalMb.length],
+                    data: [todayTotalMb.flat().length],
                     backgroundColor: '#009739',
                 }
             ]
@@ -350,15 +350,15 @@ export const NkioskDashboardLicensed = () => {
                 </div>
                 <div className="carousel-chart-container" id="carousel-chart" style={{ marginTop: 5 }}>
                     <Carousel infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                        <div className="departments-groups-chart" style={{ height: '450px' }}>
+                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
                             <h2 className="departments-groups-chart-text">Total de Pagamentos em {currentYear}: { }</h2>
                             <Line className="departments-groups-chart-data" data={payLineChartData} />
                         </div>
-                        <div className="departments-groups-chart" style={{ height: '450px' }}>
+                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
                             <h2 className="departments-groups-chart-text">Total de Movimentos em {currentYear}: { }</h2>
                             <Line className="departments-groups-chart-data" data={moveLineChartData} />
                         </div>
-                        <div style={{ height: '450px', width: '56rem', margin: 'auto' }}>
+                        <div style={{ height: '28rem', maxWidth: '56rem', margin: 'auto' }}>
                             <Calendar
                                 localizer={localizer}
                                 events={events}
@@ -376,26 +376,26 @@ export const NkioskDashboardLicensed = () => {
                 </div>
             </div>
             <div className="dashboard-content" style={{ marginTop: 5 }}>
-                <div className="carousel-chart-container" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '240px' }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Multibanco Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayMbLineChartData} />
                     </div>
                 </div>
-                <div className="carousel-chart-container" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '240px' }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Moedeiro Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayCoinLineChartData} />
                     </div>
                 </div>
-                <div className="carousel-chart-container" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '240px' }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Torniquete Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayCardLineChartData} />
                     </div>
                 </div>
-                <div className="carousel-chart-container" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '240px' }}>
+                <div className="carousel-chart-container-graphs" id="carousel-chart">
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Quiosque Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayKioskLineChartData} />
                     </div>

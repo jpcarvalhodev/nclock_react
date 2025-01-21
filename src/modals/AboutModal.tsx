@@ -13,7 +13,7 @@ interface AboutModalProps {
 export const AboutModal = ({ open, onClose }: AboutModalProps) => {
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>Acerca de</Modal.Title>
             </Modal.Header>

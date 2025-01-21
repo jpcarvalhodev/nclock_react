@@ -719,3 +719,5 @@ export type BackupDB = {
     id: string;
     backupName: string;
 }
+
+export type DevicesDoors = Partial<Devices> & Partial<Doors>;

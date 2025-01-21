@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { toast } from 'react-toastify';
 
@@ -10,8 +10,8 @@ import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { PrintButton } from '../../components/PrintButton';
 import { SelectFilter } from '../../components/SelectFilter';
-import { departmentFields } from '../../helpers/Fields';
-import { Department } from '../../helpers/Types';
+import { departmentFields } from '../../fields/Fields';
+import { Department } from '../../types/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { CreateModalDeptGrp } from '../../modals/CreateModalDeptGrp';
 import { DeleteModal } from '../../modals/DeleteModal';
@@ -24,7 +24,7 @@ import { useNavbar } from "../../context/NavbarContext";
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextField, TextFieldProps } from '@mui/material';
 
-import { PersonsContext, PersonsContextType } from '../../context/PersonsContext';
+import { usePersons } from '../../context/PersonsContext';
 
 // Define a interface para os filtros
 interface Filters {
@@ -52,7 +52,7 @@ export const Departments = () => {
         handleAddDepartment,
         handleUpdateDepartment,
         handleDeleteDepartment
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'name', 'description']);
@@ -93,19 +93,19 @@ export const Departments = () => {
     // Adiciona um departamento
     const addDepartment = async (department: Department) => {
         await handleAddDepartment(department);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Atualiza um departamento
     const updateDepartment = async (department: Department) => {
         await handleUpdateDepartment(department);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Apaga um departamento
     const deleteDepartment = async (departmentID: string[]) => {
         await handleDeleteDepartment(departmentID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca os departamentos ao carregar a página
@@ -116,7 +116,7 @@ export const Departments = () => {
     // função de atualizar os departamentos
     const refreshDepartments = () => {
         fetchDepartments();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar as linhas

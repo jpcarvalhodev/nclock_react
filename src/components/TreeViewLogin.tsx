@@ -7,8 +7,6 @@ import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useEntity } from '../context/EntityContext';
-import * as apiService from "../helpers/apiService";
-import { Devices, Logs, MBDevice } from '../helpers/Types';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 

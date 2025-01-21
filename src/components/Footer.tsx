@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useLicense } from "../context/LicenseContext";
 import { useNavbar } from "../context/NavbarContext";
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
 
 interface FooterProps {
   style?: React.CSSProperties;

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DataTable, { TableColumn } from 'react-data-table-component';
 import Split from 'react-split';
 import { toast } from "react-toastify";
@@ -11,8 +11,8 @@ import { NavBar } from "../../../components/NavBar"
 import { PrintButton } from '../../../components/PrintButton';
 import { SelectFilter } from '../../../components/SelectFilter';
 import { TreeViewDataNclock } from '../../../components/TreeViewNclock';
-import { employeeAttendanceTimesFields, employeeFields } from "../../../helpers/Fields";
-import { Employee, EmployeeAttendanceTimes, EmployeeCard } from "../../../helpers/Types";
+import { employeeAttendanceTimesFields, employeeFields } from "../../../fields/Fields";
+import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAttendance } from '../../../modals/CreateModalAttendance';
 import { DeleteModal } from "../../../modals/DeleteModal";
@@ -21,12 +21,12 @@ import { UpdateModalAttendance } from '../../../modals/UpdateModalAttendance';
 import "../../../css/PagesStyles.css";
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-import { AttendanceContext, AttendanceContextType, AttendanceProvider } from '../../../context/MovementContext';
 import { useNavbar } from "../../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from '../../../context/PersonsContext';
 import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
 
 import { TextField, TextFieldProps } from '@mui/material';
+import { usePersons } from "../../../context/PersonsContext";
+import { useAttendance } from "../../../context/MovementContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -35,36 +35,47 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
+}
+
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T00:00`;
+}
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+    return `${date.toISOString().substring(0, 10)}T23:59`;
 }
 
 // Define a página de pedidos
 export const NclockRequests = () => {
     const {
-        startDate,
-        endDate,
-        setStartDate,
-        setEndDate,
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
         handleAddAttendance,
         handleUpdateAttendance,
         handleDeleteAttendance,
-    } = useContext(AttendanceContext) as AttendanceContextType;
+    } = useAttendance();
+    const currentDate = new Date();
+    const pastDate = new Date();
+    pastDate.setDate(currentDate.getDate() - 30);
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee, handleUpdateEmployeeCard, handleAddEmployeeCard } = useContext(PersonsContext) as PersonsContextType;
+    const { employees, handleUpdateEmployee } = usePersons();
+    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [attendanceRequests, setAttendanceRequests] = useState<EmployeeAttendanceTimes[]>([]);
     const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [selectedAttendances, setSelectedAttendances] = useState<EmployeeAttendanceTimes[]>([]);
     const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
     const [showUpdateAttendanceModal, setShowUpdateAttendanceModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeId', 'observation', 'attendanceTime']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeName', 'observation', 'attendanceTime']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>([]);
@@ -99,35 +110,103 @@ export const NclockRequests = () => {
         });
     };
 
+    // Função para buscar os pagamentos dos terminais de hoje
+    const fetchMovementsToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            await fetchAllAttendancesBetweenDates({
+                filterFunc: data => data.filter(att => att.type !== 3),
+                postFetch: filteredData => {
+                    setFilteredAttendances(filteredData);
+                    setStartDate(start);
+                    setEndDate(end);
+                }
+            });
+        } catch (error) {
+            console.error("Erro ao buscar movimentos de hoje:", error);
+        }
+    }
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchMovementsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            await fetchAllAttendancesBetweenDates({
+                filterFunc: data => data.filter(att => att.type !== 3),
+                postFetch: filteredData => {
+                    setFilteredAttendances(filteredData);
+                    setStartDate(start);
+                    setEndDate(end);
+                }
+            });
+        } catch (error) {
+            console.error("Erro ao buscar movimentos do dia anterior:", error);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchMovementsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            await fetchAllAttendancesBetweenDates({
+                filterFunc: data => data.filter(att => att.type !== 3),
+                postFetch: filteredData => {
+                    setFilteredAttendances(filteredData);
+                    setStartDate(start);
+                    setEndDate(end);
+                }
+            });
+        } catch (error) {
+            console.error("Erro ao buscar movimentos do dia seguinte:", error);
+        }
+    };
+
     // Função para adicionar um movimento
     const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
         await handleAddAttendance(attendance);
         refreshAttendance();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um movimento
     const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
         await handleUpdateAttendance(attendance);
         refreshAttendance();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para deletar um movimento
     const deleteAttendance = async (attendanceTimeId: string) => {
         await handleDeleteAttendance(attendanceTimeId);
         refreshAttendance();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
         refreshAttendance();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
-    // Atualiza os dados de renderização
+    // Busca os movimentos ao carregar a página
     useEffect(() => {
         fetchRequests();
     }, []);
@@ -143,7 +222,19 @@ export const NclockRequests = () => {
     useEffect(() => {
         const lowercasedFilter = filterText.toLowerCase();
         const filteredData = attendanceRequests.filter(att => {
-            return att.employeeName ? att.employeeName.toLowerCase().includes(lowercasedFilter) : false;
+            return Object.entries(att).some(([key, value]) => {
+                if (selectedColumns.includes(key)) {
+                    if (key === 'attendanceTime') {
+                        const formattedDate = new Date(value).toLocaleString('pt');
+                        return formattedDate.toLowerCase().includes(lowercasedFilter);
+                    } else if (typeof value === 'string') {
+                        return value.toLowerCase().includes(lowercasedFilter);
+                    } else if (value != null) {
+                        return value.toString().toLowerCase().includes(lowercasedFilter);
+                    }
+                }
+                return false;
+            });
         });
         setFilteredAttendances(filteredData);
     }, [filterText, attendanceRequests]);
@@ -190,13 +281,15 @@ export const NclockRequests = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['employeeId', 'observation', 'attendanceTime']);
+        setSelectedColumns(['employeeName', 'observation', 'attendanceTime']);
     };
 
     // Função para atualizar os funcionários
     const refreshAttendance = () => {
         fetchRequests();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de adição de assiduidade
@@ -229,7 +322,7 @@ export const NclockRequests = () => {
     };
 
     // Remove o campo de número, nome, modo de entrada/saída e tipo
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'inOutMode' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
+    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'enrollNumber' && field.key !== 'employeeId' && field.key !== 'inOutMode' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredAttendances.filter(attendances =>
@@ -270,7 +363,7 @@ export const NclockRequests = () => {
     const columns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
         .filter(field => selectedColumns.includes(field.key))
         .map(field => {
-            if (field.key === 'employeeId') {
+            if (field.key === 'employeeName') {
                 return {
                     ...field,
                     name: field.label,
@@ -375,156 +468,172 @@ export const NclockRequests = () => {
     };
 
     return (
-        <AttendanceProvider>
-            <div className="main-container">
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className="content-container">
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+        <div className="main-container">
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className="content-container">
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span>Pedidos</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text">
-                                <span>Pedidos</span>
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
+                                />
                             </div>
-                            <div className="datatable-header">
-                                <div>
-                                    <CustomSearchBox
-                            label="Pesquisa"
-                            variant="outlined"
-                            size='small'
-                            value={filterText}
-                            onChange={e => setFilterText(e.target.value)}
-                            style={{ marginTop: -5 }}
+                            <div className="buttons-container">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
+                                    />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em'
+                                    />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
+                                    />
+                                </OverlayTrigger>
+                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                            </div>
+                            <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Pedidos Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchMovementsForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Pedidos Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Pedidos Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchRequestsBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
+                            </div>
+                        </div>
+                        <DataTable
+                            columns={[...columns, actionColumn]}
+                            data={filteredDataTable}
+                            onRowDoubleClicked={(row) => {
+                                setSelectedAttendances([row]);
+                                setShowUpdateAttendanceModal(true);
+                            }}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            selectableRows
+                            paginationPerPage={20}
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            selectableRowsHighlight
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId="attendanceTime"
                         />
-                                </div>
-                                <div className="buttons-container">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
-                                        />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAttendanceModal} iconSize='1.1em'
-                                        />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
-                                        />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                </div>
-                                <div className="date-range-search">
-                                    <input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={e => setStartDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <span> até </span>
-                                    <input
-                                        type="datetime-local"
-                                        value={endDate}
-                                        onChange={e => setEndDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-search" onClick={fetchRequestsBetweenDates} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-                            <DataTable
-                                columns={[...columns, actionColumn]}
-                                data={filteredDataTable}
-                                onRowDoubleClicked={(row) => {
-                                    setSelectedAttendances([row]);
-                                    setShowUpdateAttendanceModal(true);
-                                }}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                selectableRows
-                                paginationPerPage={20}
-                                onSelectedRowsChange={handleRowSelected}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRowsHighlight
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                                defaultSortAsc={true}
-                                defaultSortFieldId="attendanceTime"
-                            />
-                        </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                {showAddAttendanceModal && (
-                    <CreateModalAttendance
-                        open={showAddAttendanceModal}
-                        onClose={() => setShowAddAttendanceModal(false)}
-                        onSave={addAttendance}
-                        title='Adicionar Pedido de Assiduidade'
-                        fields={employeeAttendanceTimesFields}
-                        initialValues={initialData}
-                        entityType='pedidos'
-                    />
-                )}
-                {selectedAttendances.length > 0 && showUpdateAttendanceModal && (
-                    <UpdateModalAttendance
-                        open={showUpdateAttendanceModal}
-                        onClose={() => setShowUpdateAttendanceModal(false)}
-                        onUpdate={updateAttendance}
-                        entity={selectedAttendances[0]}
-                        fields={employeeAttendanceTimesFields}
-                        onDuplicate={handleDuplicate}
-                        title='Atualizar Assiduidade'
-                        entityType='pedidos'
-                        onNext={handlePrevDepartment}
-                        onPrev={handleNextAttendance}
-                        canMoveNext={currentAttendanceIndex > 0}
-                        canMovePrev={currentAttendanceIndex < filteredAttendances.length - 1}
-                    />
-                )}
-                {selectedAttendanceToDelete && showDeleteModal && (
-                    <DeleteModal
-                        open={showDeleteModal}
-                        onClose={() => setShowDeleteModal(false)}
-                        onDelete={deleteAttendance}
-                        entityId={selectedAttendanceToDelete}
-                    />
-                )}
-                {showColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={filteredColumns}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setShowColumnSelector(false)}
-                        onColumnToggle={handleColumnToggle}
-                        onResetColumns={handleResetColumns}
-                        onSelectAllColumns={handleSelectAllColumns}
-                    />
-                )}
-                {selectedEmployee && (
-                    <UpdateModalEmployees
-                        open={showEditModal}
-                        onClose={() => setShowEditModal(false)}
-                        onUpdate={updateEmployeeAndCard}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Funcionário"
-                    />
-                )}
+                    </div>
+                </Split>
             </div>
-        </AttendanceProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            {showAddAttendanceModal && (
+                <CreateModalAttendance
+                    open={showAddAttendanceModal}
+                    onClose={() => setShowAddAttendanceModal(false)}
+                    onSave={addAttendance}
+                    title='Adicionar Pedido de Assiduidade'
+                    fields={employeeAttendanceTimesFields}
+                    initialValues={initialData}
+                    entityType='pedidos'
+                />
+            )}
+            {selectedAttendances.length > 0 && showUpdateAttendanceModal && (
+                <UpdateModalAttendance
+                    open={showUpdateAttendanceModal}
+                    onClose={() => setShowUpdateAttendanceModal(false)}
+                    onUpdate={updateAttendance}
+                    entity={selectedAttendances[0]}
+                    fields={employeeAttendanceTimesFields}
+                    onDuplicate={handleDuplicate}
+                    title='Atualizar Assiduidade'
+                    entityType='pedidos'
+                    onNext={handlePrevDepartment}
+                    onPrev={handleNextAttendance}
+                    canMoveNext={currentAttendanceIndex > 0}
+                    canMovePrev={currentAttendanceIndex < filteredAttendances.length - 1}
+                />
+            )}
+            {selectedAttendanceToDelete && showDeleteModal && (
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={deleteAttendance}
+                    entityId={selectedAttendanceToDelete}
+                />
+            )}
+            {showColumnSelector && (
+                <ColumnSelectorModal
+                    columns={filteredColumns}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setShowColumnSelector(false)}
+                    onColumnToggle={handleColumnToggle}
+                    onResetColumns={handleResetColumns}
+                    onSelectAllColumns={handleSelectAllColumns}
+                />
+            )}
+            {selectedEmployee && (
+                <UpdateModalEmployees
+                    open={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdate={updateEmployeeAndCard}
+                    entity={selectedEmployee}
+                    fields={employeeFields}
+                    title="Atualizar Funcionário"
+                />
+            )}
+        </div>
     );
 }

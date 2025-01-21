@@ -4,7 +4,18 @@ import { toast } from 'react-toastify';
 
 import no_entity from '../assets/img/navbar/no_entity.png';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
+
+// Define a interface para os itens de erro
+interface ErrorDetails {
+    hasError: boolean;
+    message: string;
+}
+
+// Define a interface para os itens de erro
+interface ErrorRecord {
+    [key: string]: ErrorDetails;
+}
 
 // Define a interface Entity
 export interface Entity {
@@ -39,7 +50,7 @@ interface Field {
 
 export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
-    const [errors, setErrors] = useState<Record<string, boolean>>({});
+    const [errors, setErrors] = useState<ErrorRecord>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
@@ -48,20 +59,19 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
 
     // UseEffect para validar o formulário
     useEffect(() => {
-        const newErrors: Record<string, boolean> = {};
+        const newErrors: ErrorRecord = {};
+        let isValid = true;
 
-        const isValid = fields.every(field => {
+        fields.forEach(field => {
             const fieldValue = formData[field.key];
-            let valid = true;
-
-            if (field.required && (fieldValue === undefined || fieldValue === '')) {
-                valid = false;
+            if (field.required && (fieldValue === null || fieldValue === '')) {
+                isValid = false;
             }
+
             if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
-                valid = false;
+                isValid = false;
             }
 
-            return valid;
         });
 
         setErrors(newErrors);
@@ -84,22 +94,32 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
     // Função para validar o formulário
     const validateForm = () => {
         if (!showValidationErrors) return true;
-        let newErrors: Record<string, boolean> = {};
+        let newErrors: ErrorRecord = {};
         let isValid = true;
 
         fields.forEach((field) => {
             const fieldValue = formData[field.key];
             if (field.required && !fieldValue) {
                 isValid = false;
-                newErrors[field.key] = true;
-            } else {
-                newErrors[field.key] = false;
+            } else if (field.validate && !field.validate(fieldValue)) {
+                isValid = false;
             }
         });
+
+        if (formData.emails && !validateEmail(formData.emails as string)) {
+            isValid = false;
+            newErrors['emails'] = { hasError: true, message: 'O email é inválido.' };
+        }
 
         setErrors(newErrors);
         setIsFormValid(isValid);
         return isValid;
+    };
+
+    // Função para validar o email
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     };
 
     // Função para lidar com a mudança da imagem
@@ -151,7 +171,6 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
 
     // Função para lidar com a atualização
     const handleUpdate = () => {
-        console.log('formData', formData);
 
         const dataToSend = new FormData();
 
@@ -201,7 +220,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl" style={{ marginTop: 50 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -287,7 +306,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
-                                {errors['nif'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['nif']}</div>}
+                                {errors['nif'] && errors['nif'].hasError && <Form.Text className="text-danger">{errors['nif'].message}</Form.Text>}
                             </Form.Group>
                         </Col>
                         <Col md={6}>
@@ -305,7 +324,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
-                                {errors['nome'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['nome']}</div>}
+                                {errors['nome'] && errors['nome'].hasError && <Form.Text className="text-danger">{errors['nome'].message}</Form.Text>}
                             </Form.Group>
                             <Form.Group controlId="formLocalidade">
                                 <Form.Label>Localidade</Form.Label>
@@ -336,6 +355,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                                     value={formData.email}
                                     onChange={handleChange}
                                 />
+                                {errors['email'] && errors['email'].hasError && <Form.Text className="text-danger">{errors['email'].message}</Form.Text>}
                             </Form.Group>
                             <Form.Group controlId="formWww">
                                 <Form.Label>Website</Form.Label>
@@ -379,13 +399,13 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>
                     Guardar
                 </Button>
             </Modal.Footer>

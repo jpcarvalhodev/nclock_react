@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../../css/ForgotPassword.css';
-import { Button } from 'react-bootstrap';
+import { Button, FormControl, InputGroup } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
 import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
+import hidepass from "../../assets/img/login/hidepass.png";
+import showpass from "../../assets/img/login/showpass.png";
 
 // Define a página de redefinição de senha
 export const ResetPassword = () => {
@@ -13,6 +15,7 @@ export const ResetPassword = () => {
   const [token, setToken] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const [showPassword, setShowPassword] = useState(false);
 
   // Atualiza os estados de email e token
   useEffect(() => {
@@ -23,12 +26,12 @@ export const ResetPassword = () => {
 
   // Verifica se a senha é válida
   const isPasswordValid = (password: string): boolean => {
-    return password.length >= 8 && validatePassword(password);
+    return password.length >= 6 && validatePassword(password);
   };
 
   // Função para validar a senha
   const validatePassword = (password: string): boolean => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{6,})/;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*-_])(?=.{6,})/;
     return regex.test(password);
   };
 
@@ -66,16 +69,46 @@ export const ResetPassword = () => {
     }
   }
 
+  // Função para alternar a visibilidade da password
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="background-login">
       <div className='forgot-container' id='forgot'>
         <form className='form-login' onSubmit={handleResetPasswordFormSubmit}>
           <img className='logo-login' src="/logo_login.png" alt="Logo Login" />
-          <div className='email-label' style={{ height: '80px' }}>
+          <div className='email-label' style={{ height: '120px' }}>
             <p>Nova Password:</p>
-            <input className='input-email' style={{ flex: 1 }} type="password" name="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <InputGroup className='mb-3'>
+                <FormControl
+                  type={showPassword ? 'text' : 'password'}
+                  aria-label='Nova Password'
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  className='input-email'
+                  minLength={6}
+                />
+                <InputGroup.Text
+                  style={{
+                    cursor: 'pointer',
+                    border: 'none',
+                    backgroundColor: 'transparent',
+                    height: '38px',
+                    marginLeft: '-45px',
+                    zIndex: 10,
+                  }}
+                  onClick={togglePasswordVisibility}
+                >
+                  <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
+                </InputGroup.Text>
+              </InputGroup>
+            </div>
+            <Button variant='outline-light' type='submit'>Redefinir Password</Button>
           </div>
-          <Button style={{ marginTop: 30 }} variant='outline-light' type='submit'>Redefinir Password</Button>
         </form>
       </div>
     </div>

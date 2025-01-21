@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Col, Form, InputGroup, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -8,12 +8,12 @@ import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
-import * as apiService from "../helpers/apiService";
-import { departmentFields, groupFields } from '../helpers/Fields';
-import { Department, EmployeeCard, Group } from '../helpers/Types';
+import { usePersons } from '../context/PersonsContext';
+import { departmentFields, groupFields } from '../fields/Fields';
+import { EmployeeCard } from '../types/Types';
 
 import { CreateModalDeptGrp } from './CreateModalDeptGrp';
+import { useEntity } from '../context/EntityContext';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -52,11 +52,8 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-  const {
-    fetchAllDepartments,
-    fetchAllGroups,
-    fetchEmployeeCardData,
-  } = useContext(PersonsContext) as PersonsContextType;
+  const { fetchAllDepartments, fetchAllGroups, fetchAllCategories, fetchAllProfessions, fetchAllZones, fetchAllExternalEntitiesData, handleAddDepartment, handleAddGroup } = usePersons();
+  const { fetchAllEntity } = useEntity();
   const [formData, setFormData] = useState<T>({ ...entity });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -138,56 +135,28 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     try {
       const departments = await fetchAllDepartments();
       const groups = await fetchAllGroups();
-      const categories = await apiService.fetchAllCategories();
-      const professions = await apiService.fetchAllProfessions();
-      const zones = await apiService.fetchAllZones();
-      const externalEntities = await apiService.fetchAllExternalEntities();
-      const entities = await apiService.fetchAllCompanyConfig();
+      const categories = await fetchAllCategories();
+      const professions = await fetchAllProfessions();
+      const zones = await fetchAllZones();
+      const externalEntities = await fetchAllExternalEntitiesData();
+      const entities = await fetchAllEntity();
       setDropdownData({
         departmentId: departments,
         groupId: groups,
         categoryId: categories,
         professionId: professions,
         zoneId: zones,
-        externalEntityId: externalEntities,
+        externalEntityId: externalEntities.ExternalEntities,
         entidadeId: entities
       });
       if (entities.length === 1) {
-        setFormData(prevState => ({
+        setFormData((prevState) => ({
           ...prevState,
-          entidadeId: entities[0].id
+          entidadeId: entities?.[0]?.id || '',
         }));
       }
     } catch (error) {
-      console.error('Erro ao buscar os dados de departamentos e grupos', error);
-    }
-  };
-
-  // Adiciona um departamento
-  const handleAddDepartment = async (department: Department) => {
-    try {
-      const data = await apiService.addDepartment(department);
-      toast.success(data.value || 'Departamento adicionado com sucesso!')
-    } catch (error) {
-      console.error('Erro ao adicionar novo departamento:', error);
-    } finally {
-      setShowDeptModal(false);
-      const data = await fetchAllDepartments();
-      setDropdownData(prevState => ({ ...prevState, departmentId: data }));
-    }
-  };
-
-  // Função para adicionar um grupo
-  const handleAddGroup = async (group: Group) => {
-    try {
-      const data = await apiService.addGroup(group);
-      toast.success(data.value || 'Grupo adicionado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao adicionar novo grupo:', error);
-    } finally {
-      setShowGrpModal(false);
-      const data = await fetchAllGroups();
-      setDropdownData(prevState => ({ ...prevState, groupId: data }));
+      console.error('Erro ao buscar os dados', error);
     }
   };
 
@@ -481,7 +450,6 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
     }
 
     dataToSend = removeEmptyFields(dataToSend) as typeof dataToSend;
-    console.log('Data to send:', dataToSend);
     onUpdate(dataToSend as unknown as T);
   };
 
@@ -507,7 +475,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   };
 
   return (
-    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 110 }}>
+    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
       <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -530,7 +498,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               />
             </div>
             <div>
-              <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
+              <Button variant="outline-dark" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
                 Remover Foto
               </Button>
             </div>
@@ -847,7 +815,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                                   >
                                     <option value="">Selecione...</option>
                                     {dropdownData[field.key]?.map((option: any) => {
-                                      let optionId = option.professionID || option.zoneID || option.externalEntityID;
+                                      let optionId = option.professionID || option.zoneID || option.externalEntityID || option.categoryID;
                                       let optionName = option.name || option.description;
                                       return (
                                         <option key={optionId} value={optionId}>
@@ -951,9 +919,9 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         >
           <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
         </OverlayTrigger>
-        <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
-        <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-        <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+        <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>Duplicar</Button>
+        <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>Fechar</Button>
+        <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
       </Modal.Footer>
       <CreateModalDeptGrp
         title="Adicionar Departamento"

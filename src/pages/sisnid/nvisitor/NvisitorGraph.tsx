@@ -1,54 +1,18 @@
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
-import { useEffect, useState } from "react";
 import { Bar , PolarArea } from "react-chartjs-2";
 
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
+import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
+import { useKiosk } from '../../../context/KioskContext';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 export const NvisitorGraph = () => {
+    const currentYear = new Date().getFullYear();
     const { navbarColor, footerColor } = useNavbar();
-    const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
-    const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
-    const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
-    const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
-    const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
-    const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
-    const deviceSN = 'AGB7234900595';
-    const eventDoorId2 = '2';
-    const eventDoorId3 = '3';
-    const eventDoorId4 = '4';
-
-    /* // Função para buscar os dados para os gráficos
-    const fetchAllData = async () => {
-        try {
-            const mbData = await apiService.fetchKioskTransactionsByMBAndDeviceSN();
-            const coinData = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN);
-            const cardData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, deviceSN);
-            const kioskData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, deviceSN);
-            const vpData = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId3, deviceSN);
-            setPayTerminal(mbData);
-            setPayCoins(coinData);
-            setMoveCard(cardData);
-            setMoveKiosk(kioskData);
-            setMoveVP(vpData);
-
-            const totalMove = cardData.concat(kioskData);
-
-            setTotalMovements(totalMove);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    // UseEffect para buscar os dados
-    useEffect(() => {
-        fetchAllData();
-    }, []); */
+    const { moveCard, moveKiosk, totalMovements } = useKiosk();
 
     // Função para agrupar os dados por mês com base no campo correto
     const groupByMonth = <T extends KioskTransactionMB | KioskTransactionCard>(
@@ -103,17 +67,14 @@ export const NvisitorGraph = () => {
 
     // Dados para o gráfico PolarArea
     const polarData = {
-        labels: ['A', 'B', 'C', 'D', 'E'],
+        labels: ['Torniquete', 'Quiosque'],
         datasets: [
             {
-                label: 'Total',
-                data: [payTerminal.length, payCoins.length, moveCard.length, moveKiosk.length, moveVP.length],
+                label: 'Total de Movimentos',
+                data: [moveCard.length, moveKiosk.length],
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
                     'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)'
+                    'rgba(75, 192, 192, 0.2)'
                 ],
                 borderWidth: 1,
             },
@@ -125,7 +86,7 @@ export const NvisitorGraph = () => {
         labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
         datasets: [
             {
-                label: 'Total',
+                label: 'Movimentos',
                 data: groupByMonth(totalMovements, 'eventTime'),
                 backgroundColor: [
                     'rgba(75, 192, 192, 0.2)'
@@ -136,24 +97,24 @@ export const NvisitorGraph = () => {
                 borderWidth: 1
             }
         ]
-    };   
+    };  
 
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
-                <span>Gráficos de Torniquetes</span>
+                <span>Gráficos de Movimentos</span>
             </div>
             <div className="dashboard-content">
                 <div className="chart-container">
                     <div className="employee-pie-chart" style={{ flex: 1 }}>
-                        <h2 className="employee-pie-chart-text">Total: { }</h2>
+                        <h2 className="employee-pie-chart-text">Total de Movimentos: { }</h2>
                         <PolarArea className="employee-pie-chart-pie" data={polarData} />
                     </div>
                 </div>
                 <div className="chart-container">
                     <div className="departments-groups-chart" style={{ flex: 1 }}>
-                        <h2 className="departments-groups-chart-text">Total: { }</h2>
+                        <h2 className="departments-groups-chart-text">Total de Movimentos em {currentYear}: { }</h2>
                         <Bar className="departments-groups-chart-data" data={barData} />
                     </div>
                 </div>

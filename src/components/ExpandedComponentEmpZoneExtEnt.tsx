@@ -1,8 +1,8 @@
-import { employeeFields, entityFields, externalEntityFields, registerFields, zoneFields } from "../helpers/Fields";
-import { Employee, Entity, ExternalEntity, Register, Zone } from "../helpers/Types";
+import { employeeFields, entityFields, externalEntityFields, registerFields, zoneFields } from "../fields/Fields";
+import { Employee, Entity, ExternalEntity, Register, Zone } from "../types/Types";
 import '../css/Expanded.css';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
 
 // Define a interface para os campos
 interface Field {

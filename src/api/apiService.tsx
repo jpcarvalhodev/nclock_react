@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 
 import { fetchWithAuth } from "../components/FetchWithAuth";
 
-import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, MBDevice, ManualOpenDoor, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "./Types";
+import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, MBDevice, ManualOpenDoor, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "../types/Types";
 
 // URL base para as APIs
 export const BASE_URL = process.env.REACT_APP_API_BASE;
@@ -53,7 +53,7 @@ export const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
     return response.json();
 };
 
-export const addImportedAttendance = async (attendance: Partial<EmployeeAttendanceTimes>) => {
+export const addImportedAttendance = async (attendance: Partial<EmployeeAttendanceTimes>[]) => {
     const response = await fetchWithAuth(`Attendances/CreateImportAttendanceTimes`, {
         method: 'POST',
         headers: {
@@ -189,7 +189,7 @@ export const deleteEmployee = async (employeeID: string[]) => {
     return response.json();
 };
 
-export const employeeImportFP = async (employeeFP: Partial<EmployeeFP>) => {
+export const employeeImportFP = async (employeeFP: Partial<EmployeeFP>[]) => {
     const response = await fetchWithAuth(`Employees/ProcessImportEmployeeFP`, {
         method: 'POST',
         headers: {
@@ -205,7 +205,7 @@ export const employeeImportFP = async (employeeFP: Partial<EmployeeFP>) => {
     return response.json();
 };
 
-export const employeeImportFace = async (employeeFace: Partial<EmployeeFace>) => {
+export const employeeImportFace = async (employeeFace: Partial<EmployeeFace>[]) => {
     const response = await fetchWithAuth(`Employees/ProcessImportEmployeeFaces`, {
         method: 'POST',
         headers: {
@@ -221,7 +221,7 @@ export const employeeImportFace = async (employeeFace: Partial<EmployeeFace>) =>
     return response.json();
 };
 
-export const employeeImportCard = async (employeeCard: Partial<EmployeeCard>) => {
+export const employeeImportCard = async (employeeCard: Partial<EmployeeCard>[]) => {
     const response = await fetchWithAuth(`Employees/ProcessImportEmployeeCards`, {
         method: 'POST',
         headers: {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
@@ -16,9 +16,9 @@ import rfid_td from "../assets/img/terminais/rfid_td.webp";
 import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
-import { DeviceContextType, TerminalsContext } from "../context/TerminalsContext";
-import { doorsFields } from "../helpers/Fields";
-import { Devices, Doors } from "../helpers/Types";
+import { useTerminals } from "../context/TerminalsContext";
+import { doorsFields } from "../fields/Fields";
+import { Devices, Doors } from "../types/Types";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -45,7 +45,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const {
         devices,
         fetchAllDevices,
-    } = useContext(TerminalsContext) as DeviceContextType;
+    } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -270,7 +270,11 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
-        window.location.reload();
+        setFormData({ ...initialValues });
+        setSelectedDevice('');
+        setDeviceImage(null);
+        setShowIpValidationErrors(false);
+        setShowValidationErrors(false);
         onClose();
     }
 
@@ -288,7 +292,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
         { value: 'SISNID-C3-200', label: 'SISNID-C3-200', img: c3_200 },
         { value: 'SISNID-C3-400', label: 'SISNID-C3-400', img: c3_400 },
         { value: 'SISNID-INBIO160', label: 'SISNID-INBIO160', img: inbio160 },
-        { value: 'SISNID-INBIO260', label: 'SISNID-INBIO160', img: inbio260 },
+        { value: 'SISNID-INBIO260', label: 'SISNID-INBIO260', img: inbio260 },
         { value: 'SISNID-INBIO460', label: 'SISNID-INBIO460', img: inbio460 },
         { value: 'SISNID-PROFACEX-TD', label: 'SISNID-PROFACEX-TD', img: profacex },
         { value: 'SpeedFace-RFID-TD', label: 'SpeedFace-RFID-TD', img: rfid_td },
@@ -296,7 +300,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     ];
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="modal-scrollable" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -613,8 +617,8 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                 </Row>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

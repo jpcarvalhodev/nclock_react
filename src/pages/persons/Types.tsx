@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -11,13 +11,13 @@ import { NavBar } from "../../components/NavBar";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
-import { categoryFields, externalEntityTypeFields } from "../../helpers/Fields";
-import { ExternalEntityTypes } from "../../helpers/Types";
+import { categoryFields, externalEntityTypeFields } from "../../fields/Fields";
+import { ExternalEntityTypes } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
+import { usePersons } from "../../context/PersonsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -43,7 +43,7 @@ export const Types = () => {
         handleAddExternalEntityTypes,
         handleUpdateExternalEntityTypes,
         handleDeleteExternalEntityTypes,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['order', 'name']);
@@ -61,19 +61,19 @@ export const Types = () => {
     // Função para adicionar um tipo de uma entidade externa
     const addExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         await handleAddExternalEntityTypes(externalEntityType);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar um tipo de uma entidade externa
     const updateExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
         await handleUpdateExternalEntityTypes(externalEntityType);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar um tipo de uma entidade externa
     const deleteExternalEntityTypes = async (externalEntityTypeID: string[]) => {
         await handleDeleteExternalEntityTypes(externalEntityTypeID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca os tipos de entidades externas ao carregar a página
@@ -84,7 +84,7 @@ export const Types = () => {
     // Função para atualizar as entidades externas
     const refreshExternalEntitiesTypes = () => {
         fetchAllExternalEntitiesData();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de editar entidade externa

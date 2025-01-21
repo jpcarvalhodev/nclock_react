@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -7,9 +7,11 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { DeviceContextType, TerminalsContext } from '../context/TerminalsContext';
-import * as apiService from "../helpers/apiService";
-import { KioskConfig, RecolhaMoedeiroEContador } from '../helpers/Types';
+import { useTerminals } from '../context/TerminalsContext';
+import * as apiService from "../api/apiService";
+import { KioskConfig, RecolhaMoedeiroEContador } from '../types/Types';
+import { useNavbar } from '../context/NavbarContext';
+import { useKiosk } from '../context/KioskContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -47,20 +49,18 @@ interface Field {
 
 // Define o componente
 export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const {
-        devices,
-    } = useContext(TerminalsContext) as DeviceContextType;
+    const { devices } = useTerminals();
+    const { fetchAllCoin } = useKiosk();
+    const { kioskConfig } = useNavbar();
     const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
-    const [amounts, setAmounts] = useState<KioskConfig>();
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
         if (open && entity) {
             fetchRecolhas();
-            fetchAmount();
             setFormData({ ...entity });
         }
     }, [open, entity]);
@@ -112,7 +112,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     // Buscar as recolhas para o moedeiro
     const fetchRecolhas = async () => {
         try {
-            const recolhas = await apiService.fetchRecolhasMoedeiro();
+            const recolhas = await fetchAllCoin();
             const recolhaDevice = recolhas.find((recolha: any) => devices.some(device => device.zktecoDeviceID === recolha.deviceID));
             if (recolhas && recolhas.length > 0 && recolhaDevice) {
                 const lastRecolha = recolhas.sort((a: RecolhaMoedeiroEContador, b: RecolhaMoedeiroEContador) => new Date(b.dataFimRecolha).getTime() - new Date(a.dataFimRecolha).getTime())[0];
@@ -130,16 +130,6 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
             console.error('Erro ao buscar as recolhas', error);
         }
     }
-
-    // Buscar os valores de moedas
-    const fetchAmount = async () => {
-        try {
-            const amounts = await apiService.fetchKioskConfig();
-            setAmounts(amounts);
-        } catch (error) {
-            console.error('Erro ao buscar o valor', error);
-        }
-    };
 
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = async (key: string, e: React.ChangeEvent<FormControlElement>) => {
@@ -165,10 +155,10 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                 if (selectedOption.serialNumber === deviceCount.serialNumber) {
                     setFormData(prevState => ({
                         ...prevState,
-                        valorTotalSistema: deviceCount.contagemTransacoes,
-                        numeroMoedasSistema: amounts?.amount ? deviceCount.contagemTransacoes * amounts.amount : 0,
+                        valorTotalSistema: kioskConfig.amount ? deviceCount.contagemTransacoes * kioskConfig.amount : 0,
+                        numeroMoedasSistema: deviceCount.contagemTransacoes,
                         diferencaMoedas: (formData.numeroMoedas || 0) - (deviceCount.contagemTransacoes || 0),
-                        diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (amounts?.amount ?? 0))
+                        diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (kioskConfig.amount ?? 0))
                     }));
                 }
             } catch (error) {
@@ -208,7 +198,8 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
             };
 
             if (name === 'numeroMoedas') {
-                updatedState.valorTotalRecolhido = parseFloat((formattedValue * (amounts?.amount || 0)).toFixed(2));
+                updatedState.valorTotalRecolhido = parseFloat((formattedValue * (kioskConfig.amount || 0)).toFixed(2));
+                updatedState.deviceID = "";
             }
 
             if (['numeroMoedas', 'valorTotalRecolhido'].includes(name)) {
@@ -236,7 +227,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -306,7 +297,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         type="number"
                                         name="numeroMoedas"
-                                        value={formData.numeroMoedas === undefined ? 0 : formData.numeroMoedas}
+                                        value={formData.numeroMoedas || ''}
                                         onChange={handleChange}
                                     />
                                 </OverlayTrigger>
@@ -347,6 +338,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                         value={formData.deviceID || ''}
                                         onChange={(e) => handleDropdownChange('deviceID', e)}
+                                        disabled={!formData.numeroMoedas || formData.numeroMoedas === 0}
                                     >
                                         <option value="">Selecione...</option>
                                         {devices?.map((option: any) => {
@@ -425,13 +417,13 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({ title, open, onCl
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

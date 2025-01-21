@@ -4,10 +4,12 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
-import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { Col, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { Cameras } from '../helpers/Types';
+import { Cameras } from '../types/Types';
+import hidepass from "../assets/img/login/hidepass.png";
+import showpass from "../assets/img/login/showpass.png";
 
 // Define a interface Entity
 export interface Entity {
@@ -47,6 +49,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
     const [isFormValid, setIsFormValid] = useState(false);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
     const [showIpValidationErrors, setShowIpValidationErrors] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     // UseEffect para inicializar o formulário
     useEffect(() => {
@@ -150,8 +153,13 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
         onUpdate(formData as T);
     };
 
+    // Alterna a visibilidade da password
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -233,13 +241,28 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                             </Form.Group>
                             <Form.Group controlId="formPasswordCamera">
                                 <Form.Label>Password</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="string"
-                                    name="passwordCamera"
-                                    value={formData.passwordCamera || ''}
-                                    onChange={handleChange}
-                                />
+                                <InputGroup>
+                                    <Form.Control
+                                        type={showPassword ? 'text' : 'password'}
+                                        className="custom-input-height custom-select-font-size"
+                                        value={formData.passwordCamera || ''}
+                                        onChange={handleChange}
+                                        name="passwordCamera"
+                                        maxLength={6}
+                                        style={{ borderRight: 'none' }}
+                                    />
+                                    <InputGroup.Text
+                                        style={{
+                                            cursor: 'pointer',
+                                            background: 'transparent',
+                                            borderLeft: 'none',
+                                            height: '30px',
+                                        }}
+                                        onClick={togglePasswordVisibility}
+                                    >
+                                        <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
+                                    </InputGroup.Text>
+                                </InputGroup>
                             </Form.Group>
                         </Col>
                     </Row>
@@ -258,13 +281,13 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

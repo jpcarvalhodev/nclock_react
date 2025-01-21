@@ -16,8 +16,8 @@ export const CustomOutlineButton = forwardRef<HTMLButtonElement, CustomOutlineBu
 
     // Define o estilo base para o botão
     const baseStyle = {
-      borderColor: '#0050a0',
-      color: '#0050a0',
+      borderColor: '#000000',
+      color: '#000000',
       backgroundColor: 'transparent',
       cursor: 'pointer',
       height: '30px',
@@ -30,7 +30,7 @@ export const CustomOutlineButton = forwardRef<HTMLButtonElement, CustomOutlineBu
     // Define o estilo do botão ao passar o mouse
     const hoverStyle = {
       ...baseStyle,
-      backgroundColor: '#0050a0',
+      backgroundColor: '#000000',
       color: '#ffffff',
     };
 

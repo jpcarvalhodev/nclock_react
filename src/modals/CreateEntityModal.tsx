@@ -113,7 +113,10 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
 
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
-        window.location.reload();
+        setFormData(initialValues);
+        setProfileImageFile(null);
+        setDeviceImage(null);
+        setShowValidationErrors(false);
         onClose();
     };
 
@@ -174,7 +177,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" size="xl" style={{ marginTop: 50 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="modal-scrollable" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -335,10 +338,10 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>
                     Guardar
                 </Button>
             </Modal.Footer>

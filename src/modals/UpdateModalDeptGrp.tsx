@@ -8,8 +8,8 @@ import { toast } from 'react-toastify';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { usePersons } from '../context/PersonsContext';
-import { employeeFields } from '../helpers/Fields';
-import { Department, Employee, Group } from '../helpers/Types';
+import { employeeFields } from '../fields/Fields';
+import { Department, Employee, Group } from '../types/Types';
 
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
@@ -152,7 +152,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             fetchAllGroups();
         }
         setShowEmployeeModal(false);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um funcionário e um cartão
@@ -164,7 +164,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             fetchAllGroups();
         }
         setShowUpdateEmployeeModal(false);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para lidar com o clique em um funcionário
@@ -364,7 +364,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const tooltipText = entityType === 'department' ? 'Trocar Departamento' : 'Trocar Grupo';
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 115 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>
                     {entityType === 'department' ? 'Atualizar Departamento' : 'Atualizar Grupo'}
@@ -604,13 +604,13 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                         disabled={!canMoveNext}
                     />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>
                     Guardar
                 </Button>
             </Modal.Footer>

@@ -1,6 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { add } from "date-fns";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -16,15 +15,15 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { auxOutFields, employeeFields, newTransactionCardFields, transactionCardFields } from "../../../helpers/Fields";
-import { Employee, EmployeeCard, KioskTransactionCard, NewTransactionCard } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { auxOutFields, employeeFields, newTransactionCardFields, transactionCardFields } from "../../../fields/Fields";
+import { Employee, KioskTransactionCard, NewTransactionCard } from "../../../types/Types";
 import { AuxOutModal } from "../../../modals/AuxOutModal";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalNewCard } from "../../../modals/CreateModalNewCard";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+import { usePersons } from "../../../context/PersonsContext";
+import { useTerminals } from "../../../context/TerminalsContext";
 
 
 // Define a interface SaveData
@@ -55,8 +54,8 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskMoveCard = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { employees, handleUpdateEmployee } = usePersons();
+    const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -103,10 +102,116 @@ export const NkioskMoveCard = () => {
 
             setMoveCard(combinedData);
         } catch (error) {
-            console.error('Erro ao buscar os dados de movimentos de cartões:', error);
+            console.error('Erro ao buscar os dados de movimentos de cartões hoje:', error);
             setMoveCard([]);
         }
     };
+
+    // Função para buscar os movimentos dos cartões hoje
+    const fetchCardMovementsToday = async () => {
+        try {
+            if (devices.length === 0) {
+                setMoveCard([]);
+                return;
+            }
+
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate));
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveCard(combinedData);
+
+            setStartDate(formatDateToStartOfDay(currentDate));
+            setEndDate(formatDateToEndOfDay(currentDate));
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões hoje:', error);
+            setMoveCard([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchCardMovementsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            if (devices.length === 0) {
+                setMoveCard([]);
+                return;
+            }
+
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveCard(combinedData);
+
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões ontem:', error);
+            setMoveCard([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchCardMovementsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            if (devices.length === 0) {
+                setMoveCard([]);
+                return;
+            }
+
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveCard(combinedData);
+
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões amanhã:', error);
+            setMoveCard([]);
+        }
+    };
+
+    // Busca os movimentos dos cartões ao carregar a página
+    useEffect(() => {
+        fetchAllMoveCard();
+    }, []);
 
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
@@ -117,7 +222,9 @@ export const NkioskMoveCard = () => {
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {
         fetchAllMoveCard();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir a auxiliar
@@ -296,144 +403,160 @@ export const NkioskMoveCard = () => {
     };
 
     return (
-        <TerminalsProvider>
-            <div className="main-container">
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='content-container'>
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
+        <div className="main-container">
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text">
+                            <span style={{ color: '#009739' }}>Movimentos do Torniquete</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text">
-                                <span style={{ color: '#009739' }}>Movimentos do Torniquete</span>
-                            </div>
-                            <div className="datatable-header">
-                                <div>
-                                    <CustomSearchBox
-                                        label="Pesquisa"
-                                        variant="outlined"
-                                        size='small'
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        style={{ marginTop: -5 }}
-                                    />
-                                </div>
-                                <div className="buttons-container-others">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={moveCardWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Braço</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-arrow-bar-down" onClick={openAuxOutModal} />
-                                    </OverlayTrigger>
-                                </div>
-                                <div className="date-range-search">
-                                    <input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={e => setStartDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <span> até </span>
-                                    <input
-                                        type="datetime-local"
-                                        value={endDate}
-                                        onChange={e => setEndDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-                            <div className='table-css'>
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="eventTime"
+                        <div className="datatable-header">
+                            <div>
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
                                 />
                             </div>
-                            <div style={{ marginLeft: 10, marginTop: -5 }}>
-                                <strong>Movimentos do Torniquete: </strong>{totalAmount}
+                            <div className="buttons-container-others">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMoveCard} />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                                </OverlayTrigger>
+                                <ExportButton allData={moveCardWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
+                                <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveCardWithNames} fields={getSelectedFields()} />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Braço</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-bar-down" onClick={openAuxOutModal} />
+                                </OverlayTrigger>
+                            </div>
+                            <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Torniquete Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchCardMovementsForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Torniquete Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchCardMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Torniquete Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchCardMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
+                                <input
+                                    type="datetime-local"
+                                    value={startDate}
+                                    onChange={e => setStartDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <span> até </span>
+                                <input
+                                    type="datetime-local"
+                                    value={endDate}
+                                    onChange={e => setEndDate(e.target.value)}
+                                    className='search-input'
+                                />
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
+                                </OverlayTrigger>
                             </div>
                         </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                {openColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={transactionCardFields}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setOpenColumnSelector(false)}
-                        onColumnToggle={toggleColumn}
-                        onResetColumns={resetColumns}
-                        onSelectAllColumns={onSelectAllColumns}
-                    />
-                )}
-                <CreateModalNewCard
-                    open={showAddModal}
-                    onClose={() => setShowAddModal(false)}
-                    onSave={addNewCard}
-                    fields={newTransactionCardFields}
-                    title="Adicionar Picagem Manual"
-                />
-                {loadingAuxOut && (
-                    <AuxOutModal
-                        title="Escolha a Auxiliar para Abrir"
-                        open={showAuxOutModal}
-                        onClose={() => {
-                            setShowAuxOutModal(false);
-                            setLoadingAuxOut(false);
-                        }}
-                        onSave={handleOpenAuxOut}
-                        fields={auxOutFields}
-                    />
-                )}
-                {selectedEmployee && (
-                    <UpdateModalEmployees
-                        open={showEditModal}
-                        onClose={() => setShowEditModal(false)}
-                        onUpdate={updateEmployeeAndCard}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Funcionário"
-                    />
-                )}
+                        <div className='table-css'>
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                                defaultSortAsc={true}
+                                defaultSortFieldId="eventTime"
+                            />
+                        </div>
+                        <div style={{ marginLeft: 10, marginTop: -5 }}>
+                            <strong>Movimentos do Torniquete: </strong>{totalAmount}
+                        </div>
+                    </div>
+                </Split>
             </div>
-        </TerminalsProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            {openColumnSelector && (
+                <ColumnSelectorModal
+                    columns={transactionCardFields}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setOpenColumnSelector(false)}
+                    onColumnToggle={toggleColumn}
+                    onResetColumns={resetColumns}
+                    onSelectAllColumns={onSelectAllColumns}
+                />
+            )}
+            <CreateModalNewCard
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={addNewCard}
+                fields={newTransactionCardFields}
+                title="Adicionar Picagem Manual"
+            />
+            {loadingAuxOut && (
+                <AuxOutModal
+                    title="Escolha a Auxiliar para Abrir"
+                    open={showAuxOutModal}
+                    onClose={() => {
+                        setShowAuxOutModal(false);
+                        setLoadingAuxOut(false);
+                    }}
+                    onSave={handleOpenAuxOut}
+                    fields={auxOutFields}
+                />
+            )}
+            {selectedEmployee && (
+                <UpdateModalEmployees
+                    open={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdate={updateEmployeeAndCard}
+                    entity={selectedEmployee}
+                    fields={employeeFields}
+                    title="Atualizar Funcionário"
+                />
+            )}
+        </div>
     );
 }

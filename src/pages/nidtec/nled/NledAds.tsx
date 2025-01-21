@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
@@ -12,11 +12,11 @@ import { NavBar } from "../../../components/NavBar";
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNled } from "../../../components/TreeViewNled";
-import { AdsContext, AdsContextType } from "../../../context/AdsContext";
+import { useAds } from "../../../context/AdsContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import { adsFields } from "../../../helpers/Fields";
-import { Ads } from "../../../helpers/Types";
+import { useTerminals } from "../../../context/TerminalsContext";
+import { adsFields } from "../../../fields/Fields";
+import { Ads } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
 import { DeleteModal } from "../../../modals/DeleteModal";
@@ -47,8 +47,8 @@ export const NledAds = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 365);
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
-    const { ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds } = useContext(AdsContext) as AdsContextType;
+    const { devices } = useTerminals();
+    const { ads, setAds, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds } = useAds();
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -67,6 +67,74 @@ export const NledAds = () => {
     const [selectedRows, setSelectedRows] = useState<Ads[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
+    // Função para buscar os ads de hoje
+    const fetchAdsToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await fetchAds(start, end);
+            if (Array.isArray(data)) {
+                setAds(data);
+            } else {
+                setAds([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ads hoje:', error);
+        }
+    }
+
+    // Função para buscar os ads de ontem
+    const fetchAdsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await fetchAds(start, end);
+            if (Array.isArray(data)) {
+                setAds(data);
+            } else {
+                setAds([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ads ontem:', error);
+        }
+    }
+
+    // Função para buscar os ads de amanhã
+    const fetchAdsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar ads para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await fetchAds(start, end);
+            if (Array.isArray(data)) {
+                setAds(data);
+            } else {
+                setAds([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de ads amanhã:', error);
+        }
+    }
+
     // Função para adicionar uma publicidade
     const addAds = async (ads: FormData) => {
         await handleAddAds(ads);
@@ -80,6 +148,9 @@ export const NledAds = () => {
     // Função para atualizar as publicidades
     const refreshAds = () => {
         fetchAds();
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -111,7 +182,7 @@ export const NledAds = () => {
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedAds(null);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de apagar publicidade
@@ -197,7 +268,11 @@ export const NledAds = () => {
                     case 'updateDate':
                         return new Date(row[field.key]).toLocaleString() || '';
                     case 'dataFim':
-                        return new Date(row[field.key]).toLocaleString() || '';
+                        if (row[field.key] === null) {
+                            return '';
+                        } else {
+                            return new Date(row[field.key]).toLocaleString();
+                        }
                     default:
                         return row[field.key] || '';
                 }
@@ -313,6 +388,24 @@ export const NledAds = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Ads Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchAdsForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Ads Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchAdsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Ads Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchAdsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}
@@ -397,7 +490,7 @@ export const NledAds = () => {
                 open={showDeleteModal}
                 onClose={() => {
                     setShowDeleteModal(false);
-                    setClearSelectionToggle(!clearSelectionToggle);
+                    setClearSelectionToggle((prev) => !prev);
                 }}
                 onDelete={handleDeleteAds}
                 entityId={selectedAdsForDelete}

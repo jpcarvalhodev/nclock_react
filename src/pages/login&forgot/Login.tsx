@@ -11,8 +11,8 @@ import no_entity from "../../assets/img/navbar/no_entity.png";
 import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
 import { useLicense } from "../../context/LicenseContext";
 import { usePersons } from "../../context/PersonsContext";
-import * as apiService from "../../helpers/apiService";
-import { License, LicenseKey } from "../../helpers/Types";
+import * as apiService from "../../api/apiService";
+import { License, LicenseKey } from "../../types/Types";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
@@ -20,6 +20,7 @@ import { useEntity } from "../../context/EntityContext";
 import { useAttendance } from "../../context/MovementContext";
 import { useAds } from "../../context/AdsContext";
 import { useKiosk } from "../../context/KioskContext";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -38,9 +39,9 @@ export const Login = () => {
   const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllAttendances } = useAttendance();
-  const { registeredUsers, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
-  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods } = useTerminals();
-  const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal } = useKiosk();
+  const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
+  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData } = useTerminals();
+  const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks } = useKiosk();
   const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
@@ -52,6 +53,7 @@ export const Login = () => {
   const [selectedNif, setSelectedNif] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
   const [profileImage, setProfileImage] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
   // Obter a imagem do perfil do usuário
   useEffect(() => {
@@ -193,10 +195,12 @@ export const Login = () => {
           localStorage.removeItem("rememberMePassword");
         }
 
+        setLoading(true);
         try {
           await Promise.all([
             fetchAllLicensesWithoutKey(),
             fetchAllDevices(),
+            fetchAllData(),
             fetchAllEmployees(),
             fetchAllDepartments(),
             fetchAllGroups(),
@@ -215,6 +219,9 @@ export const Login = () => {
             fetchAccessControl(),
             fetchAllMBCloseOpen(),
             fetchTimePeriods(),
+            fetchAllDoorData(),
+            fetchAllAux(),
+            fetchAllAuxData(),
             fetchAllCoin(),
             fetchAllCounter(),
             fetchAllLimpezas(),
@@ -227,7 +234,9 @@ export const Login = () => {
             fetchAllPayTerminal(),
             fetchEmailConfig(),
             fetchKioskConfig(),
+            fetchAllTasks()
           ]);
+          setLoading(false);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");
           const userName = localStorage.getItem('username');
@@ -256,6 +265,11 @@ export const Login = () => {
 
   return (
     <div className="background-login">
+      {loading && (
+        <div className="loading-spinner-overlay">
+          <CustomSpinner />
+        </div>
+      )}
       <div className="div-logo-p" id="logo-login">
         <img className="logo-login" src="/logo_login.png" alt="Logo Login" />
       </div>
@@ -378,7 +392,7 @@ export const Login = () => {
               Entrar
             </Button>
             <label style={{ color: "white" }}>
-              Memorizar dados?
+              Memorizar?
               <input
                 style={{ marginLeft: "10px" }}
                 type="checkbox"

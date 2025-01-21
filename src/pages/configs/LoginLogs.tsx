@@ -14,9 +14,9 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataLogin } from "../../components/TreeViewLogin";
 import { useEntity } from "../../context/EntityContext";
 import { useNavbar } from "../../context/NavbarContext";
-import * as apiService from "../../helpers/apiService";
-import { logsFields } from "../../helpers/Fields";
-import { Logs } from "../../helpers/Types";
+import * as apiService from "../../api/apiService";
+import { logsFields } from "../../fields/Fields";
+import { Logs } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 // Formata a data para o início do dia às 00:00
@@ -31,12 +31,12 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const LoginLogs = () => {
@@ -70,15 +70,80 @@ export const LoginLogs = () => {
         }
     }
 
-    // Busca os logs ao carregar a página
-    useEffect(() => {
-        fetchAllLoginLogs();
-    }, []);
+    // Função para buscar os logs de hoje
+    const fetchLoginToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await apiService.fetchAllLoginLogs(start, end);
+            if (Array.isArray(data)) {
+                setLoginLogs(data);
+            } else {
+                setLoginLogs([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de logs hoje:', error);
+        }
+    }
+
+    // Função para buscar os logs de ontem
+    const fetchLoginForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchAllLoginLogs(start, end);
+            if (Array.isArray(data)) {
+                setLoginLogs(data);
+            } else {
+                setLoginLogs([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de logs ontem:', error);
+        }
+    }
+
+    // Função para buscar os logs de amanhã
+    const fetchLoginForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar logs para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchAllLoginLogs(start, end);
+            if (Array.isArray(data)) {
+                setLoginLogs(data);
+            } else {
+                setLoginLogs([]);
+            }
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de logs amanhã:', error);
+        }
+    }
 
     // Função para atualizar os logs
     const refreshLogs = () => {
         fetchAllLoginLogs();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -221,6 +286,24 @@ export const LoginLogs = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Login Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchLoginForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Login Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchLoginToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Login Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchLoginForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}

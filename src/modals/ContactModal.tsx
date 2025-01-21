@@ -12,7 +12,7 @@ interface ContactProps {
 export const ContactModal = ({ open, onClose }: ContactProps) => {
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>Dados para Contacto</Modal.Title>
             </Modal.Header>

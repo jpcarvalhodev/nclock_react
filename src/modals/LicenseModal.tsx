@@ -1,4 +1,3 @@
-import { set } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, FormControl, InputGroup, Modal, OverlayTrigger, Row, Tab, Tabs, Tooltip } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,7 @@ import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { useLicense } from "../context/LicenseContext";
-import { License } from "../helpers/Types";
+import { License } from "../types/Types";
 
 // Define o tipo FormControlElement
 type FormControlElement =
@@ -53,6 +52,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   const [showPassword, setShowPassword] = useState(false);
   const [entities, setEntities] = useState<Array<License>>([]);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
+  const [allEnabled, setAllEnabled] = useState(false);
 
   // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
   useEffect(() => {
@@ -91,7 +91,6 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       const isKeyValid = await fetchAllLicenses(key);
       if (isKeyValid && Array.isArray(isKeyValid) && isKeyValid.length > 0) {
         setEntities(isKeyValid);
-        const defaultNif = isKeyValid[0]?.nif?.toString() || "";
         setActiveTab(isKeyValid[0]?.entidadeNumber);
         setFormData(isKeyValid[0]);
         setIsCheckVisible(false);
@@ -116,6 +115,22 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
       }
     }
   }, [activeTab, entities]);
+
+  // useEffect para verificar se todos os produtos estão ativados
+  useEffect(() => {
+    const allProductsEnabled = checkAllProductsEnabled();
+    if (allProductsEnabled !== allEnabled) {
+      setAllEnabled(allProductsEnabled);
+    }
+  }, [formData]);
+
+  // Função para verificar se todos os produtos no formData estão ativados
+  const checkAllProductsEnabled = () => {
+    return Object.keys(formData).every(key => {
+      const product = formData[key];
+      return typeof product === 'object' && product !== null ? product.enable : true;
+    });
+  };
 
   // Função para mostrar o modal
   const showModal = () => {
@@ -417,13 +432,43 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     }
   };
 
+  // Função para ativar todos os produtos
+  const toggleAllEnabled = () => {
+    const currentState = !allEnabled;
+    setAllEnabled(currentState);
+    setFormData(prevState => {
+      const updatedFormData = { ...prevState };
+      Object.keys(updatedFormData).forEach(key => {
+        if (typeof updatedFormData[key] === 'object' && updatedFormData[key] !== null) {
+          updatedFormData[key] = { ...updatedFormData[key], enable: currentState };
+        }
+      });
+      return updatedFormData;
+    });
+  };
+
+  // Função para remover entidade localmente
+  const handleDeleteEntity = (entidadeNumber: number) => {
+    const updatedEntities = entities.filter((ent) => ent.entidadeNumber !== entidadeNumber);
+
+    setEntities(updatedEntities);
+
+    if (activeTab === String(entidadeNumber)) {
+      if (updatedEntities.length > 0) {
+        setActiveTab(updatedEntities[0].entidadeNumber?.toString());
+      } else {
+        setActiveTab(undefined);
+      }
+    }
+  };
+
   return (
     <div>
-      <Modal show={isCheckVisible} onHide={onClose} backdrop="static" style={{ marginTop: 100 }}>
+      <Modal show={isCheckVisible} onHide={onClose} backdrop="static" centered>
         <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
           <Modal.Title>Inserir Password</Modal.Title>
         </Modal.Header>
-        <InputGroup className="mb-3 license-check-modal">
+        <InputGroup className="license-check-modal">
           <FormControl
             placeholder="Insira a password de licenciamento"
             value={key}
@@ -451,7 +496,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
           <Button
             style={{ width: "40%" }}
-            variant="outline-primary"
+            variant="outline-dark"
             onClick={verifyKey}
           >
             Verificar Password
@@ -484,8 +529,22 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             {entities.map((entity) => (
               <Tab
                 eventKey={entity.entidadeNumber?.toString()}
-                title={truncateText(entity.name || '', 20) || `Entidade ${entity.entidadeNumber}`}
                 key={entity.entidadeNumber}
+                title={
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span>
+                      {truncateText(entity.name || '', 20) || `Entidade ${entity.entidadeNumber}`}
+                    </span>
+                    <i
+                      className="bi bi-trash-fill ms-2"
+                      style={{ cursor: 'pointer', color: 'black' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteEntity(entity.entidadeNumber!);
+                      }}
+                    />
+                  </div>
+                }
               >
                 <div className="p-3">
                   <Row style={{ marginBottom: 20 }}>
@@ -575,6 +634,17 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                       </Form.Group>
                     </Col>
                   </Row>
+                  <Form style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Form.Group controlId="formAllEnabledSwitch">
+                      <Form.Check
+                        type="switch"
+                        id="all-enabled-switch"
+                        label="Ativar Todos"
+                        checked={allEnabled}
+                        onChange={toggleAllEnabled}
+                      />
+                    </Form.Group>
+                  </Form>
                   <Tabs defaultActiveKey={Object.keys(formData).find(key => typeof formData[key] === 'object' && formData[key] !== null)} id="product-tabs" className='nav-modal' style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                     {Object.keys(formData)
                       .filter(key => typeof formData[key] === 'object' && formData[key] !== null)
@@ -607,10 +677,10 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
           </Tabs>
         </Modal.Body>
         <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-          <Button variant="outline-secondary" onClick={handleClose}>
+          <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
             Fechar
           </Button>
-          <Button variant="outline-primary" onClick={handleUpdate}>
+          <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleUpdate}>
             Guardar
           </Button>
         </Modal.Footer>

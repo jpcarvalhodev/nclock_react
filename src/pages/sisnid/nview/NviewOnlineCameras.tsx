@@ -12,9 +12,9 @@ import { NavBar } from "../../../components/NavBar";
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../helpers/apiService";
-import { cameraFields } from "../../../helpers/Fields";
-import { Cameras } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { cameraFields } from "../../../fields/Fields";
+import { Cameras } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal";
 import { DeleteModal } from "../../../modals/DeleteModal";
@@ -73,7 +73,7 @@ export const NviewOnlineCameras = () => {
             console.error('Erro ao adicionar a câmera:', error);
         } finally {
             refreshCameras();
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     };
 
@@ -87,7 +87,7 @@ export const NviewOnlineCameras = () => {
             console.error('Erro ao atualizar a câmera:', error);
         } finally {
             refreshCameras();
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     };
 
@@ -100,7 +100,7 @@ export const NviewOnlineCameras = () => {
             console.error('Erro ao excluir a câmera:', error);
         } finally {
             refreshCameras();
-            setClearSelectionToggle(!clearSelectionToggle);
+            setClearSelectionToggle((prev) => !prev);
         }
     }
 
@@ -112,7 +112,7 @@ export const NviewOnlineCameras = () => {
     // Função para atualizar as câmeras
     const refreshCameras = () => {
         fetchAllCameras();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar as colunas
@@ -284,7 +284,7 @@ export const NviewOnlineCameras = () => {
     return (
         <div className="main-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="datatable-container">
+            <div className="datatable-container" style={{ flex: 1 }}>
                 <div className="datatable-title-text">
                     <span style={{ color: '#0050a0' }}>Câmeras Online</span>
                 </div>

@@ -1,4 +1,4 @@
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
 
 // Define as opções de requisição
 interface FetchOptions extends RequestInit {

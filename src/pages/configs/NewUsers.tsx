@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
@@ -15,8 +15,8 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataUsers } from "../../components/TreeViewRegisteredUsers";
 import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from "../../context/PersonsContext";
-import { registerFields } from "../../helpers/Fields";
-import { Register } from "../../helpers/Types";
+import { registerFields } from "../../fields/Fields";
+import { Register } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
 import { DeleteModal } from "../../modals/DeleteModal";
@@ -60,7 +60,7 @@ export const NewUsers = () => {
     // Função para atualizar os utilizadores
     const refreshUsers = () => {
         fetchAllRegisteredUsers();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -83,7 +83,7 @@ export const NewUsers = () => {
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
         setSelectedUser(null);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar as colunas
@@ -298,6 +298,7 @@ export const NewUsers = () => {
                                     paginationPerPage={20}
                                     selectableRows
                                     onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
                                     expandableRows
                                     expandableRowsComponent={({ data }) => expandableRowComponent(data)}
                                     noDataComponent="Não existem dados disponíveis para exibir."
@@ -317,7 +318,7 @@ export const NewUsers = () => {
                 open={showAddModal}
                 onClose={() => {
                     setShowAddModal(false);
-                    setClearSelectionToggle(!clearSelectionToggle);
+                    setClearSelectionToggle((prev) => !prev);
                 }}
                 onSave={handleAddUsers}
                 fields={registerFields}
@@ -342,7 +343,7 @@ export const NewUsers = () => {
                 open={showDeleteModal}
                 onClose={() => {
                     setShowDeleteModal(false);
-                    setClearSelectionToggle(!clearSelectionToggle);
+                    setClearSelectionToggle((prev) => !prev);
                 }}
                 onDelete={handleDeleteUser}
                 entityId={selectedUserToDelete}

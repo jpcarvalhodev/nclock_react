@@ -1,5 +1,4 @@
-import { set } from "date-fns";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
@@ -18,10 +17,9 @@ import v5l_td from "../assets/img/terminais/v5l_td.webp";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
-import { DeviceContextType, TerminalsContext } from "../context/TerminalsContext";
-import * as apiService from "../helpers/apiService";
-import { auxiliariesFields, doorsFields } from "../helpers/Fields";
-import { Auxiliaries, Doors, TimePeriod } from "../helpers/Types";
+import { useTerminals } from "../context/TerminalsContext";
+import { auxiliariesFields, doorsFields } from "../fields/Fields";
+import { Auxiliaries, Doors } from "../types/Types";
 
 import { UpdateModalAux } from "./UpdateModalAux";
 import { UpdateModalDoor } from "./UpdateModalDoor";
@@ -60,25 +58,28 @@ interface UpdateModalProps<T extends Entity> {
 
 export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
     const {
-        fetchAllDevices,
+        door,
+        aux,
+        period,
         fetchAllDoorData,
-    } = useContext(TerminalsContext) as DeviceContextType;
+        handleUpdateDoor,
+        handleUpdateAux,
+    } = useTerminals();
     const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const fileInputRef = React.createRef<HTMLInputElement>();
-    const [doors, setDoors] = useState<Doors[]>([]);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState('');
     const [currentDoorIndex, setCurrentDoorIndex] = useState(0);
+    const [filteredDoors, setFilteredDoors] = useState<Doors[]>([]);
     const [auxiliaries, setAuxiliaries] = useState<Auxiliaries[]>([]);
     const [showAuxUpdateModal, setShowAuxUpdateModal] = useState(false);
     const [selectedAuxIn, setSelectedAuxIn] = useState<Auxiliaries | null>(null);
     const [selectedAuxOut, setSelectedAuxOut] = useState<Auxiliaries | null>(null);
-    const [period, setPeriod] = useState<TimePeriod[]>([]);
     const [auxIn, setAuxIn] = useState<Auxiliaries[]>([]);
     const [auxOut, setAuxOut] = useState<Auxiliaries[]>([]);
     const [currentAuxInIndex, setCurrentAuxInIndex] = useState(0);
@@ -92,6 +93,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         if (open && entity) {
+            fetchDoors();
+            fetchAuxiliaries();
             setFormData({ ...entity } as T);
             const matchedDevice = deviceOptions.find(option => option.label === entity.model);
             if (matchedDevice) {
@@ -148,24 +151,15 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         return isValid;
     };
 
-    // Função para buscar os períodos
-    const fetchPeriods = async () => {
-        const dataPeriods = await apiService.fetchAllTimePeriods();
-        setPeriod(dataPeriods);
-    }
-
-    // Função para buscar as portas e filtrar pelo SN
+    // Função para buscar as portas
     const fetchDoors = async () => {
-        const dataDoors = await fetchAllDoorData();
-        const filteredDoors = dataDoors.filter((door) => door.devId === entity.zktecoDeviceID);
-        const filteredDoorsOrdered = filteredDoors.sort((a, b) => a.doorNo - b.doorNo);
-        setDoors(filteredDoorsOrdered);
+        const filteredDoors = door.filter((door: Doors) => door.devId === entity.zktecoDeviceID);
+        setFilteredDoors(filteredDoors);
     }
 
     // Função para buscar as auxiliares
     const fetchAuxiliaries = async () => {
-        const dataAuxiliaries = await apiService.fetchAllAux();
-        const filteredAuxiliaries = dataAuxiliaries.filter((aux: Auxiliaries) => aux.deviceId === entity.zktecoDeviceID);
+        const filteredAuxiliaries = aux.filter((aux: Auxiliaries) => aux.deviceId === entity.zktecoDeviceID);
         setAuxiliaries(filteredAuxiliaries);
     }
 
@@ -180,44 +174,25 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     }, [auxiliaries]);
 
     // Função para lidar com a atualização das portas
-    const handleUpdateDoor = async (door: Doors) => {
-        try {
-            const data = await apiService.updateDoor(door);
-            toast.success(data.message || 'Porta atualizada com sucesso!');
-            setLoadingDoorData(false);
-        } catch (error) {
-            console.error('Erro ao atualizar a porta:', error);
-        } finally {
-            setShowUpdateModal(false);
-            setLoadingDoorData(false);
-            fetchDoors();
-        }
+    const updateDoor = async (door: Doors) => {
+        await handleUpdateDoor(door);
+        setLoadingDoorData(false);
+        refreshDoorsAndAux();
     }
 
     // Função para lidar com a atualização das auxiliares
-    const handleUpdateAux = async (aux: Auxiliaries) => {
-        try {
-            const data = await apiService.updateAllAux(aux);
-            toast.success(data.message || 'Auxiliar atualizada com sucesso!');
-            setLoadingAuxInData(false);
-            setLoadingAuxOutData(false);
-        } catch (error) {
-            console.error('Erro ao atualizar a porta:', error);
-        } finally {
-            setShowAuxUpdateModal(false);
-            setLoadingAuxInData(false);
-            setLoadingAuxOutData(false);
-            fetchAuxiliaries();
-        }
+    const updateAux = async (aux: Auxiliaries) => {
+        await handleUpdateAux(aux);
+        setLoadingAuxInData(false);
+        setLoadingAuxOutData(false);
+        refreshDoorsAndAux();
     }
 
-    // UseEffect para atualizar lista de todos os dispositivos
-    useEffect(() => {
-        fetchAllDevices();
-        fetchDoors();
+    // Função para atualizar as portas e auxiliares
+    const refreshDoorsAndAux = () => {
+        fetchAllDoorData();
         fetchAuxiliaries();
-        fetchPeriods();
-    }, []);
+    }
 
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
@@ -322,7 +297,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = doors.filter(door =>
+    const filteredDataTable = filteredDoors.filter(door =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(door[key]) === String(filters[key])
         )
@@ -330,9 +305,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
 
     // Seleciona a entidade anterior
     const handleNextDoor = () => {
-        if (currentDoorIndex < doors.length - 1) {
+        if (currentDoorIndex < door.length - 1) {
             setCurrentDoorIndex(currentDoorIndex + 1);
-            setSelectedDoor(doors[currentDoorIndex + 1]);
+            setSelectedDoor(door[currentDoorIndex + 1]);
         }
     };
 
@@ -340,7 +315,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const handlePrevDoor = () => {
         if (currentDoorIndex > 0) {
             setCurrentDoorIndex(currentDoorIndex - 1);
-            setSelectedDoor(doors[currentDoorIndex - 1]);
+            setSelectedDoor(door[currentDoorIndex - 1]);
         }
     };
 
@@ -431,7 +406,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             setSelectedAuxOut(auxOut[currentAuxOutIndex - 1]);
         }
     };
-    
+
     // Função para fechar o modal de atualização das auxiliares
     const handleCloseAuxModal = (type: 'in' | 'out') => {
         if (type === 'in') {
@@ -444,7 +419,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             setLoadingAuxOutData(false);
         }
         setShowAuxUpdateModal(false);
-    };    
+    };
 
     // Define as colunas
     const auxColumns: TableColumn<Auxiliaries>[] = auxiliariesFields
@@ -523,7 +498,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         { value: 'SISNID-C3-200', label: 'SISNID-C3-200', img: c3_200 },
         { value: 'SISNID-C3-400', label: 'SISNID-C3-400', img: c3_400 },
         { value: 'SISNID-INBIO160', label: 'SISNID-INBIO160', img: inbio160 },
-        { value: 'SISNID-INBIO260', label: 'SISNID-INBIO160', img: inbio260 },
+        { value: 'SISNID-INBIO260', label: 'SISNID-INBIO260', img: inbio260 },
         { value: 'SISNID-INBIO460', label: 'SISNID-INBIO460', img: inbio460 },
         { value: 'SISNID-PROFACEX-TD', label: 'SISNID-PROFACEX-TD', img: profacex },
         { value: 'SpeedFace-RFID-TD', label: 'SpeedFace-RFID-TD', img: rfid_td },
@@ -902,11 +877,11 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                         setShowUpdateModal(false)
                         setLoadingDoorData(false)
                     }}
-                    onUpdate={handleUpdateDoor}
+                    onUpdate={updateDoor}
                     entity={selectedDoor}
                     fields={doorsFields}
                     title="Atualizar Porta"
-                    canMoveNext={currentDoorIndex < doors.length - 1}
+                    canMoveNext={currentDoorIndex < door.length - 1}
                     canMovePrev={currentDoorIndex > 0}
                     onNext={handleNextDoor}
                     onPrev={handlePrevDoor}
@@ -916,7 +891,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 <UpdateModalAux
                     open={showAuxUpdateModal}
                     onClose={() => handleCloseAuxModal('in')}
-                    onUpdate={handleUpdateAux}
+                    onUpdate={updateAux}
                     entity={selectedAuxIn}
                     fields={auxiliariesFields}
                     title="Atualizar Auxiliar IN"
@@ -930,7 +905,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 <UpdateModalAux
                     open={showAuxUpdateModal}
                     onClose={() => handleCloseAuxModal('out')}
-                    onUpdate={handleUpdateAux}
+                    onUpdate={updateAux}
                     entity={selectedAuxOut}
                     fields={auxiliariesFields}
                     title="Atualizar Auxiliar OUT"
@@ -953,9 +928,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button variant="outline-dark" onClick={handleDuplicateClick}>Duplicar</Button>
+                <Button variant="outline-dark" onClick={onClose}>Fechar</Button>
+                <Button variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

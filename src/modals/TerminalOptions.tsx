@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Col, Form, Modal, Tab, Tabs } from 'react-bootstrap';
 import "../css/TerminalOptionsModal.css";
 
@@ -85,11 +85,13 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
         //validateForm();
     };
 
+    // Função para limpar e fechar o modal
     const handleClose = () => {
-        setFormData({});
+        setFormData({ ...initialValues, status: true });
         onClose();
     };
 
+    // Função para guardar os dados
     const handleSave = () => {
         onSave(formData as T);
     };
@@ -344,10 +346,10 @@ export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onCl
                     </Tabs>
                 </Modal.Body>
                 <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                    <Button variant="outline-secondary" onClick={handleClose}>
+                    <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                         Fechar
                     </Button>
-                    <Button variant="outline-primary" onClick={handleSave}>
+                    <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSave}>
                         Guardar
                     </Button>
                 </Modal.Footer>

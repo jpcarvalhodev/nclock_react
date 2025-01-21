@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -6,9 +6,9 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
-import { groupFields } from "../../helpers/Fields";
-import { Group } from "../../helpers/Types";
+import { usePersons } from "../../context/PersonsContext";
+import { groupFields } from "../../fields/Fields";
+import { Group } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -49,7 +49,7 @@ export const Groups = () => {
         handleAddGroup,
         handleUpdateGroup,
         handleDeleteGroup,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'description']);
@@ -67,19 +67,19 @@ export const Groups = () => {
     // Função para adicionar um grupo
     const addGroup = async (group: Group) => {
         await handleAddGroup(group);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar um grupo
     const updateGroup = async (group: Group) => {
         await handleUpdateGroup(group);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar um grupo
     const deleteGroup = async (groupID: string[]) => {
         await handleDeleteGroup(groupID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca os grupos ao carregar a página
@@ -99,7 +99,7 @@ export const Groups = () => {
     // Função para atualizar os grupos
     const refreshGroups = () => {
         fetchAllGroups();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de atualizar grupo

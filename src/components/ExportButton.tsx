@@ -3,14 +3,15 @@ import { saveAs } from 'file-saver';
 import { useEffect, useState } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 import { useTerminals } from '../context/TerminalsContext';
-import * as apiService from "../helpers/apiService";
-import { Devices, Entity, MBDevice } from '../helpers/Types';
+import * as apiService from "../api/apiService";
+import { AccessControl, Devices, MBDevice } from '../types/Types';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { PDFDocument } from './PDFDocument';
+import { useEntity } from '../context/EntityContext';
 
 
 // Define a interface para os itens de dados
@@ -35,7 +36,7 @@ interface ExportButtonProps {
 type FieldKey = 'birthday' | 'status' | 'statusEmail' | 'rgpdAut' | 'departmentId' | 'professionId' | 'categoryId' | 'groupId' | 'zoneId' | 'externalEntityId' | 'attendanceTime' | 'inOutMode' | 'code' | 'machineNumber' | 'cardNumber' | 'productTime' | 'createDate' | 'updateDate' | 'createTime' | 'updateTime' | 'eventTime' | 'timestamp' | 'eventDoorId' | 'transactionType' | 'estadoTerminal' | 'timeReboot' | 'dataRecolha' | 'dataFimRecolha' | 'createdTime' | 'dataCreate' | 'admissionDate' | 'bIissuance' | 'biValidity' | 'exitDate' | 'dateInserted' | 'dateUpdated' | 'employeeId' | 'statusFprint' | 'statusPalm' | 'statusFace' | 'isPresent' | 'urlArquivo' | 'fechoImage' | 'aberturaImage' | string;
 
 // Formata o campo com base no tipo de campo
-const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDevice: MBDevice[]) => {
+const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDevice: MBDevice[], accessControl: AccessControl[]) => {
 
     const currentRoute = window.location.pathname;
     const cartao = currentRoute.endsWith('movecard') || currentRoute.endsWith('listmovements') ? 'Torniquete' : '';
@@ -74,14 +75,21 @@ const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDe
         case 'rgpdAut':
             return item[fieldKey] ? 'Autorizado' : 'Não Autorizado';
         case 'employeeId':
-            return item.employeeName;
+            return item.employeeName || '';
         case 'departmentId':
+            return item.departmentName || '';
         case 'professionId':
+            return item.professionName || '';
         case 'categoryId':
+            return item.categoryName || '';
         case 'groupId':
+            return item.groupName || '';
         case 'zoneId':
+            return item.zoneName || '';
         case 'externalEntityId':
-            return item[fieldKey] || '';
+            return item.externalEntityName || '';
+        case 'entidadeId':
+            return item.entidadeName || '';
         case 'inOutMode':
             if (item.inOutModeDescription) {
                 return item.inOutModeDescription || '';
@@ -125,16 +133,34 @@ const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDe
             return device.find(device => device.serialNumber === item.deviceSN)?.deviceName || '';
         case 'tpId':
             return mbDevice.find(mbDevice => mbDevice.id === item.tpId)?.nomeQuiosque || '';
+        case "doorName": {
+            const found = accessControl.find((acObj) => acObj.employeesId === item.employeesId);
+            if (!found) {
+                return "";
+            }
+            const doorNames = found.acc.map((accItem: AccessControl) => accItem.doorName);
+            return doorNames.join(", ");
+        }
+        case "timezoneName": {
+            const found = accessControl.find((acObj) => acObj.employeesId === item.employeesId);
+            if (!found) {
+                return "";
+            }
+            const timezones = found.acc.map((accItem: AccessControl) => accItem.timezoneName);
+            return timezones.join(", ");
+        }
+        case 'cardNumber':
+            return item.employeeCards?.[0]?.cardNumber || '';
         default:
             return item[fieldKey] !== undefined && item[fieldKey] !== null && item[fieldKey] !== '' ? item[fieldKey] : ' ';
     }
 };
 
 // Colunas a ignorar na exportação
-const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo', 'url', 'passwordCamera', 'urlArquivo', 'fechoImage', 'aberturaImage', 'paiId'];
+const columnsToIgnore = ['clientTicket', 'merchantTicket', 'photo', 'logotipo', 'url', 'passwordCamera', 'urlArquivo', 'fechoImage', 'aberturaImage', 'paiId', 'employeesId'];
 
 // Função para exportar os dados para CSV
-const exportToCSV = (data: DataItem[], fileName: string, fields: Field[], device: Devices[], mbDevice: MBDevice[]): void => {
+const exportToCSV = (data: DataItem[], fileName: string, fields: Field[], device: Devices[], mbDevice: MBDevice[], accessControl: AccessControl[]): void => {
     const fileExtension = '.csv';
     const fileType = 'text/csv;charset=utf-8;';
     const BOM = '\uFEFF';
@@ -157,7 +183,7 @@ const exportToCSV = (data: DataItem[], fileName: string, fields: Field[], device
     const csvContent = data.map(item => {
         return filteredFields.map(field => {
             if (!validFields.has(field.key)) return '';
-            const value = formatField(item, field.key, device, mbDevice);
+            const value = formatField(item, field.key, device, mbDevice, accessControl);
             if (typeof value === 'string') {
                 return `"${value.replace(/"/g, '""')}"`;
             }
@@ -172,31 +198,37 @@ const exportToCSV = (data: DataItem[], fileName: string, fields: Field[], device
 };
 
 // Função para exportar os dados para XLSX
-const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[], device: Devices[], mbDevice: MBDevice[]): void => {
-    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-    const fileExtension = '.xlsx';
+const exportToXLSX = (data: DataItem[], fileName: string, fields: Field[], device: Devices[], mbDevice: MBDevice[], accessControl: AccessControl[]): void => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Data');
 
-    const filteredFields = fields.filter(field => !columnsToIgnore.includes(field.key));
+    const headers = fields.filter(field => !columnsToIgnore.includes(field.key)).map(field => ({
+        header: field.label, key: field.key, width: 20
+    }));
+    worksheet.columns = headers;
 
-    const output = data.map(item => {
-        return filteredFields.reduce((result: Record<string, any>, field) => {
-            const value = formatField(item, field.key, device, mbDevice);
-            if (value !== undefined && value !== null && value !== '') {
-                result[field.label] = value;
-            }
-            return result;
-        }, {});
+    data.forEach(item => {
+        const row: Record<string, any> = {};
+        headers.forEach(header => {
+            const value = formatField(item, header.key, device, mbDevice, accessControl);
+            row[header.key] = value;
+        });
+        worksheet.addRow(row);
     });
 
-    const ws = XLSX.utils.json_to_sheet(output);
-    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], { type: fileType });
-    saveAs(blob, fileName + fileExtension);
+    worksheet.eachRow({ includeEmpty: true }, function (row: { eachCell: (arg0: (cell: any) => void) => void; }) {
+        row.eachCell((cell) => {
+            cell.numFmt = '@';
+        });
+    });
+
+    workbook.xlsx.writeBuffer().then(function (buffer: BlobPart) {
+        saveAs(new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), `${fileName}.xlsx`);
+    });
 };
 
 // Função para exportar os dados para TXT
-const exportToTXT = (data: DataItem[], fileName: string, device: Devices[], mbDevice: MBDevice[]): void => {
+const exportToTXT = (data: DataItem[], fileName: string, device: Devices[], mbDevice: MBDevice[], accessControl: AccessControl[]): void => {
     const fileExtension = '.txt';
 
     const filteredData = data.map(item => {
@@ -205,7 +237,7 @@ const exportToTXT = (data: DataItem[], fileName: string, device: Devices[], mbDe
         const filteredItem = Object.keys(rest)
             .filter(key => !columnsToIgnore.includes(key))
             .reduce((result: Record<string, any>, key) => {
-                const value = formatField(rest, key, device, mbDevice);
+                const value = formatField(rest, key, device, mbDevice, accessControl);
                 if (value !== undefined && value !== null && value !== '') {
                     result[key] = value;
                 }
@@ -221,45 +253,25 @@ const exportToTXT = (data: DataItem[], fileName: string, device: Devices[], mbDe
 
 // Define o componente
 export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProps) => {
-    const { devices, mbDevices } = useTerminals();
+    const { devices, mbDevices, accessControl } = useTerminals();
+    const { entity } = useEntity();
     const fileName = 'dados_exportados';
     const dataToExport = selectedData.length > 0 ? selectedData : allData;
-    const [entity, setEntity] = useState<Entity[]>([]);
     const [entityLogo, setEntityLogo] = useState<Blob | null>(null);
-    const [isEntityLoading, setIsEntityLoading] = useState(true);
-    const [isEntityLogoLoading, setIsEntityLogoLoading] = useState(true);
-
-    // Busca as entidades para exibir no PDF
-    const fetchEntityData = async () => {
-        setIsEntityLoading(true);
-        try {
-            const data = await apiService.fetchAllCompanyConfig();
-            setEntity(Array.isArray(data) ? data : []);
-        } catch (error) {
-            console.error('Erro ao buscar entidades:', error);
-            setEntity([]);
-        } finally {
-            setIsEntityLoading(false);
-        }
-    };
 
     // Obtém o logotipo da entidade
     const fetchLogo = async () => {
-        setIsEntityLogoLoading(true);
         try {
             const nif = localStorage.getItem('nif');
             const logo = await apiService.fetchCompanyLogo(Number(nif));
             setEntityLogo(logo);
         } catch (error) {
             console.error('Erro ao buscar logotipo:', error);
-        } finally {
-            setIsEntityLogoLoading(false);
         }
     };
 
     // Busca as entidades ao montar o componente
     useEffect(() => {
-        fetchEntityData();
         fetchLogo();
     }, []);
 
@@ -273,18 +285,18 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
                 </Dropdown.Toggle>
             </OverlayTrigger>
             <Dropdown.Menu>
-                <Dropdown.Item onClick={() => exportToCSV(dataToExport, fileName, fields, devices, mbDevices)}>Exportar em CSV</Dropdown.Item>
-                <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields, devices, mbDevices)}>Exportar em XLSX</Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToCSV(dataToExport, fileName, fields, devices, mbDevices, accessControl)}>Exportar em CSV</Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields, devices, mbDevices, accessControl)}>Exportar em XLSX</Dropdown.Item>
                 <Dropdown.Item as="button">
                     <PDFDownloadLink
-                        document={<PDFDocument data={dataToExport} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} />}
+                        document={<PDFDocument data={dataToExport} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} accessControl={accessControl} />}
                         fileName={`${fileName}.pdf`}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                     >
                         Exportar em PDF
                     </PDFDownloadLink>
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => exportToTXT(dataToExport, fileName, devices, mbDevices)}>Exportar em TXT</Dropdown.Item>
+                <Dropdown.Item onClick={() => exportToTXT(dataToExport, fileName, devices, mbDevices, accessControl)}>Exportar em TXT</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
     );

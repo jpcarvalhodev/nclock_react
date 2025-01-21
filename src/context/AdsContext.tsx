@@ -1,12 +1,13 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import * as apiService from '../helpers/apiService';
-import { Ads } from '../helpers/Types';
+import * as apiService from '../api/apiService';
+import { Ads } from '../types/Types';
 
 // Define o tipo do contexto
 export interface AdsContextType {
   ads: Ads[];
+  setAds: React.Dispatch<React.SetStateAction<Ads[]>>;
   fetchAds: (startDate?: string, endDate?: string) => Promise<void>;
   handleAddAds: (ads: FormData) => Promise<void>;
   handleUpdateAds: (ads: Ads, ad: FormData) => Promise<void>;
@@ -83,7 +84,7 @@ export const AdsProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AdsContext.Provider value={{ ads, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds }}>
+    <AdsContext.Provider value={{ ads, setAds, fetchAds, handleAddAds, handleUpdateAds, handleDeleteAds }}>
       {children}
     </AdsContext.Provider>
   );

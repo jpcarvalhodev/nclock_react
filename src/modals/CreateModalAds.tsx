@@ -34,7 +34,7 @@ interface FileWithOrder {
 }
 
 // Define o componente
-export const CreateModalAds = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, entities, initialValues }: CreateModalProps<T>) => {
+export const CreateModalAds = <T extends Record<string, any>>({ title, open, onClose, onSave, entities, initialValues }: CreateModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [files, setFiles] = useState<FileWithOrder[]>([]);
     const [fileInputKey, setFileInputKey] = useState(Date.now());
@@ -143,7 +143,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
 
     // Função para fechar o modal
     const handleClose = () => {
-        window.location.reload();
+        setFormData(initialValues);
         onClose();
     };
 
@@ -152,15 +152,6 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
         setFiles([]);
         resetFileInput();
     };
-
-    // Função para verificar se o formulário é válido antes de salvar
-    const handleCheckForSave = () => {
-        /* if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
-            return;
-        } */
-        handleSave();
-    }
 
     // Função para salvar os dados
     const handleSave = () => {
@@ -217,7 +208,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -322,10 +313,10 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

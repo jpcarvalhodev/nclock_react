@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
-import { Button, OverlayTrigger, Spinner, Tab, Tabs , Tooltip } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, OverlayTrigger, Spinner, Tab, Tabs, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 import { toast } from "react-toastify";
@@ -14,9 +14,9 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
 import { useNavbar } from "../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../context/TerminalsContext";
-import { mbDeviceFields } from "../../helpers/Fields";
-import { MBDevice } from "../../helpers/Types";
+import { useTerminals } from "../../context/TerminalsContext";
+import { mbDeviceFields } from "../../fields/Fields";
+import { MBDevice } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
 import { DeleteModal } from "../../modals/DeleteModal";
@@ -29,12 +29,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define o componente de terminais
@@ -46,7 +46,7 @@ export const TerminalsMB = () => {
         handleAddMBDevice,
         handleUpdateMBDevice,
         handleDeleteMBDevice,
-    } = useContext(TerminalsContext) as DeviceContextType;
+    } = useTerminals();
     const { navbarColor, footerColor } = useNavbar();
     const [showAddModal, setShowAddModal] = useState(false);
     const [userTabKey, setUserTabKey] = useState('onOff');
@@ -71,27 +71,27 @@ export const TerminalsMB = () => {
     // Função para atualizar todos os dispositivos
     const refreshMBDevices = () => {
         fetchAllMBDevices();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: MBDevice) => {
         await handleAddMBDevice(device);
         refreshMBDevices();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um dispositivo
     const updateDevice = async (device: MBDevice) => {
         await handleUpdateMBDevice(device);
         refreshMBDevices();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     const deleteDevice = async (id: string) => {
         await handleDeleteMBDevice(id);
         refreshMBDevices();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Atualiza os dados de renderização
@@ -317,146 +317,144 @@ export const TerminalsMB = () => {
     };
 
     return (
-        <TerminalsProvider>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-                <NavBar style={{ backgroundColor: navbarColor }} />
-                <div className='content-container'>
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataMBTerminals onSelectDevices={handleSelectFromTreeView} />
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className='content-container'>
+                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
+                    <div className="treeview-container">
+                        <TreeViewDataMBTerminals onSelectDevices={handleSelectFromTreeView} />
+                    </div>
+                    <div className="datatable-container">
+                        <div className="datatable-title-text" style={{ color: '#000000' }}>
+                            <span>Terminais</span>
                         </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text" style={{ color: '#000000' }}>
-                                <span>Terminais</span>
-                            </div>
-                            <div className="datatable-header">
-                                <div className="buttons-container-others-mb">
-                                    <CustomSearchBox
-                                        label="Pesquisa"
-                                        variant="outlined"
-                                        size='small'
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        style={{ marginTop: -5 }}
-                                    />
-                                    <div className="custom-buttons">
-                                        <OverlayTrigger
-                                            placement="top"
-                                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                        >
-                                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMBDevices} />
-                                        </OverlayTrigger>
-                                        <OverlayTrigger
-                                            placement="top"
-                                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                                        >
-                                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                        </OverlayTrigger>
-                                        <OverlayTrigger
-                                            placement="top"
-                                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                        >
-                                            <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
-                                        </OverlayTrigger>
-                                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="deviceMobile">
-                                <DataTable
-                                    columns={[...columns, devicesActionColumn]}
-                                    data={filteredDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleDeviceRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    onRowDoubleClicked={handleEditDevices}
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
+                        <div className="datatable-header">
+                            <div className="buttons-container-others-mb">
+                                <CustomSearchBox
+                                    label="Pesquisa"
+                                    variant="outlined"
+                                    size='small'
+                                    value={filterText}
+                                    onChange={e => setFilterText(e.target.value)}
+                                    style={{ marginTop: -5 }}
                                 />
-                            </div>
-                            <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
-                                <div>
-                                    <Tabs
-                                        id="controlled-tab-terminals-buttons"
-                                        activeKey={userTabKey}
-                                        onSelect={handleUserSelect}
-                                        className="nav-modal"
+                                <div className="custom-buttons">
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                                     >
-                                        <Tab eventKey="onOff" title="Ligação">
-                                            <div style={{ display: "flex", marginTop: 10 }}>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleTurnOffDevice}>
-                                                    {loadingTurnOffDevice ? (
-                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                                    ) : (
-                                                        <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                                    )}
-                                                    Executar Fecho
-                                                </Button>
-                                                <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
-                                                    {loadingRestartDevice ? (
-                                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                                    ) : (
-                                                        <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                                    )}
-                                                    Reiniciar
-                                                </Button>
-                                            </div>
-                                        </Tab>
-                                    </Tabs>
+                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshMBDevices} />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} />
+                                    </OverlayTrigger>
+                                    <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                                    <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                                 </div>
                             </div>
                         </div>
-                    </Split>
-                </div>
-                <Footer style={{ backgroundColor: footerColor }} />
-                {showColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={mbDeviceFields}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setShowColumnSelector(false)}
-                        onColumnToggle={handleColumnToggle}
-                        onResetColumns={handleResetColumns}
-                        onSelectAllColumns={handleSelectAllColumns}
-                    />
-                )}
-                <CreateModalDeviceMB
-                    title="Adicionar Terminal Multibanco"
-                    open={showAddModal}
-                    onClose={() => setShowAddModal(false)}
-                    onSave={addDevice}
-                    fields={mbDeviceFields}
-                    initialValues={initialData || {}}
-                />
-                {selectedTerminal && (
-                    <UpdateModalDeviceMB
-                        title="Editar Terminal Multibanco"
-                        open={showUpdateModal}
-                        onClose={() => setShowUpdateModal(false)}
-                        onUpdate={updateDevice}
-                        entity={selectedTerminal}
-                        fields={mbDeviceFields}
-                        onDuplicate={handleDuplicate}
-                        onPrev={handlePrevDevice}
-                        onNext={handleNextDevice}
-                        canMovePrev={currentDeviceIndex > 0}
-                        canMoveNext={currentDeviceIndex < mbDevices.length - 1}
-                    />
-                )}
-                {showDeleteModal && (
-                    <DeleteModal
-                        open={showDeleteModal}
-                        onClose={() => setShowDeleteModal(false)}
-                        onDelete={deleteDevice}
-                        entityId={selectedMBDeviceToDelete}
-                    />
-                )}
+                        <div className="deviceMobile">
+                            <DataTable
+                                columns={[...columns, devicesActionColumn]}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleDeviceRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                onRowDoubleClicked={handleEditDevices}
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                            />
+                        </div>
+                        <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
+                            <div>
+                                <Tabs
+                                    id="controlled-tab-terminals-buttons"
+                                    activeKey={userTabKey}
+                                    onSelect={handleUserSelect}
+                                    className="nav-modal"
+                                >
+                                    <Tab eventKey="onOff" title="Ligação">
+                                        <div style={{ display: "flex", marginTop: 10 }}>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleTurnOffDevice}>
+                                                {loadingTurnOffDevice ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-power" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Executar Fecho
+                                            </Button>
+                                            <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleRestartDevice}>
+                                                {loadingRestartDevice ? (
+                                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                                ) : (
+                                                    <i className="bi bi-bootstrap-reboot" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                                )}
+                                                Reiniciar
+                                            </Button>
+                                        </div>
+                                    </Tab>
+                                </Tabs>
+                            </div>
+                        </div>
+                    </div>
+                </Split>
             </div>
-        </TerminalsProvider>
+            <Footer style={{ backgroundColor: footerColor }} />
+            {showColumnSelector && (
+                <ColumnSelectorModal
+                    columns={mbDeviceFields}
+                    selectedColumns={selectedColumns}
+                    onClose={() => setShowColumnSelector(false)}
+                    onColumnToggle={handleColumnToggle}
+                    onResetColumns={handleResetColumns}
+                    onSelectAllColumns={handleSelectAllColumns}
+                />
+            )}
+            <CreateModalDeviceMB
+                title="Adicionar Terminal Multibanco"
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={addDevice}
+                fields={mbDeviceFields}
+                initialValues={initialData || {}}
+            />
+            {selectedTerminal && (
+                <UpdateModalDeviceMB
+                    title="Editar Terminal Multibanco"
+                    open={showUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
+                    onUpdate={updateDevice}
+                    entity={selectedTerminal}
+                    fields={mbDeviceFields}
+                    onDuplicate={handleDuplicate}
+                    onPrev={handlePrevDevice}
+                    onNext={handleNextDevice}
+                    canMovePrev={currentDeviceIndex > 0}
+                    canMoveNext={currentDeviceIndex < mbDevices.length - 1}
+                />
+            )}
+            {showDeleteModal && (
+                <DeleteModal
+                    open={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onDelete={deleteDevice}
+                    entityId={selectedMBDeviceToDelete}
+                />
+            )}
+        </div>
     );
 };

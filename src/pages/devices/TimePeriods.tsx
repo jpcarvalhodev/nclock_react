@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
@@ -13,9 +13,9 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
 import { useNavbar } from "../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../context/TerminalsContext";
-import { timePeriodFields } from "../../helpers/Fields";
-import { TimePeriod } from "../../helpers/Types";
+import { useTerminals } from "../../context/TerminalsContext";
+import { timePeriodFields } from "../../fields/Fields";
+import { TimePeriod } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalPeriods } from "../../modals/CreateModalPeriods";
 import { DeleteModal } from "../../modals/DeleteModal";
@@ -39,7 +39,7 @@ export const TimePeriods = () => {
         handleAddPeriod,
         handleUpdatePeriod,
         handleDeletePeriod,
-    } = useContext(TerminalsContext) as DeviceContextType;
+    } = useTerminals();
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Feriado']);
     const [filterText, setFilterText] = useState("");
@@ -59,19 +59,19 @@ export const TimePeriods = () => {
     // Função para adicionar um período
     const addPeriod = async (newPeriod: Partial<TimePeriod>) => {
         await handleAddPeriod(newPeriod);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar um período
     const updatePeriod = async (updatedPeriod: TimePeriod) => {
         await handleUpdatePeriod(updatedPeriod);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para eliminar um período
     const deletePeriod = async (id: string) => {
         await handleDeletePeriod(id);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Busca os utilizadores ao carregar a página
@@ -92,7 +92,7 @@ export const TimePeriods = () => {
     // Função para atualizar os utilizadores
     const refreshPeriods = () => {
         fetchTimePeriods();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Define a seleção da árvore

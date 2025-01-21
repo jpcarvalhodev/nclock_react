@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -6,9 +6,9 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
-import { categoryFields } from "../../helpers/Fields";
-import { Category } from "../../helpers/Types";
+import { usePersons } from "../../context/PersonsContext";
+import { categoryFields } from "../../fields/Fields";
+import { Category } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -49,7 +49,7 @@ export const Categories = () => {
         handleAddCategory,
         handleUpdateCategory,
         handleDeleteCategory,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'description']);
@@ -67,19 +67,19 @@ export const Categories = () => {
     // Função para adicionar uma categoria
     const addCategory = async (category: Category) => {
         await handleAddCategory(category);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar uma categoria
     const updateCategory = async (category: Category) => {
         await handleUpdateCategory(category);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para apagar uma categoria
     const deleteCategory = async (categoryID: string[]) => {
         await handleDeleteCategory(categoryID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca as categorias ao carregar a página
@@ -90,7 +90,7 @@ export const Categories = () => {
     // Função para atualizar as categorias
     const refreshCategories = () => {
         fetchAllCategories();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para editar uma categoria

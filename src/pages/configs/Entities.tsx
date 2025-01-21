@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -13,8 +13,8 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useEntity } from "../../context/EntityContext";
 import { useNavbar } from "../../context/NavbarContext";
-import { entityFields } from "../../helpers/Fields";
-import { Entity } from "../../helpers/Types";
+import { entityFields } from "../../fields/Fields";
+import { Entity } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
 
@@ -45,13 +45,13 @@ export const Entities = () => {
     // Função para atualizar os dados da entidade
     const handleUpdateCompanyData = async (entityData: FormData) => {
         await updateEntity(entityData);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     }
 
     // Função para atualizar as entidade
     const refreshEntity = () => {
         fetchAllEntity();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para editar uma entidade

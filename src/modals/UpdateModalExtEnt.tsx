@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -45,6 +45,7 @@ interface UpdateModalProps<T extends Entity> {
 
 // Exporta o componente
 export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
+    const { fetchAllEmployees, fetchAllExternalEntitiesData } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
@@ -115,7 +116,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
     // Função para buscar os funcionários
     const fetchEmployees = async () => {
         try {
-            const employeeResponse = await apiService.fetchAllEmployees();
+            const employeeResponse = await fetchAllEmployees();
             setDropdownData(prev => ({ ...prev, responsibleName: employeeResponse }));
         } catch (error) {
             toast.error('Erro ao buscar os dados dos funcionários.');
@@ -126,9 +127,9 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const externalEntityTypesResponse = await apiService.fetchAllExternalEntityTypes();
+            const externalEntityTypesResponse = await fetchAllExternalEntitiesData();
             setDropdownData({
-                externalEntityTypeId: externalEntityTypesResponse
+                externalEntityTypeId: externalEntityTypesResponse.ExternalEntityTypes
             });
         } catch (error) {
             toast.error('Erro ao buscar os dados de tipos.');
@@ -259,7 +260,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 115 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -529,9 +530,9 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>Duplicar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

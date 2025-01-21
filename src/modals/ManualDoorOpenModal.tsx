@@ -6,8 +6,8 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import * as apiService from "../helpers/apiService";
-import { Doors } from '../helpers/Types';
+import { Doors } from '../types/Types';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -33,6 +33,7 @@ interface Field {
 
 // Define o componente
 export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
+    const { fetchAllDevices, fetchAllDoorData } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -88,8 +89,8 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const door = await apiService.fetchAllDoors();
-            const device = await apiService.fetchAllDevices();
+            const door = await fetchAllDoorData();
+            const device = await fetchAllDevices();
             setDropdownData({
                 doorId: door,
                 deviceId: device
@@ -145,6 +146,13 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
         }
     };
 
+    // Função para limpar e fechar o modal
+    const handleClose = () => {
+        setFormData({});
+        setShowValidationErrors(false);
+        onClose();
+    }
+
     // Função para verificar se o formulário é válido antes de salvar
     const handleCheckForSave = () => {
         const keysToCheck = ['deviceId', 'doorId', 'observacoes'];
@@ -160,11 +168,11 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     // Função para salvar os dados
     const handleSave = () => {
         onSave(formData as Partial<T>);
-        onClose();
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -235,10 +243,10 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-success" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleCheckForSave}>
                     Abrir
                 </Button>
             </Modal.Footer>

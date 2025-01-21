@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -14,13 +14,14 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { employeeFields, transactionCardFields } from "../../../helpers/Fields";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { useTerminals } from "../../../context/TerminalsContext";
+import * as apiService from "../../../api/apiService";
+import { employeeFields, transactionCardFields } from "../../../fields/Fields";
+import { Employee, KioskTransactionCard } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+import { usePersons } from "../../../context/PersonsContext";
+import { set } from "date-fns";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -44,8 +45,8 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const NkioskMoveKiosk = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { employees, handleUpdateEmployee } = usePersons();
+    const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -88,6 +89,109 @@ export const NkioskMoveKiosk = () => {
         }
     };
 
+    // Função para buscar os movimentos de quiosque hoje
+    const fetchKioskMovementsToday = async () => {
+        try {
+            if (devices.length === 0) {
+                setMoveKiosk([]);
+                return;
+            }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate));
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveKiosk(combinedData);
+
+            setStartDate(formatDateToStartOfDay(currentDate));
+            setEndDate(formatDateToEndOfDay(currentDate));
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos no quiosque hoje:', error);
+            setMoveKiosk([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchKioskMovementsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            if (devices.length === 0) {
+                setMoveKiosk([]);
+                return;
+            }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveKiosk(combinedData);
+
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos no quiosque ontem:', error);
+            setMoveKiosk([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchKioskMovementsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            if (devices.length === 0) {
+                setMoveKiosk([]);
+                return;
+            }
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveKiosk(combinedData);
+
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos no quiosque amanhã:', error);
+            setMoveKiosk([]);
+        }
+    };
+
+    // Busca os movimentos de quiosque ao carregar a página
+    useEffect(() => {
+        fetchAllMoveKiosk();
+    }, []);
+
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
@@ -97,7 +201,9 @@ export const NkioskMoveKiosk = () => {
     // Função para atualizar os movimentos de quiosque
     const refreshMoveKiosk = () => {
         fetchAllMoveKiosk();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
@@ -296,6 +402,24 @@ export const NkioskMoveKiosk = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : moveKioskWithNames} fields={getSelectedFields()} />
                             </div>
                             <div className="date-range-search">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Quiosque Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchKioskMovementsForPreviousDay} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Quiosque Hoje</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchKioskMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Quiosque Dia Seguinte</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchKioskMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                </OverlayTrigger>
                                 <input
                                     type="datetime-local"
                                     value={startDate}

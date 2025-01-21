@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -6,9 +6,9 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
-import { externalEntityFields } from "../../helpers/Fields";
-import { ExternalEntity, ExternalEntityTypes } from "../../helpers/Types";
+import { usePersons } from "../../context/PersonsContext";
+import { externalEntityFields } from "../../fields/Fields";
+import { ExternalEntity } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -49,7 +49,7 @@ export const ExternalEntities = () => {
         handleAddExternalEntity,
         handleUpdateExternalEntity,
         handleDeleteExternalEntity,
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'nif']);
@@ -67,19 +67,19 @@ export const ExternalEntities = () => {
     // Função para adicionar uma nova entidade externa
     const addExternalEntity = async (externalEntity: ExternalEntity) => {
         await handleAddExternalEntity(externalEntity);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar uma entidade externa
     const updateExternalEntity = async (externalEntity: ExternalEntity) => {
         await handleUpdateExternalEntity(externalEntity);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar uma entidade externa
     const deleteExternalEntity = async (externalEntityID: string[]) => {
         await handleDeleteExternalEntity(externalEntityID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca as entidades externas ao carregar a página
@@ -99,7 +99,7 @@ export const ExternalEntities = () => {
     // Função para atualizar as entidades externas
     const refreshExternalEntities = () => {
         fetchAllExternalEntitiesData();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de editar entidade externa

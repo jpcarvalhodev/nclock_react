@@ -1,8 +1,8 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import * as apiService from '../helpers/apiService';
-import { License } from '../helpers/Types';
+import * as apiService from '../api/apiService';
+import { License } from '../types/Types';
 
 // Define o tipo do contexto
 interface LicenseContextType {

@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../helpers/apiService";
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface Entity
 export interface Entity {
@@ -47,6 +47,7 @@ interface CodeItem {
 
 // Exporta o componente
 export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, entityType, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
+    const { fetchAllCategories, fetchAllProfessions, fetchAllExternalEntitiesData } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -106,33 +107,36 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
 
     // Função para buscar os dados de categoria, profissão ou tipo
     const fetchEntityData = async () => {
-        let url;
-        switch (entityType) {
-            case 'categorias':
-                url = apiService.fetchAllCategories;
-                break;
-            case 'profissões':
-                url = apiService.fetchAllProfessions;
-                break;
-            case 'tipos':
-                url = apiService.fetchAllExternalEntityTypes;
-                break;
-            default:
-                toast.error(`Tipo de entidade '${entityType}' não existe.`);
-                return;
-        }
         try {
-            const response = await url();
-            if (response.ok) {
-                const data: CodeItem[] = await response.json();
-                const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code), 0) + 1;
-                setFormData(prevState => ({
-                    ...prevState,
-                    code: maxCode
-                }));
-            } else {
-                return;
+            let data: CodeItem[] = [];
+            switch (entityType) {
+                case 'categorias': {
+                    const categories = await fetchAllCategories();
+                    data = categories;
+                    break;
+                }
+                case 'profissões': {
+                    const professions = await fetchAllProfessions();
+                    data = professions;
+                    break;
+                }
+                case 'tipos': {
+                    const externalEntitiesData = await fetchAllExternalEntitiesData();
+                    data = externalEntitiesData.ExternalEntityTypes.map(item => ({
+                        code: item.code,
+                        ...item
+                    }));
+                    break;
+                }
+                default:
+                    console.error(`Tipo de entidade '${entityType}' não existe.`);
+                    return;
             }
+            const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code), 0) + 1;
+            setFormData(prevState => ({
+                ...prevState,
+                code: maxCode
+            }));
         } catch (error) {
             console.error(`Erro ao buscar dados de ${entityType}:`, error);
         }
@@ -174,7 +178,7 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" style={{ marginTop: 115 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="modal-scrollable" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -217,9 +221,9 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>Duplicar</Button>
-                <Button variant="outline-secondary" onClick={onClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>Duplicar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal>
     );

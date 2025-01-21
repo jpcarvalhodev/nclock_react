@@ -48,7 +48,6 @@ import nserver from '../assets/img/navbar/navbar/nserver.webp';
 import naut from '../assets/img/navbar/navbar/naut.webp';
 import nequip from '../assets/img/navbar/navbar/nequip.webp';
 import nproject from '../assets/img/navbar/navbar/nproject.webp';
-import nidgroup from '../assets/img/navbar/navbar/nidgroup.png';
 import nsoftwares from '../assets/img/navbar/navbar/nsoftwares.png';
 import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
 import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
@@ -100,9 +99,9 @@ import module from '../assets/img/navbar/nkiosk/module.png';
 import { CreateModalAds } from '../modals/CreateModalAds';
 import { Button, Navbar } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { accessControlFields, adsFields, backupDBFields, categoryFields, counterFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, limpezasEOcorrenciasFields, logsFields, manualOpenDoorFields, mbDeviceCloseOpenFields, professionFields, recolhaMoedeiroEContadorFields, registerFields, timePeriodFields, transactionCardFields, transactionMBFields, zoneFields } from '../helpers/Fields';
+import { accessControlFields, adsFields, backupDBFields, categoryFields, counterFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, limpezasEOcorrenciasFields, logsFields, manualOpenDoorFields, mbDeviceCloseOpenFields, professionFields, recolhaMoedeiroEContadorFields, registerFields, timePeriodFields, transactionCardFields, transactionMBFields, zoneFields } from '../fields/Fields';
 import { EmailOptionsModal } from '../modals/EmailOptions';
-import * as apiService from "../helpers/apiService";
+import * as apiService from "../api/apiService";
 import { toast } from 'react-toastify';
 import { AboutModal } from '../modals/AboutModal';
 import ncount from '../assets/img/navbar/navbar/ncount.png';
@@ -172,7 +171,7 @@ import group from '../assets/img/navbar/pessoas/groups.png';
 import person from '../assets/img/navbar/pessoas/person.png';
 import profession from '../assets/img/navbar/pessoas/professions.png';
 import zone from '../assets/img/navbar/pessoas/zones.png';
-import { EmailUser, KioskConfig } from '../helpers/Types';
+import { EmailUser, KioskConfig } from '../types/Types';
 import { BackupDBModal } from '../modals/BackupDBModal';
 import { TerminalOptionsModal } from '../modals/TerminalOptions';
 import realTime from '../assets/img/navbar/nsmart/realTime.png';
@@ -615,7 +614,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Verificar se a tela é mobile
 	const checkIfMobile = () => {
-		setIsMobile(window.innerWidth <= 500);
+		setIsMobile(window.innerWidth <= 1200);
 	};
 
 	// Adicionar listener para redimensionar a janela
@@ -1025,11 +1024,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Define a estrutura do menu de softwares
 	useEffect(() => {
-		const enabledSoftware = getSoftwareEnabledStatus(license);
-
-		const filterUnlicensedSoftware = (submenu: MenuItem[]): MenuItem[] => {
-			return submenu.filter(item => enabledSoftware[item.label.toLowerCase()] === false);
-		};
 
 		// Estrutura de menu original
 		const originalMenuStructure: MenuStructure = {
@@ -1129,15 +1123,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const newMenuStructure: MenuStructure = {};
 		Object.keys(originalMenuStructure).forEach(key => {
 			const menu = originalMenuStructure[key];
-			const filteredSubmenu = menu.submenu ? filterUnlicensedSoftware(menu.submenu) : [];
 			newMenuStructure[key] = {
 				...menu,
-				submenu: filteredSubmenu
+				submenu: menu.submenu
 			};
 		});
 
 		setMenuStructureNG(newMenuStructure);
-	}, [license]);
+	}, []);
 
 	// Estrutura de menu opcional para o nkiosk
 	const KioskOptionalMenuStructure: MenuStructure = {
@@ -1445,6 +1438,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 			return null;
 		}
 
+		const pathsNotRequired = ['view', 'caravan', 'mechanic', 'events', 'service', 'task', 'production', 'sales', 'sports', 'gym', 'school', 'clinic', 'optics', 'gold', 'reality', 'hologram', 'fire', 'light', 'comfort', 'sound', 'home'];
+
+		const isPageNotRequired = pathsNotRequired.some(path => location.pathname.includes(path));
+
 		const isWideMenu = menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk' || menuKey === 'contador' || menuKey === 'sensor' || menuKey === 'fotocelula' || menuKey === 'painel' || menuKey === 'revista';
 		const isWideSubmenu = menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
 
@@ -1452,7 +1449,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
 				style={{
 					minWidth: isWideMenu ? '200px' : 'auto',
-					zIndex: 1000
 				}}
 			>
 				<MenuItem
@@ -1476,9 +1472,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 				{activeMenu === menuKey && menu.submenu && (
 					<div className="submenu" style={{
 						width: isWideSubmenu ? '300px' : 'auto',
-						right: isWideSubmenu ? '100%' : undefined,
-						left: isWideSubmenu ? undefined : '100%',
-						zIndex: 1000
+						right: isWideSubmenu && !isPageNotRequired ? '100%' : 'auto',
+						left: isWideSubmenu && !isPageNotRequired ? 'auto' : '100%',
 					}}>
 						{menu.submenu.map((item: MenuItem) => (
 							<MenuItem
@@ -2171,7 +2166,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleRibbonMouseLeave = () => {
 		setIsMouseOver(false);
 	};
-	
+
 	return (
 		<nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
 			<div className="nav-container">
@@ -2214,7 +2209,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<li className={`nav-item ${activeTab === 'configuracao' ? 'active' : ''}`}>
 								<a className="nav-link configuracao-tab" id="configuracao-tab" onClick={() => handleRibbonClick('configuracao')}>CONFIGURAÇÃO</a>
 							</li>
-							<div className='logos mobile-only'>
+							<div className='logos mobile-only mobile-adjust'>
 								<Dropdown
 									onMouseOver={() => setShowSoftwaresDropdown(true)}
 									onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 300)}

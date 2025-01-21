@@ -2,28 +2,16 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
-import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useTerminals } from '../context/TerminalsContext';
-import { AccessControl } from '../helpers/Types';
-
-import { CustomOutlineButton } from './CustomOutlineButton';
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-    return (
-        <TextField
-            {...props}
-            className="SearchBox"
-        />
-    );
-}
+import { DevicesDoors, Doors } from '../types/Types';
 
 // Define a interface para as propriedades do componente TreeViewData
-interface TreeViewDataACProps {
+interface TreeViewACProps {
     onSelectDevices: (selectedDevices: string[]) => void;
+    devices: DevicesDoors;
+    doors: Doors[];
 }
 
 // Função para filtrar os itens
@@ -61,10 +49,9 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
-    const { accessControl, fetchAccessControl } = useTerminals();
+export function TreeViewAC({ onSelectDevices }: TreeViewACProps) {
+    const { devices, door } = useTerminals();
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
-    const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
@@ -72,47 +59,32 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
 
     // Atualiza a árvore de itens ao receber os dados dos dispositivos
     useEffect(() => {
-        if (!accessControl) return;
-
-        let uniqueCounter = 0;
-        const generateUniqueId = (prefix: string) => `${prefix}-${uniqueCounter++}`;
-
-        const buildDoorTree = (doors: AccessControl) => {
-            if (!Array.isArray(doors)) return [];
-            return doors
-            .sort((a, b) => a.doorName.localeCompare(b.doorName))
-            .map((door: AccessControl) => ({
-                id: door?.acId || generateUniqueId('door'),
-                label: door?.doorName || 'Sem Nome',
-                children: []
+        const buildDoorTree = door
+            .sort((a, b) => a.doorNo - b.doorNo)
+            .map(door => ({
+                id: door.id || 'Sem ID',
+                label: door.name || 'Sem Nome',
             }));
-        };
 
-        const buildNameTree = accessControl
-            .sort((a, b) => (Number(a.enrollNumber) || 0) - (Number(b.enrollNumber) || 0))
-            .map(ac => ({
-                id: ac.employeesId || generateUniqueId('employee'),
-                label: `${ac.enrollNumber} - ${ac.shortName}`,
-                children: buildDoorTree(ac.acc || [])
+        const buildDeviceTree = devices
+            .sort((a, b) => a.deviceNumber - b.deviceNumber)
+            .map(device => ({
+                id: device.zktecoDeviceID || 'Sem ID',
+                label: device.deviceName || 'Sem Nome',
+                children: buildDoorTree
             }));
 
         const treeItems = [{
-            id: 'nidgroup',
-            label: 'NIDGROUP',
-            children: [
-                {
-                    id: 'name',
-                    label: 'NOME',
-                    children: buildNameTree
-                },
-            ]
+            id: 'equipamento',
+            label: 'EQUIPAMENTO',
+            children: buildDeviceTree
         }];
 
         setItems(treeItems);
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
-        setExpandedIds(['nidgroup', 'name']);
-    }, [accessControl]);
+        setExpandedIds(allExpandableIds);
+    }, [devices]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
@@ -157,17 +129,6 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
         onSelectDevices(Array.from(newSelectedIds));
     };
 
-    // Filtra os itens ao mudar o termo de pesquisa
-    useEffect(() => {
-        const [newFilteredItems, newExpandedIds] = filterItems(items, searchTerm.toLowerCase());
-        setFilteredItems(newFilteredItems);
-        if (searchTerm.trim()) {
-            setExpandedIds([...newExpandedIds]);
-        } else {
-            setExpandedIds(['nidgroup', 'name']);
-        }
-    }, [items, searchTerm]);
-
     useEffect(() => {
         if (selectionChangedRef.current) {
             selectionChangedRef.current = false;
@@ -176,21 +137,6 @@ export function TreeViewDataAC({ onSelectDevices }: TreeViewDataACProps) {
 
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text'>Filtros</p>
-            <div style={{ display: 'flex' }}>
-                <CustomSearchBox
-                    label="Pesquisa"
-                    variant="outlined"
-                    size='small'
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                >
-                    <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAccessControl()} iconSize='1.1em'></CustomOutlineButton>
-                </OverlayTrigger>
-            </div>
             <Box className="treeViewFlexItem">
                 <RichTreeView
                     multiSelect={true}

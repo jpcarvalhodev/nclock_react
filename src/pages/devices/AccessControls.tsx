@@ -1,46 +1,43 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { Key, useContext, useEffect, useState } from "react";
-import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
-import Split from "react-split";
 
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
-import { ExpandedComponentAC } from "../../components/ExpandedComponentAC";
 import { ExportButton } from "../../components/ExportButton";
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { TreeViewDataAC } from "../../components/TreeViewAccessControl";
 import { useNavbar } from "../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../context/TerminalsContext";
-import { accessControlFields } from "../../helpers/Fields";
-import { AccessControl } from "../../helpers/Types";
+import { useTerminals } from "../../context/TerminalsContext";
+import { accessControlFields } from "../../fields/Fields";
+import { AccessControl } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
 import { DeleteACModal } from "../../modals/DeleteACModal";
 import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
+import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const AccessControls = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { 
+    const {
         accessControl,
         fetchAccessControl,
         handleAddAccessControl,
         handleUpdateAccessControl,
         handleDeleteAccessControl
-    } = useContext(TerminalsContext) as DeviceContextType;
+    } = useTerminals();
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['shortName', 'enrollNumber', 'createrName', 'createDate', 'updateDate']);
     const [selectedRows, setSelectedRows] = useState<AccessControl[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState<boolean>(false);
@@ -61,20 +58,20 @@ export const AccessControls = () => {
     const addAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         await handleAddAccessControl(newAccessControl);
         refreshAccessControl();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para editar o controle de acesso
     const updateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         await handleUpdateAccessControl(newAccessControl);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
         refreshAccessControl();
     };
 
     // Função para deletar o controle de acesso
     const deleteAccessControl = async (employeesId: string[], doorId: string) => {
         await handleDeleteAccessControl(employeesId, doorId);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
         refreshAccessControl();
         window.location.reload();
     }
@@ -84,20 +81,10 @@ export const AccessControls = () => {
         fetchAccessControl();
     }, []);
 
-    // Atualiza os nomes filtrados da treeview
-    useEffect(() => {
-        if (selectedDevicesIds.length > 0) {
-            const filtered = accessControl.filter(ac => ac.acc && ac.acc.some((accItem: AccessControl) => accItem && accItem.acId && selectedDevicesIds.includes(accItem.acId)));
-            setFilteredAccessControl(filtered);
-        } else {
-            setFilteredAccessControl(accessControl);
-        }
-    }, [selectedDevicesIds, accessControl]);
-
     // Função para atualizar as listagens de movimentos
     const refreshAccessControl = () => {
         fetchAccessControl();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para selecionar as colunas
@@ -176,11 +163,6 @@ export const AccessControls = () => {
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
-    };
-
-    // Define a seleção da árvore
-    const handleSelectFromTreeView = (selectedIds: string[]) => {
-        setSelectedDevicesIds(selectedIds);
     };
 
     // Filtra os dados da tabela
@@ -287,93 +269,63 @@ export const AccessControls = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className='content-container' >
-                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                    <div className="treeview-container">
-                        <TreeViewDataAC onSelectDevices={handleSelectFromTreeView} />
+            <div className="datatable-container" style={{ flex: 1 }}>
+                <div className="datatable-title-text">
+                    <span style={{ color: '#000000' }}>Planos de Acessos</span>
+                </div>
+                <div className="datatable-header">
+                    <div>
+                        <CustomSearchBox
+                            label="Pesquisa"
+                            variant="outlined"
+                            size='small'
+                            value={filterText}
+                            onChange={e => setFilterText(e.target.value)}
+                            style={{ marginTop: -5 }}
+                        />
                     </div>
-                    <div className="datatable-container">
-                        <div className="datatable-title-text">
-                            <span style={{ color: '#000000' }}>Planos de Acessos</span>
-                        </div>
-                        <div className="datatable-header">
-                            <div>
-                                <CustomSearchBox
-                                    label="Pesquisa"
-                                    variant="outlined"
-                                    size='small'
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5 }}
-                                />
-                            </div>
-                            <div className="buttons-container-others">
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAccessControl} />
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                </OverlayTrigger>
-                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                            </div>
-                        </div>
-                        <div className='table-css'>
-                            <DataTable
-                                columns={[...columns, actionColumn]}
-                                data={filteredDataTable}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={20}
-                                onRowDoubleClicked={handleEditAccessControl}
-                                selectableRows
-                                onSelectedRowsChange={handleRowSelected}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRowsHighlight
-                                expandableRows
-                                expandableRowsComponent={(props) => {
-                                    const accessControlEntries = props.data.acc || [];
-                                    const sortedEntries = accessControlEntries.sort((a: { doorName: string; }, b: { doorName: string; }) => {
-                                        const doorNameA = a.doorName?.toUpperCase() ?? "";
-                                        const doorNameB = b.doorName?.toUpperCase() ?? "";
-                                        return doorNameA.localeCompare(doorNameB);
-                                    });
-                                    return (
-                                        <div>
-                                            {sortedEntries.map((entry: Record<string, any>, index: Key | null | undefined) => (
-                                                <ExpandedComponentAC
-                                                    key={index}
-                                                    data={[entry]}
-                                                    fields={[
-                                                        { key: 'doorName', label: 'Nome da Porta' },
-                                                        { key: 'timezoneName', label: 'Nome do Fuso Horário' }
-                                                    ]}
-                                                />
-                                            ))}
-                                        </div>
-                                    );
-                                }}
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                                defaultSortAsc={true}
-                                defaultSortFieldId='enrollNumber'
-                            />
-                        </div>
+                    <div className="buttons-container-others">
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAccessControl} />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
+                        </OverlayTrigger>
+                        <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
+                        <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
-                </Split>
+                </div>
+                <div className='table-css'>
+                    <DataTable
+                        columns={[...columns, actionColumn]}
+                        data={filteredDataTable}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        paginationPerPage={20}
+                        onRowDoubleClicked={handleEditAccessControl}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        selectableRowsHighlight
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                        defaultSortAsc={true}
+                        defaultSortFieldId='enrollNumber'
+                    />
+                </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
@@ -395,22 +347,17 @@ export const AccessControls = () => {
                 />
             )}
             <CreateAccessControlModal
-                title="Adicionar Acesso"
+                title="Adicionar Plano de Acesso"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 onSave={addAccessControl}
-                fields={accessControlFields}
-                initialValues={initialData || {}}
             />
             {selectedAccessControl && (
                 <UpdateAccessControlModal
-                    title="Atualizar Acesso"
+                    title="Atualizar Plano de Acesso"
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
                     onUpdate={updateAccessControl}
-                    fields={accessControlFields}
-                    entity={selectedAccessControl}
-                    onDuplicate={handleDuplicate}
                     onPrev={handlePrevAccessControl}
                     onNext={handleNextAccessControl}
                     canMovePrev={currentAccessControlIndex > 0}

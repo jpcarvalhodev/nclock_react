@@ -7,7 +7,7 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { Ads } from '../helpers/Types';
+import { Ads } from '../types/Types';
 
 // Define a interface Entity
 export interface Entity {
@@ -166,15 +166,6 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
         resetFileInput();
     };
 
-    // Função para verificar se o formulário é válido antes de salvar
-    const handleCheckForSave = () => {
-        /* if (!isFormValid) {
-            toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
-            return;
-        } */
-        handleSave();
-    }
-
     // Função para salvar os dados
     const handleSave = () => {
         const dataToSend = new FormData();
@@ -235,7 +226,7 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -348,13 +339,13 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
-                <Button variant="outline-info" onClick={handleDuplicateClick}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>
                     Duplicar
                 </Button>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleCheckForSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

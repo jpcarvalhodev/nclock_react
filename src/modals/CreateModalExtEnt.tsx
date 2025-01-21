@@ -6,7 +6,7 @@ import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstr
 import { toast } from 'react-toastify';
 
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
-import * as apiService from "../helpers/apiService";
+import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -34,6 +34,7 @@ interface Props<T> {
 
 // Define o componente
 export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
+    const { fetchAllEmployees, fetchAllExternalEntitiesData } = usePersons();
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
@@ -92,7 +93,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     // Função para buscar os funcionários
     const fetchEmployees = async () => {
         try {
-            const employeeResponse = await apiService.fetchAllEmployees();
+            const employeeResponse = await fetchAllEmployees();
             setDropdownData(prev => ({ ...prev, responsibleName: employeeResponse }));
         } catch (error) {
             toast.error('Erro ao buscar os dados dos funcionários.');
@@ -103,9 +104,9 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const externalEntityTypesResponse = await apiService.fetchAllExternalEntityTypes();
+            const externalEntityTypesResponse = await fetchAllExternalEntitiesData();
             setDropdownData({
-                externalEntityTypeId: externalEntityTypesResponse
+                externalEntityTypeId: externalEntityTypesResponse.ExternalEntityTypes
             });
         } catch (error) {
             toast.error('Erro ao buscar os dados de tipos.');
@@ -184,7 +185,8 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        window.location.reload();
+        setFormData(initialValues);
+        setShowValidationErrors(false);
         onClose();
     }
 
@@ -231,7 +233,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" style={{ marginTop: 115 }}>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -483,8 +485,8 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                 </Tab.Container>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={handleClose}>Fechar</Button>
-                <Button variant="outline-primary" onClick={handleSaveClick}>Guardar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
         </Modal >
     );

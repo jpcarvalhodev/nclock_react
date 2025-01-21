@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
@@ -6,9 +6,8 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../context/PersonsContext";
-import { zoneFields } from "../../helpers/Fields";
-import { Zone } from "../../helpers/Types";
+import { zoneFields } from "../../fields/Fields";
+import { Zone } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -23,6 +22,7 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextField, TextFieldProps } from "@mui/material";
+import { usePersons } from "../../context/PersonsContext";
 
 
 // Define a interface para os filtros
@@ -49,7 +49,7 @@ export const Zones = () => {
         handleAddZone,
         handleUpdateZone,
         handleDeleteZone
-    } = useContext(PersonsContext) as PersonsContextType;
+    } = usePersons();
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -67,19 +67,19 @@ export const Zones = () => {
     // Função para adicionar uma zona
     const addZone = async (zone: Zone) => {
         await handleAddZone(zone);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar uma zona
     const updateZone = async (zone: Zone) => {
         await handleUpdateZone(zone);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para apagar uma zona
     const deleteZone = async (zoneID: string[]) => {
         await handleDeleteZone(zoneID);
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Busca as zonas ao carregar a página
@@ -99,7 +99,7 @@ export const Zones = () => {
     // Função para atualizar as zonas
     const refreshZones = () => {
         fetchAllZones();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir o modal de editar zona

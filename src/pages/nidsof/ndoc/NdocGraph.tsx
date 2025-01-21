@@ -5,8 +5,8 @@ import { Bar , PolarArea } from "react-chartjs-2";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
+import * as apiService from "../../../api/apiService";
+import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 

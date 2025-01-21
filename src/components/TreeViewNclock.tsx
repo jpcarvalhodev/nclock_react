@@ -1,13 +1,13 @@
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { SyntheticEvent, useContext, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { AttendanceProvider } from '../context/MovementContext';
-import { PersonsContext, PersonsContextType } from '../context/PersonsContext';
-import { Department, Employee, Group } from '../helpers/Types';
+import { usePersons } from '../context/PersonsContext';
+import { Department, Employee, Group } from '../types/Types';
 
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 
@@ -72,7 +72,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProps) {
-  const { data, fetchAllData } = useContext(PersonsContext) as PersonsContextType;
+  const { data, fetchAllData } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -104,7 +104,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         if (departmentMap.has(deptCode)) {
           departmentMap.get(deptCode).employees.push({
             id: `emp-${emp.employeeID}` || 'Sem ID',
-            label: `${emp.enrollNumber} - ${emp.shortName}`
+            label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
           });
         }
       }
@@ -136,7 +136,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
         .map((emp: Employee) => ({
           id: `dept-${dept.departmentID}-emp-${emp.employeeID}` || 'Sem ID',
-          label: `${emp.enrollNumber} - ${emp.shortName}`
+          label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
         })),
       ],
     });
@@ -151,18 +151,18 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
       .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
       .map((emp: Employee) => ({
         id: `group-${group.groupID}-emp-${emp.employeeID}` || 'Sem ID',
-        label: `${emp.enrollNumber} - ${emp.shortName}`
+        label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
       })),
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
       id: `unassigned-empdept-${emp.employeeID}`,
-      label: `${emp.enrollNumber} - ${emp.shortName}`
+      label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
     }));
 
     const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
       id: `unassigned-empgrp-${emp.employeeID}`,
-      label: `${emp.enrollNumber} - ${emp.shortName}`
+      label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
     }));
 
     const treeItems = [

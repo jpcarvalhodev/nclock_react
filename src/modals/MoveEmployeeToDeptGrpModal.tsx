@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 
-import { Department, Employee, Group } from '../helpers/Types';
+import { Department, Employee, Group } from '../types/Types';
 import { customStyles } from '../components/CustomStylesDataTable';
 import DataTable from 'react-data-table-component';
 
@@ -220,7 +220,7 @@ export const MoveEmployeeToDeptGrpModal = <T extends Entity>({ open, onClose, on
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size='xl' style={{ marginTop: 100 }}>
+        <Modal show={open} onHide={onClose} backdrop="static" size='xl' centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -279,10 +279,10 @@ export const MoveEmployeeToDeptGrpModal = <T extends Entity>({ open, onClose, on
                 </div>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button variant="outline-secondary" onClick={onClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>
                     Fechar
                 </Button>
-                <Button variant="outline-primary" onClick={handleSave}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSave}>
                     Guardar
                 </Button>
             </Modal.Footer>

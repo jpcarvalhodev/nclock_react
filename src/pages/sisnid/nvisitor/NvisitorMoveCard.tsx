@@ -1,8 +1,7 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { useLocation } from "react-router-dom";
 import Split from "react-split";
 import { toast } from "react-toastify";
 
@@ -16,11 +15,11 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import { PersonsContext, PersonsContextType } from "../../../context/PersonsContext";
-import { DeviceContextType, TerminalsContext, TerminalsProvider } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { auxOutFields, employeeFields, transactionCardFields } from "../../../helpers/Fields";
-import { Employee, EmployeeCard, KioskTransactionCard } from "../../../helpers/Types";
+import { usePersons } from "../../../context/PersonsContext";
+import { TerminalsProvider, useTerminals } from "../../../context/TerminalsContext";
+import * as apiService from "../../../api/apiService";
+import { auxOutFields, employeeFields, transactionCardFields } from "../../../fields/Fields";
+import { Employee, KioskTransactionCard } from "../../../types/Types";
 import { AuxOutModal } from "../../../modals/AuxOutModal";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
@@ -44,18 +43,18 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NvisitorMoveCard = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { employees, handleUpdateEmployee } = useContext(PersonsContext) as PersonsContextType;
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
+    const { employees, handleUpdateEmployee } = usePersons();
+    const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -101,6 +100,107 @@ export const NvisitorMoveCard = () => {
         }
     };
 
+    // Função para buscar os movimentos dos cartões hoje
+    const fetchCardMovementsToday = async () => {
+        try {
+            if (devices.length === 0) {
+                setMoveCard([]);
+                return;
+            }
+
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate));
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveCard(combinedData);
+
+            setStartDate(formatDateToStartOfDay(currentDate));
+            setEndDate(formatDateToEndOfDay(currentDate));
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões hoje:', error);
+            setMoveCard([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchCardMovementsForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            if (devices.length === 0) {
+                setMoveCard([]);
+                return;
+            }
+
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveCard(combinedData);
+
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões ontem:', error);
+            setMoveCard([]);
+        }
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchCardMovementsForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar movimentos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            if (devices.length === 0) {
+                setMoveCard([]);
+                return;
+            }
+
+            const promises = devices.map((device, i) => {
+                return apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end);
+            });
+
+            const allData = await Promise.all(promises);
+
+            const validData = allData.filter(data => Array.isArray(data) && data.length > 0);
+
+            const combinedData = validData.flat();
+
+            setMoveCard(combinedData);
+
+            setStartDate(start);
+            setEndDate(end);
+        } catch (error) {
+            console.error('Erro ao buscar os dados de movimentos de cartões amanhã:', error);
+            setMoveCard([]);
+        }
+    };
+
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
@@ -115,7 +215,9 @@ export const NvisitorMoveCard = () => {
     // Função para atualizar as publicidades
     const refreshMoveCard = () => {
         fetchAllMoveCard();
-        setClearSelectionToggle(!clearSelectionToggle);
+        setStartDate(formatDateToStartOfDay(pastDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para abrir a auxiliar
@@ -292,7 +394,7 @@ export const NvisitorMoveCard = () => {
     const getSelectedFields = () => {
         return transactionCardFields.filter(field => selectedColumns.includes(field.key));
     };
-    
+
     return (
         <TerminalsProvider>
             <div className="main-container">
@@ -309,13 +411,13 @@ export const NvisitorMoveCard = () => {
                             <div className="datatable-header">
                                 <div>
                                     <CustomSearchBox
-                                    label="Pesquisa"
-                                    variant="outlined"
-                                    size='small'
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5}}
-                                />
+                                        label="Pesquisa"
+                                        variant="outlined"
+                                        size='small'
+                                        value={filterText}
+                                        onChange={e => setFilterText(e.target.value)}
+                                        style={{ marginTop: -5 }}
+                                    />
                                 </div>
                                 <div className="buttons-container-others">
                                     <OverlayTrigger
@@ -340,6 +442,24 @@ export const NvisitorMoveCard = () => {
                                     </OverlayTrigger>
                                 </div>
                                 <div className="date-range-search">
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Torniquete Dia Anterior</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchCardMovementsForPreviousDay} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Torniquete Hoje</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchCardMovementsToday} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Torniquete Dia Seguinte</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchCardMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                    </OverlayTrigger>
                                     <input
                                         type="datetime-local"
                                         value={startDate}

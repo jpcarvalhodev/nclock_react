@@ -1,90 +1,18 @@
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
-import { useContext, useEffect, useState } from "react";
 import { Bar , PolarArea } from "react-chartjs-2";
 
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import { DeviceContextType, TerminalsContext } from "../../../context/TerminalsContext";
-import * as apiService from "../../../helpers/apiService";
-import { KioskTransactionCard, KioskTransactionMB } from "../../../helpers/Types";
+import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
+import { useKiosk } from '../../../context/KioskContext';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 export const NkioskGraph = () => {
+    const currentYear = new Date().getFullYear();
     const { navbarColor, footerColor } = useNavbar();
-    const { devices } = useContext(TerminalsContext) as DeviceContextType;
-    const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
-    const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
-    const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
-    const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
-    const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
-    const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
-    const eventDoorId2 = '2';
-    const eventDoorId3 = '3';
-    const eventDoorId4 = '4';
-
-    // Função para buscar os dados para os gráficos
-    const fetchAllData = async () => {
-        try {
-            if (devices.length === 0) {
-                console.error('Não há dispositivos para buscar dados');
-                return;
-            }
-
-            const mbPromises = devices.map(device =>
-                apiService.fetchKioskTransactionsByMBAndDeviceSN()
-            );
-            const cardPromises = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, device.serialNumber)
-            );
-            const coinPromises = devices.map(device =>
-                apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, device.serialNumber)
-            );
-            const vpPromises = devices.map(device =>
-                apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId3, device.serialNumber)
-            );
-            const kioskPromises = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, device.serialNumber)
-            );
-
-            const [mbResults, cardResults, coinResults, vpResults, kioskResults] = await Promise.all([
-                Promise.all(mbPromises),
-                Promise.all(cardPromises),
-                Promise.all(coinPromises),
-                Promise.all(vpPromises),
-                Promise.all(kioskPromises)
-            ]);
-
-            const combinedMBData = mbResults.filter(data => Array.isArray(data) && data.length > 0).flat();
-            const combinedCardData = cardResults.filter(data => Array.isArray(data) && data.length > 0).flat();
-            const combinedCoinData = coinResults.filter(data => Array.isArray(data) && data.length > 0).flat();
-            const combinedVPData = vpResults.filter(data => Array.isArray(data) && data.length > 0).flat();
-            const combinedKioskData = kioskResults.filter(data => Array.isArray(data) && data.length > 0).flat();
-
-            setPayTerminal(combinedMBData);
-            setPayCoins(combinedCoinData);
-            setMoveCard(combinedCardData);
-            setMoveVP(combinedVPData);
-            setMoveKiosk(combinedKioskData);
-
-            const totalMove = combinedCardData.concat(combinedKioskData);
-            setTotalMovements(totalMove);
-        } catch (error) {
-            console.error('Erro ao buscar os dados:', error);
-            setPayTerminal([]);
-            setPayCoins([]);
-            setMoveCard([]);
-            setMoveKiosk([]);
-            setMoveVP([]);
-            setTotalMovements([]);
-        }
-    };
-
-    // UseEffect para buscar os dados
-    useEffect(() => {
-        fetchAllData();
-    }, [devices]);
+    const { payTerminal, payCoins, moveCard, moveKiosk, moveVP, totalMovements } = useKiosk();
 
     // Função para agrupar os dados por mês com base no campo correto
     const groupByMonth = <T extends KioskTransactionMB | KioskTransactionCard>(
@@ -189,7 +117,7 @@ export const NkioskGraph = () => {
                 </div>
                 <div className="chart-container">
                     <div className="departments-groups-chart" style={{ flex: 1 }}>
-                        <h2 className="departments-groups-chart-text">Total de Movimentos: { }</h2>
+                        <h2 className="departments-groups-chart-text">Total de Movimentos em {currentYear}: { }</h2>
                         <Bar className="departments-groups-chart-data" data={barData} />
                     </div>
                 </div>
