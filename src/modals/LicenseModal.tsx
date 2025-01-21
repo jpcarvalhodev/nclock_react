@@ -89,8 +89,8 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   const verifyKey = async () => {
     try {
       const isKeyValid = await fetchAllLicenses(key);
-      if (isKeyValid && isKeyValid.length > 0) {
-        setEntities(Array.isArray(isKeyValid) ? isKeyValid : []);
+      if (isKeyValid && Array.isArray(isKeyValid) && isKeyValid.length > 0) {
+        setEntities(isKeyValid);
         setActiveTab(isKeyValid[0]?.entidadeNumber);
         setFormData(isKeyValid[0]);
         setIsCheckVisible(false);
