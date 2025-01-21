@@ -4,7 +4,7 @@ NSOFTWARES software project using React and Typescript for SISNID
 
 ## Prerequisites
 
-• Node.js (v20.11.1 or higher)
+• Node.js (v22.13.0 or higher)
 
 • npm or yarn
 
