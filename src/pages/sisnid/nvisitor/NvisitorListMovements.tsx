@@ -310,7 +310,6 @@ export const NvisitorListMovements = () => {
     // Filtra os dados da tabela com base no filtro de 'eventName'
     const filteredDataTable = filteredDevices
         .filter(listMovement =>
-            new Date(listMovement.eventTime) >= new Date(startDate) && new Date(listMovement.eventTime) <= new Date(endDate) &&
             Object.keys(filters).every(key =>
                 filters[key] === "" || (listMovement[key] != null && String(listMovement[key]).toLowerCase().includes(filters[key].toLowerCase()))
             ) &&

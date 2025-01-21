@@ -200,7 +200,6 @@ export const NkioskAlerts = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(getCoin =>
-        new Date(getCoin.timespam) >= new Date(startDate) && new Date(getCoin.timespam) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

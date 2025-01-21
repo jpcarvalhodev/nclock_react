@@ -377,25 +377,25 @@ export const NkioskDashboardLicensed = () => {
             </div>
             <div className="dashboard-content" style={{ marginTop: 5 }}>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Multibanco Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayMbLineChartData} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Moedeiro Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayCoinLineChartData} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Torniquete Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayCardLineChartData} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Quiosque Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayKioskLineChartData} />
                     </div>

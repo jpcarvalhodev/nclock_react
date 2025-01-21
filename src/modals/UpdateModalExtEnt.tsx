@@ -467,7 +467,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
                                             />
                                         </div>
                                         <div>
-                                            <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
+                                            <Button variant="outline-dark" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
                                                 Remover Foto
                                             </Button>
                                         </div>

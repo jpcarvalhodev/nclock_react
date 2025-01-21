@@ -234,8 +234,6 @@ export const NkioskListMovements = () => {
 
     // Atualiza a lista de movimentos ao montar o componente
     useEffect(() => {
-        fetchAllMoveCard();
-        fetchAllMoveKiosk();
         settingVariables();
         mergeMovementData();
     }, []);
@@ -308,7 +306,6 @@ export const NkioskListMovements = () => {
 
     // Filtra os dados da tabela com base no filtro de 'eventName'
     const filteredDataTable = filteredDevices.filter(moveCards =>
-        new Date(moveCards.eventTime) >= new Date(startDate) && new Date(moveCards.eventTime) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

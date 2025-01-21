@@ -27,6 +27,10 @@ export const LicenseProvider = ({ children }: { children: ReactNode }) => {
 
         const storedNif = localStorage.getItem('nif');
 
+        if (storedNif === '0') {
+            return softwareEnabled;
+        }
+
         let licenseObj: Partial<License> = {};
         if (Array.isArray(license)) {
             licenseObj = license.find(lic => lic.nif === storedNif) || license[0];

@@ -213,11 +213,6 @@ export const NkioskPayCoins = () => {
         }
     };
 
-    // Busca os pagamentos no moedeiro ao carregar a página
-    useEffect(() => {
-        fetchAllPayCoins();
-    }, []);
-
     // Função para atualizar os pagamentos no moedeiro
     const refreshPayCoins = () => {
         fetchAllPayCoins();
@@ -278,7 +273,6 @@ export const NkioskPayCoins = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(payCoin =>
-        new Date(payCoin.timestamp) >= new Date(startDate) && new Date(payCoin.timestamp) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (payCoin[key] != null && String(payCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

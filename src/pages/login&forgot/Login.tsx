@@ -152,11 +152,6 @@ export const Login = () => {
   const handleLoginFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (selectedNif === 0) {
-      toast.warn("Selecione uma entidade primeiro!");
-      return;
-    }
-
     const user: User = {
       username,
       entidadeNif: selectedNif,

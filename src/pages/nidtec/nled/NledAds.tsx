@@ -292,7 +292,6 @@ export const NledAds = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter((ad: Ads) =>
-        new Date(ad.createDate) >= new Date(startDate) && new Date(ad.createDate) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (ad[key] != null && String(ad[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

@@ -292,7 +292,6 @@ export const NvisitorMoveCard = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(moveCards =>
-        new Date(moveCards.eventTime) >= new Date(startDate) && new Date(moveCards.eventTime) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

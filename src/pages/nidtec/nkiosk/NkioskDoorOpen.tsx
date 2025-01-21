@@ -207,7 +207,6 @@ export const NkioskDoorOpen = () => {
 
     // Filtra os dados da tabela de dispositivos
     const filteredDataTable = filteredDevices.filter(device =>
-        new Date(device.createdDate) >= new Date(startDate) && new Date(device.createdDate) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (device[key] != null && String(device[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

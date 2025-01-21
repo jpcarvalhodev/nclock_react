@@ -245,7 +245,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                                     />
                                 </div>
                                 <div>
-                                    <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm'>
+                                    <Button variant="outline-dark" onClick={resetToDefaultAvatar} size='sm'>
                                         Remover Foto
                                     </Button>
                                 </div>

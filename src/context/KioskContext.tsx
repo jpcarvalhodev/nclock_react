@@ -57,6 +57,8 @@ export interface KioskContextType {
     fetchAllTasks: () => void;
     unifyTotalPayments: () => void;
     unifyTotalMovements: () => void;
+    fetchAndUnifyPaymentsForNavbar: () => void;
+    fetchAndUnifyMovementsForNavbar: () => void;
 }
 
 // Cria o contexto
@@ -109,7 +111,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     const unifyTotalMovements = () => {
         const combinedData = moveCard.concat(moveKiosk).concat(moveVP);
         setTotalMovements(combinedData);
-    }
+    }    
 
     // Função para buscar os pagamentos dos terminais
     const fetchAllPayTerminal = async () => {
@@ -437,6 +439,20 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Função para buscar os pagamentos e movimentos e unificar os dados para a navbar
+    const fetchAndUnifyPaymentsForNavbar = async () => {
+        await fetchAllPayTerminal();
+        await fetchAllPayCoins();
+        unifyTotalPayments();
+    }
+
+    // Função para buscar os pagamentos e movimentos e unificar os dados para a navbar
+    const fetchAndUnifyMovementsForNavbar = async () => {
+        await fetchAllMoveCard();
+        await fetchAllMoveKiosk();
+        unifyTotalMovements();
+    }
+
     // Atualiza os dados ao mudar a lista de terminais
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -518,7 +534,9 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         setAlerts,
         fetchAllTasks,
         unifyTotalPayments,
-        unifyTotalMovements
+        unifyTotalMovements,
+        fetchAndUnifyPaymentsForNavbar,
+        fetchAndUnifyMovementsForNavbar
     };
 
     return (

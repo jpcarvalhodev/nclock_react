@@ -268,7 +268,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
                                 />
                             </div>
                             <div>
-                                <Button variant="outline-danger" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
+                                <Button variant="outline-dark" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
                                     Remover Foto
                                 </Button>
                             </div>

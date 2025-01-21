@@ -132,11 +132,6 @@ export const NkioskPayTerminal = () => {
         }
     };
 
-    // Busca os pagamentos dos terminais ao carregar a página
-    useEffect(() => {
-        fetchAllPayTerminal();
-    }, []);
-
     // Função para atualizar os pagamentos dos terminais
     const refreshPayTerminal = () => {
         fetchAllPayTerminal();
@@ -197,7 +192,6 @@ export const NkioskPayTerminal = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(payTerminals =>
-        new Date(payTerminals.timestamp) >= new Date(startDate) && new Date(payTerminals.timestamp) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (payTerminals[key] != null && String(payTerminals[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

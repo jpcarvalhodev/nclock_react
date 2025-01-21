@@ -187,11 +187,6 @@ export const NkioskMoveKiosk = () => {
         }
     };
 
-    // Busca os movimentos de quiosque ao carregar a página
-    useEffect(() => {
-        fetchAllMoveKiosk();
-    }, []);
-
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
@@ -265,7 +260,6 @@ export const NkioskMoveKiosk = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(moveKiosks =>
-        new Date(moveKiosks.eventTime) >= new Date(startDate) && new Date(moveKiosks.eventTime) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (moveKiosks[key] != null && String(moveKiosks[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

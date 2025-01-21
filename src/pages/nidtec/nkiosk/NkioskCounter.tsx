@@ -235,7 +235,6 @@ export const NkioskCounter = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(getCoin =>
-        getCoin.eventTime >= new Date(startDate) && getCoin.eventTime <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (getCoin[key] != null && String(getCoin[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

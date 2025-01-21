@@ -359,7 +359,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
 	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
 	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
-	const { payTerminal, payCoins, totalPayments, moveCard, moveKiosk, totalMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter, fetchAllPayTerminal, fetchAllPayCoins, fetchAllMoveCard, fetchAllMoveKiosk, fetchAndUnifyPaymentsForNavbar, fetchAndUnifyMovementsForNavbar } = useKiosk();
+	const { payTerminal, payCoins, totalPayments, moveCard, moveKiosk, totalMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter } = useKiosk();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
 	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
@@ -9705,13 +9705,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'recebimentos nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
-												<Link to="/nkiosk/nkioskpayterminal" onClick={() => fetchAllPayTerminal()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskpayterminal' ? 'current-active' : ''}`}>
+												<Link to="/nkiosk/nkioskpayterminal" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskpayterminal' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={payment_card} alt="botão pagamento terminal" />
 													</span>
 													<span className="text">Multibanco</span>
 												</Link>
-												<Link to='/nkiosk/nkioskpaycoins' onClick={() => fetchAllPayCoins()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskpaycoins' ? 'current-active' : ''}`}>
+												<Link to='/nkiosk/nkioskpaycoins' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskpaycoins' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={coin} alt="botão pagamento moedas" />
 													</span>
@@ -9719,7 +9719,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
-												<Link to="/nkiosk/nkiosklistpayments" onClick={() => fetchAndUnifyPaymentsForNavbar()} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkiosklistpayments' ? 'current-active' : ''}`}>
+												<Link to="/nkiosk/nkiosklistpayments" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkiosklistpayments' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={card_report} alt="botão pagamentos totais" />
 													</span>
@@ -9736,13 +9736,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
-												<Link to='/nkiosk/nkioskmovecard' onClick={() => fetchAllMoveCard()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovecard' ? 'current-active' : ''}`}>
+												<Link to='/nkiosk/nkioskmovecard' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovecard' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={barrier} alt="botão movimentos cartão" />
 													</span>
 													<span className="text">Torniquete</span>
 												</Link>
-												<Link to='/nkiosk/nkioskmovekiosk' onClick={() => fetchAllMoveKiosk()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovekiosk' ? 'current-active' : ''}`}>
+												<Link to='/nkiosk/nkioskmovekiosk' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovekiosk' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={kiosk} alt="botão movimentos porteiro" />
 													</span>
@@ -9750,7 +9750,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
-												<Link to="/nkiosk/nkiosklistmovements" onClick={() => fetchAndUnifyMovementsForNavbar()} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkiosklistmovements' ? 'current-active' : ''}`}>
+												<Link to="/nkiosk/nkiosklistmovements" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkiosklistmovements' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={coin_report} alt="botão movimentos totais" />
 													</span>

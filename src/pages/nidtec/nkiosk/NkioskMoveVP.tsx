@@ -196,11 +196,6 @@ export const NkioskMoveVP = () => {
         }
     };
 
-    // Busca os movimentos de videoporteiro ao carregar a página
-    useEffect(() => {
-        fetchAllMoveVP();
-    }, []);
-
     // Função para atualizar as movimentos de videoporteiro
     const refreshMoveCard = () => {
         fetchAllMoveVP();
@@ -261,7 +256,6 @@ export const NkioskMoveVP = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(moveCards =>
-        moveCards.eventTime >= new Date(startDate) && moveCards.eventTime <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (moveCards[key] != null && String(moveCards[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

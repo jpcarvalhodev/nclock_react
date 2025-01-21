@@ -235,8 +235,6 @@ export const NkioskListPayments = () => {
 
     // Atualiza a lista de pagamentos ao montar o componente
     useEffect(() => {
-        fetchAllPayTerminal();
-        fetchAllPayCoins();
         settingVariables();
         mergePaymentData();
     }, []);
@@ -302,7 +300,6 @@ export const NkioskListPayments = () => {
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredDevices.filter(payTerminals =>
-        new Date(payTerminals.timestamp) >= new Date(startDate) && new Date(payTerminals.timestamp) <= new Date(endDate) &&
         Object.keys(filters).every(key =>
             filters[key] === "" || (payTerminals[key] != null && String(payTerminals[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
