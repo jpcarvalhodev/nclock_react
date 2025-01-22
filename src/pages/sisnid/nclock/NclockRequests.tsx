@@ -517,15 +517,15 @@ export const NclockRequests = () => {
                             <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Pedidos Dia Anterior</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchMovementsForPreviousDay} iconSize='1.1em' />
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Pedidos Hoje</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Pedidos Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchMovementsForPreviousDay} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 <OverlayTrigger
                                     placement="top"

@@ -271,6 +271,7 @@ import digitalFile from '../assets/img/navbar/ndoc/digitalFile.png';
 import workflow from '../assets/img/navbar/ndoc/workflow.png';
 import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
 import ticket from '../assets/img/navbar/nticket/ticket.png';
+import { useAttendance } from '../context/MovementContext';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -360,6 +361,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
 	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
 	const { payTerminal, payCoins, totalPayments, moveCard, moveKiosk, totalMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter, fetchAllPayTerminal, fetchAllPayCoins, fetchAllMoveCard, fetchAllMoveKiosk, fetchAndUnifyPaymentsForNavbar, fetchAndUnifyMovementsForNavbar } = useKiosk();
+	const { fetchAllAttendances } = useAttendance();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
 	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
@@ -2354,7 +2356,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos nclock') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Link to="/nclock/nclockmovement" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclock/nclockmovement' ? 'current-active' : ''}`}>
+												<Link to="/nclock/nclockmovement" onClick={() => fetchAllAttendances({filterFunc: data => data.filter(att => att.type !== 3)})} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclock/nclockmovement' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={movement} alt="botão assiduidade" />
 													</span>
@@ -2368,13 +2370,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</span>
 													<span className="text">Presenças</span>
 												</Link>
-												<Link to='/nclock/nclockrequests' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockrequests' ? 'current-active' : ''}`}>
+												<Link to='/nclock/nclockrequests' onClick={() => fetchAllAttendances({filterFunc: data => data.filter(att => att.type === 3)})} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockrequests' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={request} alt="botão alterações" />
 													</span>
 													<span className="text">Alterações</span>
 												</Link>
-												<Link to='/nclock/nclockall' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockall' ? 'current-active' : ''}`}>
+												<Link to='/nclock/nclockall' onClick={() => fetchAllAttendances()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockall' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={all} alt="botão totais" />
 													</span>
@@ -2982,13 +2984,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos nvisitor') && (
 										<div className="btn-group" role="group">
 											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
-												<Link to='/nvisitor/nvisitormovecard' type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '/nvisitor/nvisitormovecard' ? 'current-active' : ''}`}>
+												<Link to='/nvisitor/nvisitormovecard' onClick={() => fetchAllMoveCard()} type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '/nvisitor/nvisitormovecard' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={barrier} alt="botão movimentos cartão" />
 													</span>
 													<span className="text">Torniquete</span>
 												</Link>
-												<Link to='/nvisitor/nvisitormovekiosk' type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '/nvisitor/nvisitormovekiosk' ? 'current-active' : ''}`}>
+												<Link to='/nvisitor/nvisitormovekiosk' onClick={() => fetchAllMoveKiosk()} type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '/nvisitor/nvisitormovekiosk' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={kiosk} alt="botão movimentos porteiro" />
 													</span>
@@ -2996,7 +2998,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
-												<Link to="/nvisitor/nvisitorlistmovements" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '/nvisitor/nvisitorlistmovements' ? 'current-active' : ''}`}>
+												<Link to="/nvisitor/nvisitorlistmovements" onClick={() => fetchAndUnifyMovementsForNavbar()} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '/nvisitor/nvisitorlistmovements' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={coin_report} alt="botão movimentos totais" />
 													</span>

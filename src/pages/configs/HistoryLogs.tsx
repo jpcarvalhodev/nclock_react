@@ -287,15 +287,15 @@ export const HistoryLogs = () => {
                             <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Histórico Dia Anterior</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchHistoryForPreviousDay} iconSize='1.1em' />
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Histórico Hoje</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchHistoryToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Histórico Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchHistoryForPreviousDay} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 <OverlayTrigger
                                     placement="top"

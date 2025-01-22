@@ -292,15 +292,15 @@ export const NkioskAlerts = () => {
                             <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Alertas Dia Anterior</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchAlertsForPreviousDay} iconSize='1.1em' />
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Alertas Hoje</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchAlertsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Alertas Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchAlertsForPreviousDay} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 <OverlayTrigger
                                     placement="top"

@@ -357,15 +357,15 @@ export const NkioskDoorOpen = () => {
                                 <div className="date-range-search">
                                     <OverlayTrigger
                                         placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Aberturas Dia Anterior</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchDoorOpenForPreviousDay} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Aberturas Hoje</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchDoorOpenToday} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Aberturas Dia Anterior</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchDoorOpenForPreviousDay} iconSize='1.1em' />
                                     </OverlayTrigger>
                                     <OverlayTrigger
                                         placement="top"

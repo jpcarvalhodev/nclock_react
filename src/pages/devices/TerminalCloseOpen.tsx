@@ -323,15 +323,15 @@ export const TerminalCloseOpen = () => {
                             <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Movimentos Dia Anterior</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchCloseOpenForPreviousDay} iconSize='1.1em' />
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Movimentos Hoje</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchCloseOpenToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Movimentos Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchCloseOpenForPreviousDay} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 <OverlayTrigger
                                     placement="top"

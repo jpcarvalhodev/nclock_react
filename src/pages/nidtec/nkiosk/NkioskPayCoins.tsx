@@ -405,15 +405,15 @@ export const NkioskPayCoins = () => {
                                     </OverlayTrigger>
                                     <OverlayTrigger
                                         placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Moedas Dia Anterior</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchPaymentsCoinForPreviousDay} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
                                         overlay={<Tooltip className="custom-tooltip">Moedas Hoje</Tooltip>}
                                     >
                                         <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchPaymentsCoinToday} iconSize='1.1em' />
+                                    </OverlayTrigger>
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip className="custom-tooltip">Moedas Dia Anterior</Tooltip>}
+                                    >
+                                        <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchPaymentsCoinForPreviousDay} iconSize='1.1em' />
                                     </OverlayTrigger>
                                     <OverlayTrigger
                                         placement="top"

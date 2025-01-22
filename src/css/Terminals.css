@@ -6,27 +6,28 @@
 .button-terminals-users {
     margin-right: 5px;
     background-color: transparent;
-    border-color: #0050a0;
-    color: #0050a0;
+    border-color: #000000;
+    color: #000000;
     height: 100px;
     width: 130px;
 }
 
 .button-terminals-users:hover {
-    background-color: #0050a0;
+    background-color: #000000;
     color: #fff;
+    border: none;
 }
 
 .button-terminals-users-track {
     margin-top: 10px;
     margin-bottom: 5px;
     background-color: transparent;
-    border-color: #0050a0;
-    color: #0050a0;
+    border-color: #000000;
+    color: #000000;
 }
 
 .button-terminals-users-track:hover {
-    background-color: #0050a0;
+    background-color: #000000;
     color: #fff;
 }
 

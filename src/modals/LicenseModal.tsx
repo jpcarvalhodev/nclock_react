@@ -53,6 +53,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   const [entities, setEntities] = useState<Array<License>>([]);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [allEnabled, setAllEnabled] = useState(false);
+  const [licenseString, setLicenseString] = useState<string>('');
 
   // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
   useEffect(() => {
@@ -89,18 +90,24 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   const verifyKey = async () => {
     try {
       const isKeyValid = await fetchAllLicenses(key);
-      if (isKeyValid && Array.isArray(isKeyValid) && isKeyValid.length > 0) {
-        setEntities(isKeyValid);
-        setActiveTab(isKeyValid[0]?.entidadeNumber);
-        setFormData(isKeyValid[0]);
-        setIsCheckVisible(false);
-        showModal();
-      } else {
-        toast.warn("Password inválida, tente novamente.");
+      if (!isKeyValid.error) {
+        const { encryptedKey } = isKeyValid;
+        setLicenseString(encryptedKey);
+        const { licenses } = isKeyValid;
+        if (licenses && Array.isArray(licenses) && licenses.length > 0) {
+          setEntities(licenses);
+          setActiveTab(licenses[0]?.entidadeNumber);
+          setFormData(licenses[0]);
+          setIsCheckVisible(false);
+          showModal();
+        } else {
+          handleCreateNewLicense();
+          setIsCheckVisible(false);
+          showModal();
+        }
       }
     } catch (error) {
       console.error("Erro ao verificar chave:", error);
-      toast.warn("Não foi possível verificar a chave, tente novamente.");
     }
   };
 
@@ -462,6 +469,17 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     }
   };
 
+  // Função para copiar a chave
+  const handleCopyKey = (key: string) => {
+    navigator.clipboard.writeText(key)
+      .then(() => {
+        toast.success("Chave copiada para a área de transferência!");
+      })
+      .catch((error) => {
+        toast.error("Erro ao copiar a chave. Tente novamente!");
+      });
+  };
+
   return (
     <div>
       <Modal show={isCheckVisible} onHide={onClose} backdrop="static" centered>
@@ -514,12 +532,39 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
           <Modal.Title>Licenciamento</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip className="custom-tooltip">Adicionar Licença</Tooltip>}
-          >
-            <CustomOutlineButton className="action-button" icon='bi-plus' onClick={handleCreateNewLicense} />
-          </OverlayTrigger>
+          <Row style={{ display: 'flex', alignItems: 'center' }}>
+            <Col md={6}>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip className="custom-tooltip">Adicionar Licença</Tooltip>}
+              >
+                <CustomOutlineButton icon='bi-plus' iconSize='1.1em' onClick={handleCreateNewLicense} />
+              </OverlayTrigger>
+            </Col>
+            <Col md={6} style={{ display: 'flex', alignItems: 'center' }}>
+              <Form.Group style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, marginRight: 10 }}>
+                <Form.Label style={{ marginBottom: 0 }}>Chave</Form.Label>
+                <Form.Control
+                  type="string"
+                  className="custom-input-height custom-select-font-size"
+                  value={licenseString}
+                  name="chave"
+                  style={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                  readOnly
+                />
+              </Form.Group>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip className="custom-tooltip">Copiar Chave</Tooltip>}
+              >
+                <CustomOutlineButton icon='bi bi-copy' iconSize='1em' onClick={() => handleCopyKey(licenseString)} />
+              </OverlayTrigger>
+            </Col>
+          </Row>
           <Tabs
             activeKey={activeTab}
             onSelect={(key) => setActiveTab(key || undefined)}

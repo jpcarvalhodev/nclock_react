@@ -80,7 +80,6 @@ export const NclockAll = () => {
     // Função para buscar todos as assiduidades
     const fetchAll = () => {
         fetchAllAttendances({
-            filterFunc: data => data.filter(att => att.type !== 3),
             postFetch: filteredData => {
                 setAttendanceAll(filteredData);
             }
@@ -292,6 +291,9 @@ export const NclockAll = () => {
                     case 'attendanceTime':
                         return new Date(row.attendanceTime).toLocaleString() || '';
                     case 'inOutMode':
+                        if (row.observation) {
+                            return '';
+                        }
                         switch (row[field.key]) {
                             case 0: return 'Entrada';
                             case 1: return 'Saída';
@@ -383,15 +385,15 @@ export const NclockAll = () => {
                             <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Todos Dia Anterior</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchMovementsForPreviousDay} iconSize='1.1em' />
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                    placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Todos Hoje</Tooltip>}
                                 >
                                     <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchMovementsToday} iconSize='1.1em' />
+                                </OverlayTrigger>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">Todos Dia Anterior</Tooltip>}
+                                >
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchMovementsForPreviousDay} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 <OverlayTrigger
                                     placement="top"

@@ -1632,7 +1632,7 @@ export const fetchLicenses = async (key: string) => {
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);
-        throw new Error();
+        return errorData;
     }
     return response.json();
 }

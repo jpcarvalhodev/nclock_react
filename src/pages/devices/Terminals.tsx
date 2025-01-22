@@ -1520,7 +1520,7 @@ export const Terminals = () => {
                                     {loadingSendClock ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                                     ) : (
-                                        <i className="bi bi-clock-history" style={{ marginRight: 5, fontSize: '1rem' }}></i>
+                                        <i className="bi bi-clock-history" style={{ marginRight: 4, fontSize: '1rem' }}></i>
                                     )}
                                     Enviar horários
                                 </Button>
