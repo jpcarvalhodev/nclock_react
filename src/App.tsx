@@ -233,6 +233,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Contacts } from './pages/persons/Contacts';
 import { Groups } from './pages/persons/Groups';
 import { Types } from './pages/persons/Types';
+import { TimePlans } from './pages/devices/TimePlans';
 
 // Define a função de rotas com animação
 function AnimatedRoutes() {
@@ -240,286 +241,283 @@ function AnimatedRoutes() {
   const nodeRef = useRef(null);
 
   return (
-    <div>
-      <TransitionGroup>
-        <div ref={nodeRef}>
-          <Routes location={location}>
-            <Route path="/" element={<Login />} />
-            <Route path="/login&forgot/forgotpassword" element={<ForgotPassword />} />
-            <Route path='/login&forgot/resetpassword' element={<ResetPassword />} />
-            <Route path="/errors/notfound" element={<NotFound />} />
-            <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
+    <div ref={nodeRef}>
+      <Routes location={location}>
+        <Route path="/" element={<Login />} />
+        <Route path="/login&forgot/forgotpassword" element={<ForgotPassword />} />
+        <Route path='/login&forgot/resetpassword' element={<ResetPassword />} />
+        <Route path="/errors/notfound" element={<NotFound />} />
+        <Route path="/dashboard" element={<PageProtection><Dashboard /></PageProtection>} />
 
-            <Route path="/persons/persons" element={<PageProtection><Persons /></PageProtection>} />
-            <Route path="/persons/employees" element={<PageProtection><Employees /></PageProtection>} />
-            <Route path="/persons/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
-            <Route path="/persons/user" element={<PageProtection><User /></PageProtection>} />
-            <Route path="/persons/visitors" element={<PageProtection><Visitors /></PageProtection>} />
-            <Route path="/persons/contacts" element={<PageProtection><Contacts /></PageProtection>} />
-            <Route path="/persons/temporaries" element={<PageProtection><Temporaries /></PageProtection>} />
-            <Route path="/persons/departments" element={<PageProtection><Departments /></PageProtection>} />
-            <Route path="/persons/categories" element={<PageProtection><Categories /></PageProtection>} />
-            <Route path="/persons/externalentities" element={<PageProtection><ExternalEntities /></PageProtection>} />
-            <Route path="/persons/groups" element={<PageProtection><Groups /></PageProtection>} />
-            <Route path="/persons/professions" element={<PageProtection><Professions /></PageProtection>} />
-            <Route path="/persons/zones" element={<PageProtection><Zones /></PageProtection>} />
-            <Route path="/persons/types" element={<PageProtection><Types /></PageProtection>} />
+        <Route path="/persons/persons" element={<PageProtection><Persons /></PageProtection>} />
+        <Route path="/persons/employees" element={<PageProtection><Employees /></PageProtection>} />
+        <Route path="/persons/externalemployees" element={<PageProtection><ExternalEmployees /></PageProtection>} />
+        <Route path="/persons/user" element={<PageProtection><User /></PageProtection>} />
+        <Route path="/persons/visitors" element={<PageProtection><Visitors /></PageProtection>} />
+        <Route path="/persons/contacts" element={<PageProtection><Contacts /></PageProtection>} />
+        <Route path="/persons/temporaries" element={<PageProtection><Temporaries /></PageProtection>} />
+        <Route path="/persons/departments" element={<PageProtection><Departments /></PageProtection>} />
+        <Route path="/persons/categories" element={<PageProtection><Categories /></PageProtection>} />
+        <Route path="/persons/externalentities" element={<PageProtection><ExternalEntities /></PageProtection>} />
+        <Route path="/persons/groups" element={<PageProtection><Groups /></PageProtection>} />
+        <Route path="/persons/professions" element={<PageProtection><Professions /></PageProtection>} />
+        <Route path="/persons/zones" element={<PageProtection><Zones /></PageProtection>} />
+        <Route path="/persons/types" element={<PageProtection><Types /></PageProtection>} />
 
-            <Route path="/devices/terminals" element={<PageProtection><Terminals /></PageProtection>} />
-            <Route path="/devices/terminalsmb" element={<PageProtection><TerminalsMB /></PageProtection>} />
-            <Route path="/devices/terminalcloseopen" element={<PageProtection><TerminalCloseOpen /></PageProtection>} />
-            <Route path="/devices/accesscontrols" element={<PageProtection><AccessControls /></PageProtection>} />
-            <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
+        <Route path="/devices/terminals" element={<PageProtection><Terminals /></PageProtection>} />
+        <Route path="/devices/terminalsmb" element={<PageProtection><TerminalsMB /></PageProtection>} />
+        <Route path="/devices/terminalcloseopen" element={<PageProtection><TerminalCloseOpen /></PageProtection>} />
+        <Route path="/devices/accesscontrols" element={<PageProtection><AccessControls /></PageProtection>} />
+        <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
+        <Route path="/devices/timeplans" element={<PageProtection><TimePlans /></PageProtection>} />
 
-            <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />
-            <Route path="/configs/entities" element={<PageProtection><Entities /></PageProtection>} />
-            <Route path="/configs/loginlogs" element={<PageProtection><LoginLogs /></PageProtection>} />
-            <Route path="/configs/historylogs" element={<PageProtection><HistoryLogs /></PageProtection>} />
+        <Route path="/configs/newusers" element={<PageProtection><NewUsers /></PageProtection>} />
+        <Route path="/configs/entities" element={<PageProtection><Entities /></PageProtection>} />
+        <Route path="/configs/loginlogs" element={<PageProtection><LoginLogs /></PageProtection>} />
+        <Route path="/configs/historylogs" element={<PageProtection><HistoryLogs /></PageProtection>} />
 
-            <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
-            <Route path="/nclock/nclockdashboardlicensed" element={<PageProtection><NclockDashboardLicensed /></PageProtection>} />
-            <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />
-            <Route path="/nclock/nclockpresence" element={<PageProtection><NclockPresence /></PageProtection>} />
-            <Route path="/nclock/nclockrequests" element={<PageProtection><NclockRequests /></PageProtection>} />
-            <Route path="/nclock/nclockall" element={<PageProtection><NclockAll /></PageProtection>} />
-            <Route path="/nclock/nclockgraph" element={<PageProtection><NclockGraph /></PageProtection>} />
+        <Route path="/nclock/nclockdashboard" element={<PageProtection><NclockDashboard /></PageProtection>} />
+        <Route path="/nclock/nclockdashboardlicensed" element={<PageProtection><NclockDashboardLicensed /></PageProtection>} />
+        <Route path="/nclock/nclockmovement" element={<PageProtection><NclockMovement /></PageProtection>} />
+        <Route path="/nclock/nclockpresence" element={<PageProtection><NclockPresence /></PageProtection>} />
+        <Route path="/nclock/nclockrequests" element={<PageProtection><NclockRequests /></PageProtection>} />
+        <Route path="/nclock/nclockall" element={<PageProtection><NclockAll /></PageProtection>} />
+        <Route path="/nclock/nclockgraph" element={<PageProtection><NclockGraph /></PageProtection>} />
 
-            <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
-            <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />
-            <Route path="/naccess/naccessgraph" element={<PageProtection><NaccessGraph /></PageProtection>} />
+        <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
+        <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />
+        <Route path="/naccess/naccessgraph" element={<PageProtection><NaccessGraph /></PageProtection>} />
 
-            <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
-            <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />
-            <Route path="/nvisitor/nvisitorgraph" element={<PageProtection><NvisitorGraph /></PageProtection>} />
-            <Route path="/nvisitor/nvisitorMoveCard" element={<PageProtection><NvisitorMoveCard /></PageProtection>} />
-            <Route path="/nvisitor/nvisitorMoveKiosk" element={<PageProtection><NvisitorMoveKiosk /></PageProtection>} />
-            <Route path="/nvisitor/nvisitorListMovements" element={<PageProtection><NvisitorListMovements /></PageProtection>} />
+        <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
+        <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />
+        <Route path="/nvisitor/nvisitorgraph" element={<PageProtection><NvisitorGraph /></PageProtection>} />
+        <Route path="/nvisitor/nvisitorMoveCard" element={<PageProtection><NvisitorMoveCard /></PageProtection>} />
+        <Route path="/nvisitor/nvisitorMoveKiosk" element={<PageProtection><NvisitorMoveKiosk /></PageProtection>} />
+        <Route path="/nvisitor/nvisitorListMovements" element={<PageProtection><NvisitorListMovements /></PageProtection>} />
 
-            <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
-            <Route path="/nview/nviewdashboardlicensed" element={<PageProtection><NviewDashboardLicensed /></PageProtection>} />
-            <Route path="/nview/nviewgraph" element={<PageProtection><NviewGraph /></PageProtection>} />
-            <Route path="/nview/nviewonlinecameras" element={<PageProtection><NviewOnlineCameras /></PageProtection>} />
+        <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
+        <Route path="/nview/nviewdashboardlicensed" element={<PageProtection><NviewDashboardLicensed /></PageProtection>} />
+        <Route path="/nview/nviewgraph" element={<PageProtection><NviewGraph /></PageProtection>} />
+        <Route path="/nview/nviewonlinecameras" element={<PageProtection><NviewOnlineCameras /></PageProtection>} />
 
-            <Route path="/ncard/ncarddashboard" element={<PageProtection><NcardDashboard /></PageProtection>} />
-            <Route path="/ncard/ncarddashboardlicensed" element={<PageProtection><NcardDashboardLicensed /></PageProtection>} />
-            <Route path="/ncard/ncardgraph" element={<PageProtection><NcardGraph /></PageProtection>} />
+        <Route path="/ncard/ncarddashboard" element={<PageProtection><NcardDashboard /></PageProtection>} />
+        <Route path="/ncard/ncarddashboardlicensed" element={<PageProtection><NcardDashboardLicensed /></PageProtection>} />
+        <Route path="/ncard/ncardgraph" element={<PageProtection><NcardGraph /></PageProtection>} />
 
-            <Route path="/ndoor/ndoordashboard" element={<PageProtection><NdoorDashboard /></PageProtection>} />
-            <Route path="/ndoor/ndoordashboardlicensed" element={<PageProtection><NdoorDashboardLicensed /></PageProtection>} />
-            <Route path="/ndoor/ndoorgraph" element={<PageProtection><NdoorGraph /></PageProtection>} />
+        <Route path="/ndoor/ndoordashboard" element={<PageProtection><NdoorDashboard /></PageProtection>} />
+        <Route path="/ndoor/ndoordashboardlicensed" element={<PageProtection><NdoorDashboardLicensed /></PageProtection>} />
+        <Route path="/ndoor/ndoorgraph" element={<PageProtection><NdoorGraph /></PageProtection>} />
 
-            <Route path="/npark/nparkdashboard" element={<PageProtection><NparkDashboard /></PageProtection>} />
-            <Route path="/npark/nparkdashboardlicensed" element={<PageProtection><NparkDashboardLicensed /></PageProtection>} />
-            <Route path="/npark/nparkgraph" element={<PageProtection><NparkGraph /></PageProtection>} />
+        <Route path="/npark/nparkdashboard" element={<PageProtection><NparkDashboard /></PageProtection>} />
+        <Route path="/npark/nparkdashboardlicensed" element={<PageProtection><NparkDashboardLicensed /></PageProtection>} />
+        <Route path="/npark/nparkgraph" element={<PageProtection><NparkGraph /></PageProtection>} />
 
-            <Route path="/npatrol/npatroldashboard" element={<PageProtection><NpatrolDashboard /></PageProtection>} />
-            <Route path="/npatrol/npatroldashboardlicensed" element={<PageProtection><NpatrolDashboardLicensed /></PageProtection>} />
-            <Route path="/npatrol/npatrolgraph" element={<PageProtection><NpatrolGraph /></PageProtection>} />
+        <Route path="/npatrol/npatroldashboard" element={<PageProtection><NpatrolDashboard /></PageProtection>} />
+        <Route path="/npatrol/npatroldashboardlicensed" element={<PageProtection><NpatrolDashboardLicensed /></PageProtection>} />
+        <Route path="/npatrol/npatrolgraph" element={<PageProtection><NpatrolGraph /></PageProtection>} />
 
-            <Route path="/nsecur/nsecurdashboard" element={<PageProtection><NsecurDashboard /></PageProtection>} />
-            <Route path="/nsecur/nsecurdashboardlicensed" element={<PageProtection><NsecurDashboardLicensed /></PageProtection>} />
-            <Route path="/nsecur/nsecurgraph" element={<PageProtection><NsecurGraph /></PageProtection>} />
+        <Route path="/nsecur/nsecurdashboard" element={<PageProtection><NsecurDashboard /></PageProtection>} />
+        <Route path="/nsecur/nsecurdashboardlicensed" element={<PageProtection><NsecurDashboardLicensed /></PageProtection>} />
+        <Route path="/nsecur/nsecurgraph" element={<PageProtection><NsecurGraph /></PageProtection>} />
 
-            <Route path="/nsoftware/nsoftwaredashboard" element={<PageProtection><NsoftwareDashboard /></PageProtection>} />
-            <Route path="/nsoftware/nsoftwaredashboardlicensed" element={<PageProtection><NsoftwareDashboardLicensed /></PageProtection>} />
-            <Route path="/nsoftware/nsoftwaregraph" element={<PageProtection><NsoftwareGraph /></PageProtection>} />
+        <Route path="/nsoftware/nsoftwaredashboard" element={<PageProtection><NsoftwareDashboard /></PageProtection>} />
+        <Route path="/nsoftware/nsoftwaredashboardlicensed" element={<PageProtection><NsoftwareDashboardLicensed /></PageProtection>} />
+        <Route path="/nsoftware/nsoftwaregraph" element={<PageProtection><NsoftwareGraph /></PageProtection>} />
 
-            <Route path="/nsystem/nsystemdashboard" element={<PageProtection><NsystemDashboard /></PageProtection>} />
-            <Route path="/nsystem/nsystemdashboardlicensed" element={<PageProtection><NsystemDashboardLicensed /></PageProtection>} />
-            <Route path="/nsystem/nsystemgraph" element={<PageProtection><NsystemGraph /></PageProtection>} />
+        <Route path="/nsystem/nsystemdashboard" element={<PageProtection><NsystemDashboard /></PageProtection>} />
+        <Route path="/nsystem/nsystemdashboardlicensed" element={<PageProtection><NsystemDashboardLicensed /></PageProtection>} />
+        <Route path="/nsystem/nsystemgraph" element={<PageProtection><NsystemGraph /></PageProtection>} />
 
-            <Route path="/napp/nappdashboard" element={<PageProtection><NappDashboard /></PageProtection>} />
-            <Route path="/napp/nappdashboardlicensed" element={<PageProtection><NappDashboardLicensed /></PageProtection>} />
-            <Route path="/napp/nappgraph" element={<PageProtection><NappGraph /></PageProtection>} />
+        <Route path="/napp/nappdashboard" element={<PageProtection><NappDashboard /></PageProtection>} />
+        <Route path="/napp/nappdashboardlicensed" element={<PageProtection><NappDashboardLicensed /></PageProtection>} />
+        <Route path="/napp/nappgraph" element={<PageProtection><NappGraph /></PageProtection>} />
 
-            <Route path="/ncyber/ncyberdashboard" element={<PageProtection><NcyberDashboard /></PageProtection>} />
-            <Route path="/ncyber/ncyberdashboardlicensed" element={<PageProtection><NcyberDashboardLicensed /></PageProtection>} />
-            <Route path="/ncyber/ncybergraph" element={<PageProtection><NcyberGraph /></PageProtection>} />
+        <Route path="/ncyber/ncyberdashboard" element={<PageProtection><NcyberDashboard /></PageProtection>} />
+        <Route path="/ncyber/ncyberdashboardlicensed" element={<PageProtection><NcyberDashboardLicensed /></PageProtection>} />
+        <Route path="/ncyber/ncybergraph" element={<PageProtection><NcyberGraph /></PageProtection>} />
 
-            <Route path="/ndigital/ndigitaldashboard" element={<PageProtection><NdigitalDashboard /></PageProtection>} />
-            <Route path="/ndigital/ndigitaldashboardlicensed" element={<PageProtection><NdigitalDashboardLicensed /></PageProtection>} />
-            <Route path="/ndigital/ndigitalgraph" element={<PageProtection><NdigitalGraph /></PageProtection>} />
+        <Route path="/ndigital/ndigitaldashboard" element={<PageProtection><NdigitalDashboard /></PageProtection>} />
+        <Route path="/ndigital/ndigitaldashboardlicensed" element={<PageProtection><NdigitalDashboardLicensed /></PageProtection>} />
+        <Route path="/ndigital/ndigitalgraph" element={<PageProtection><NdigitalGraph /></PageProtection>} />
 
-            <Route path="/nserver/nserverdashboard" element={<PageProtection><NserverDashboard /></PageProtection>} />
-            <Route path="/nserver/nserverdashboardlicensed" element={<PageProtection><NserverDashboardLicensed /></PageProtection>} />
-            <Route path="/nserver/nservergraph" element={<PageProtection><NserverGraph /></PageProtection>} />
+        <Route path="/nserver/nserverdashboard" element={<PageProtection><NserverDashboard /></PageProtection>} />
+        <Route path="/nserver/nserverdashboardlicensed" element={<PageProtection><NserverDashboardLicensed /></PageProtection>} />
+        <Route path="/nserver/nservergraph" element={<PageProtection><NserverGraph /></PageProtection>} />
 
-            <Route path="/naut/nautdashboard" element={<PageProtection><NautDashboard /></PageProtection>} />
-            <Route path="/naut/nautdashboardlicensed" element={<PageProtection><NautDashboardLicensed /></PageProtection>} />
-            <Route path="/naut/nautgraph" element={<PageProtection><NautGraph /></PageProtection>} />
+        <Route path="/naut/nautdashboard" element={<PageProtection><NautDashboard /></PageProtection>} />
+        <Route path="/naut/nautdashboardlicensed" element={<PageProtection><NautDashboardLicensed /></PageProtection>} />
+        <Route path="/naut/nautgraph" element={<PageProtection><NautGraph /></PageProtection>} />
 
-            <Route path="/nequip/nequipdashboard" element={<PageProtection><NequipDashboard /></PageProtection>} />
-            <Route path="/nequip/nequipdashboardlicensed" element={<PageProtection><NequipDashboardLicensed /></PageProtection>} />
-            <Route path="/nequip/nequipgraph" element={<PageProtection><NequipGraph /></PageProtection>} />
+        <Route path="/nequip/nequipdashboard" element={<PageProtection><NequipDashboard /></PageProtection>} />
+        <Route path="/nequip/nequipdashboardlicensed" element={<PageProtection><NequipDashboardLicensed /></PageProtection>} />
+        <Route path="/nequip/nequipgraph" element={<PageProtection><NequipGraph /></PageProtection>} />
 
-            <Route path="/nproject/nprojectdashboard" element={<PageProtection><NprojectDashboard /></PageProtection>} />
-            <Route path="/nproject/nprojectdashboardlicensed" element={<PageProtection><NprojectDashboardLicensed /></PageProtection>} />
-            <Route path="/nproject/nprojectgraph" element={<PageProtection><NprojectGraph /></PageProtection>} />
+        <Route path="/nproject/nprojectdashboard" element={<PageProtection><NprojectDashboard /></PageProtection>} />
+        <Route path="/nproject/nprojectdashboardlicensed" element={<PageProtection><NprojectDashboardLicensed /></PageProtection>} />
+        <Route path="/nproject/nprojectgraph" element={<PageProtection><NprojectGraph /></PageProtection>} />
 
-            <Route path="/ncount/ncountdashboard" element={<PageProtection><NcountDashboard /></PageProtection>} />
-            <Route path="/ncount/ncountdashboardlicensed" element={<PageProtection><NcountDashboardLicensed /></PageProtection>} />
-            <Route path="/ncount/ncountgraph" element={<PageProtection><NcountGraph /></PageProtection>} />
+        <Route path="/ncount/ncountdashboard" element={<PageProtection><NcountDashboard /></PageProtection>} />
+        <Route path="/ncount/ncountdashboardlicensed" element={<PageProtection><NcountDashboardLicensed /></PageProtection>} />
+        <Route path="/ncount/ncountgraph" element={<PageProtection><NcountGraph /></PageProtection>} />
 
-            <Route path="/nbuild/nbuilddashboard" element={<PageProtection><NbuildDashboard /></PageProtection>} />
-            <Route path="/nbuild/nbuilddashboardlicensed" element={<PageProtection><NbuildDashboardLicensed /></PageProtection>} />
-            <Route path="/nbuild/nbuildgraph" element={<PageProtection><NbuildGraph /></PageProtection>} />
+        <Route path="/nbuild/nbuilddashboard" element={<PageProtection><NbuildDashboard /></PageProtection>} />
+        <Route path="/nbuild/nbuilddashboardlicensed" element={<PageProtection><NbuildDashboardLicensed /></PageProtection>} />
+        <Route path="/nbuild/nbuildgraph" element={<PageProtection><NbuildGraph /></PageProtection>} />
 
-            <Route path="/ncaravan/ncaravandashboard" element={<PageProtection><NcaravanDashboard /></PageProtection>} />
-            <Route path="/ncaravan/ncaravandashboardlicensed" element={<PageProtection><NcaravanDashboardLicensed /></PageProtection>} />
-            <Route path="/ncaravan/ncaravangraph" element={<PageProtection><NcaravanGraph /></PageProtection>} />
+        <Route path="/ncaravan/ncaravandashboard" element={<PageProtection><NcaravanDashboard /></PageProtection>} />
+        <Route path="/ncaravan/ncaravandashboardlicensed" element={<PageProtection><NcaravanDashboardLicensed /></PageProtection>} />
+        <Route path="/ncaravan/ncaravangraph" element={<PageProtection><NcaravanGraph /></PageProtection>} />
 
-            <Route path="/nmechanic/nmechanicdashboard" element={<PageProtection><NmechanicDashboard /></PageProtection>} />
-            <Route path="/nmechanic/nmechanicdashboardlicensed" element={<PageProtection><NmechanicDashboardLicensed /></PageProtection>} />
-            <Route path="/nmechanic/nmechanicgraph" element={<PageProtection><NmechanicGraph /></PageProtection>} />
+        <Route path="/nmechanic/nmechanicdashboard" element={<PageProtection><NmechanicDashboard /></PageProtection>} />
+        <Route path="/nmechanic/nmechanicdashboardlicensed" element={<PageProtection><NmechanicDashboardLicensed /></PageProtection>} />
+        <Route path="/nmechanic/nmechanicgraph" element={<PageProtection><NmechanicGraph /></PageProtection>} />
 
-            <Route path="/nevents/neventsdashboard" element={<PageProtection><NeventsDashboard /></PageProtection>} />
-            <Route path="/nevents/neventsdashboardlicensed" element={<PageProtection><NeventsDashboardLicensed /></PageProtection>} />
-            <Route path="/nevents/neventsgraph" element={<PageProtection><NeventsGraph /></PageProtection>} />
+        <Route path="/nevents/neventsdashboard" element={<PageProtection><NeventsDashboard /></PageProtection>} />
+        <Route path="/nevents/neventsdashboardlicensed" element={<PageProtection><NeventsDashboardLicensed /></PageProtection>} />
+        <Route path="/nevents/neventsgraph" element={<PageProtection><NeventsGraph /></PageProtection>} />
 
-            <Route path="/nservice/nservicedashboard" element={<PageProtection><NserviceDashboard /></PageProtection>} />
-            <Route path="/nservice/nservicedashboardlicensed" element={<PageProtection><NserviceDashboardLicensed /></PageProtection>} />
-            <Route path="/nservice/nservicegraph" element={<PageProtection><NserviceGraph /></PageProtection>} />
+        <Route path="/nservice/nservicedashboard" element={<PageProtection><NserviceDashboard /></PageProtection>} />
+        <Route path="/nservice/nservicedashboardlicensed" element={<PageProtection><NserviceDashboardLicensed /></PageProtection>} />
+        <Route path="/nservice/nservicegraph" element={<PageProtection><NserviceGraph /></PageProtection>} />
 
-            <Route path="/ntask/ntaskdashboard" element={<PageProtection><NtaskDashboard /></PageProtection>} />
-            <Route path="/ntask/ntaskdashboardlicensed" element={<PageProtection><NtaskDashboardLicensed /></PageProtection>} />
-            <Route path="/ntask/ntaskgraph" element={<PageProtection><NtaskGraph /></PageProtection>} />
+        <Route path="/ntask/ntaskdashboard" element={<PageProtection><NtaskDashboard /></PageProtection>} />
+        <Route path="/ntask/ntaskdashboardlicensed" element={<PageProtection><NtaskDashboardLicensed /></PageProtection>} />
+        <Route path="/ntask/ntaskgraph" element={<PageProtection><NtaskGraph /></PageProtection>} />
 
-            <Route path="/nproduction/nproductiondashboard" element={<PageProtection><NproductionDashboard /></PageProtection>} />
-            <Route path="/nproduction/nproductiondashboardlicensed" element={<PageProtection><NproductionDashboardLicensed /></PageProtection>} />
-            <Route path="/nproduction/nproductiongraph" element={<PageProtection><NproductionGraph /></PageProtection>} />
+        <Route path="/nproduction/nproductiondashboard" element={<PageProtection><NproductionDashboard /></PageProtection>} />
+        <Route path="/nproduction/nproductiondashboardlicensed" element={<PageProtection><NproductionDashboardLicensed /></PageProtection>} />
+        <Route path="/nproduction/nproductiongraph" element={<PageProtection><NproductionGraph /></PageProtection>} />
 
-            <Route path="/nticket/nticketdashboard" element={<PageProtection><NticketDashboard /></PageProtection>} />
-            <Route path="/nticket/nticketdashboardlicensed" element={<PageProtection><NticketDashboardLicensed /></PageProtection>} />
-            <Route path="/nticket/nticketgraph" element={<PageProtection><NticketGraph /></PageProtection>} />
+        <Route path="/nticket/nticketdashboard" element={<PageProtection><NticketDashboard /></PageProtection>} />
+        <Route path="/nticket/nticketdashboardlicensed" element={<PageProtection><NticketDashboardLicensed /></PageProtection>} />
+        <Route path="/nticket/nticketgraph" element={<PageProtection><NticketGraph /></PageProtection>} />
 
-            <Route path="/nsales/nsalesdashboard" element={<PageProtection><NsalesDashboard /></PageProtection>} />
-            <Route path="/nsales/nsalesdashboardlicensed" element={<PageProtection><NsalesDashboardLicensed /></PageProtection>} />
-            <Route path="/nsales/nsalesgraph" element={<PageProtection><NsalesGraph /></PageProtection>} />
+        <Route path="/nsales/nsalesdashboard" element={<PageProtection><NsalesDashboard /></PageProtection>} />
+        <Route path="/nsales/nsalesdashboardlicensed" element={<PageProtection><NsalesDashboardLicensed /></PageProtection>} />
+        <Route path="/nsales/nsalesgraph" element={<PageProtection><NsalesGraph /></PageProtection>} />
 
-            <Route path="/ninvoice/ninvoicedashboard" element={<PageProtection><NinvoiceDashboard /></PageProtection>} />
-            <Route path="/ninvoice/ninvoicedashboardlicensed" element={<PageProtection><NinvoiceDashboardLicensed /></PageProtection>} />
-            <Route path="/ninvoice/ninvoicegraph" element={<PageProtection><NinvoiceGraph /></PageProtection>} />
+        <Route path="/ninvoice/ninvoicedashboard" element={<PageProtection><NinvoiceDashboard /></PageProtection>} />
+        <Route path="/ninvoice/ninvoicedashboardlicensed" element={<PageProtection><NinvoiceDashboardLicensed /></PageProtection>} />
+        <Route path="/ninvoice/ninvoicegraph" element={<PageProtection><NinvoiceGraph /></PageProtection>} />
 
-            <Route path="/ndoc/ndocdashboard" element={<PageProtection><NdocDashboard /></PageProtection>} />
-            <Route path="/ndoc/ndocdashboardlicensed" element={<PageProtection><NdocDashboardLicensed /></PageProtection>} />
-            <Route path="/ndoc/ndocgraph" element={<PageProtection><NdocGraph /></PageProtection>} />
+        <Route path="/ndoc/ndocdashboard" element={<PageProtection><NdocDashboard /></PageProtection>} />
+        <Route path="/ndoc/ndocdashboardlicensed" element={<PageProtection><NdocDashboardLicensed /></PageProtection>} />
+        <Route path="/ndoc/ndocgraph" element={<PageProtection><NdocGraph /></PageProtection>} />
 
-            <Route path="/nsports/nsportsdashboard" element={<PageProtection><NsportsDashboard /></PageProtection>} />
-            <Route path="/nsports/nsportsdashboardlicensed" element={<PageProtection><NsportsDashboardLicensed /></PageProtection>} />
-            <Route path="/nsports/nsportsgraph" element={<PageProtection><NsportsGraph /></PageProtection>} />
+        <Route path="/nsports/nsportsdashboard" element={<PageProtection><NsportsDashboard /></PageProtection>} />
+        <Route path="/nsports/nsportsdashboardlicensed" element={<PageProtection><NsportsDashboardLicensed /></PageProtection>} />
+        <Route path="/nsports/nsportsgraph" element={<PageProtection><NsportsGraph /></PageProtection>} />
 
-            <Route path="/ngym/ngymdashboard" element={<PageProtection><NgymDashboard /></PageProtection>} />
-            <Route path="/ngym/ngymdashboardlicensed" element={<PageProtection><NgymDashboardLicensed /></PageProtection>} />
-            <Route path="/ngym/ngymgraph" element={<PageProtection><NgymGraph /></PageProtection>} />
+        <Route path="/ngym/ngymdashboard" element={<PageProtection><NgymDashboard /></PageProtection>} />
+        <Route path="/ngym/ngymdashboardlicensed" element={<PageProtection><NgymDashboardLicensed /></PageProtection>} />
+        <Route path="/ngym/ngymgraph" element={<PageProtection><NgymGraph /></PageProtection>} />
 
-            <Route path="/nschool/nschooldashboard" element={<PageProtection><NschoolDashboard /></PageProtection>} />
-            <Route path="/nschool/nschooldashboardlicensed" element={<PageProtection><NschoolDashboardLicensed /></PageProtection>} />
-            <Route path="/nschool/nschoolgraph" element={<PageProtection><NschoolGraph /></PageProtection>} />
+        <Route path="/nschool/nschooldashboard" element={<PageProtection><NschoolDashboard /></PageProtection>} />
+        <Route path="/nschool/nschooldashboardlicensed" element={<PageProtection><NschoolDashboardLicensed /></PageProtection>} />
+        <Route path="/nschool/nschoolgraph" element={<PageProtection><NschoolGraph /></PageProtection>} />
 
-            <Route path="/nclinic/nclinicdashboard" element={<PageProtection><NclinicDashboard /></PageProtection>} />
-            <Route path="/nclinic/nclinicdashboardlicensed" element={<PageProtection><NclinicDashboardLicensed /></PageProtection>} />
-            <Route path="/nclinic/nclinicgraph" element={<PageProtection><NclinicGraph /></PageProtection>} />
+        <Route path="/nclinic/nclinicdashboard" element={<PageProtection><NclinicDashboard /></PageProtection>} />
+        <Route path="/nclinic/nclinicdashboardlicensed" element={<PageProtection><NclinicDashboardLicensed /></PageProtection>} />
+        <Route path="/nclinic/nclinicgraph" element={<PageProtection><NclinicGraph /></PageProtection>} />
 
-            <Route path="/noptics/nopticsdashboard" element={<PageProtection><NopticsDashboard /></PageProtection>} />
-            <Route path="/noptics/nopticsdashboardlicensed" element={<PageProtection><NopticsDashboardLicensed /></PageProtection>} />
-            <Route path="/noptics/nopticsgraph" element={<PageProtection><NopticsGraph /></PageProtection>} />
+        <Route path="/noptics/nopticsdashboard" element={<PageProtection><NopticsDashboard /></PageProtection>} />
+        <Route path="/noptics/nopticsdashboardlicensed" element={<PageProtection><NopticsDashboardLicensed /></PageProtection>} />
+        <Route path="/noptics/nopticsgraph" element={<PageProtection><NopticsGraph /></PageProtection>} />
 
-            <Route path="/ngold/ngolddashboard" element={<PageProtection><NgoldDashboard /></PageProtection>} />
-            <Route path="/ngold/ngolddashboardlicensed" element={<PageProtection><NgoldDashboardLicensed /></PageProtection>} />
-            <Route path="/ngold/ngoldgraph" element={<PageProtection><NgoldGraph /></PageProtection>} />
+        <Route path="/ngold/ngolddashboard" element={<PageProtection><NgoldDashboard /></PageProtection>} />
+        <Route path="/ngold/ngolddashboardlicensed" element={<PageProtection><NgoldDashboardLicensed /></PageProtection>} />
+        <Route path="/ngold/ngoldgraph" element={<PageProtection><NgoldGraph /></PageProtection>} />
 
-            <Route path="/nsmart/nsmartdashboard" element={<PageProtection><NsmartDashboard /></PageProtection>} />
-            <Route path="/nsmart/nsmartdashboardlicensed" element={<PageProtection><NsmartDashboardLicensed /></PageProtection>} />
-            <Route path="/nsmart/nsmartgraph" element={<PageProtection><NsmartGraph /></PageProtection>} />
+        <Route path="/nsmart/nsmartdashboard" element={<PageProtection><NsmartDashboard /></PageProtection>} />
+        <Route path="/nsmart/nsmartdashboardlicensed" element={<PageProtection><NsmartDashboardLicensed /></PageProtection>} />
+        <Route path="/nsmart/nsmartgraph" element={<PageProtection><NsmartGraph /></PageProtection>} />
 
-            <Route path="/nreality/nrealitydashboard" element={<PageProtection><NrealityDashboard /></PageProtection>} />
-            <Route path="/nreality/nrealitydashboardlicensed" element={<PageProtection><NrealityDashboardLicensed /></PageProtection>} />
-            <Route path="/nreality/nrealitygraph" element={<PageProtection><NrealityGraph /></PageProtection>} />
+        <Route path="/nreality/nrealitydashboard" element={<PageProtection><NrealityDashboard /></PageProtection>} />
+        <Route path="/nreality/nrealitydashboardlicensed" element={<PageProtection><NrealityDashboardLicensed /></PageProtection>} />
+        <Route path="/nreality/nrealitygraph" element={<PageProtection><NrealityGraph /></PageProtection>} />
 
-            <Route path="/nhologram/nhologramdashboard" element={<PageProtection><NhologramDashboard /></PageProtection>} />
-            <Route path="/nhologram/nhologramdashboardlicensed" element={<PageProtection><NhologramDashboardLicensed /></PageProtection>} />
-            <Route path="/nhologram/nhologramgraph" element={<PageProtection><NhologramGraph /></PageProtection>} />
+        <Route path="/nhologram/nhologramdashboard" element={<PageProtection><NhologramDashboard /></PageProtection>} />
+        <Route path="/nhologram/nhologramdashboardlicensed" element={<PageProtection><NhologramDashboardLicensed /></PageProtection>} />
+        <Route path="/nhologram/nhologramgraph" element={<PageProtection><NhologramGraph /></PageProtection>} />
 
-            <Route path="/npower/npowerdashboard" element={<PageProtection><NpowerDashboard /></PageProtection>} />
-            <Route path="/npower/npowerdashboardlicensed" element={<PageProtection><NpowerDashboardLicensed /></PageProtection>} />
-            <Route path="/npower/npowergraph" element={<PageProtection><NpowerGraph /></PageProtection>} />
+        <Route path="/npower/npowerdashboard" element={<PageProtection><NpowerDashboard /></PageProtection>} />
+        <Route path="/npower/npowerdashboardlicensed" element={<PageProtection><NpowerDashboardLicensed /></PageProtection>} />
+        <Route path="/npower/npowergraph" element={<PageProtection><NpowerGraph /></PageProtection>} />
 
-            <Route path="/ncharge/nchargedashboard" element={<PageProtection><NchargeDashboard /></PageProtection>} />
-            <Route path="/ncharge/nchargedashboardlicensed" element={<PageProtection><NchargeDashboardLicensed /></PageProtection>} />
-            <Route path="/ncharge/nchargegraph" element={<PageProtection><NchargeGraph /></PageProtection>} />
+        <Route path="/ncharge/nchargedashboard" element={<PageProtection><NchargeDashboard /></PageProtection>} />
+        <Route path="/ncharge/nchargedashboardlicensed" element={<PageProtection><NchargeDashboardLicensed /></PageProtection>} />
+        <Route path="/ncharge/nchargegraph" element={<PageProtection><NchargeGraph /></PageProtection>} />
 
-            <Route path="/ncity/ncitydashboard" element={<PageProtection><NcityDashboard /></PageProtection>} />
-            <Route path="/ncity/ncitydashboardlicensed" element={<PageProtection><NcityDashboardLicensed /></PageProtection>} />
-            <Route path="/ncity/ncitygraph" element={<PageProtection><NcityGraph /></PageProtection>} />
+        <Route path="/ncity/ncitydashboard" element={<PageProtection><NcityDashboard /></PageProtection>} />
+        <Route path="/ncity/ncitydashboardlicensed" element={<PageProtection><NcityDashboardLicensed /></PageProtection>} />
+        <Route path="/ncity/ncitygraph" element={<PageProtection><NcityGraph /></PageProtection>} />
 
-            <Route path="/nkiosk/nkioskdashboard" element={<PageProtection><NkioskDashboard /></PageProtection>} />
-            <Route path="/nkiosk/nkioskdashboardlicensed" element={<PageProtection><NkioskDashboardLicensed /></PageProtection>} />
-            <Route path="/nkiosk/nkioskMap" element={<PageProtection><NkioskMap /></PageProtection>} />
-            <Route path="/nkiosk/nkioskPayTerminal" element={<PageProtection><NkioskPayTerminal /></PageProtection>} />
-            <Route path="/nkiosk/nkioskPayCoins" element={<PageProtection><NkioskPayCoins /></PageProtection>} />
-            <Route path="/nkiosk/nkioskMoveCard" element={<PageProtection><NkioskMoveCard /></PageProtection>} />
-            <Route path="/nkiosk/nkioskMoveKiosk" element={<PageProtection><NkioskMoveKiosk /></PageProtection>} />
-            <Route path="/nkiosk/nkioskMoveVP" element={<PageProtection><NkioskMoveVP /></PageProtection>} />
-            <Route path="/nkiosk/nkioskListPayments" element={<PageProtection><NkioskListPayments /></PageProtection>} />
-            <Route path="/nkiosk/nkioskListMovements" element={<PageProtection><NkioskListMovements /></PageProtection>} />
-            <Route path="/nkiosk/nkioskgraph" element={<PageProtection><NkioskGraph /></PageProtection>} />
-            <Route path="/nkiosk/nkioskgetcoins" element={<PageProtection><NkioskGetCoins /></PageProtection>} />
-            <Route path="/nkiosk/nkioskdooropen" element={<PageProtection><NkioskDoorOpen /></PageProtection>} />
-            <Route path="/nkiosk/nkioskcleaning" element={<PageProtection><NkioskCleaning /></PageProtection>} />
-            <Route path="/nkiosk/nkioskoccurrences" element={<PageProtection><NkioskOccurrences /></PageProtection>} />
-            <Route path="/nkiosk/nkioskcounter" element={<PageProtection><NkioskCounter /></PageProtection>} />
-            <Route path="/nkiosk/nkioskalerts" element={<PageProtection><NkioskAlerts /></PageProtection>} />
+        <Route path="/nkiosk/nkioskdashboard" element={<PageProtection><NkioskDashboard /></PageProtection>} />
+        <Route path="/nkiosk/nkioskdashboardlicensed" element={<PageProtection><NkioskDashboardLicensed /></PageProtection>} />
+        <Route path="/nkiosk/nkioskMap" element={<PageProtection><NkioskMap /></PageProtection>} />
+        <Route path="/nkiosk/nkioskPayTerminal" element={<PageProtection><NkioskPayTerminal /></PageProtection>} />
+        <Route path="/nkiosk/nkioskPayCoins" element={<PageProtection><NkioskPayCoins /></PageProtection>} />
+        <Route path="/nkiosk/nkioskMoveCard" element={<PageProtection><NkioskMoveCard /></PageProtection>} />
+        <Route path="/nkiosk/nkioskMoveKiosk" element={<PageProtection><NkioskMoveKiosk /></PageProtection>} />
+        <Route path="/nkiosk/nkioskMoveVP" element={<PageProtection><NkioskMoveVP /></PageProtection>} />
+        <Route path="/nkiosk/nkioskListPayments" element={<PageProtection><NkioskListPayments /></PageProtection>} />
+        <Route path="/nkiosk/nkioskListMovements" element={<PageProtection><NkioskListMovements /></PageProtection>} />
+        <Route path="/nkiosk/nkioskgraph" element={<PageProtection><NkioskGraph /></PageProtection>} />
+        <Route path="/nkiosk/nkioskgetcoins" element={<PageProtection><NkioskGetCoins /></PageProtection>} />
+        <Route path="/nkiosk/nkioskdooropen" element={<PageProtection><NkioskDoorOpen /></PageProtection>} />
+        <Route path="/nkiosk/nkioskcleaning" element={<PageProtection><NkioskCleaning /></PageProtection>} />
+        <Route path="/nkiosk/nkioskoccurrences" element={<PageProtection><NkioskOccurrences /></PageProtection>} />
+        <Route path="/nkiosk/nkioskcounter" element={<PageProtection><NkioskCounter /></PageProtection>} />
+        <Route path="/nkiosk/nkioskalerts" element={<PageProtection><NkioskAlerts /></PageProtection>} />
 
-            <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
-            <Route path="/nled/nleddashboardlicensed" element={<PageProtection><NledDashboardLicensed /></PageProtection>} />
-            <Route path="/nled/nledads" element={<PageProtection><NledAds /></PageProtection>} />
-            <Route path="/nled/nledgraph" element={<PageProtection><NledGraph /></PageProtection>} />
-            <Route path="/nled/nledadslogs" element={<PageProtection><NledAdsLogs /></PageProtection>} />
+        <Route path="/nled/nleddashboard" element={<PageProtection><NledDashboard /></PageProtection>} />
+        <Route path="/nled/nleddashboardlicensed" element={<PageProtection><NledDashboardLicensed /></PageProtection>} />
+        <Route path="/nled/nledads" element={<PageProtection><NledAds /></PageProtection>} />
+        <Route path="/nled/nledgraph" element={<PageProtection><NledGraph /></PageProtection>} />
+        <Route path="/nled/nledadslogs" element={<PageProtection><NledAdsLogs /></PageProtection>} />
 
-            <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
-            <Route path="/nfire/nfiredashboardlicensed" element={<PageProtection><NfireDashboardLicensed /></PageProtection>} />
-            <Route path="/nfire/nfiregraph" element={<PageProtection><NfireGraph /></PageProtection>} />
+        <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
+        <Route path="/nfire/nfiredashboardlicensed" element={<PageProtection><NfireDashboardLicensed /></PageProtection>} />
+        <Route path="/nfire/nfiregraph" element={<PageProtection><NfireGraph /></PageProtection>} />
 
-            <Route path="/nfurniture/nfurnituredashboard" element={<PageProtection><NfurnitureDashboard /></PageProtection>} />
-            <Route path="/nfurniture/nfurnituredashboardlicensed" element={<PageProtection><NfurnitureDashboardLicensed /></PageProtection>} />
-            <Route path="/nfurniture/nfurnituregraph" element={<PageProtection><NfurnitureGraph /></PageProtection>} />
+        <Route path="/nfurniture/nfurnituredashboard" element={<PageProtection><NfurnitureDashboard /></PageProtection>} />
+        <Route path="/nfurniture/nfurnituredashboardlicensed" element={<PageProtection><NfurnitureDashboardLicensed /></PageProtection>} />
+        <Route path="/nfurniture/nfurnituregraph" element={<PageProtection><NfurnitureGraph /></PageProtection>} />
 
-            <Route path="/npartition/npartitiondashboard" element={<PageProtection><NpartitionDashboard /></PageProtection>} />
-            <Route path="/npartition/npartitiondashboardlicensed" element={<PageProtection><NpartitionDashboardLicensed /></PageProtection>} />
-            <Route path="/npartition/npartitiongraph" element={<PageProtection><NpartitionGraph /></PageProtection>} />
+        <Route path="/npartition/npartitiondashboard" element={<PageProtection><NpartitionDashboard /></PageProtection>} />
+        <Route path="/npartition/npartitiondashboardlicensed" element={<PageProtection><NpartitionDashboardLicensed /></PageProtection>} />
+        <Route path="/npartition/npartitiongraph" element={<PageProtection><NpartitionGraph /></PageProtection>} />
 
-            <Route path="/ndecor/ndecordashboard" element={<PageProtection><NdecorDashboard /></PageProtection>} />
-            <Route path="/ndecor/ndecordashboardlicensed" element={<PageProtection><NdecorDashboardLicensed /></PageProtection>} />
-            <Route path="/ndecor/ndecorgraph" element={<PageProtection><NdecorGraph /></PageProtection>} />
+        <Route path="/ndecor/ndecordashboard" element={<PageProtection><NdecorDashboard /></PageProtection>} />
+        <Route path="/ndecor/ndecordashboardlicensed" element={<PageProtection><NdecorDashboardLicensed /></PageProtection>} />
+        <Route path="/ndecor/ndecorgraph" element={<PageProtection><NdecorGraph /></PageProtection>} />
 
-            <Route path="/nping/npingdashboard" element={<PageProtection><NpingDashboard /></PageProtection>} />
-            <Route path="/nping/npingdashboardlicensed" element={<PageProtection><NpingDashboardLicensed /></PageProtection>} />
-            <Route path="/nping/npinggraph" element={<PageProtection><NpingGraph /></PageProtection>} />
+        <Route path="/nping/npingdashboard" element={<PageProtection><NpingDashboard /></PageProtection>} />
+        <Route path="/nping/npingdashboardlicensed" element={<PageProtection><NpingDashboardLicensed /></PageProtection>} />
+        <Route path="/nping/npinggraph" element={<PageProtection><NpingGraph /></PageProtection>} />
 
-            <Route path="/nconnect/nconnectdashboard" element={<PageProtection><NconnectDashboard /></PageProtection>} />
-            <Route path="/nconnect/nconnectdashboardlicensed" element={<PageProtection><NconnectDashboardLicensed /></PageProtection>} />
-            <Route path="/nconnect/nconnectgraph" element={<PageProtection><NconnectGraph /></PageProtection>} />
+        <Route path="/nconnect/nconnectdashboard" element={<PageProtection><NconnectDashboard /></PageProtection>} />
+        <Route path="/nconnect/nconnectdashboardlicensed" element={<PageProtection><NconnectDashboardLicensed /></PageProtection>} />
+        <Route path="/nconnect/nconnectgraph" element={<PageProtection><NconnectGraph /></PageProtection>} />
 
-            <Route path="/nlight/nlightdashboard" element={<PageProtection><NlightDashboard /></PageProtection>} />
-            <Route path="/nlight/nlightdashboardlicensed" element={<PageProtection><NlightDashboardLicensed /></PageProtection>} />
-            <Route path="/nlight/nlightgraph" element={<PageProtection><NlightGraph /></PageProtection>} />
+        <Route path="/nlight/nlightdashboard" element={<PageProtection><NlightDashboard /></PageProtection>} />
+        <Route path="/nlight/nlightdashboardlicensed" element={<PageProtection><NlightDashboardLicensed /></PageProtection>} />
+        <Route path="/nlight/nlightgraph" element={<PageProtection><NlightGraph /></PageProtection>} />
 
-            <Route path="/ncomfort/ncomfortdashboard" element={<PageProtection><NcomfortDashboard /></PageProtection>} />
-            <Route path="/ncomfort/ncomfortdashboardlicensed" element={<PageProtection><NcomfortDashboardLicensed /></PageProtection>} />
-            <Route path="/ncomfort/ncomfortgraph" element={<PageProtection><NcomfortGraph /></PageProtection>} />
+        <Route path="/ncomfort/ncomfortdashboard" element={<PageProtection><NcomfortDashboard /></PageProtection>} />
+        <Route path="/ncomfort/ncomfortdashboardlicensed" element={<PageProtection><NcomfortDashboardLicensed /></PageProtection>} />
+        <Route path="/ncomfort/ncomfortgraph" element={<PageProtection><NcomfortGraph /></PageProtection>} />
 
-            <Route path="/nsound/nsounddashboard" element={<PageProtection><NsoundDashboard /></PageProtection>} />
-            <Route path="/nsound/nsounddashboardlicensed" element={<PageProtection><NsoundDashboardLicensed /></PageProtection>} />
-            <Route path="/nsound/nsoundgraph" element={<PageProtection><NsoundGraph /></PageProtection>} />
+        <Route path="/nsound/nsounddashboard" element={<PageProtection><NsoundDashboard /></PageProtection>} />
+        <Route path="/nsound/nsounddashboardlicensed" element={<PageProtection><NsoundDashboardLicensed /></PageProtection>} />
+        <Route path="/nsound/nsoundgraph" element={<PageProtection><NsoundGraph /></PageProtection>} />
 
-            <Route path="/nhome/nhomedashboard" element={<PageProtection><NhomeDashboard /></PageProtection>} />
-            <Route path="/nhome/nhomedashboardlicensed" element={<PageProtection><NhomeDashboardLicensed /></PageProtection>} />
-            <Route path="/nhome/nhomegraph" element={<PageProtection><NhomeGraph /></PageProtection>} />
+        <Route path="/nhome/nhomedashboard" element={<PageProtection><NhomeDashboard /></PageProtection>} />
+        <Route path="/nhome/nhomedashboardlicensed" element={<PageProtection><NhomeDashboardLicensed /></PageProtection>} />
+        <Route path="/nhome/nhomegraph" element={<PageProtection><NhomeGraph /></PageProtection>} />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </div>
-      </TransitionGroup>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </div>
   );
 }

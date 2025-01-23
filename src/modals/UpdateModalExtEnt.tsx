@@ -322,7 +322,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
                     </Col>
                     <Col md={3}>
                         <Form.Group controlId="formExternalEntityType">
-                            <Form.Label>Tipos de Entidade Externa</Form.Label>
+                            <Form.Label>Tipos de Entidade</Form.Label>
                             <Form.Control
                                 as="select"
                                 className="custom-input-height custom-select-font-size"
@@ -420,7 +420,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
                                     </Col>
                                     <Col md={3}>
                                         <Form.Group controlId="formFont">
-                                            <Form.Label>Fonte</Form.Label>
+                                            <Form.Label>Origem de Entidade</Form.Label>
                                             <Form.Control
                                                 type="string"
                                                 className="custom-input-height custom-select-font-size"

@@ -6,9 +6,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
 import absent from '../assets/img/navbar/nclock/absent.png';
 import unknown from '../assets/img/navbar/nclock/unknown.png';
-import work from '../assets/img/navbar/nclock/work.png';
 import extra from '../assets/img/navbar/nclock/extra.png';
 import limit from '../assets/img/navbar/nclock/limit.png';
+import work from '../assets/img/navbar/nclock/work.png';
 import addHour from '../assets/img/navbar/nclock/addHour.png';
 import rules from '../assets/img/navbar/nclock/rules.png';
 import medicalLeave from '../assets/img/navbar/nclock/medicalLeave.png';
@@ -87,7 +87,7 @@ import log from '../assets/img/navbar/nkiosk/logs.png';
 import bell from '../assets/img/navbar/nkiosk/bell.png';
 import registry from '../assets/img/navbar/nkiosk/registry.png';
 import alert from '../assets/img/navbar/nkiosk/alert.png';
-import accessControls from '../assets/img/navbar/nkiosk/accessControl.png';
+import accessControls from '../assets/img/navbar/dispositivos/accessControls.png';
 import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
 import home from '../assets/img/navbar/home.png';
 import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
@@ -272,6 +272,12 @@ import workflow from '../assets/img/navbar/ndoc/workflow.png';
 import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
 import ticket from '../assets/img/navbar/nticket/ticket.png';
 import { useAttendance } from '../context/MovementContext';
+import employee from '../assets/img/navbar/pessoas/employee.png';
+import entity from '../assets/img/navbar/configuracao/entity.png';
+import users from '../assets/img/navbar/configuracao/users.png';
+import profiles from '../assets/img/navbar/configuracao/profiles.png';
+import typeConfig from '../assets/img/navbar/configuracao/typeConfig.png';
+import visitorAccess from '../assets/img/navbar/naccess/visitorAccess.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -2356,7 +2362,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos nclock') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Link to="/nclock/nclockmovement" onClick={() => fetchAllAttendances({filterFunc: data => data.filter(att => att.type !== 3)})} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclock/nclockmovement' ? 'current-active' : ''}`}>
+												<Link to="/nclock/nclockmovement" onClick={() => fetchAllAttendances({ filterFunc: data => data.filter(att => att.type !== 3) })} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclock/nclockmovement' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={movement} alt="botão assiduidade" />
 													</span>
@@ -2370,7 +2376,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</span>
 													<span className="text">Presenças</span>
 												</Link>
-												<Link to='/nclock/nclockrequests' onClick={() => fetchAllAttendances({filterFunc: data => data.filter(att => att.type === 3)})} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockrequests' ? 'current-active' : ''}`}>
+												<Link to='/nclock/nclockrequests' onClick={() => fetchAllAttendances({ filterFunc: data => data.filter(att => att.type === 3) })} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockrequests' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={request} alt="botão alterações" />
 													</span>
@@ -2567,7 +2573,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div style={{ width: 130 }}>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={vacation} alt="botão alterações" />
+														<img src={calendar} alt="botão alterações" />
 													</span>
 													<span className="text">Alterações</span>
 												</Button>
@@ -2616,7 +2622,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={exchange} alt="botão planos" />
 													</span>
-													<span className="text">Planos</span>
+													<span className="text">Trocas</span>
 												</Button>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
@@ -2789,7 +2795,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão visitantes" />
+														<img src={visitorAccess} alt="botão visitantes" />
 													</span>
 													<span className="text">Visitantes</span>
 												</Button>
@@ -3037,7 +3043,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 												<Button /* to='' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão visitantes" />
+														<img src={visitorAccess} alt="botão visitantes" />
 													</span>
 													<span className="text">Visitantes</span>
 												</Button>
@@ -3054,7 +3060,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão visitantes" />
+														<img src={visitorAccess} alt="botão visitantes" />
 													</span>
 													<span className="text">Visitantes</span>
 												</Button>
@@ -11619,37 +11625,37 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="grid-container">
 												<Link to="/persons/Employees" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão funcionários" />
+														<img src={employee} alt="botão funcionários" />
 													</span>
 													<span className="text">Funcionários</span>
 												</Link>
 												<Link to='/persons/Visitors' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Visitors' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão visitantes" />
+														<img src={employee} alt="botão visitantes" />
 													</span>
 													<span className="text">Visitantes</span>
 												</Link>
 												<Link to='/persons/ExternalEmployees' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão subcontratados" />
+														<img src={employee} alt="botão subcontratados" />
 													</span>
 													<span className="text">Subcontratados</span>
 												</Link>
 												<Link to='/persons/Contacts' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão contactos" />
+														<img src={employee} alt="botão contactos" />
 													</span>
 													<span className="text">Contactos</span>
 												</Link>
 												<Link to='/persons/User' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/User' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão utentes" />
+														<img src={employee} alt="botão utentes" />
 													</span>
 													<span className="text">Utentes</span>
 												</Link>
 												<Link to='/persons/Temporaries' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Temporaries' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão provisórios" />
+														<img src={employee} alt="botão provisórios" />
 													</span>
 													<span className="text">Provisórios</span>
 												</Link>
@@ -11710,42 +11716,38 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									{(!isMobile || visibleGroup === 'entidades pessoas') && (
 										<div className="btn-group" role="group">
-											<div className='icon-text-informacoes'>
-												<Link to="/persons/externalentities" type="button" className={`btn btn-light ribbon-button ribbon-button-entidades ${currentRoute === '/persons/externalentities' ? 'current-active' : ''}`}>
+											<div className="grid-container-entidades">
+												<Link to="/persons/externalentities" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/externalentities' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={externalEntities} alt="botão entidades externas" />
 													</span>
 													<span className="text">Entidades Externas</span>
 												</Link>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={interventionAreas} alt="botão áreas de intervenção" />
+													</span>
+													<span className="text">Áreas de Intervenção</span>
+												</Button>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={businessAreas} alt="botão áreas de negócios" />
+													</span>
+													<span className="text">Áreas de Negócios</span>
+												</Button>
 											</div>
 											<div>
 												<Link to="/persons/types" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/types' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={types} alt="botão tipos" />
 													</span>
-													<span className="text">Tipos</span>
+													<span className="text">Tipos de Entidades</span>
 												</Link>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
 														<img src={fonts} alt="botão fontes" />
 													</span>
-													<span className="text">Fontes</span>
-												</Button>
-											</div>
-											<div className='icon-text-informacoes'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-entidades ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={interventionAreas} alt="botão áreas de intervenção" />
-													</span>
-													<span className="text">Áreas de Intervenção</span>
-												</Button>
-											</div>
-											<div className='icon-text-informacoes'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-entidades ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={businessAreas} alt="botão áreas de negócios" />
-													</span>
-													<span className="text">Áreas de Negócios</span>
+													<span className="text">Origem de Entidade</span>
 												</Button>
 											</div>
 										</div>
@@ -11757,8 +11759,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									{(!isMobile || visibleGroup === 'informacoes pessoas') && (
 										<div className="btn-group" role="group">
-											<div className='icon-text-informacoes'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-entidades ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+											<div className="grid-container-entidades">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
 														<img src={internalContacts} alt="botão contactos internos" />
 													</span>
@@ -11900,7 +11902,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Link to="/configs/entities" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/configs/entities' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={department} alt="botão entidade" />
+														<img src={entity} alt="botão entidade" />
 													</span>
 													<span className="text">Entidade</span>
 												</Link>
@@ -11966,7 +11968,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={group} alt="botão perfis" />
+														<img src={profiles} alt="botão perfis" />
 													</span>
 													<span className="text">Perfis</span>
 												</Button>
@@ -11974,7 +11976,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Link to="/configs/newusers" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/configs/newusers' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão utilizadores" />
+														<img src={users} alt="botão utilizadores" />
 													</span>
 													<span className="text">Utilizadores</span>
 												</Link>
@@ -11999,7 +12001,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button-ent" disabled>
 													<span className="icon">
-														<img src={types} alt="botão tipos" />
+														<img src={typeConfig} alt="botão tipos" />
 													</span>
 													<span className="text">Tipos</span>
 												</Button>

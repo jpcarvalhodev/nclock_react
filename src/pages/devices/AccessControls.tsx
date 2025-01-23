@@ -232,35 +232,6 @@ export const AccessControls = () => {
             };
         });
 
-    // Define as colunas de ação
-    const actionColumn: TableColumn<AccessControl> = {
-        name: 'Ações',
-        cell: (row: AccessControl) => (
-            <div style={{ display: 'flex' }}>
-                <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
-                >
-                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
-                </OverlayTrigger>
-                <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
-                >
-                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditAccessControl(row)} />
-                </OverlayTrigger>
-                <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
-                >
-                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row)} />
-                </OverlayTrigger>
-            </div>
-        ),
-        selector: (row: AccessControl) => row.acId,
-        ignoreRowClick: true,
-    };
-
     // Função para obter os campos selecionados baseado em selectedColumns
     const getSelectedFields = () => {
         return accessControlFields.filter(field => selectedColumns.includes(field.key));
@@ -309,7 +280,7 @@ export const AccessControls = () => {
                 </div>
                 <div className='table-css'>
                     <DataTable
-                        columns={[...columns, actionColumn]}
+                        columns={columns}
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
