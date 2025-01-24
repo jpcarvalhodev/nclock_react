@@ -372,7 +372,7 @@ export const Login = () => {
                 </Form.Group>
               </Col>
               <Col className="col-profile-img-2">
-                <div className="image-container">
+                <div className="image-container" style={{ borderRadius: '50%' }}>
                   <img
                     className="profile-login"
                     src={profileImage}

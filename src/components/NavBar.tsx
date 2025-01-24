@@ -228,7 +228,7 @@ import tick from '../assets/img/navbar/npartition/tick.png';
 import patrols from '../assets/img/navbar/npatrol/patrols.png';
 import bandwidth from '../assets/img/navbar/nping/bandwidth.png';
 import network from '../assets/img/navbar/nping/network.png';
-import test from '../assets/img/navbar/nping/test.webp';
+import test from '../assets/img/navbar/nping/test.png';
 import businessAreas from '../assets/img/navbar/pessoas/businessAreas.png';
 import fonts from '../assets/img/navbar/pessoas/fonts.png';
 import fraccoes from '../assets/img/navbar/pessoas/fraccoes.png';
@@ -268,7 +268,6 @@ import folder from '../assets/img/navbar/ndoc/folder.png';
 import file from '../assets/img/navbar/ndoc/file.png';
 import deadFiles from '../assets/img/navbar/ndoc/deadFiles.png';
 import digitalFile from '../assets/img/navbar/ndoc/digitalFile.png';
-import workflow from '../assets/img/navbar/ndoc/workflow.png';
 import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
 import ticket from '../assets/img/navbar/nticket/ticket.png';
 import { useAttendance } from '../context/MovementContext';
@@ -278,6 +277,7 @@ import users from '../assets/img/navbar/configuracao/users.png';
 import profiles from '../assets/img/navbar/configuracao/profiles.png';
 import typeConfig from '../assets/img/navbar/configuracao/typeConfig.png';
 import visitorAccess from '../assets/img/navbar/naccess/visitorAccess.png';
+import supplier from '../assets/img/navbar/ninvoice/supplier.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -1033,6 +1033,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Define a estrutura do menu de softwares
 	useEffect(() => {
 
+		const enabledSoftware = getSoftwareEnabledStatus(license);
+
+		const filterUnlicensedSoftware = (submenu: MenuItem[]): MenuItem[] => {
+			return submenu.filter(item => enabledSoftware[item.label.toLowerCase()] === false);
+		};
+
 		// Estrutura de menu original
 		const originalMenuStructure: MenuStructure = {
 			sisnid: {
@@ -1131,14 +1137,15 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const newMenuStructure: MenuStructure = {};
 		Object.keys(originalMenuStructure).forEach(key => {
 			const menu = originalMenuStructure[key];
+			const filteredSubmenu = menu.submenu ? filterUnlicensedSoftware(menu.submenu) : [];
 			newMenuStructure[key] = {
 				...menu,
-				submenu: menu.submenu
+				submenu: filteredSubmenu
 			};
 		});
 
 		setMenuStructureNG(newMenuStructure);
-	}, []);
+	}, [license]);
 
 	// Estrutura de menu opcional para o nkiosk
 	const KioskOptionalMenuStructure: MenuStructure = {
@@ -1209,18 +1216,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const ListingMenuStructure = {
 			pessoas: {
 				label: 'Listagem Pessoas',
-				image: person,
+				image: visitorAccess,
 				alt: 'pessoas',
 				key: 'pessoas',
 				submenu: [
-					{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Departamentos', key: 'geral_departamentos', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Grupos', key: 'geral_grupos', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Categorias', key: 'geral_categorias', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Profissões', key: 'geral_profissoes', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Zonas', key: 'geral_zonas', image: person, alt: 'pessoas' },
-					/* { label: 'Listagem Geral de Fracções', key: 'geral_fraccoes', image: person, alt: 'pessoas' }, */
-					{ label: 'Listagem Geral de Entidades Externas', key: 'geral_entext', image: person, alt: 'pessoas' }
+					{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', image: visitorAccess, alt: 'pessoas' },
+					{ label: 'Listagem Geral de Departamentos', key: 'geral_departamentos', image: visitorAccess, alt: 'pessoas' },
+					{ label: 'Listagem Geral de Grupos', key: 'geral_grupos', image: visitorAccess, alt: 'pessoas' },
+					{ label: 'Listagem Geral de Categorias', key: 'geral_categorias', image: visitorAccess, alt: 'pessoas' },
+					{ label: 'Listagem Geral de Profissões', key: 'geral_profissoes', image: visitorAccess, alt: 'pessoas' },
+					{ label: 'Listagem Geral de Zonas', key: 'geral_zonas', image: visitorAccess, alt: 'pessoas' },
+					/* { label: 'Listagem Geral de Fracções', key: 'geral_fraccoes', image: visitorAccess, alt: 'pessoas' }, */
+					{ label: 'Listagem Geral de Entidades Externas', key: 'geral_entext', image: visitorAccess, alt: 'pessoas' }
 				],
 			},
 			dispositivos: {
@@ -1426,7 +1433,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleMouseLeave = () => {
 		const timeoutId = setTimeout(() => {
 			setActiveMenu(null);
-		}, 300);
+		}, 200);
 		setSubmenuTimeout(timeoutId);
 	};
 
@@ -2185,7 +2192,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<Navbar.Collapse id="basic-navbar-nav" className='navbar-collapse-items'>
 						<div className='logos mobile-only'>
 							<Dropdown onMouseOver={() => setShowDropdown(true)}
-								onMouseLeave={() => setTimeout(() => setShowDropdown(false), 300)}
+								onMouseLeave={() => setTimeout(() => setShowDropdown(false), 200)}
 								show={showDropdown}
 								className='dropdown-icon'
 								id='dropdown-navbar'
@@ -2220,7 +2227,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<div className='logos mobile-only mobile-adjust'>
 								<Dropdown
 									onMouseOver={() => setShowSoftwaresDropdown(true)}
-									onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 300)}
+									onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 200)}
 									show={showSoftwaresDropdown}
 									className='dropdown-icon'
 									id='dropdown-navbar'
@@ -2242,7 +2249,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						<div className="user-section mobile-only">
 							<Dropdown
 								onMouseOver={() => setShowUserDropdown(true)}
-								onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 300)}
+								onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 200)}
 								show={showUserDropdown}
 								className='dropdown-icon'
 								id='dropdown-navbar'
@@ -2262,7 +2269,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				</Navbar>
 				<div className='logos mobile-hidden'>
 					<Dropdown onMouseOver={() => setShowDropdown(true)}
-						onMouseLeave={() => setTimeout(() => setShowDropdown(false), 300)}
+						onMouseLeave={() => setTimeout(() => setShowDropdown(false), 200)}
 						show={showDropdown}
 						className='dropdown-icon'
 						id='dropdown-navbar'
@@ -2297,7 +2304,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className='logos mobile-hidden'>
 						<Dropdown
 							onMouseOver={() => setShowSoftwaresDropdown(true)}
-							onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 300)}
+							onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 200)}
 							show={showSoftwaresDropdown}
 							className='dropdown-icon'
 							id='dropdown-navbar'
@@ -2319,7 +2326,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				<div className="user-section mobile-hidden">
 					<Dropdown
 						onMouseOver={() => setShowUserDropdown(true)}
-						onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 300)}
+						onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 200)}
 						show={showUserDropdown}
 						className='dropdown-icon'
 						id='dropdown-navbar'
@@ -2666,7 +2673,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-informacoes'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4" style={{ position: 'relative' }}>
@@ -2895,7 +2902,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3102,7 +3109,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas mt-2" id="dropdown-basic-4">
@@ -3328,7 +3335,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3498,7 +3505,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3662,7 +3669,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3801,7 +3808,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3839,7 +3846,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowCardDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowCardDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowCardDropdown(false); }, 200)}
 													show={showCardDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3953,7 +3960,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4160,7 +4167,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4307,7 +4314,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4412,7 +4419,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={barrier} alt="botão parquemanto" />
+														<img src={cars} alt="botão parquemanto" />
 													</span>
 													<span className="text">Parqueamento</span>
 												</Button>
@@ -4481,7 +4488,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4628,7 +4635,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4783,7 +4790,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4938,7 +4945,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5085,7 +5092,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5232,7 +5239,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5345,7 +5352,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão visitas" />
+														<img src={visitorAccess} alt="botão visitas" />
 													</span>
 													<span className="text">Visitas</span>
 												</Button>
@@ -5453,7 +5460,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5608,7 +5615,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5705,7 +5712,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão contador pessoas" />
+														<img src={visitorAccess} alt="botão contador pessoas" />
 													</span>
 													<span className="text">Contador Pessoas</span>
 												</Button>
@@ -5746,7 +5753,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={group} alt="botão equipas trabalho" />
+														<img src={profiles} alt="botão equipas trabalho" />
 													</span>
 													<span className="text">Equipas Trabalho</span>
 												</Button>
@@ -5805,7 +5812,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5960,7 +5967,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6065,7 +6072,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={barrier} alt="botão parqueamento" />
+														<img src={cars} alt="botão parqueamento" />
 													</span>
 													<span className="text">Parqueamento</span>
 												</Button>
@@ -6099,7 +6106,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6238,7 +6245,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6377,7 +6384,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6516,7 +6523,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6655,7 +6662,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6693,7 +6700,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowTaskDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowTaskDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowTaskDropdown(false); }, 200)}
 													show={showTaskDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6807,7 +6814,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6954,7 +6961,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7093,7 +7100,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7190,19 +7197,19 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="grid-container">
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão clientes" />
+														<img src={visitorAccess} alt="botão clientes" />
 													</span>
 													<span className="text">Clientes</span>
 												</Button>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Visitors' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={department} alt="botão fornecedores" />
+														<img src={supplier} alt="botão fornecedores" />
 													</span>
 													<span className="text">Fornecedores</span>
 												</Button>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={externalEntities} alt="botão entidades" />
+														<img src={entity} alt="botão entidades" />
 													</span>
 													<span className="text">Entidades</span>
 												</Button>
@@ -7354,7 +7361,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="grid-container">
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão pessoal" />
+														<img src={visitorAccess} alt="botão pessoal" />
 													</span>
 													<span className="text">Pessoal</span>
 												</Button>
@@ -7372,7 +7379,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={group} alt="botão organigrama" />
+														<img src={profiles} alt="botão organigrama" />
 													</span>
 													<span className="text">Organigrama</span>
 												</Button>
@@ -7412,7 +7419,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas mt-2" id="dropdown-basic-4">
@@ -7558,7 +7565,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={workflow} alt="botão workflow" />
+														<img src={flow} alt="botão workflow" />
 													</span>
 													<span className="text">Workflow</span>
 												</Button>
@@ -7599,7 +7606,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={externalEntities} alt="botão entidades" />
+														<img src={entity} alt="botão entidades" />
 													</span>
 													<span className="text">Entidades</span>
 												</Button>
@@ -7633,7 +7640,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7772,7 +7779,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7911,7 +7918,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8050,7 +8057,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8189,7 +8196,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8328,7 +8335,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8467,7 +8474,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8622,7 +8629,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8761,7 +8768,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8900,7 +8907,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9173,7 +9180,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9337,7 +9344,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9543,7 +9550,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={externalEntities} alt="botão comércio" />
+														<img src={entity} alt="botão comércio" />
 													</span>
 													<span className="text">Comércio</span>
 												</Button>
@@ -9618,7 +9625,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9875,7 +9882,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9913,7 +9920,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowKioskDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowKioskDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowKioskDropdown(false); }, 200)}
 													show={showKioskDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10066,7 +10073,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10205,7 +10212,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10352,7 +10359,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10532,7 +10539,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10679,7 +10686,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10834,7 +10841,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10981,7 +10988,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11120,7 +11127,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11259,7 +11266,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="comfort" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11398,7 +11405,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="sound" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11537,7 +11544,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="home" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
