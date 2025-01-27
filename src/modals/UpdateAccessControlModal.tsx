@@ -16,6 +16,7 @@ interface Props<T> {
     title: string;
     open: boolean;
     onClose: () => void;
+    onDuplicate: (entity: T) => void;
     onUpdate: (data: T) => void;
     onNext: () => void;
     onPrev: () => void;

@@ -278,6 +278,8 @@ import profiles from '../assets/img/navbar/configuracao/profiles.png';
 import typeConfig from '../assets/img/navbar/configuracao/typeConfig.png';
 import visitorAccess from '../assets/img/navbar/naccess/visitorAccess.png';
 import supplier from '../assets/img/navbar/ninvoice/supplier.png';
+import favourite from '../assets/img/navbar/navbar/favourite.svg';
+import mail from '../assets/img/navbar/navbar/mail.svg';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -2324,6 +2326,16 @@ export const NavBar = ({ style }: NavBarProps) => {
 					</li>
 				</ul>
 				<div className="user-section mobile-hidden">
+					<Button onClick={() => toast.warn('Funcionalidade de favoritos em desenvolvimento')} className='btn btn-light navbar-buttons'>
+						<span className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+							<img src={favourite} alt="botão favoritos" />
+						</span>
+					</Button>
+					<Button onClick={() => toast.warn('Funcionalidade de mensagens em desenvolvimento')} className='btn btn-light navbar-buttons' style={{ marginLeft: 5 }}>
+						<span className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+							<img src={mail} alt="botão mensagens" />
+						</span>
+					</Button>
 					<Dropdown
 						onMouseOver={() => setShowUserDropdown(true)}
 						onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 200)}
@@ -11734,13 +11746,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={interventionAreas} alt="botão áreas de intervenção" />
 													</span>
-													<span className="text">Áreas de Intervenção</span>
+													<span className="text">Áreas Intervenção</span>
 												</Button>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
 														<img src={businessAreas} alt="botão áreas de negócios" />
 													</span>
-													<span className="text">Áreas de Negócios</span>
+													<span className="text">Áreas Negócios</span>
 												</Button>
 											</div>
 											<div>
@@ -11748,13 +11760,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={types} alt="botão tipos" />
 													</span>
-													<span className="text">Tipos de Entidades</span>
+													<span className="text">Tipos Entidades</span>
 												</Link>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
 														<img src={fonts} alt="botão fontes" />
 													</span>
-													<span className="text">Origem de Entidade</span>
+													<span className="text">Origem Entidade</span>
 												</Button>
 											</div>
 										</div>
@@ -11812,23 +11824,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={clock} alt="botão períodos" />
 													</span>
-													<span className="text">Períodos de Horários</span>
+													<span className="text">Períodos Horários</span>
 												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+												<Link to="/devices/timeplans" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={timePlan} alt="botão planos de horários" />
 													</span>
-													<span className="text">Planos de Horários</span>
-												</Button>
+													<span className="text">Planos Horários</span>
+												</Link>
 											</div>
 											<div className="icon-text-pessoas">
 												<Link to="/devices/accesscontrols" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/devices/accesscontrols' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={accessControls} alt="botão controle de acesso " />
 													</span>
-													<span className="text">Planos de Acessos</span>
+													<span className="text">Planos Acessos</span>
 												</Link>
 											</div>
 											<div className='icon-text-pessoas'>

@@ -1,16 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { customStyles } from '../components/CustomStylesDataTable';
-import { TreeViewData } from '../components/TreeView';
-import Split from 'react-split';
-import { Employee } from '../types/Types';
-import { employeeFields } from '../fields/Fields';
-import { usePersons } from '../context/PersonsContext';
-import { Spinner } from 'react-bootstrap';
+import { TimePeriod } from '../types/Types';
+import { timePeriodFields } from '../fields/Fields';
+import { Col } from 'react-bootstrap';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
@@ -22,34 +20,18 @@ interface CreateModalProps<T> {
 
 // Define o componente
 export const AddPeriodToTimePlansModal = <T extends Record<string, any>>({ title, open, onClose, onSave }: CreateModalProps<T>) => {
-    const {
-        data,
-    } = usePersons();
-    const [formData, setFormData] = useState<T>({} as T);
-    const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
-    const [filterText, setFilterText] = useState('');
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
-    const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
-    const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
-    const [loadingPeriodData, setLoadingPeriodData] = useState(false);
+    const { period } = useTerminals();
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
 
-    // Atualiza os funcionários filtrados ao abrir o modal
-    useEffect(() => {
-        if (open)
-            setFilteredEmployees(data.employees);
-    }, [open, data.employees]);
-
-    // Atualiza os funcionários filtrados com base nos funcionários selecionados
-    useEffect(() => {
-        if (selectedEmployeeIds.length > 0) {
-            const filtered = data.employees.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
-            setFilteredEmployees(filtered);
-        } else {
-            setFilteredEmployees(data.employees);
-        }
-    }, [selectedEmployeeIds, data.employees]);
+    // Define a função de seleção de linhas
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: TimePeriod[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+    };
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -57,102 +39,109 @@ export const AddPeriodToTimePlansModal = <T extends Record<string, any>>({ title
         rangeSeparatorText: 'de',
     };
 
-    // Define a seleção da árvore
-    const handleSelectFromTreeView = (selectedIds: string[]) => {
-        setSelectedEmployeeIds(selectedIds);
-    };
+    // Define as colunas excluídas
+    const excludedColumns = timePeriodFields
+        .filter(field =>
+            (field.key.includes('Start') || field.key.includes('End'))
+        )
+        .map(field => field.key);
 
-    // Define a função selecionar uma linha
-    const handleRowSelected = (state: {
-        allSelected: boolean;
-        selectedCount: number;
-        selectedRows: Employee[];
-    }) => {
-        const sortedSelectedRows = state.selectedRows.sort((a, b) => parseInt(a.enrollNumber) - parseInt(b.enrollNumber));
-        setSelectedRows(sortedSelectedRows);
-    };
+    // Define as colunas dos dias da semana para o nesting
+    const dayColumns = [
+        { day: 'monday', label: 'Segunda' },
+        { day: 'tuesday', label: 'Terça' },
+        { day: 'wednesday', label: 'Quarta' },
+        { day: 'thursday', label: 'Quinta' },
+        { day: 'friday', label: 'Sexta' },
+        { day: 'saturday', label: 'Sábado' },
+        { day: 'sunday', label: 'Domingo' },
+    ];
 
-    // Define as colunas de funcionários
-    const selectedColumns = ['enrollNumber', 'name', 'shortName', 'cardNumber']
-
-    // Define as colunas
-    const columns: TableColumn<Employee>[] = employeeFields
-        .filter(field => selectedColumns.includes(field.key))
-        .map(field => {
-            const formatField = (row: Employee) => {
-                switch (field.key) {
-                    case 'cardNumber':
-                        return row.employeeCards?.[0]?.cardNumber || '';
-                    default:
-                        return row[field.key] || '';
-                }
-            };
-
-            return {
-                id: field.key,
+    // Define as colunas da tabela
+    const columns: TableColumn<TimePeriod>[] = [
+        ...timePeriodFields
+            .filter(field => !dayColumns.find(dc => field.key.includes(dc.day)) && !excludedColumns.includes(field.key) && field.key !== 'initFlag' && field.key !== 'appId' && field.key !== 'createrName' && field.key !== 'remark')
+            .map(field => ({
                 name: (
                     <>
                         {field.label}
                     </>
                 ),
-                selector: (row: Employee) => {
-                    if (field.key === 'enrollNumber') {
-                        return parseInt(row.enrollNumber) || 0;
-                    }
-                    return row[field.key] || '';
-                },
+                selector: (row: TimePeriod) => formatField(row, field.key),
                 sortable: true,
-                cell: (row: Employee) => formatField(row)
-            };
-        });
-
-    // Função para fechar o modal
-    const handleClose = () => {
-        onClose();
+            })),
+        ...dayColumns.map(({ day, label }) => ({
+            name: label,
+            selector: (row: TimePeriod) => `${row[`${day}Start1`] || ''} - ${row[`${day}End1`] || ''}`,
+            sortable: true,
+            cell: (row: TimePeriod) => `${row[`${day}Start1`] || ''} - ${row[`${day}End1`] || ''}`,
+            columns: [
+                {
+                    name: 'Início',
+                    selector: (row: TimePeriod) => row[`${day}Start1`] || '',
+                    sortable: true,
+                    cell: (row: TimePeriod) => row[`${day}Start1`] || '',
+                },
+                {
+                    name: 'Fim',
+                    selector: (row: TimePeriod) => row[`${day}End1`] || '',
+                    sortable: true,
+                    cell: (row: TimePeriod) => row[`${day}End1`] || '',
+                },
+            ]
+        }))
+    ];
+    function formatField(row: TimePeriod, key: string): any {
+        switch (key) {
+            case 'initFlag':
+                return row[key] ? 'Activo' : 'Inactivo';
+            default:
+                return row[key];
+        }
     }
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(formData);
+        onSave(selectedRows as unknown as T);
         onClose();
-    };
+    }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" centered>
+        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <div className="datatable-container">
-                    {loadingPeriodData ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={columns}
-                            data={[]}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={20}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                        />
-                    }
-                </div>
+                <Col md={12}>
+                    <DataTable
+                        columns={columns}
+                        data={period}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        paginationPerPage={10}
+                        paginationRowsPerPageOptions={[5, 10]}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                    />
+                </Col>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={onClose} >
                     Fechar
                 </Button>
-                <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSave}>
-                    Adicionar
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleSave} >
+                    Guardar
                 </Button>
             </Modal.Footer>
+            <AddPeriodToTimePlansModal
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={() => console.log('save')}
+                title="Adicionar Horário"
+            />
         </Modal>
     );
 };

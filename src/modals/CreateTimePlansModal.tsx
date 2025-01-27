@@ -1,15 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
-import { Col, Form, OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
+import { Col, Form, Nav, OverlayTrigger, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../components/CustomStylesDataTable";
-import { Doors, Employee } from "../types/Types";
-import { doorsFields, employeeFields } from "../fields/Fields";
-import { useTerminals } from "../context/TerminalsContext";
+import { TimePeriod } from "../types/Types";
+import { timePeriodFields } from "../fields/Fields";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { usePersons } from "../context/PersonsContext";
 import { AddPeriodToTimePlansModal } from "./AddPeriodToTimePlansModal";
 
 // Define as propriedades do componente
@@ -18,31 +16,42 @@ interface Props<T> {
     open: boolean;
     onClose: () => void;
     onSave: (data: T) => void;
+    initialValuesData: Partial<T>;
 }
 
 // Define o componente
-export const CreateTimePlansModal = <T extends Record<string, any>>({ title, open, onClose, onSave }: Props<T>) => {
-    const { employees } = usePersons();
-    const { period } = useTerminals();
-    const [formData, setFormData] = useState<T>({} as T);
-    const [doors, setDoors] = useState<Doors[]>([]);
-    const [loadingTimeData, setLoadingTimeData] = useState(false);
-    const [filters, setFilters] = useState<Record<string, string>>({});
+export const CreateTimePlansModal = <T extends Record<string, any>>({ title, open, onClose, onSave, initialValuesData }: Props<T>) => {
+    const [formData, setFormData] = useState<T>(initialValuesData as T || {} as T);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
+    const [tableData, setTableData] = useState<TimePeriod[]>([]);
 
-    /* // UseEffect para atualizar o estado do formulário
+    // Atualiza os campos do formulário com os valores iniciais
     useEffect(() => {
         if (open) {
-            fetchDoors();
+            if (initialValuesData) {
+                setFormData(initialValuesData as T);
+                setTableData(initialValuesData.periodos as TimePeriod[]);
+            } else {
+                setFormData({} as T);
+                setTableData([]);
+            }
         }
-    }, [open]);
+    }, [open, initialValuesData]);
 
-    // Função para buscar as portas
-    const fetchDoors = async () => {
-        const dataDoors = await fetchAllDoorData();
-        const filteredDoorsOrdered = dataDoors.sort((a, b) => a.doorNo - b.doorNo);
-        setDoors(filteredDoorsOrdered);
-    }; */
+    // Função para adicionar períodos à tabela
+    const addPeriodsToDatatable = (periods: TimePeriod[]) => {
+        setTableData(periods);
+    };
+
+    // Função para remover períodos selecionados
+    const removeSelectedPeriods = () => {
+        const remainingData = tableData.filter(
+            (period) => !selectedRows.some((row) => row.id === period.id)
+        );
+        setTableData(remainingData);
+        setSelectedRows([]);
+    };
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -56,175 +65,172 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
         setFormData({ ...formData, [name]: value });
     };
 
-    // Filtra os dados da tabela de portas
-    const filteredDoorDataTable = doors.filter(door =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(door[key]) === String(filters[key])
+    // Define as colunas excluídas
+    const excludedColumns = timePeriodFields
+        .filter(field =>
+            (field.key.includes('Start') || field.key.includes('End'))
         )
-    );
+        .map(field => field.key);
 
-    // Define as colunas que serão exibidas
-    const includedColumns = ['enabled', 'name', 'doorNo', 'timezoneId'];
+    // Define as colunas dos dias da semana para o nesting
+    const dayColumns = [
+        { day: 'monday', label: 'Segunda' },
+        { day: 'tuesday', label: 'Terça' },
+        { day: 'wednesday', label: 'Quarta' },
+        { day: 'thursday', label: 'Quinta' },
+        { day: 'friday', label: 'Sexta' },
+        { day: 'saturday', label: 'Sábado' },
+        { day: 'sunday', label: 'Domingo' },
+    ];
 
-    // Define as colunas
-    const doorColumns: TableColumn<Doors>[] = doorsFields
-        .filter(field => includedColumns.includes(field.key))
-        .sort((a, b) => { if (a.key === 'timezoneId') return -1; else if (b.key === 'timezoneId') return 1; else return 0; })
-        .sort((a, b) => { if (a.key === 'name') return -1; else if (b.key === 'name') return 1; else return 0; })
-        .sort((a, b) => { if (a.key === 'enabled') return 1; else if (b.key === 'enabled') return -1; else return 0; })
-        .map(field => {
-            const formatField = (row: Doors) => {
-                switch (field.key) {
-                    case 'enabled':
-                        return row[field.key] === true ? 'Activo' : 'Inactivo';
-                    case 'timezoneId':
-                        return period.find(p => p.id === row[field.key])?.name || '';
-                    default:
-                        return row[field.key] || '';
-                }
-            };
-            return {
-                id: field.key,
+    // Define as colunas da tabela
+    const columns: TableColumn<TimePeriod>[] = [
+        ...timePeriodFields
+            .filter(field => !dayColumns.find(dc => field.key.includes(dc.day)) && !excludedColumns.includes(field.key) && field.key !== 'initFlag' && field.key !== 'appId' && field.key !== 'createrName' && field.key !== 'remark')
+            .map(field => ({
                 name: (
                     <>
                         {field.label}
                     </>
                 ),
-                selector: (row: Doors) => {
-                    if (field.key === 'doorNo') {
-                        return row[field.key];
-                    }
-                    return formatField(row);
-                },
+                selector: (row: TimePeriod) => formatField(row, field.key),
                 sortable: true,
-                cell: (row: Doors) => {
-                    if (field.key === 'doorNo') {
-                        return row[field.key];
-                    }
-                    return formatField(row);
-                }
-            };
-        });
-
-    // Filtra os dados da tabela de funcionários
-    const filteredEmployeeDataTable = employees
-        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-        .filter(employee =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || String(employee[key]) === String(filters[key])
-            )
-        );
-
-    // Define as colunas que serão exibidas
-    const includedEmployeeColumns = ['enrollNumber', 'name', 'cardNumber', 'type'];
-
-    // Define as colunas
-    const employeeColumns: TableColumn<Employee>[] = employeeFields
-        .filter(field => includedEmployeeColumns.includes(field.key))
-        .sort((a, b) => { if (a.key === 'name') return -1; else if (b.key === 'name') return 1; else return 0; })
-        .sort((a, b) => { if (a.key === 'cardNumber') return -1; else if (b.key === 'cardNumber') return 1; else return 0; })
-        .sort((a, b) => { if (a.key === 'type') return 1; else if (b.key === 'type') return -1; else return 0; })
-        .map(field => {
-            const formatField = (row: Employee) => {
-                switch (field.key) {
-                    case 'cardNumber':
-                        return row.employeeCards?.[0]?.cardNumber || '';
-                    default:
-                        return row[field.key] || '';
-                }
-            };
-            return {
-                id: field.key,
-                name: (
-                    <>
-                        {field.label}
-                    </>
-                ),
-                selector: (row: Employee) => {
-                    if (field.key === 'enrollNumber') {
-                        return parseInt(row.enrollNumber) || 0;
-                    }
-                    return row[field.key] || '';
+            })),
+        ...dayColumns.map(({ day, label }) => ({
+            name: label,
+            selector: (row: TimePeriod) => `${row[`${day}Start1`] || ''} - ${row[`${day}End1`] || ''}`,
+            sortable: true,
+            cell: (row: TimePeriod) => `${row[`${day}Start1`] || ''} - ${row[`${day}End1`] || ''}`,
+            columns: [
+                {
+                    name: 'Início',
+                    selector: (row: TimePeriod) => row[`${day}Start1`] || '',
+                    sortable: true,
+                    cell: (row: TimePeriod) => row[`${day}Start1`] || '',
                 },
-                sortable: true,
-                cell: (row: Employee) => formatField(row)
-            };
-        });
+                {
+                    name: 'Fim',
+                    selector: (row: TimePeriod) => row[`${day}End1`] || '',
+                    sortable: true,
+                    cell: (row: TimePeriod) => row[`${day}End1`] || '',
+                },
+            ]
+        }))
+    ];
+    function formatField(row: TimePeriod, key: string): any {
+        switch (key) {
+            case 'initFlag':
+                return row[key] ? 'Activo' : 'Inactivo';
+            default:
+                return row[key];
+        }
+    }
+
+    // Função para lidar com o fechamento do modal
+    const handleClose = () => {
+        setFormData({} as T);
+        setTableData([]);
+        onClose();
+    };
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave({} as T);
-        onClose();
+        const dataToSave = {
+            ...formData,
+            periodos: tableData.map(period => period.id),
+        };
+        onSave(dataToSave as T);
+        handleClose();
     }
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <Col md={12}>
-                    <Form.Group controlId="formNome">
-                        <Form.Label>Nome</Form.Label>
-                        <Form.Control
-                            className="custom-input-height custom-select-font-size"
-                            type="text"
-                            name="nome"
-                            value={formData.nome}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                </Col>
-                <Col md={12}>
-                    <Form.Group controlId="formDescricao">
-                        <Form.Label>Descrição</Form.Label>
-                        <Form.Control
-                            className="custom-input-height custom-select-font-size"
-                            type="text"
-                            name="descricao"
-                            value={formData.descricao}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                </Col>
-                <Col md={12} style={{ marginTop: 20 }}>
-                    {loadingTimeData ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={doorColumns}
-                            data={[]}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={10}
-                            paginationRowsPerPageOptions={[5, 10]}
-                            selectableRows
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="doorNo"
-                        />
-                    }
-                </Col>
-                <div style={{ display: 'flex', marginTop: 10 }}>
-                    <OverlayTrigger
-                        placement="top"
-                        overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
-                    >
-                        <CustomOutlineButton className="accesscontrol-buttons" icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
-                    </OverlayTrigger>
-                    <OverlayTrigger
-                        placement="top"
-                        overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
-                    >
-                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={() => console.log('delete')} iconSize='1.1em' />
-                    </OverlayTrigger>
-                </div>
-            </Modal.Body>
+                <Tab.Container defaultActiveKey="geral">
+                    <Nav variant="tabs" className="nav-modal">
+                        <Nav.Item>
+                            <Nav.Link eventKey="geral">Geral</Nav.Link>
+                        </Nav.Item>
+                    </Nav>
+                    <Tab.Content>
+                        <Tab.Pane eventKey="geral">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                <Col md={12}>
+                                    <Form.Group controlId="formNome">
+                                        <Form.Label>Nome</Form.Label>
+                                        <Form.Control
+                                            className="custom-input-height custom-select-font-size"
+                                            type="text"
+                                            name="nome"
+                                            value={formData.nome}
+                                            onChange={handleChange}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={12}>
+                                    <Form.Group controlId="formDescricao">
+                                        <Form.Label>Descrição</Form.Label>
+                                        <Form.Control
+                                            className="custom-input-height custom-select-font-size"
+                                            type="text"
+                                            name="descricao"
+                                            value={formData.descricao}
+                                            onChange={handleChange}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Form>
+                        </Tab.Pane>
+                    </Tab.Content>
+                </Tab.Container>
+                    <Tab.Container defaultActiveKey="periodos">
+                        <Nav variant="tabs" className="nav-modal">
+                            <Nav.Item>
+                                <Nav.Link eventKey="periodos">Períodos</Nav.Link>
+                            </Nav.Item>
+                        </Nav>
+                        <Tab.Content>
+                            <Tab.Pane eventKey="periodos">
+                                <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                    <Col md={12} style={{ marginTop: 20 }}>
+                                        <DataTable
+                                            columns={columns}
+                                            data={tableData}
+                                            pagination
+                                            paginationComponentOptions={paginationOptions}
+                                            paginationPerPage={10}
+                                            paginationRowsPerPageOptions={[5, 10]}
+                                            selectableRows
+                                            onSelectedRowsChange={({ selectedRows }) => setSelectedRows(selectedRows)}
+                                            noDataComponent="Não existem dados disponíveis para exibir."
+                                            customStyles={customStyles}
+                                            striped
+                                        />
+                                    </Col>
+                                    <div style={{ display: 'flex', marginTop: 10 }}>
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
+                                        >
+                                            <CustomOutlineButton className="accesscontrol-buttons" icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
+                                        </OverlayTrigger>
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                                        >
+                                            <CustomOutlineButton icon="bi bi-trash-fill" onClick={removeSelectedPeriods} iconSize='1.1em' />
+                                        </OverlayTrigger>
+                                    </div>
+                                </Form>
+                            </Tab.Pane>
+                        </Tab.Content>
+                    </Tab.Container>
+            </Modal.Body >
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={onClose} >
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleClose} >
                     Fechar
                 </Button>
                 <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleSave} >
@@ -234,9 +240,9 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
             <AddPeriodToTimePlansModal
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={() => console.log('save')}
+                onSave={addPeriodsToDatatable}
                 title="Adicionar Horário"
             />
-        </Modal>
+        </Modal >
     );
 };

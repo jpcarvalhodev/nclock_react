@@ -395,19 +395,55 @@ export type Door = {
 
 export type DoorDevice = Partial<Devices> & Partial<Door>;
 
+export type DoorDeviceAccess = {
+    idPlanosAcessoDispositivo: string;
+    idPorta: string;
+    nomePorta: string;
+};
+
+export type DeviceAccess = {
+    idTerminal: string;
+    nomeTerminal: string;
+    portas: DoorDeviceAccess[];
+};
+
+export type PlanoAcessoDispositivos = {
+    idPlanosAcessoDispositivo: string;
+    idPlanoAcesso: string;
+    nomePlanoAcesso: string | null;
+    idPlanoHorario: string | null;
+    nomePlanoHorario: string | null;
+    nivel: number | null;
+    createdDate: string;
+    rem: boolean;
+    dispositivos: DeviceAccess[];
+};
+
 export type AccessControl = {
     [key: string]: any;
     id: string;
-    employeesId: string;
-    shortName: string;
-    enrollNumber: string;
-    doorId: string;
-    doorName: string;
-    timezoneId: string;
-    timezoneName: string;
-    createrName: string;
-    createDate: Date;
-    updateDate: Date;
+    nome: string;
+    tipo: number;
+    tipoVerificacao: number;
+    verificacaoFixa: boolean;
+    dataInicio: Date;
+    dataFim: Date;
+    opc: number;
+    activo: boolean;
+    saldoZonaCarregamento: boolean;
+    saldoZonaLotacao: boolean;
+    asWithAc: boolean;
+    acOutWithAs: boolean;
+    acOutWithAsOffset: number;
+    masterOnline: boolean;
+    respAuthOnline: boolean;
+    respAuthOnlineOffset: number;
+    acGrpHR: boolean;
+    OConfig: string;
+    createdDate: Date;
+    rem: boolean;
+    planosAcessoDispositivos: PlanoAcessoDispositivos[];
+    employees: Employee[];
 };
 
 export type Doors = {
@@ -721,3 +757,11 @@ export type BackupDB = {
 }
 
 export type DevicesDoors = Partial<Devices> & Partial<Doors>;
+
+export type TimePlan = {
+    [key: string]: any;
+    id: string;
+    nome: string;
+    descricao: string;
+    periodos: string[];
+}

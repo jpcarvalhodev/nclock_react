@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from "../api/apiService";
-import { AccessControl, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, TimePeriod } from '../types/Types';
+import { AccessControl, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, TimePeriod, TimePlan } from '../types/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -43,7 +43,7 @@ export interface DeviceContextType {
     fetchAccessControl: () => Promise<void>;
     handleAddAccessControl: (newAccessControl: Partial<AccessControl>) => Promise<void>;
     handleUpdateAccessControl: (newAccessControl: Partial<AccessControl>) => Promise<void>;
-    handleDeleteAccessControl: (employeesId: string[], doorId: string) => Promise<void>;
+    handleDeleteAccessControl: (id: string) => Promise<void>;
     period: TimePeriod[];
     fetchTimePeriods: () => Promise<TimePeriod[]>;
     handleAddPeriod: (newPeriod: Partial<TimePeriod>) => Promise<void>;
@@ -52,6 +52,12 @@ export interface DeviceContextType {
     handleUpdateDoor: (door: Doors) => Promise<void>;
     handleUpdateAux: (aux: Auxiliaries) => Promise<void>;
     fetchCameras: () => Promise<Cameras[]>;
+    timePlans: TimePlan[];
+    fetchTimePlans: () => Promise<TimePlan[]>;
+    handleAddTimePlan: (timePlan: TimePlan) => Promise<void>;
+    handleUpdateTimePlan: (timePlan: TimePlan) => Promise<void>;
+    handleDeleteTimePlan: (id: string[]) => Promise<void>;
+    handleDeletePeriodTimePlan: (planoId: string, id: string[]) => Promise<void>;
 }
 
 // Cria o contexto	
@@ -69,6 +75,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [auxData, setAuxData] = useState<AuxOut[]>([]);
     const [aux, setAux] = useState<Auxiliaries[]>([]);
     const [cameras, setCameras] = useState<Cameras[]>([]);
+    const [timePlans, setTimePlans] = useState<TimePlan[]>([]);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<Devices[]> => {
@@ -382,7 +389,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const handleUpdateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
         try {
             const data = await apiService.updateAccessControl(newAccessControl);
-            setAccessControl(prevAccessControls => prevAccessControls.map(item => item.acId === data.acId ? { ...item, acc: [data.acc] } : item));
+            setAccessControl(prevAccessControls => [...prevAccessControls, data]);
             toast.success(data.message || 'Controle de acesso atualizado com sucesso!');
         } catch (error) {
             console.error('Erro ao editar o controle de acesso:', error);
@@ -392,9 +399,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para deletar o controle de acesso
-    const handleDeleteAccessControl = async (employeesId: string[], doorId: string) => {
+    const handleDeleteAccessControl = async (id: string) => {
         try {
-            const data = await apiService.deleteAccessControl(employeesId, doorId);
+            const data = await apiService.deleteAccessControl(id);
             setAccessControl(prevAccessControl => [...prevAccessControl, data]);
             toast.success(data.message || 'Controle de acesso apagado com sucesso!');
         } catch (error) {
@@ -502,6 +509,68 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         return [];
     }
 
+    // Função para buscar todos os planos de horário
+    const fetchTimePlans = async (): Promise<TimePlan[]> => {
+        try {
+            const data = await apiService.fetchAllTimePlans();
+            setTimePlans(data);
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar os planos de tempo:', error);
+        }
+        return [];
+    }
+
+    // Função para adicionar um plano de horário
+    const handleAddTimePlan = async (timePlan: TimePlan) => {
+        try {
+            const data = await apiService.createTimePlan(timePlan);
+            setTimePlans([...timePlans, data]);
+            toast.success(data.message || 'Plano de horário adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar o plano de tempo:', error);
+        } finally {
+            fetchTimePlans();
+        }
+    }
+
+    // Função para atualizar um plano de horário
+    const handleUpdateTimePlan = async (timePlan: TimePlan) => {
+        try {
+            const data = await apiService.updateTimePlan(timePlan);
+            setTimePlans(prevTimePlan => [...prevTimePlan, data]);
+            toast.success(data.message || 'Plano de horário atualizado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar o plano de tempo:', error);
+        } finally {
+            fetchTimePlans();
+        }
+    }
+
+    // Função para eliminar um plano de horário
+    const handleDeleteTimePlan = async (id: string[]) => {
+        try {
+            const data = await apiService.deleteTimePlan(id);
+            toast.success(data.message || 'Plano de horário eliminado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao eliminar o plano de tempo:', error);
+        } finally {
+            fetchTimePlans();
+        }
+    }
+
+    // Função para eliminar um período de tempo ao plano de horário
+    const handleDeletePeriodTimePlan = async (planoId: string, id: string[]) => {
+        try {
+            await apiService.deletePeriodoTimePlan(planoId, id);
+            toast.success('Período eliminado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao eliminar o período:', error);
+        } finally {
+            fetchTimePlans();
+        }
+    }
+
     // Busca todos os dispositivos ao carregar a página
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -514,6 +583,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllDoorData();
             fetchAllAux();
             fetchAllAuxData();
+            fetchTimePlans();
         }
     }, []);
 
@@ -565,6 +635,12 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleUpdateDoor,
         handleUpdateAux,
         fetchCameras,
+        timePlans,
+        fetchTimePlans,
+        handleAddTimePlan,
+        handleUpdateTimePlan,
+        handleDeleteTimePlan,
+        handleDeletePeriodTimePlan,
     };
 
     return (

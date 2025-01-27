@@ -598,6 +598,16 @@ input::-ms-clear {
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
+.navbar-buttons {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.navbar-buttons:hover {
+    background-color: transparent;
+    border-color: transparent;
+}
+
 /* @keyframes slideDownFadeIn {
     from {
         transform: translateY(-25%);

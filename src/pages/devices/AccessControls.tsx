@@ -31,26 +31,18 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const AccessControls = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const {
-        accessControl,
-        fetchAccessControl,
-        handleAddAccessControl,
-        handleUpdateAccessControl,
-        handleDeleteAccessControl
-    } = useTerminals();
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['shortName', 'enrollNumber', 'createrName', 'createDate', 'updateDate']);
+    const { accessControl, fetchAccessControl, handleAddAccessControl, handleUpdateAccessControl, handleDeleteAccessControl } = useTerminals();
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['nome', 'activo']);
     const [selectedRows, setSelectedRows] = useState<AccessControl[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState<boolean>(false);
     const [openColumnSelector, setOpenColumnSelector] = useState<boolean>(false);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [filterText, setFilterText] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedAccessToDelete, setSelectedAccessToDelete] = useState<AccessControl | null>(null);
+    const [selectedAccessToDelete, setSelectedAccessToDelete] = useState<any | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
-    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [filteredAccessControl, setFilteredAccessControl] = useState<AccessControl[]>([]);
     const [initialData, setInitialData] = useState<Partial<AccessControl> | null>(null);
     const [currentAccessControlIndex, setCurrentAccessControlIndex] = useState(0);
 
@@ -69,8 +61,8 @@ export const AccessControls = () => {
     };
 
     // Função para deletar o controle de acesso
-    const deleteAccessControl = async (employeesId: string[], doorId: string) => {
-        await handleDeleteAccessControl(employeesId, doorId);
+    const deleteAccessControl = async (id: string) => {
+        await handleDeleteAccessControl(id);
         setClearSelectionToggle((prev) => !prev);
         refreshAccessControl();
         window.location.reload();
@@ -98,7 +90,7 @@ export const AccessControls = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['shortName', 'enrollNumber', 'createrName', 'createDate', 'updateDate']);
+        setSelectedColumns(['nome', 'activo']);
     };
 
     // Função para selecionar todas as colunas
@@ -112,8 +104,7 @@ export const AccessControls = () => {
         selectedCount: number;
         selectedRows: AccessControl[];
     }) => {
-        const sortedAccessControl = state.selectedRows.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
-        setSelectedRows(sortedAccessControl);
+        setSelectedRows(state.selectedRows);
     };
 
     // Define a função de edição de controle de acesso
@@ -123,7 +114,7 @@ export const AccessControls = () => {
     };
 
     // Define a abertura do modal de apagar controle de acesso
-    const handleOpenDeleteModal = (accessControl: AccessControl) => {
+    const handleOpenDeleteModal = (accessControl: string) => {
         setSelectedAccessToDelete(accessControl);
         setShowDeleteModal(true);
     };
@@ -166,7 +157,7 @@ export const AccessControls = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredAccessControl.filter(accessControls =>
+    const filteredDataTable = accessControl.filter(accessControls =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (accessControls[key] != null && String(accessControls[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -182,39 +173,43 @@ export const AccessControls = () => {
         })
     );
 
-    // Define as colunas que não devem ser exibidas
-    const excludedColumns = ['employeesId', 'timezoneId'];
-
-    // Filtra as colunas para remover as colunas excluídas
-    const filteredColumns = accessControlFields.filter(column => !excludedColumns.includes(column.key));
+    // Define a coluna de ações
+    const actionColumn: TableColumn<AccessControl> = {
+        name: 'Ações',
+        cell: (row: AccessControl) => (
+            <div style={{ display: 'flex' }}>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditAccessControl(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row.id)} />
+                </OverlayTrigger>
+            </div>
+        ),
+        selector: (row: AccessControl) => row.id,
+        ignoreRowClick: true,
+    };
 
     // Define as colunas da tabela
     const columns: TableColumn<AccessControl>[] = accessControlFields
         .filter(field => selectedColumns.includes(field.key))
-        .filter(field => !excludedColumns.includes(field.key))
         .map(field => {
             const formatField = (row: AccessControl) => {
                 switch (field.key) {
-                    case 'doorName':
-                        if (row.acc && row.acc.length > 0) {
-                            const doorNames = row.acc.map((accItem: AccessControl) => {
-                                if (accItem.doorName.endsWith('door3')) {
-                                    return 'Torniquete';
-                                } else if (accItem.doorName.endsWith('door4')) {
-                                    return 'Video Porteiro';
-                                } else {
-                                    return accItem.doorName || 'Não disponível';
-                                }
-                            });
-                            return doorNames.join(', ');
-                        }
-                        return 'Sem portas definidas';
-                    case 'createDate':
-                        return new Date(row.createDate).toLocaleString() || '';
-                    case 'updateDate':
-                        return new Date(row.updateDate).toLocaleString() || '';
-                    case 'enrollNumber':
-                        return Number(row.enrollNumber) || 'Número inválido';
+                    case 'activo':
+                        return row[field.key] ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key] || '';
                 }
@@ -280,7 +275,7 @@ export const AccessControls = () => {
                 </div>
                 <div className='table-css'>
                     <DataTable
-                        columns={columns}
+                        columns={[...columns, actionColumn]}
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
@@ -293,15 +288,13 @@ export const AccessControls = () => {
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId='enrollNumber'
                     />
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={filteredColumns}
+                    columns={accessControlFields.filter(field => field.key === 'nome' || field.key === 'activo')}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
@@ -309,25 +302,27 @@ export const AccessControls = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            {selectedAccessToDelete && (
+            {/* {selectedAccessToDelete && (
                 <DeleteACModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
                     onDelete={deleteAccessControl}
                     entity={selectedAccessToDelete}
                 />
-            )}
+            )} */}
             <CreateAccessControlModal
                 title="Adicionar Plano de Acesso"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 onSave={addAccessControl}
+                initialValuesData={initialData || {}}
             />
             {selectedAccessControl && (
                 <UpdateAccessControlModal
                     title="Atualizar Plano de Acesso"
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
+                    onDuplicate={handleDuplicate}
                     onUpdate={updateAccessControl}
                     onPrev={handlePrevAccessControl}
                     onNext={handleNextAccessControl}

@@ -5,8 +5,8 @@ import "../css/PagesStyles.css";
 import { Col, Form, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../components/CustomStylesDataTable";
-import { Doors, Employee } from "../types/Types";
-import { doorsFields, employeeFields } from "../fields/Fields";
+import { Devices, Doors, Employee } from "../types/Types";
+import { deviceFields, doorsFields, employeeFields } from "../fields/Fields";
 import { useTerminals } from "../context/TerminalsContext";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { usePersons } from "../context/PersonsContext";
@@ -19,33 +19,23 @@ interface Props<T> {
     open: boolean;
     onClose: () => void;
     onSave: (data: T) => void;
+    initialValuesData: Partial<T>;
 }
 
 // Define o componente
-export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave }: Props<T>) => {
-    const { employees } = usePersons();
-    const { devices, fetchAllDoorData, period } = useTerminals();
-    const [formData, setFormData] = useState<T>({} as T);
-    const [doors, setDoors] = useState<Doors[]>([]);
-    const [loadingDoorData, setLoadingDoorData] = useState(false);
-    const [loadingEmployeeData, setLoadingEmployeeData] = useState(false);
-    const [filters, setFilters] = useState<Record<string, string>>({});
+export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, initialValuesData }: Props<T>) => {
+    const [formData, setFormData] = useState<T>(initialValuesData as T || ({} as T));
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEmployeeAddModal, setShowEmployeeAddModal] = useState(false);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         if (open) {
-            fetchDoors();
+            setFormData(initialValuesData as T || ({} as T));
+        } else {
+            setFormData({} as T);
         }
     }, [open]);
-
-    // Função para buscar as portas
-    const fetchDoors = async () => {
-        const dataDoors = await fetchAllDoorData();
-        const filteredDoorsOrdered = dataDoors.sort((a, b) => a.doorNo - b.doorNo);
-        setDoors(filteredDoorsOrdered);
-    };
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -59,31 +49,33 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
         setFormData({ ...formData, [name]: value });
     };
 
-    // Filtra os dados da tabela de portas
-    const filteredDoorDataTable = doors.filter(door =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(door[key]) === String(filters[key])
-        )
-    );
-
-    // Define as colunas que serão exibidas
-    const includedColumns = ['enabled', 'name', 'doorNo', 'timezoneId'];
-
-    // Define as colunas
-    const doorColumns: TableColumn<Doors>[] = doorsFields
-        .filter(field => includedColumns.includes(field.key))
-        .sort((a, b) => { if (a.key === 'timezoneId') return -1; else if (b.key === 'timezoneId') return 1; else return 0; })
-        .sort((a, b) => { if (a.key === 'name') return -1; else if (b.key === 'name') return 1; else return 0; })
-        .sort((a, b) => { if (a.key === 'enabled') return 1; else if (b.key === 'enabled') return -1; else return 0; })
+    // Define as colunas de dispositivos
+    const deviceColumns: TableColumn<Devices>[] = deviceFields
         .map(field => {
-            const formatField = (row: Doors) => {
+            const formatField = (row: Devices) => {
                 switch (field.key) {
+                    case 'code':
+                        return row.code === 0 ? "" : row.code;
+                    case 'machineNumber':
+                        return row.code === 0 ? "" : row.machineNumber;
+                    case 'cardNumber':
+                        return row.cardNumber === 0 ? "" : row.cardNumber;
+                    case 'productTime':
+                        return new Date(row.productTime).toLocaleString() || '';
+                    case 'status':
+                        return (
+                            <div style={{
+                                height: '10px',
+                                width: '10px',
+                                backgroundColor: row.status ? 'green' : 'red',
+                                borderRadius: '50%',
+                                display: 'inline-block'
+                            }} title={row.status ? 'Online' : 'Offline'} />
+                        );
                     case 'enabled':
-                        return row[field.key] === true ? 'Activo' : 'Inactivo';
-                    case 'timezoneId':
-                        return period.find(p => p.id === row[field.key])?.name || '';
+                        return row.enabled ? 'Activo' : 'Inactivo';
                     default:
-                        return row[field.key] || '';
+                        return row[field.key];
                 }
             };
             return {
@@ -93,30 +85,10 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                         {field.label}
                     </>
                 ),
-                selector: (row: Doors) => {
-                    if (field.key === 'doorNo') {
-                        return row[field.key];
-                    }
-                    return formatField(row);
-                },
+                selector: row => formatField(row),
                 sortable: true,
-                cell: (row: Doors) => {
-                    if (field.key === 'doorNo') {
-                        return row[field.key];
-                    }
-                    return formatField(row);
-                }
             };
         });
-
-    // Filtra os dados da tabela de funcionários
-    const filteredEmployeeDataTable = employees
-        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-        .filter(employee =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || String(employee[key]) === String(filters[key])
-            )
-        );
 
     // Define as colunas que serão exibidas
     const includedEmployeeColumns = ['enrollNumber', 'name', 'cardNumber', 'type'];
@@ -166,7 +138,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <Col md={3}>
+                {/* <Col md={3}>
                     <Form.Group controlId="formNome">
                         <Form.Label>Nome</Form.Label>
                         <Form.Control
@@ -280,7 +252,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                             </Form>
                         </Tab.Pane>
                     </Tab.Content>
-                </Tab.Container>
+                </Tab.Container> */}
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={onClose} >
@@ -290,14 +262,14 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                     Guardar
                 </Button>
             </Modal.Footer>
-            <AddTerminalToACModal
+            {/* <AddTerminalToACModal
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
                 onSave={() => console.log('save')}
                 title="Adicionar Equipamento ao Plano"
                 devices={devices}
                 doors={doors}
-            />
+            /> */}
             <AddEmployeeToACModal
                 open={showEmployeeAddModal}
                 onClose={() => setShowEmployeeAddModal(false)}

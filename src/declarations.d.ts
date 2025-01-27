@@ -3,6 +3,7 @@ declare module '*.png';
 declare module '*.jpg';
 declare module '*.jpeg';
 declare module '*.webp';
+declare module '*.svg';
 
 // Declarações de módulos que não possuem tipos
 declare module 'jquery';

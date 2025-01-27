@@ -330,16 +330,26 @@ export const doorFields = [
 ];
 
 export const accessControlFields = [
-    { key: 'employeesId', label: 'Funcionário', type: 'dropdown', required: true },
-    { key: 'shortName', label: 'Nome', type: 'string' },
-    { key: 'enrollNumber', label: 'Número', type: 'string' },
-    { key: 'doorId', label: 'Porta', type: 'dropdown' },
-    { key: 'doorName', label: 'Nome da Porta', type: 'string' },
-    { key: 'timezoneId', label: 'Período', type: 'dropdown' },
-    { key: 'timezoneName', label: 'Nome do Período', type: 'string' },
-    { key: 'createrName', label: 'Nome do Criador', type: 'string', required: true },
-    { key: 'createDate', label: 'Data de Criação', type: 'Date' },
-    { key: 'updateDate', label: 'Data de Atualização', type: 'Date' },
+    { key: 'nome', label: 'Nome', type: 'string' },
+    { key: 'tipo', label: 'Tipo', type: 'number' },
+    { key: 'tipoVerificacao', label: 'Tipo de Verificação', type: 'number' },
+    { key: 'verificacaoFixa', label: 'Verificação Fixa', type: 'boolean' },
+    { key: 'dataInicio', label: 'Data de Início', type: 'Date' },
+    { key: 'dataFim', label: 'Data de Fim', type: 'Date' },
+    { key: 'opc', label: 'OPC', type: 'number' },
+    { key: 'activo', label: 'Ativo', type: 'boolean' },
+    { key: 'saldoZonaCarregamento', label: 'Saldo na Zona de Carregamento', type: 'boolean' },
+    { key: 'saldoZonaLotacao', label: 'Saldo na Zona de Lotação', type: 'boolean' },
+    { key: 'asWithAc', label: 'AS com AC', type: 'boolean' },
+    { key: 'acOutWithAs', label: 'AC Saída com AS', type: 'boolean' },
+    { key: 'acOutWithAsOffset', label: 'Offset AC Saída com AS', type: 'number' },
+    { key: 'masterOnline', label: 'Master Online', type: 'boolean' },
+    { key: 'respAuthOnline', label: 'Resposta Autorização Online', type: 'boolean' },
+    { key: 'respAuthOnlineOffset', label: 'Offset de Resposta Online', type: 'number' },
+    { key: 'acGrpHR', label: 'Grupo de AC HR', type: 'boolean' },
+    { key: 'OConfig', label: 'Configuração', type: 'string' },
+    { key: 'createdDate', label: 'Data de Criação', type: 'Date' },
+    { key: 'rem', label: 'Removido', type: 'boolean' },
 ];
 
 export const doorsFields = [
@@ -538,4 +548,10 @@ export const newTransactionCardFields = [
 
 export const backupDBFields = [
     { key: 'backupName', label: 'Nome do Backup', type: 'string' }
+];
+
+export const timePlanFields = [
+    { key: 'nome', label: 'Nome', type: 'string' },
+    { key: 'descricao', label: 'Descrição', type: 'string' },
+    { key: 'periodos', label: 'Períodos', type: 'string' },
 ];

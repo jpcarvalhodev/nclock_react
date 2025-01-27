@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 
 import { fetchWithAuth } from "../components/FetchWithAuth";
 
-import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, MBDevice, ManualOpenDoor, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, Zone } from "../types/Types";
+import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, MBDevice, ManualOpenDoor, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, TimePlan, Zone } from "../types/Types";
 
 // URL base para as APIs
 export const BASE_URL = process.env.REACT_APP_API_BASE;
@@ -1524,11 +1524,89 @@ export const deleteTimePeriod = async (id: string) => {
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CRIAÇÃO DE PLANOS DE HORÁRIOS/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllTimePlans = async () => {
+    const response = await fetchWithAuth(`AccPlanoHorario/GetAllAccPlanoHorario`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
+
+export const createTimePlan = async (timePlan: TimePlan) => {
+    const response = await fetchWithAuth(`AccPlanoHorario/CreateAccPlanoHorario`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(timePlan)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
+
+export const updateTimePlan = async (timePlan: TimePlan) => {
+    const response = await fetchWithAuth(`AccPlanoHorario/UpdateAccPlanoHorario?planoId=${timePlan.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(timePlan)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
+
+export const deleteTimePlan = async (id: string[]) => {
+    const response = await fetchWithAuth(`AccPlanoHorario/DeleteAccPlanoHorario`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(id)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
+
+export const deletePeriodoTimePlan = async (planoId: string, id: string[]) => {
+    const response = await fetchWithAuth(`AccPlanoHorario/DeletePeriodosAccPlanoHorario?planoId=${planoId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(id)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CONTROLE DE ACESSO////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 export const fetchAllAccessControl = async () => {
-    const response = await fetchWithAuth(`AccessControle/GetAllAccessControles`);
+    const response = await fetchWithAuth(`AccPlanoAcesso/GetAllAccPlanoAcesso`);
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);
@@ -1538,7 +1616,7 @@ export const fetchAllAccessControl = async () => {
 }
 
 export const addAccessControl = async (accessControl: Partial<AccessControl>) => {
-    const response = await fetchWithAuth(`AccessControle/CreateAccessControle`, {
+    const response = await fetchWithAuth(`AccPlanoAcesso/CreateAccPlanoAcesso`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1554,11 +1632,7 @@ export const addAccessControl = async (accessControl: Partial<AccessControl>) =>
 }
 
 export const updateAccessControl = async (accessControl: Partial<AccessControl>) => {
-    let url = `AccessControle/UpdateAccessControle?employeesId=${accessControl.employeesId}`;
-    if (accessControl.doorId) {
-        url += `&doorId=${accessControl.doorId}`;
-    }
-    const response = await fetchWithAuth(url, {
+    const response = await fetchWithAuth(`AccPlanoAcesso/UpdateAccPlanoAcesso?id=${accessControl.id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -1573,13 +1647,9 @@ export const updateAccessControl = async (accessControl: Partial<AccessControl>)
     return response.json();
 }
 
-export const deleteAccessControl = async (employeesId: string[], doorId: string) => {
-    const response = await fetchWithAuth(`AccessControle/DeleteAccessControle?doorId=${doorId}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(employeesId)
+export const deleteAccessControl = async (id: string) => {
+    const response = await fetchWithAuth(`AccPlanoAcesso/DeleteAccPlanoAcesso?id=${id}`, {
+        method: 'DELETE'
     });
     if (!response.ok) {
         const errorData = await response.json();

@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -12,13 +12,12 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
-import { accessControlFields } from "../../fields/Fields";
-import { AccessControl } from "../../types/Types";
+import { TimePlan } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { DeleteACModal } from "../../modals/DeleteACModal";
-import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
-import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
 import { CreateTimePlansModal } from "../../modals/CreateTimePlansModal";
+import { UpdateTimePlansModal } from "../../modals/UpdateTimePlansModal";
+import { timePlanFields } from "../../fields/Fields";
+import { DeleteModal } from "../../modals/DeleteModal";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -32,59 +31,45 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const TimePlans = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const {
-        accessControl,
-        fetchAccessControl,
-        handleAddAccessControl,
-        handleUpdateAccessControl,
-        handleDeleteAccessControl
-    } = useTerminals();
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['shortName', 'enrollNumber', 'createrName', 'createDate', 'updateDate']);
-    const [selectedRows, setSelectedRows] = useState<AccessControl[]>([]);
+    const { timePlans, fetchTimePlans, handleAddTimePlan, handleUpdateTimePlan, handleDeleteTimePlan } = useTerminals();
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['nome', 'descricao']);
+    const [selectedRows, setSelectedRows] = useState<TimePlan[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState<boolean>(false);
     const [openColumnSelector, setOpenColumnSelector] = useState<boolean>(false);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [filterText, setFilterText] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedAccessToDelete, setSelectedAccessToDelete] = useState<AccessControl | null>(null);
+    const [selectedTimePlanToDelete, setSelectedTimePlanToDelete] = useState<any | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
-    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [filteredAccessControl, setFilteredAccessControl] = useState<AccessControl[]>([]);
-    const [initialData, setInitialData] = useState<Partial<AccessControl> | null>(null);
-    const [currentAccessControlIndex, setCurrentAccessControlIndex] = useState(0);
+    const [selectedTimePlan, setSelectedTimePlan] = useState<TimePlan | null>(null);
+    const [initialData, setInitialData] = useState<Partial<TimePlan> | null>(null);
+    const [currentTimePlanIndex, setCurrentTimePlanIndex] = useState(0);
 
-    // Função para adicionar o controle de acesso
-    const addAccessControl = async (newAccessControl: Partial<AccessControl>) => {
-        await handleAddAccessControl(newAccessControl);
-        refreshAccessControl();
+    // Função para adicionar o plano de horários
+    const addTimePlan = async (newTimePlan: TimePlan) => {
+        await handleAddTimePlan(newTimePlan);
+        refreshTimePlan();
         setClearSelectionToggle((prev) => !prev);
     };
 
-    // Função para editar o controle de acesso
-    const updateAccessControl = async (newAccessControl: Partial<AccessControl>) => {
-        await handleUpdateAccessControl(newAccessControl);
+    // Função para editar o plano de horários
+    const updateTimePlan = async (newTimePlan: TimePlan) => {
+        await handleUpdateTimePlan(newTimePlan);
         setClearSelectionToggle((prev) => !prev);
-        refreshAccessControl();
+        refreshTimePlan();
     };
 
-    // Função para deletar o controle de acesso
-    const deleteAccessControl = async (employeesId: string[], doorId: string) => {
-        await handleDeleteAccessControl(employeesId, doorId);
+    // Função para deletar o plano de horários
+    const deleteTimePlan = async (planoId: string[]) => {
+        await handleDeleteTimePlan(planoId);
         setClearSelectionToggle((prev) => !prev);
-        refreshAccessControl();
-        window.location.reload();
+        refreshTimePlan();
     }
 
-    // Busca as listagens de movimentos ao carregar a página
-    useEffect(() => {
-        fetchAccessControl();
-    }, []);
-
-    // Função para atualizar as listagens de movimentos
-    const refreshAccessControl = () => {
-        fetchAccessControl();
+    // Função para atualizar os planos de horários
+    const refreshTimePlan = () => {
+        fetchTimePlans();
         setClearSelectionToggle((prev) => !prev);
     };
 
@@ -99,7 +84,7 @@ export const TimePlans = () => {
 
     // Função para resetar as colunas
     const resetColumns = () => {
-        setSelectedColumns(['shortName', 'enrollNumber', 'createrName', 'createDate', 'updateDate']);
+        setSelectedColumns(['nome', 'descricao']);
     };
 
     // Função para selecionar todas as colunas
@@ -111,52 +96,74 @@ export const TimePlans = () => {
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
-        selectedRows: AccessControl[];
+        selectedRows: TimePlan[];
     }) => {
-        const sortedAccessControl = state.selectedRows.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
-        setSelectedRows(sortedAccessControl);
+        setSelectedRows(state.selectedRows);
     };
 
-    // Define a função de edição de controle de acesso
-    const handleEditAccessControl = (accessControl: AccessControl) => {
-        setSelectedAccessControl(accessControl);
+    // Define a função de edição de planos de horários
+    const handleEditTimePlan = (timePlan: TimePlan) => {
+        setSelectedTimePlan(timePlan);
         setShowUpdateModal(true);
     };
 
-    // Define a abertura do modal de apagar controle de acesso
-    const handleOpenDeleteModal = (accessControl: AccessControl) => {
-        setSelectedAccessToDelete(accessControl);
+    // Define a abertura do modal de apagar planos de horários
+    const handleOpenDeleteModal = (timePlan: string) => {
+        setSelectedTimePlanToDelete(timePlan);
         setShowDeleteModal(true);
     };
 
-    // Fecha o modal de atualização de controle de acesso
+    // Função para deletar vários departamentos
+    const handleSelectedTimePlanToDelete = () => {
+        const timePlanIds = Array.from(new Set(selectedRows.map(timeplan => timeplan.id)));
+        setSelectedTimePlanToDelete(timePlanIds);
+        setShowDeleteModal(true);
+    };
+
+    // Configurando a função onDelete para iniciar o processo de exclusão
+    const startDeletionProcess = () => {
+        let timePlanIds;
+
+        if (Array.isArray(selectedTimePlanToDelete)) {
+            timePlanIds = selectedTimePlanToDelete;
+        } else if (selectedTimePlanToDelete) {
+            timePlanIds = [selectedTimePlanToDelete];
+        } else {
+            timePlanIds = Array.from(new Set(selectedRows.map(timeplan => timeplan.id)));
+        }
+
+        setShowDeleteModal(false);
+        deleteTimePlan(timePlanIds);
+    };
+
+    // Fecha o modal de atualização de planos de horários
     const handleCloseUpdateModal = () => {
         setShowUpdateModal(false);
-        setSelectedAccessControl(null);
-        refreshAccessControl();
+        setSelectedTimePlan(null);
+        refreshTimePlan();
     };
 
     // Define a função de duplicar funcionários
-    const handleDuplicate = (data: Partial<AccessControl>) => {
+    const handleDuplicate = (data: TimePlan) => {
         setInitialData(data);
         setShowAddModal(true);
-        setSelectedAccessControl(null);
+        setSelectedTimePlan(null);
         setShowUpdateModal(false);
     }
 
-    // Seleciona o controle de acesso anterior
-    const handleNextAccessControl = () => {
-        if (currentAccessControlIndex < accessControl.length - 1) {
-            setCurrentAccessControlIndex(currentAccessControlIndex + 1);
-            setSelectedAccessControl(accessControl[currentAccessControlIndex + 1]);
+    // Seleciona o plano de horário anterior
+    const handleNextTimePlan = () => {
+        if (currentTimePlanIndex < timePlans.length - 1) {
+            setCurrentTimePlanIndex(currentTimePlanIndex + 1);
+            setSelectedTimePlan(timePlans[currentTimePlanIndex + 1]);
         }
     };
 
-    // Seleciona o controle de acesso seguinte
-    const handlePrevAccessControl = () => {
-        if (currentAccessControlIndex > 0) {
-            setCurrentAccessControlIndex(currentAccessControlIndex - 1);
-            setSelectedAccessControl(accessControl[currentAccessControlIndex - 1]);
+    // Seleciona o plano de horário seguinte
+    const handlePrevTimePlan = () => {
+        if (currentTimePlanIndex > 0) {
+            setCurrentTimePlanIndex(currentTimePlanIndex - 1);
+            setSelectedTimePlan(timePlans[currentTimePlanIndex - 1]);
         }
     };
 
@@ -167,11 +174,11 @@ export const TimePlans = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = filteredAccessControl.filter(accessControls =>
+    const filteredDataTable = timePlans.filter(timePlan =>
         Object.keys(filters).every(key =>
-            filters[key] === "" || (accessControls[key] != null && String(accessControls[key]).toLowerCase().includes(filters[key].toLowerCase()))
+            filters[key] === "" || (timePlan[key] != null && String(timePlan[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
-        Object.entries(accessControls).some(([key, value]) => {
+        Object.entries(timePlan).some(([key, value]) => {
             if (selectedColumns.includes(key) && value != null) {
                 if (value instanceof Date) {
                     return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
@@ -183,39 +190,12 @@ export const TimePlans = () => {
         })
     );
 
-    // Define as colunas que não devem ser exibidas
-    const excludedColumns = ['employeesId', 'timezoneId'];
-
-    // Filtra as colunas para remover as colunas excluídas
-    const filteredColumns = accessControlFields.filter(column => !excludedColumns.includes(column.key));
-
     // Define as colunas da tabela
-    const columns: TableColumn<AccessControl>[] = accessControlFields
+    const columns: TableColumn<TimePlan>[] = timePlanFields
         .filter(field => selectedColumns.includes(field.key))
-        .filter(field => !excludedColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: AccessControl) => {
+            const formatField = (row: TimePlan) => {
                 switch (field.key) {
-                    case 'doorName':
-                        if (row.acc && row.acc.length > 0) {
-                            const doorNames = row.acc.map((accItem: AccessControl) => {
-                                if (accItem.doorName.endsWith('door3')) {
-                                    return 'Torniquete';
-                                } else if (accItem.doorName.endsWith('door4')) {
-                                    return 'Video Porteiro';
-                                } else {
-                                    return accItem.doorName || 'Não disponível';
-                                }
-                            });
-                            return doorNames.join(', ');
-                        }
-                        return 'Sem portas definidas';
-                    case 'createDate':
-                        return new Date(row.createDate).toLocaleString() || '';
-                    case 'updateDate':
-                        return new Date(row.updateDate).toLocaleString() || '';
-                    case 'enrollNumber':
-                        return Number(row.enrollNumber) || 'Número inválido';
                     default:
                         return row[field.key] || '';
                 }
@@ -233,9 +213,38 @@ export const TimePlans = () => {
             };
         });
 
+    // Define a coluna de ações
+    const actionColumn: TableColumn<TimePlan> = {
+        name: 'Ações',
+        cell: (row: TimePlan) => (
+            <div style={{ display: 'flex' }}>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-copy' onClick={() => handleDuplicate(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-pencil-fill' onClick={() => handleEditTimePlan(row)} />
+                </OverlayTrigger>
+                <OverlayTrigger
+                    placement="top"
+                    overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
+                >
+                    <CustomOutlineButton className="action-button" icon='bi bi-trash-fill' onClick={() => handleOpenDeleteModal(row.id)} />
+                </OverlayTrigger>
+            </div>
+        ),
+        selector: (row: TimePlan) => row.id,
+        ignoreRowClick: true,
+    };
+
     // Função para obter os campos selecionados baseado em selectedColumns
     const getSelectedFields = () => {
-        return accessControlFields.filter(field => selectedColumns.includes(field.key));
+        return timePlanFields.filter(field => selectedColumns.includes(field.key));
     };
 
     return (
@@ -261,7 +270,7 @@ export const TimePlans = () => {
                             placement="top"
                             overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
                         >
-                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAccessControl} />
+                            <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshTimePlan} />
                         </OverlayTrigger>
                         <OverlayTrigger
                             placement="top"
@@ -275,18 +284,24 @@ export const TimePlans = () => {
                         >
                             <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
                         </OverlayTrigger>
+                        <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
+                        >
+                            <CustomOutlineButton icon="bi bi-trash-fill" onClick={handleSelectedTimePlanToDelete} iconSize='1.1em' />
+                        </OverlayTrigger>
                         <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                         <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                     </div>
                 </div>
                 <div className='table-css'>
                     <DataTable
-                        columns={columns}
+                        columns={[...columns, actionColumn]}
                         data={filteredDataTable}
                         pagination
                         paginationComponentOptions={paginationOptions}
                         paginationPerPage={20}
-                        onRowDoubleClicked={handleEditAccessControl}
+                        onRowDoubleClicked={handleEditTimePlan}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
                         clearSelectedRows={clearSelectionToggle}
@@ -294,15 +309,13 @@ export const TimePlans = () => {
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId='enrollNumber'
                     />
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
             {openColumnSelector && (
                 <ColumnSelectorModal
-                    columns={filteredColumns}
+                    columns={timePlanFields.filter(field => field.key !== 'periodos')}
                     selectedColumns={selectedColumns}
                     onClose={() => setOpenColumnSelector(false)}
                     onColumnToggle={toggleColumn}
@@ -310,32 +323,35 @@ export const TimePlans = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            {selectedAccessToDelete && (
-                <DeleteACModal
+            {selectedTimePlanToDelete && (
+                <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
-                    onDelete={deleteAccessControl}
-                    entity={selectedAccessToDelete}
+                    onDelete={startDeletionProcess}
+                    entityId={selectedTimePlanToDelete}
                 />
             )}
             <CreateTimePlansModal
                 title="Adicionar Plano de Horários"
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={addAccessControl}
+                onSave={addTimePlan}
+                initialValuesData={initialData || {}}
             />
-            {/* {selectedAccessControl && (
-                <UpdateAccessControlModal
+            {selectedTimePlan && (
+                <UpdateTimePlansModal
                     title="Atualizar Plano de Horários"
                     open={showUpdateModal}
                     onClose={handleCloseUpdateModal}
-                    onUpdate={updateAccessControl}
-                    onPrev={handlePrevAccessControl}
-                    onNext={handleNextAccessControl}
-                    canMovePrev={currentAccessControlIndex > 0}
-                    canMoveNext={currentAccessControlIndex < accessControl.length - 1}
+                    onDuplicate={handleDuplicate}
+                    onUpdate={updateTimePlan}
+                    entity={selectedTimePlan}
+                    onPrev={handlePrevTimePlan}
+                    onNext={handleNextTimePlan}
+                    canMovePrev={currentTimePlanIndex > 0}
+                    canMoveNext={currentTimePlanIndex < timePlans.length - 1}
                 />
-            )} */}
+            )}
         </div>
     );
 }
