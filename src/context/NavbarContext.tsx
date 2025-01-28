@@ -35,8 +35,8 @@ type RibbonToggler = 'Pessoas' | 'Dispositivos' | 'Configuracao' | 'Ajuda' | 'Nc
 
 // Provedor de contexto
 export const NavbarProvider = ({ children }: { children: ReactNode }) => {
-  const [navbarColor, setNavbarColor] = useState('#000000');
-  const [footerColor, setFooterColor] = useState('#000000');
+  const [navbarColor, setNavbarColor] = useState('#333333');
+  const [footerColor, setFooterColor] = useState('#333333');
   const [lockRibbon, setLockRibbon] = useState(false);
   const [currentOpenRibbon, setCurrentOpenRibbon] = useState<RibbonToggler | null>(null);
   const [lastClosedRibbon, setLastClosedRibbon] = useState<RibbonToggler | null>(null);

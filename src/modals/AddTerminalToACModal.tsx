@@ -1,14 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
-import { Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 
-import { Devices, DevicesDoors, Doors } from '../types/Types';
+import { Devices, DevicesDoors, Doors, PlanoAcessoDispositivos } from '../types/Types';
 import DataTable from 'react-data-table-component';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { TreeViewAC } from '../components/TreeViewAC';
+import { useTerminals } from '../context/TerminalsContext';
+
+// Define a interface para os itens de campo
+type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
@@ -33,8 +37,55 @@ const getCustomStyles = () => ({
 
 // Define o componente
 export const AddTerminalToACModal = <T extends Record<string, any>>({ title, open, onClose, onSave, devices, doors }: CreateModalProps<T>) => {
-    const [formData, setFormData] = useState<T>({} as T);
+    const { fetchTimePlans } = useTerminals();
+    const [formData, setFormData] = useState<PlanoAcessoDispositivos>({} as PlanoAcessoDispositivos);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
+
+    // Atualiza os dados do dropdown ao abrir o modal
+    useEffect(() => {
+        if (open) {
+            fetchDropdownOptions();
+        }
+    }, [open]);
+
+    // Função para buscar as opções do dropdown
+    const fetchDropdownOptions = async () => {
+        try {
+            const timePlan = await fetchTimePlans();
+            setDropdownData({
+                timePlanId: timePlan,
+            });
+        } catch (error) {
+            console.error("Erro ao buscar os dados", error);
+        }
+    };
+
+    // Função para lidar com a mudança do dropdown
+    const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+        const { value } = e.target;
+        const selectedOption = dropdownData[key]?.find((option: any) => {
+            switch (key) {
+                case 'timePlanId':
+                    return option.id === value;
+                default:
+                    return false;
+            }
+        });
+        if (selectedOption) {
+            const idKey = key;
+            setFormData(prevState => ({
+                ...prevState,
+                [idKey]: value
+            }));
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                [key]: value
+            }));
+        }
+    };
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -48,22 +99,32 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
     };
 
     // Prepara os dados para a tabela
-    const prepareDataForTable = () => {
-        return devices.map(device => ({
-            deviceId: device.zktecoDeviceID,
-            deviceName: device.deviceName,
-            doors: doors.filter(door => door.devId === device.zktecoDeviceID)
-        }));
-    };
+    function prepareDataForTable() {
+        return [{
+            deviceId: '',
+            deviceName: '',
+            doors: [],
+            isTreeViewRow: true
+        }];
+    }
 
     // Define as colunas da tabela
     const columns = [
         {
+
             name: 'Equipamentos',
-            selector: (row: DevicesDoors) => row.deviceName || '',
-            cell: (row: DevicesDoors) => (
-                <TreeViewAC onSelectDevices={handleSelectFromTreeView} devices={devices} doors={doors} />
-            ),
+            cell: (row: DevicesDoors & { isTreeViewRow?: boolean }) => {
+                if (row.isTreeViewRow) {
+                    return (
+                        <TreeViewAC
+                            onSelectDevices={handleSelectFromTreeView}
+                            devices={devices}
+                            doors={doors}
+                        />
+                    );
+                }
+                return row.deviceName || '';
+            },
             grow: 8,
             ignoreRowClick: true,
             allowOverflow: true,
@@ -73,30 +134,56 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
 
     // Função para fechar o modal
     const handleClose = () => {
+        setClearSelectionToggle((prev) => !prev);
         onClose();
     }
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(formData);
-        onClose();
+        const dataToSave = {
+            ...formData,
+            idTerminal: selectedDevicesIds
+        };
+        onSave(dataToSave as unknown as T);
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="lg" centered>
+        <Modal show={open} onHide={handleClose} backdrop="static" size="lg" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
                 <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
+                    <Col md={4}>
+                        <Form.Group controlId="formIdPlanoHorario">
+                            <Form.Label>Plano de Horário</Form.Label>
+                            <Form.Control
+                                as="select"
+                                className={`custom-input-height custom-select-font-size`}
+                                value={formData.idPlanoHorario || ''}
+                                onChange={(e) => handleDropdownChange('timePlanId', e)}
+                            >
+                                <option value="">Selecione...</option>
+                                {dropdownData['timePlanId']?.map((option: any) => {
+                                    let optionId = option.id;
+                                    let optionName = option.nome;
+                                    return (
+                                        <option key={optionId} value={optionId}>
+                                            {optionName}
+                                        </option>
+                                    );
+                                })}
+                            </Form.Control>
+                        </Form.Group>
+                    </Col>
+                    <Row style={{ marginTop: 10 }}>
                         <DataTable
                             columns={columns}
                             data={prepareDataForTable()}
+                            clearSelectedRows={clearSelectionToggle}
                             pagination
                             paginationComponentOptions={paginationOptions}
-                            paginationPerPage={5}
-                            paginationRowsPerPageOptions={[5, 10, 15]}
                             noDataComponent="Não existem dados disponíveis para exibir."
                             customStyles={getCustomStyles()}
                             striped

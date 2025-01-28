@@ -39,37 +39,6 @@ import dpoConsult from '../assets/img/navbar/configuracao/dpoConsult.png';
 import about from '../assets/img/navbar/ajuda/about.png';
 import manual from '../assets/img/navbar/ajuda/manual.png';
 import helpdesk from '../assets/img/navbar/ajuda/helpdesk.png';
-import nsoftware from '../assets/img/navbar/navbar/nsoftware.webp';
-import nsystem from '../assets/img/navbar/navbar/nsystem.webp';
-import napp from '../assets/img/navbar/navbar/napp.webp';
-import ncyber from '../assets/img/navbar/navbar/ncyber.webp';
-import ndigital from '../assets/img/navbar/navbar/ndigital.webp';
-import nserver from '../assets/img/navbar/navbar/nserver.webp';
-import naut from '../assets/img/navbar/navbar/naut.webp';
-import nequip from '../assets/img/navbar/navbar/nequip.webp';
-import nproject from '../assets/img/navbar/navbar/nproject.webp';
-import nsoftwares from '../assets/img/navbar/navbar/nsoftwares.png';
-import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
-import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
-import nidtec from '../assets/img/navbar/navbar/nidtec.png';
-import nsmart from '../assets/img/navbar/navbar/nsmart.webp';
-import nreality from '../assets/img/navbar/navbar/nreality.webp';
-import nhologram from '../assets/img/navbar/navbar/nhologram.webp';
-import npower from '../assets/img/navbar/navbar/npower.webp';
-import ncharge from '../assets/img/navbar/navbar/ncharge.webp';
-import ncity from '../assets/img/navbar/navbar/ncity.png';
-import nkiosk from '../assets/img/navbar/navbar/nkiosk.webp';
-import nled from '../assets/img/navbar/navbar/nled.webp';
-import nfire from '../assets/img/navbar/navbar/nfire.webp';
-import nfurniture from '../assets/img/navbar/navbar/nfurniture.webp';
-import nping from '../assets/img/navbar/navbar/nping.webp';
-import nconnect from '../assets/img/navbar/navbar/nconnect.webp';
-import nlight from '../assets/img/navbar/navbar/nlight.webp';
-import ncomfort from '../assets/img/navbar/navbar/ncomfort.webp';
-import nsound from '../assets/img/navbar/navbar/nsound.webp';
-import nhome from '../assets/img/navbar/navbar/nhome.webp';
-import ndecor from '../assets/img/navbar/navbar/ndecor.webp';
-import npartition from '../assets/img/navbar/navbar/npartition.webp';
 import payment_card from '../assets/img/navbar/nkiosk/payment_card.png';
 import coin from '../assets/img/navbar/nkiosk/coin.png';
 import intercom from '../assets/img/navbar/nkiosk/intercom.png';
@@ -104,24 +73,6 @@ import { EmailOptionsModal } from '../modals/EmailOptions';
 import * as apiService from "../api/apiService";
 import { toast } from 'react-toastify';
 import { AboutModal } from '../modals/AboutModal';
-import ncount from '../assets/img/navbar/navbar/ncount.png';
-import nbuild from '../assets/img/navbar/navbar/nbuild.png';
-import ncaravan from '../assets/img/navbar/navbar/ncaravan.png';
-import nmechanic from '../assets/img/navbar/navbar/nmechanic.png';
-import nevents from '../assets/img/navbar/navbar/nevents.png';
-import nservice from '../assets/img/navbar/navbar/nservice.png';
-import ntask from '../assets/img/navbar/navbar/ntask.png';
-import nproduction from '../assets/img/navbar/navbar/nproduction.png';
-import nticket from '../assets/img/navbar/navbar/nticket.png';
-import nsales from '../assets/img/navbar/navbar/nsales.png';
-import ninvoice from '../assets/img/navbar/navbar/ninvoice.png';
-import ndoc from '../assets/img/navbar/navbar/ndoc.png';
-import nsports from '../assets/img/navbar/navbar/nsports.png';
-import ngym from '../assets/img/navbar/navbar/ngym.png';
-import nschool from '../assets/img/navbar/navbar/nschool.png';
-import nclinic from '../assets/img/navbar/navbar/nclinic.png';
-import noptics from '../assets/img/navbar/navbar/noptics.png';
-import ngold from '../assets/img/navbar/navbar/ngold.png';
 import open_door from '../assets/img/navbar/nkiosk/open_door.png';
 import count from '../assets/img/navbar/nkiosk/count.png';
 import cleanings from '../assets/img/navbar/nkiosk/cleaning.png';
@@ -140,19 +91,9 @@ import { useTerminals } from '../context/TerminalsContext';
 import { useEntity } from '../context/EntityContext';
 import { useKiosk } from '../context/KioskContext';
 import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
-import naccess from '../assets/img/navbar/navbar/naccess.webp';
-import ncard from '../assets/img/navbar/navbar/ncard.webp';
-import nclock from '../assets/img/navbar/navbar/nclock.webp';
-import ndoor from '../assets/img/navbar/navbar/ndoor.webp';
-import npark from '../assets/img/navbar/navbar/npark.webp';
-import npatrol from '../assets/img/navbar/navbar/npatrol.webp';
-import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
-import nview from '../assets/img/navbar/navbar/nview.webp';
-import nvisitor from '../assets/img/navbar/navbar/nvisitor.webp';
 import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
 import ribbonControl from '../assets/img/navbar/navbar/ribbonControl.png';
 import ribbonControlLock from '../assets/img/navbar/navbar/ribbonControlLock.png';
-import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.webp';
 import analysis from '../assets/img/navbar/npatrol/analysis.png';
 import routes from '../assets/img/navbar/npatrol/routes.png';
 import points from '../assets/img/navbar/ncard/points.png';
@@ -304,7 +245,6 @@ interface MenuItem {
 	active?: boolean;
 	onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 	label: string;
-	image?: any;
 	alt?: string;
 	key: string;
 	className?: string;
@@ -907,7 +847,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
 			const softwareName = tabName;
 			const isSoftwareEnabled = softwareEnabled[softwareName] ? true : false;
-			const isSoftwareCliente = menuStructureStart.cliente.submenu?.some(item => item.label.toLowerCase() === softwareName) ? true : false;
+			const isSoftwareCliente = menuStructureStart.cliente.submenu?.some(item => item.key === softwareName) ? true : false;
 			const finalRoute = (softwareName && isSoftwareEnabled && isSoftwareCliente) ? `${route}licensed` : route;
 
 			if (activeTab === tabName) {
@@ -1038,99 +978,95 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const enabledSoftware = getSoftwareEnabledStatus(license);
 
 		const filterUnlicensedSoftware = (submenu: MenuItem[]): MenuItem[] => {
-			return submenu.filter(item => enabledSoftware[item.label.toLowerCase()] === false);
+			return submenu.filter(item => enabledSoftware[item.key] === false);
 		};
 
 		// Estrutura de menu original
 		const originalMenuStructure: MenuStructure = {
 			sisnid: {
 				label: 'SISNID - Segurança',
-				image: sisnidlogo,
 				alt: 'SISNID',
 				key: 'sisnid',
 				submenu: [
-					{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
-					{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
-					{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
-					{ label: 'Npark', image: npark, alt: 'npark', key: 'npark' },
-					{ label: 'Ndoor', image: ndoor, alt: 'ndoor', key: 'ndoor' },
-					{ label: 'Npatrol', image: npatrol, alt: 'npatrol', key: 'npatrol' },
-					{ label: 'Ncard', image: ncard, alt: 'ncard', key: 'ncard' },
-					{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
-					{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
-					{ label: 'Nsoftware', image: sisnidlogo, alt: 'nsoftware', key: 'nsoftware' }
+					{ label: 'Nclock - Assiduidade', alt: 'nclock', key: 'nclock' },
+					{ label: 'Naccess - Acessos', alt: 'naccess', key: 'naccess' },
+					{ label: 'Nvisitor - Torniquetes', alt: 'nvisitor', key: 'nvisitor' },
+					{ label: 'Npark - Parques', alt: 'npark', key: 'npark' },
+					{ label: 'Ndoor - Automatismos', alt: 'ndoor', key: 'ndoor' },
+					{ label: 'Npatrol - Rondas', alt: 'npatrol', key: 'npatrol' },
+					{ label: 'Ncard - Cartões', alt: 'ncard', key: 'ncard' },
+					{ label: 'Nview - Vigilância', alt: 'nview', key: 'nview' },
+					{ label: 'Nsecur - Alarmes', alt: 'nsecur', key: 'nsecur' },
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 			nidsof: {
 				label: 'NIDSOF - Gestão',
-				image: nidsof,
 				alt: 'NIDSOF',
 				key: 'nidsof',
 				submenu: [
-					{ label: 'Nsoftware', image: nsoftware, alt: 'nsoftware', key: 'nsoftware' },
-					{ label: 'Nsystem', image: nsystem, alt: 'nsystem', key: 'nsystem' },
-					{ label: 'Napp', image: napp, alt: 'napp', key: 'napp' },
-					{ label: 'Ncyber', image: ncyber, alt: 'ncyber', key: 'ncyber' },
-					{ label: 'Ndigital', image: ndigital, alt: 'ndigital', key: 'ndigital' },
-					{ label: 'Nserver', image: nserver, alt: 'nserver', key: 'nserver' },
-					{ label: 'Naut', image: naut, alt: 'naut', key: 'naut' },
-					{ label: 'Nequip', image: nequip, alt: 'nequip', key: 'nequip' },
-					{ label: 'Nproject', image: nproject, alt: 'nproject', key: 'nproject' },
-					{ label: 'Ncount', image: ncount, alt: 'ncount', key: 'ncount' },
-					{ label: 'Nbuild', image: nbuild, alt: 'nbuild', key: 'nbuild' },
-					{ label: 'Ncaravan', image: ncaravan, alt: 'ncaravan', key: 'ncaravan' },
-					{ label: 'Nmechanic', image: nmechanic, alt: 'nmechanic', key: 'nmechanic' },
-					{ label: 'Nevents', image: nevents, alt: 'nevents', key: 'nevents' },
-					{ label: 'Nservice', image: nservice, alt: 'nservice', key: 'nservice' },
-					{ label: 'Ntask', image: ntask, alt: 'ntask', key: 'ntask' },
-					{ label: 'Nproduction', image: nproduction, alt: 'nproduction', key: 'nproduction' },
-					{ label: 'Nticket', image: nticket, alt: 'nticket', key: 'nticket' },
-					{ label: 'Nsales', image: nsales, alt: 'nsales', key: 'nsales' },
-					{ label: 'Ninvoice', image: ninvoice, alt: 'ninvoice', key: 'ninvoice' },
-					{ label: 'Ndoc', image: ndoc, alt: 'ndoc', key: 'ndoc' },
-					{ label: 'Nsports', image: nsports, alt: 'nsports', key: 'nsports' },
-					{ label: 'Ngym', image: ngym, alt: 'ngym', key: 'ngym' },
-					{ label: 'Nschool', image: nschool, alt: 'nschool', key: 'nschool' },
-					{ label: 'Nclinic', image: nclinic, alt: 'nclinic', key: 'nclinic' },
-					{ label: 'Noptics', image: noptics, alt: 'noptics', key: 'noptics' },
-					{ label: 'Ngold', image: ngold, alt: 'ngold', key: 'ngold' },
-					{ label: 'Nsoftware', image: nidsof, alt: 'nsoftware', key: 'nsoftware' }
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' },
+					{ label: 'Nsystem - Sistemas', alt: 'nsystem', key: 'nsystem' },
+					{ label: 'Napp - Aplicativos', alt: 'napp', key: 'napp' },
+					{ label: 'Ncyber - Cibernética', alt: 'ncyber', key: 'ncyber' },
+					{ label: 'Ndigital - Transformação', alt: 'ndigital', key: 'ndigital' },
+					{ label: 'Nserver - Integração', alt: 'nserver', key: 'nserver' },
+					{ label: 'Naut - Automação', alt: 'naut', key: 'naut' },
+					{ label: 'Nequip - Equipamentos', alt: 'nequip', key: 'nequip' },
+					{ label: 'Nproject - Projetos', alt: 'nproject', key: 'nproject' },
+					{ label: 'Ncount - Contador', alt: 'ncount', key: 'ncount' },
+					{ label: 'Nbuild - Obras', alt: 'nbuild', key: 'nbuild' },
+					{ label: 'Ncaravan - Autocaravanas', alt: 'ncaravan', key: 'ncaravan' },
+					{ label: 'Nmechanic - Oficinas', alt: 'nmechanic', key: 'nmechanic' },
+					{ label: 'Nevents - Eventos', alt: 'nevents', key: 'nevents' },
+					{ label: 'Nservice - Serviços', alt: 'nservice', key: 'nservice' },
+					{ label: 'Ntask - Tarefas', alt: 'ntask', key: 'ntask' },
+					{ label: 'Nproduction - Produção', alt: 'nproduction', key: 'nproduction' },
+					{ label: 'Nticket - Bilhetes', alt: 'nticket', key: 'nticket' },
+					{ label: 'Nsales - CRM', alt: 'nsales', key: 'nsales' },
+					{ label: 'Ninvoice - Faturação', alt: 'ninvoice', key: 'ninvoice' },
+					{ label: 'Ndoc - Documental', alt: 'ndoc', key: 'ndoc' },
+					{ label: 'Nsports - Desporto', alt: 'nsports', key: 'nsports' },
+					{ label: 'Ngym - Ginásios', alt: 'ngym', key: 'ngym' },
+					{ label: 'Nschool - Escolar', alt: 'nschool', key: 'nschool' },
+					{ label: 'Nclinic - Clínicas', alt: 'nclinic', key: 'nclinic' },
+					{ label: 'Noptics - Ópticas', alt: 'noptics', key: 'noptics' },
+					{ label: 'Ngold - Ourivesarias', alt: 'ngold', key: 'ngold' },
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 			nidtec: {
 				label: 'NIDTEC - Tecnologia',
-				image: nidtec,
 				alt: 'NIDTEC',
 				key: 'nidtec',
 				submenu: [
-					{ label: 'Nsmart', image: nsmart, alt: 'nsmart', key: 'nsmart' },
-					{ label: 'Nreality', image: nreality, alt: 'nreality', key: 'nreality' },
-					{ label: 'Nhologram', image: nhologram, alt: 'nhologram', key: 'nhologram' },
-					{ label: 'Npower', image: npower, alt: 'npower', key: 'npower' },
-					{ label: 'Ncharge', image: ncharge, alt: 'ncharge', key: 'ncharge' },
-					{ label: 'Ncity', image: ncity, alt: 'ncity', key: 'ncity' },
-					{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
-					{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
-					{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
-					{ label: 'Nsoftware', image: nidtec, alt: 'nsoftware', key: 'nsoftware' }
+					{ label: 'Nsmart - Inteligência', alt: 'nsmart', key: 'nsmart' },
+					{ label: 'Nreality - Virtual', alt: 'nreality', key: 'nreality' },
+					{ label: 'Nhologram - Hologramas', alt: 'nhologram', key: 'nhologram' },
+					{ label: 'Npower - Energias', alt: 'npower', key: 'npower' },
+					{ label: 'Ncharge - Recarga', alt: 'ncharge', key: 'ncharge' },
+					{ label: 'Ncity - Mobilidade', alt: 'ncity', key: 'ncity' },
+					{ label: 'Nkiosk - Quiosques', alt: 'nkiosk', key: 'nkiosk' },
+					{ label: 'Nled - Multimédia', alt: 'nled', key: 'nled' },
+					{ label: 'Nfire - Incêndios', alt: 'nfire', key: 'nfire' },
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 			nidplace: {
 				label: 'NIDPLACE - Conforto',
-				image: nidplace,
 				alt: 'NIDPLACE',
 				key: 'nidplace',
 				submenu: [
-					{ label: 'Nfurniture', image: nfurniture, alt: 'nfurniture', key: 'nfurniture' },
-					{ label: 'Npartition', image: npartition, alt: 'npartition', key: 'npartition' },
-					{ label: 'Ndecor', image: ndecor, alt: 'ndecor', key: 'ndecor' },
-					{ label: 'Nping', image: nping, alt: 'nping', key: 'nping' },
-					{ label: 'Nconnect', image: nconnect, alt: 'nconnect', key: 'nconnect' },
-					{ label: 'Nlight', image: nlight, alt: 'nlight', key: 'nlight' },
-					{ label: 'Ncomfort', image: ncomfort, alt: 'ncomfort', key: 'ncomfort' },
-					{ label: 'Nsound', image: nsound, alt: 'nsound', key: 'nsound' },
-					{ label: 'Nhome', image: nhome, alt: 'nhome', key: 'nhome' },
-					{ label: 'Nsoftware', image: nidplace, alt: 'nsoftware', key: 'nsoftware' }
+					{ label: 'Nfurniture - Mobiliário', alt: 'nfurniture', key: 'nfurniture' },
+					{ label: 'Npartition - Divisórias', alt: 'npartition', key: 'npartition' },
+					{ label: 'Ndecor - Design', alt: 'ndecor', key: 'ndecor' },
+					{ label: 'Nping - Redes', alt: 'nping', key: 'nping' },
+					{ label: 'Nconnect - Electricidade', alt: 'nconnect', key: 'nconnect' },
+					{ label: 'Nlight - Iluminação', alt: 'nlight', key: 'nlight' },
+					{ label: 'Ncomfort - Climatização', alt: 'ncomfort', key: 'ncomfort' },
+					{ label: 'Nsound - Áudio', alt: 'nsound', key: 'nsound' },
+					{ label: 'Nhome - Domótica', alt: 'nhome', key: 'nhome' },
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 
@@ -1153,35 +1089,30 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const KioskOptionalMenuStructure: MenuStructure = {
 		contador: {
 			label: 'Contador Passagem',
-			image: counts,
 			alt: 'contador',
 			key: 'contador',
 			onClick: () => toast.info('Módulo de Contagem de Pessoas. Sistema pode ser utilizado em diversos contextos, como: Contagem: Controle de entradas e saída de pessoas.'),
 		},
 		sensor: {
 			label: 'Sensor Movimento',
-			image: sensor,
 			alt: 'sensor',
 			key: 'sensor',
 			onClick: () => toast.info('Módulo de Sensores de Movimento. Sistema pode ser utilizado em diversos contextos, como: Local: Detetar movimento de uma determinada área.'),
 		},
 		fotocelula: {
 			label: 'Fotocélula Segurança',
-			image: cell,
 			alt: 'fotocélula',
 			key: 'fotocelula',
 			onClick: () => toast.info('Módulo de Fotocélulas de Segurança. Sistema pode ser utilizado em diversos contextos, como: Zona: Alerta de um movimento indesejado num local.'),
 		},
 		painel: {
 			label: 'Painel de Movimentos',
-			image: panel,
 			alt: 'painel',
 			key: 'painel',
 			onClick: () => toast.info('Módulo de Painel de Movimentos. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Visualizar Registos Online com Foto'),
 		},
 		revista: {
 			label: 'Revistas Aleatórias',
-			image: search,
 			alt: 'revista',
 			key: 'revista',
 			onClick: () => toast.info('Módulo de Revistas Aleatórias. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Inspecionar aleatoriamente pessoas.'),
@@ -1192,21 +1123,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const TaskOptionalMenuStructure: MenuStructure = {
 		contador: {
 			label: 'Contador Passagem',
-			image: counts,
 			alt: 'contador',
 			key: 'contador',
 			onClick: () => toast.info('Módulo de Contagem de Pessoas. Sistema pode ser utilizado em diversos contextos, como: Contagem: Controle de entradas e saída de pessoas.'),
 		},
 		sensor: {
 			label: 'Sensor Movimento',
-			image: sensor,
 			alt: 'sensor',
 			key: 'sensor',
 			onClick: () => toast.info('Módulo de Sensores de Movimento. Sistema pode ser utilizado em diversos contextos, como: Local: Detetar movimento de uma determinada área.'),
 		},
 		fotocelula: {
 			label: 'Fotocélula Segurança',
-			image: cell,
 			alt: 'fotocélula',
 			key: 'fotocelula',
 			onClick: () => toast.info('Módulo de Fotocélulas de Segurança. Sistema pode ser utilizado em diversos contextos, como: Zona: Alerta de um movimento indesejado num local.'),
@@ -1222,14 +1150,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 				alt: 'pessoas',
 				key: 'pessoas',
 				submenu: [
-					{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', image: visitorAccess, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Departamentos', key: 'geral_departamentos', image: visitorAccess, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Grupos', key: 'geral_grupos', image: visitorAccess, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Categorias', key: 'geral_categorias', image: visitorAccess, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Profissões', key: 'geral_profissoes', image: visitorAccess, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Zonas', key: 'geral_zonas', image: visitorAccess, alt: 'pessoas' },
-					/* { label: 'Listagem Geral de Fracções', key: 'geral_fraccoes', image: visitorAccess, alt: 'pessoas' }, */
-					{ label: 'Listagem Geral de Entidades Externas', key: 'geral_entext', image: visitorAccess, alt: 'pessoas' }
+					{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', alt: 'pessoas' },
+					{ label: 'Listagem Geral de Departamentos', key: 'geral_departamentos', alt: 'pessoas' },
+					{ label: 'Listagem Geral de Grupos', key: 'geral_grupos', alt: 'pessoas' },
+					{ label: 'Listagem Geral de Categorias', key: 'geral_categorias', alt: 'pessoas' },
+					{ label: 'Listagem Geral de Profissões', key: 'geral_profissoes', alt: 'pessoas' },
+					{ label: 'Listagem Geral de Zonas', key: 'geral_zonas', alt: 'pessoas' },
+					/* { label: 'Listagem Geral de Fracções', key: 'geral_fraccoes', alt: 'pessoas' }, */
+					{ label: 'Listagem Geral de Entidades Externas', key: 'geral_entext', alt: 'pessoas' }
 				],
 			},
 			dispositivos: {
@@ -1238,10 +1166,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 				alt: 'dispositivos',
 				key: 'dispositivos',
 				submenu: [
-					{ label: 'Listagem Geral de Equipamentos', key: 'geral_equipamentos', image: terminal, alt: 'dispositivos' },
-					{ label: 'Listagem Geral de Controlo de Acessos', key: 'geral_controlo', image: terminal, alt: 'dispositivos' },
-					{ label: 'Listagem Geral de Períodos', key: 'geral_periodos', image: terminal, alt: 'dispositivos' },
-					{ label: 'Listagem Geral de Fecho e Abertura', key: 'geral_fecho', image: terminal, alt: 'dispositivos' }
+					{ label: 'Listagem Geral de Equipamentos', key: 'geral_equipamentos', alt: 'dispositivos' },
+					{ label: 'Listagem Geral de Controlo de Acessos', key: 'geral_controlo', alt: 'dispositivos' },
+					{ label: 'Listagem Geral de Períodos', key: 'geral_periodos', alt: 'dispositivos' },
+					{ label: 'Listagem Geral de Fecho e Abertura', key: 'geral_fecho', alt: 'dispositivos' }
 				],
 			},
 			configuracao: {
@@ -1250,9 +1178,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 				alt: 'configuração',
 				key: 'configuracao',
 				submenu: [
-					{ label: 'Listagem Geral de Utilizadores', key: 'geral_utilizadores', image: settings, alt: 'configuração' },
-					{ label: 'Listagem Geral de Logins', key: 'geral_logins', image: settings, alt: 'configuração' },
-					{ label: 'Listagem Geral de Histórico', key: 'geral_historico', image: settings, alt: 'configuração' }
+					{ label: 'Listagem Geral de Utilizadores', key: 'geral_utilizadores', alt: 'configuração' },
+					{ label: 'Listagem Geral de Logins', key: 'geral_logins', alt: 'configuração' },
+					{ label: 'Listagem Geral de Histórico', key: 'geral_historico', alt: 'configuração' }
 				],
 			}
 		};
@@ -1260,22 +1188,21 @@ export const NavBar = ({ style }: NavBarProps) => {
 		// Estrutura do menu de listagens para o nkiosk
 		const nkioskSubmenu = {
 			label: 'Listagem Nkiosk',
-			image: nkiosk,
 			alt: 'nkiosk',
 			key: 'nkiosk',
 			submenu: [
-				{ label: 'Listagem Recebimento Multibanco', key: 'recebimento_multibanco', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Recebimento Moedeiro', key: 'recebimento_moedeiro', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Recebimentos Totais', key: 'recebimento_totais', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Movimento Torniquete', key: 'movimento_torniquete', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Movimento Quiosque', key: 'movimento_quiosque', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Movimentos Totais', key: 'movimento_totais', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Remota Video Porteiro', key: 'remota_vp', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Remota Abertura Manual', key: 'remota_abertura', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Registos Recolha Moedas', key: 'registo_recolhas', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Registos Limpeza Geral', key: 'registo_limpeza', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Registos Contador', key: 'registo_contador', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Registos Ocorrências', key: 'registo_ocorrencias', image: nkiosk, alt: 'nkiosk' }
+				{ label: 'Listagem Recebimento Multibanco', key: 'recebimento_multibanco', alt: 'nkiosk' },
+				{ label: 'Listagem Recebimento Moedeiro', key: 'recebimento_moedeiro', alt: 'nkiosk' },
+				{ label: 'Listagem Recebimentos Totais', key: 'recebimento_totais', alt: 'nkiosk' },
+				{ label: 'Listagem Movimento Torniquete', key: 'movimento_torniquete', alt: 'nkiosk' },
+				{ label: 'Listagem Movimento Quiosque', key: 'movimento_quiosque', alt: 'nkiosk' },
+				{ label: 'Listagem Movimentos Totais', key: 'movimento_totais', alt: 'nkiosk' },
+				{ label: 'Listagem Remota Video Porteiro', key: 'remota_vp', alt: 'nkiosk' },
+				{ label: 'Listagem Remota Abertura Manual', key: 'remota_abertura', alt: 'nkiosk' },
+				{ label: 'Listagem Registos Recolha Moedas', key: 'registo_recolhas', alt: 'nkiosk' },
+				{ label: 'Listagem Registos Limpeza Geral', key: 'registo_limpeza', alt: 'nkiosk' },
+				{ label: 'Listagem Registos Contador', key: 'registo_contador', alt: 'nkiosk' },
+				{ label: 'Listagem Registos Ocorrências', key: 'registo_ocorrencias', alt: 'nkiosk' }
 			],
 		}
 
@@ -1299,67 +1226,66 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const enabledSoftware = getSoftwareEnabledStatus(license);
 
 		const filteredSubmenu = [
-			{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
-			{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
-			{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
-			{ label: 'Npark', image: npark, alt: 'npark', key: 'npark' },
-			{ label: 'Ndoor', image: ndoor, alt: 'ndoor', key: 'ndoor' },
-			{ label: 'Npatrol', image: npatrol, alt: 'npatrol', key: 'npatrol' },
-			{ label: 'Ncard', image: ncard, alt: 'ncard', key: 'ncard' },
-			{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
-			{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
-			{ label: 'Nsoftware', image: nsoftware, alt: 'nsoftware', key: 'nsoftware' },
-			{ label: 'Nsystem', image: nsystem, alt: 'nsystem', key: 'nsystem' },
-			{ label: 'Napp', image: napp, alt: 'napp', key: 'napp' },
-			{ label: 'Ncyber', image: ncyber, alt: 'ncyber', key: 'ncyber' },
-			{ label: 'Ndigital', image: ndigital, alt: 'ndigital', key: 'ndigital' },
-			{ label: 'Nserver', image: nserver, alt: 'nserver', key: 'nserver' },
-			{ label: 'Naut', image: naut, alt: 'naut', key: 'naut' },
-			{ label: 'Nequip', image: nequip, alt: 'nequip', key: 'nequip' },
-			{ label: 'Nproject', image: nproject, alt: 'nproject', key: 'nproject' },
-			{ label: 'Ncount', image: ncount, alt: 'ncount', key: 'ncount' },
-			{ label: 'Nbuild', image: nbuild, alt: 'nbuild', key: 'nbuild' },
-			{ label: 'Ncaravan', image: ncaravan, alt: 'ncaravan', key: 'ncaravan' },
-			{ label: 'Nmechanic', image: nmechanic, alt: 'nmechanic', key: 'nmechanic' },
-			{ label: 'Nevents', image: nevents, alt: 'nevents', key: 'nevents' },
-			{ label: 'Nservice', image: nservice, alt: 'nservice', key: 'nservice' },
-			{ label: 'Ntask', image: ntask, alt: 'ntask', key: 'ntask' },
-			{ label: 'Nproduction', image: nproduction, alt: 'nproduction', key: 'nproduction' },
-			{ label: 'Nticket', image: nticket, alt: 'nticket', key: 'nticket' },
-			{ label: 'Nsales', image: nsales, alt: 'nsales', key: 'nsales' },
-			{ label: 'Ninvoice', image: ninvoice, alt: 'ninvoice', key: 'ninvoice' },
-			{ label: 'Ndoc', image: ndoc, alt: 'ndoc', key: 'ndoc' },
-			{ label: 'Nsports', image: nsports, alt: 'nsports', key: 'nsports' },
-			{ label: 'Ngym', image: ngym, alt: 'ngym', key: 'ngym' },
-			{ label: 'Nschool', image: nschool, alt: 'nschool', key: 'nschool' },
-			{ label: 'Nclinic', image: nclinic, alt: 'nclinic', key: 'nclinic' },
-			{ label: 'Noptics', image: noptics, alt: 'noptics', key: 'noptics' },
-			{ label: 'Ngold', image: ngold, alt: 'ngold', key: 'ngold' },
-			{ label: 'Nsmart', image: nsmart, alt: 'nsmart', key: 'nsmart' },
-			{ label: 'Nreality', image: nreality, alt: 'nreality', key: 'nreality' },
-			{ label: 'Nhologram', image: nhologram, alt: 'nhologram', key: 'nhologram' },
-			{ label: 'Npower', image: npower, alt: 'npower', key: 'npower' },
-			{ label: 'Ncharge', image: ncharge, alt: 'ncharge', key: 'ncharge' },
-			{ label: 'Ncity', image: ncity, alt: 'ncity', key: 'ncity' },
-			{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
-			{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
-			{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
-			{ label: 'Nfurniture', image: nfurniture, alt: 'nfurniture', key: 'nfurniture' },
-			{ label: 'Npartition', image: npartition, alt: 'npartition', key: 'npartition' },
-			{ label: 'Ndecor', image: ndecor, alt: 'ndecor', key: 'ndecor' },
-			{ label: 'Nping', image: nping, alt: 'nping', key: 'nping' },
-			{ label: 'Nconnect', image: nconnect, alt: 'nconnect', key: 'nconnect' },
-			{ label: 'Nlight', image: nlight, alt: 'nlight', key: 'nlight' },
-			{ label: 'Ncomfort', image: ncomfort, alt: 'ncomfort', key: 'ncomfort' },
-			{ label: 'Nsound', image: nsound, alt: 'nsound', key: 'nsound' },
-			{ label: 'Nhome', image: nhome, alt: 'nhome', key: 'nhome' },
-		].filter(item => enabledSoftware[item.label.toLowerCase()]);
+			{ label: 'Nclock - Assiduidade', alt: 'nclock', key: 'nclock' },
+			{ label: 'Naccess - Acessos', alt: 'naccess', key: 'naccess' },
+			{ label: 'Nvisitor - Torniquetes', alt: 'nvisitor', key: 'nvisitor' },
+			{ label: 'Npark - Parques', alt: 'npark', key: 'npark' },
+			{ label: 'Ndoor - Automatismos', alt: 'ndoor', key: 'ndoor' },
+			{ label: 'Npatrol - Rondas', alt: 'npatrol', key: 'npatrol' },
+			{ label: 'Ncard - Cartões', alt: 'ncard', key: 'ncard' },
+			{ label: 'Nview - Vigilância', alt: 'nview', key: 'nview' },
+			{ label: 'Nsecur - Alarmes', alt: 'nsecur', key: 'nsecur' },
+			{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' },
+			{ label: 'Nsystem - Sistemas', alt: 'nsystem', key: 'nsystem' },
+			{ label: 'Napp - Aplicativos', alt: 'napp', key: 'napp' },
+			{ label: 'Ncyber - Cibernética', alt: 'ncyber', key: 'ncyber' },
+			{ label: 'Ndigital - Transformação', alt: 'ndigital', key: 'ndigital' },
+			{ label: 'Nserver - Integração', alt: 'nserver', key: 'nserver' },
+			{ label: 'Naut - Automação', alt: 'naut', key: 'naut' },
+			{ label: 'Nequip - Equipamentos', alt: 'nequip', key: 'nequip' },
+			{ label: 'Nproject - Projetos', alt: 'nproject', key: 'nproject' },
+			{ label: 'Ncount - Contador', alt: 'ncount', key: 'ncount' },
+			{ label: 'Nbuild - Obras', alt: 'nbuild', key: 'nbuild' },
+			{ label: 'Ncaravan - Autocaravanas', alt: 'ncaravan', key: 'ncaravan' },
+			{ label: 'Nmechanic - Oficinas', alt: 'nmechanic', key: 'nmechanic' },
+			{ label: 'Nevents - Eventos', alt: 'nevents', key: 'nevents' },
+			{ label: 'Nservice - Serviços', alt: 'nservice', key: 'nservice' },
+			{ label: 'Ntask - Tarefas', alt: 'ntask', key: 'ntask' },
+			{ label: 'Nproduction - Produção', alt: 'nproduction', key: 'nproduction' },
+			{ label: 'Nticket - Bilhetes', alt: 'nticket', key: 'nticket' },
+			{ label: 'Nsales - CRM', alt: 'nsales', key: 'nsales' },
+			{ label: 'Ninvoice - Faturação', alt: 'ninvoice', key: 'ninvoice' },
+			{ label: 'Ndoc - Documental', alt: 'ndoc', key: 'ndoc' },
+			{ label: 'Nsports - Desporto', alt: 'nsports', key: 'nsports' },
+			{ label: 'Ngym - Ginásios', alt: 'ngym', key: 'ngym' },
+			{ label: 'Nschool - Escolar', alt: 'nschool', key: 'nschool' },
+			{ label: 'Nclinic - Clínicas', alt: 'nclinic', key: 'nclinic' },
+			{ label: 'Noptics - Ópticas', alt: 'noptics', key: 'noptics' },
+			{ label: 'Ngold - Ourivesarias', alt: 'ngold', key: 'ngold' },
+			{ label: 'Nsmart - Inteligência', alt: 'nsmart', key: 'nsmart' },
+			{ label: 'Nreality - Virtual', alt: 'nreality', key: 'nreality' },
+			{ label: 'Nhologram - Hologramas', alt: 'nhologram', key: 'nhologram' },
+			{ label: 'Npower - Energias', alt: 'npower', key: 'npower' },
+			{ label: 'Ncharge - Recarga', alt: 'ncharge', key: 'ncharge' },
+			{ label: 'Ncity - Mobilidade', alt: 'ncity', key: 'ncity' },
+			{ label: 'Nkiosk - Quiosques', alt: 'nkiosk', key: 'nkiosk' },
+			{ label: 'Nled - Multimédia', alt: 'nled', key: 'nled' },
+			{ label: 'Nfire - Incêndios', alt: 'nfire', key: 'nfire' },
+			{ label: 'Nfurniture - Mobiliário', alt: 'nfurniture', key: 'nfurniture' },
+			{ label: 'Npartition - Divisórias', alt: 'npartition', key: 'npartition' },
+			{ label: 'Ndecor - Design', alt: 'ndecor', key: 'ndecor' },
+			{ label: 'Nping - Redes', alt: 'nping', key: 'nping' },
+			{ label: 'Nconnect - Electricidade', alt: 'nconnect', key: 'nconnect' },
+			{ label: 'Nlight - Iluminação', alt: 'nlight', key: 'nlight' },
+			{ label: 'Ncomfort - Climatização', alt: 'ncomfort', key: 'ncomfort' },
+			{ label: 'Nsound - Áudio', alt: 'nsound', key: 'nsound' },
+			{ label: 'Nhome - Domótica', alt: 'nhome', key: 'nhome' },
+		].filter(item => enabledSoftware[item.key]);
 
 		const dynamicMenuStructure = {
-			dashboard: { label: 'INÍCIO', image: nsoftwares, alt: 'INÍCIO', key: 'dashboard' },
+			dashboard: { label: 'INÍCIO', alt: 'INÍCIO', key: 'dashboard' },
 			cliente: {
 				label: 'LICENÇAS',
-				image: certificate,
 				alt: 'LICENÇAS',
 				key: 'cliente',
 				submenu: filteredSubmenu,
@@ -1370,13 +1296,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 	}, [license]);
 
 	// Define o componente do item de menu
-	const MenuItem = ({ active, onClick, image, alt, label }: MenuItem) => (
+	const MenuItem = ({ active, onClick, alt, label }: MenuItem) => (
 		<li
 			className={`image-text ${active ? 'active' : ''}`}
 			onClick={onClick}
-			style={{ display: 'flex', flexDirection: 'row' }}
+			style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}
 		>
-			<img src={image} alt={alt} className='menu-item-image' />
 			<span className='menu-item-text'>{label}</span>
 		</li>
 	);
@@ -1461,11 +1386,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 		const isWideMenu = menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk' || menuKey === 'contador' || menuKey === 'sensor' || menuKey === 'fotocelula' || menuKey === 'painel' || menuKey === 'revista';
 		const isWideSubmenu = menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
+		const isWideSubmenuMain = menuKey === 'cliente' || menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace'
 
 		return (
 			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
 				style={{
-					minWidth: isWideMenu ? '200px' : 'auto',
+					minWidth: isWideMenu ? '150px' : 'auto',
 				}}
 			>
 				<MenuItem
@@ -1481,14 +1407,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 							handleTab(String(menuKey));
 						}
 					}}
-					image={menu.image}
 					alt={menu.alt}
 					label={menu.label}
 					className="menu-item"
 				/>
 				{activeMenu === menuKey && menu.submenu && (
 					<div className="submenu" style={{
-						width: isWideSubmenu ? '300px' : 'auto',
+						minWidth: isWideSubmenu || isWideSubmenuMain ? '255px' : 'auto',
 						right: isWideSubmenu && !isPageNotRequired ? '100%' : 'auto',
 						left: isWideSubmenu && !isPageNotRequired ? 'auto' : '100%',
 					}}>
@@ -1497,7 +1422,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 								key={item.key}
 								active={activeMenu === item.key}
 								onClick={() => handleMenuItemClick(item)}
-								image={item.image}
 								alt={item.alt}
 								label={item.label}
 								className="submenu-item"
@@ -1518,62 +1442,62 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Defina o mapeamento das cores para cada aba
 	const tabColors: Record<string, { navbarColor: string; footerColor: string }> = {
-		default: { navbarColor: '#000000', footerColor: '#000000' },
-		dashboard: { navbarColor: '#000000', footerColor: '#000000' },
-		nclock: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		naccess: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		nvisitor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		npark: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		ndoor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		npatrol: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		ncard: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		nview: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		nsecur: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		nsoftware: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nsystem: { navbarColor: '#D01313', footerColor: '#D01313' },
-		napp: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ncyber: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ndigital: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nserver: { navbarColor: '#D01313', footerColor: '#D01313' },
-		naut: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nequip: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nproject: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ncount: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nbuild: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ncaravan: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nmechanic: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nevents: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nservice: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ntask: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nproduction: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nticket: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nsales: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ninvoice: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ndoc: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nsports: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ngym: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nschool: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nclinic: { navbarColor: '#D01313', footerColor: '#D01313' },
-		noptics: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ngold: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nsmart: { navbarColor: '#009739', footerColor: '#009739' },
-		nreality: { navbarColor: '#009739', footerColor: '#009739' },
-		nhologram: { navbarColor: '#009739', footerColor: '#009739' },
-		npower: { navbarColor: '#009739', footerColor: '#009739' },
-		ncharge: { navbarColor: '#009739', footerColor: '#009739' },
-		ncity: { navbarColor: '#009739', footerColor: '#009739' },
-		nkiosk: { navbarColor: '#009739', footerColor: '#009739' },
-		nled: { navbarColor: '#009739', footerColor: '#009739' },
-		nfire: { navbarColor: '#009739', footerColor: '#009739' },
-		nfurniture: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		npartition: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		ndecor: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nping: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nconnect: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nlight: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		ncomfort: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nsound: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nhome: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		default: { navbarColor: '#333333', footerColor: '#333333' },
+		dashboard: { navbarColor: '#333333', footerColor: '#333333' },
+		nclock: { navbarColor: '#333333', footerColor: '#333333' },
+		naccess: { navbarColor: '#333333', footerColor: '#333333' },
+		nvisitor: { navbarColor: '#333333', footerColor: '#333333' },
+		npark: { navbarColor: '#333333', footerColor: '#333333' },
+		ndoor: { navbarColor: '#333333', footerColor: '#333333' },
+		npatrol: { navbarColor: '#333333', footerColor: '#333333' },
+		ncard: { navbarColor: '#333333', footerColor: '#333333' },
+		nview: { navbarColor: '#333333', footerColor: '#333333' },
+		nsecur: { navbarColor: '#333333', footerColor: '#333333' },
+		nsoftware: { navbarColor: '#333333', footerColor: '#333333' },
+		nsystem: { navbarColor: '#333333', footerColor: '#333333' },
+		napp: { navbarColor: '#333333', footerColor: '#333333' },
+		ncyber: { navbarColor: '#333333', footerColor: '#333333' },
+		ndigital: { navbarColor: '#333333', footerColor: '#333333' },
+		nserver: { navbarColor: '#333333', footerColor: '#333333' },
+		naut: { navbarColor: '#333333', footerColor: '#333333' },
+		nequip: { navbarColor: '#333333', footerColor: '#333333' },
+		nproject: { navbarColor: '#333333', footerColor: '#333333' },
+		ncount: { navbarColor: '#333333', footerColor: '#333333' },
+		nbuild: { navbarColor: '#333333', footerColor: '#333333' },
+		ncaravan: { navbarColor: '#333333', footerColor: '#333333' },
+		nmechanic: { navbarColor: '#333333', footerColor: '#333333' },
+		nevents: { navbarColor: '#333333', footerColor: '#333333' },
+		nservice: { navbarColor: '#333333', footerColor: '#333333' },
+		ntask: { navbarColor: '#333333', footerColor: '#333333' },
+		nproduction: { navbarColor: '#333333', footerColor: '#333333' },
+		nticket: { navbarColor: '#333333', footerColor: '#333333' },
+		nsales: { navbarColor: '#333333', footerColor: '#333333' },
+		ninvoice: { navbarColor: '#333333', footerColor: '#333333' },
+		ndoc: { navbarColor: '#333333', footerColor: '#333333' },
+		nsports: { navbarColor: '#333333', footerColor: '#333333' },
+		ngym: { navbarColor: '#333333', footerColor: '#333333' },
+		nschool: { navbarColor: '#333333', footerColor: '#333333' },
+		nclinic: { navbarColor: '#333333', footerColor: '#333333' },
+		noptics: { navbarColor: '#333333', footerColor: '#333333' },
+		ngold: { navbarColor: '#333333', footerColor: '#333333' },
+		nsmart: { navbarColor: '#333333', footerColor: '#333333' },
+		nreality: { navbarColor: '#333333', footerColor: '#333333' },
+		nhologram: { navbarColor: '#333333', footerColor: '#333333' },
+		npower: { navbarColor: '#333333', footerColor: '#333333' },
+		ncharge: { navbarColor: '#333333', footerColor: '#333333' },
+		ncity: { navbarColor: '#333333', footerColor: '#333333' },
+		nkiosk: { navbarColor: '#333333', footerColor: '#333333' },
+		nled: { navbarColor: '#333333', footerColor: '#333333' },
+		nfire: { navbarColor: '#333333', footerColor: '#333333' },
+		nfurniture: { navbarColor: '#333333', footerColor: '#333333' },
+		npartition: { navbarColor: '#333333', footerColor: '#333333' },
+		ndecor: { navbarColor: '#333333', footerColor: '#333333' },
+		nping: { navbarColor: '#333333', footerColor: '#333333' },
+		nconnect: { navbarColor: '#333333', footerColor: '#333333' },
+		nlight: { navbarColor: '#333333', footerColor: '#333333' },
+		ncomfort: { navbarColor: '#333333', footerColor: '#333333' },
+		nsound: { navbarColor: '#333333', footerColor: '#333333' },
+		nhome: { navbarColor: '#333333', footerColor: '#333333' },
 	};
 
 	// useEffect para atualizar as cores da navbar e do footer e manter a ribbon da tab ativa
@@ -2383,7 +2307,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Link to="/nclock/nclockmovement" onClick={() => fetchAllAttendances({ filterFunc: data => data.filter(att => att.type !== 3) })} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclock/nclockmovement' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={movement} alt="botão assiduidade" />
+														<img src={hourDatabase} alt="botão assiduidade" />
 													</span>
 													<span className="text">Assiduidade</span>
 												</Link>
@@ -11965,6 +11889,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 														<img src={nacionalities} alt="botão nacionalidades" />
 													</span>
 													<span className="text">Nacionalidades</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={imports} alt="botão importar" />
+													</span>
+													<span className="text">Importar</span>
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>

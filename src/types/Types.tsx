@@ -396,24 +396,27 @@ export type Door = {
 export type DoorDevice = Partial<Devices> & Partial<Door>;
 
 export type DoorDeviceAccess = {
+    [key: string]: any;
     idPlanosAcessoDispositivo: string;
     idPorta: string;
     nomePorta: string;
 };
 
 export type DeviceAccess = {
+    [key: string]: any;
     idTerminal: string;
     nomeTerminal: string;
     portas: DoorDeviceAccess[];
 };
 
 export type PlanoAcessoDispositivos = {
+    [key: string]: any;
     idPlanosAcessoDispositivo: string;
     idPlanoAcesso: string;
-    nomePlanoAcesso: string | null;
-    idPlanoHorario: string | null;
-    nomePlanoHorario: string | null;
-    nivel: number | null;
+    nomePlanoAcesso: string;
+    idPlanoHorario: string;
+    nomePlanoHorario: string;
+    nivel: number;
     createdDate: string;
     rem: boolean;
     dispositivos: DeviceAccess[];

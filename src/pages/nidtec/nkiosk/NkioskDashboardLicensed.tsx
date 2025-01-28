@@ -350,15 +350,15 @@ export const NkioskDashboardLicensed = () => {
                 </div>
                 <div className="carousel-chart-container" id="carousel-chart" style={{ marginTop: 5 }}>
                     <Carousel infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
+                        <div className="departments-groups-chart" style={{ height: '26rem' }}>
                             <h2 className="departments-groups-chart-text">Total de Pagamentos em {currentYear}: { }</h2>
                             <Line className="departments-groups-chart-data" data={payLineChartData} />
                         </div>
-                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
+                        <div className="departments-groups-chart" style={{ height: '26rem' }}>
                             <h2 className="departments-groups-chart-text">Total de Movimentos em {currentYear}: { }</h2>
                             <Line className="departments-groups-chart-data" data={moveLineChartData} />
                         </div>
-                        <div style={{ height: '28rem', maxWidth: '56rem', margin: 'auto' }}>
+                        <div style={{ height: '26rem', maxWidth: '56rem', margin: 'auto' }}>
                             <Calendar
                                 localizer={localizer}
                                 events={events}
@@ -377,25 +377,25 @@ export const NkioskDashboardLicensed = () => {
             </div>
             <div className="dashboard-content" style={{ marginTop: 5 }}>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Multibanco Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayMbLineChartData} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Moedeiro Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayCoinLineChartData} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Torniquete Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayCardLineChartData} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '14rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Quiosque Hoje: { }</h2>
                         <Bar className="departments-groups-chart-data" data={todayKioskLineChartData} />
                     </div>

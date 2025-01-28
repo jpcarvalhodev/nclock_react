@@ -352,6 +352,14 @@ export const accessControlFields = [
     { key: 'rem', label: 'Removido', type: 'boolean' },
 ];
 
+export const planosAcessoDispositivosFields = [
+    { key: 'nomePlanoAcesso', label: 'Plano de Acesso', type: 'string' },
+    { key: 'nomePlanoHorario', label: 'Plano de Horário', type: 'string' },
+    { key: 'nivel', label: 'Nível', type: 'string' },
+    { key: 'nomeTerminal', label: 'Terminal', type: 'string' },
+    { key: 'portas', label: 'Porta', type: 'string' },
+];
+
 export const doorsFields = [
     { key: 'actionInterval', label: 'Intervalo entre Operações', type: 'number' },
     { key: 'activeTimesegId', label: 'Faixa Horária Activa', type: 'string' },

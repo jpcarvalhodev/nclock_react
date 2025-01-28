@@ -44,7 +44,6 @@ export const TimePlans = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedTimePlan, setSelectedTimePlan] = useState<TimePlan | null>(null);
     const [initialData, setInitialData] = useState<Partial<TimePlan> | null>(null);
-    const [currentTimePlanIndex, setCurrentTimePlanIndex] = useState(0);
 
     // Função para adicionar o plano de horários
     const addTimePlan = async (newTimePlan: TimePlan) => {
@@ -151,19 +150,21 @@ export const TimePlans = () => {
         setShowUpdateModal(false);
     }
 
-    // Seleciona o plano de horário anterior
+    // Função para selecionar o próximo plano de horário
     const handleNextTimePlan = () => {
-        if (currentTimePlanIndex < timePlans.length - 1) {
-            setCurrentTimePlanIndex(currentTimePlanIndex + 1);
-            setSelectedTimePlan(timePlans[currentTimePlanIndex + 1]);
+        const currentIndex = timePlans.findIndex((plan) => plan.nome === selectedTimePlan?.nome);
+
+        if (currentIndex >= 0 && currentIndex < timePlans.length - 1) {
+            setSelectedTimePlan(timePlans[currentIndex + 1]);
         }
     };
 
-    // Seleciona o plano de horário seguinte
+    // Função para selecionar o plano de horário anterior
     const handlePrevTimePlan = () => {
-        if (currentTimePlanIndex > 0) {
-            setCurrentTimePlanIndex(currentTimePlanIndex - 1);
-            setSelectedTimePlan(timePlans[currentTimePlanIndex - 1]);
+        const currentIndex = timePlans.findIndex((plan) => plan.nome === selectedTimePlan?.nome);
+
+        if (currentIndex > 0) {
+            setSelectedTimePlan(timePlans[currentIndex - 1]);
         }
     };
 
@@ -348,8 +349,8 @@ export const TimePlans = () => {
                     entity={selectedTimePlan}
                     onPrev={handlePrevTimePlan}
                     onNext={handleNextTimePlan}
-                    canMovePrev={currentTimePlanIndex > 0}
-                    canMoveNext={currentTimePlanIndex < timePlans.length - 1}
+                    canMovePrev={selectedTimePlan && timePlans.findIndex(plan => plan.nome === selectedTimePlan.nome) > 0}
+                    canMoveNext={selectedTimePlan && timePlans.findIndex(plan => plan.nome === selectedTimePlan.nome) < timePlans.length - 1}
                 />
             )}
         </div>

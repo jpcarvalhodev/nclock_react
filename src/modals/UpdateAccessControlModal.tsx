@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
-import { Col, Form, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
+import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../components/CustomStylesDataTable";
-import { Doors, Employee } from "../types/Types";
-import { doorsFields, employeeFields } from "../fields/Fields";
-import { useTerminals } from "../context/TerminalsContext";
+import { Employee, PlanoAcessoDispositivos } from "../types/Types";
+import { employeeFields, planosAcessoDispositivosFields } from "../fields/Fields";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { usePersons } from "../context/PersonsContext";
+import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 
 // Define as propriedades do componente
 interface Props<T> {
@@ -18,6 +17,7 @@ interface Props<T> {
     onClose: () => void;
     onDuplicate: (entity: T) => void;
     onUpdate: (data: T) => void;
+    entity: T;
     onNext: () => void;
     onPrev: () => void;
     canMoveNext: boolean;
@@ -25,29 +25,36 @@ interface Props<T> {
 }
 
 // Define o componente
-export const UpdateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, canMoveNext, canMovePrev, onNext, onPrev }: Props<T>) => {
-    const { employees } = usePersons();
-    const { fetchAllDoorData, period } = useTerminals();
-    const [formData, setFormData] = useState<T>({} as T);
-    const [doors, setDoors] = useState<Doors[]>([]);
-    const [loadingDoorData, setLoadingDoorData] = useState(false);
-    const [loadingEmployeeData, setLoadingEmployeeData] = useState(false);
-    const [filters, setFilters] = useState<Record<string, string>>({});
+export const UpdateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, entity, canMoveNext, canMovePrev, onNext, onPrev }: Props<T>) => {
+    const [formData, setFormData] = useState<T>({ ...entity });
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEmployeeAddModal, setShowEmployeeAddModal] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
+    const [employeeTableData, setEmployeeTableData] = useState<Employee[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         if (open) {
-            fetchDoors();
+            setFormData({ ...entity });
+        } else {
+            setFormData({} as T);
+            setEmployeeTableData([]);
         }
     }, [open]);
 
-    // Função para buscar as portas
-    const fetchDoors = async () => {
-        const dataDoors = await fetchAllDoorData();
-        const filteredDoorsOrdered = dataDoors.sort((a, b) => a.doorNo - b.doorNo);
-        setDoors(filteredDoorsOrdered);
+    // Função para adicionar períodos à tabela
+    const addEmployeesToDatatable = (periods: Employee[]) => {
+        setEmployeeTableData(periods);
+    };
+
+    // Função para remover períodos selecionados
+    const removeSelectedEmployees = () => {
+        const remainingData = employeeTableData.filter(
+            (emp) => !selectedRows.some((row) => row.employeeID === emp.employeeID)
+        );
+        setEmployeeTableData(remainingData);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Define as opções de paginação de EN para PT
@@ -56,37 +63,19 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
         rangeSeparatorText: 'de',
     };
 
-    // Função para atualizar o estado do formulário
+    // Função para atualizar os campos do formulário
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    // Filtra os dados da tabela de portas
-    const filteredDoorDataTable = doors.filter(door =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || String(door[key]) === String(filters[key])
-        )
-    );
-
-    // Define as colunas que serão exibidas
-    const includedColumns = ['enabled', 'name', 'doorNo', 'timezoneId'];
-
-    // Define as colunas
-    const doorColumns: TableColumn<Doors>[] = doorsFields
-        .filter(field => includedColumns.includes(field.key))
-        .sort((a, b) => { if (a.key === 'timezoneId') return -1; else if (b.key === 'timezoneId') return 1; else return 0; })
-        .sort((a, b) => { if (a.key === 'name') return -1; else if (b.key === 'name') return 1; else return 0; })
-        .sort((a, b) => { if (a.key === 'enabled') return 1; else if (b.key === 'enabled') return -1; else return 0; })
+    // Define as colunas de dispositivos
+    const deviceColumns: TableColumn<PlanoAcessoDispositivos>[] = planosAcessoDispositivosFields
         .map(field => {
-            const formatField = (row: Doors) => {
+            const formatField = (row: PlanoAcessoDispositivos) => {
                 switch (field.key) {
-                    case 'enabled':
-                        return row[field.key] === true ? 'Activo' : 'Inactivo';
-                    case 'timezoneId':
-                        return period.find(p => p.id === row[field.key])?.name || '';
                     default:
-                        return row[field.key] || '';
+                        return row[field.key];
                 }
             };
             return {
@@ -96,30 +85,10 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                         {field.label}
                     </>
                 ),
-                selector: (row: Doors) => {
-                    if (field.key === 'doorNo') {
-                        return row[field.key];
-                    }
-                    return formatField(row);
-                },
+                selector: row => formatField(row),
                 sortable: true,
-                cell: (row: Doors) => {
-                    if (field.key === 'doorNo') {
-                        return row[field.key];
-                    }
-                    return formatField(row);
-                }
             };
         });
-
-    // Filtra os dados da tabela de funcionários
-    const filteredEmployeeDataTable = employees
-        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-        .filter(employee =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || String(employee[key]) === String(filters[key])
-            )
-        );
 
     // Define as colunas que serão exibidas
     const includedEmployeeColumns = ['enrollNumber', 'name', 'cardNumber', 'type'];
@@ -160,6 +129,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
     // Função para salvar os dados
     const handleSave = () => {
         onUpdate({} as T);
+        onClose();
     }
 
     return (
@@ -202,25 +172,20 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                                         <Tab.Pane eventKey="equipamentos">
                                             <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                                 <Row>
-                                                    {loadingDoorData ?
-                                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                                                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                                        </div> :
-                                                        <DataTable
-                                                            columns={doorColumns}
-                                                            data={filteredDoorDataTable}
-                                                            pagination
-                                                            paginationComponentOptions={paginationOptions}
-                                                            paginationPerPage={10}
-                                                            paginationRowsPerPageOptions={[5, 10]}
-                                                            selectableRows
-                                                            noDataComponent="Não existem dados disponíveis para exibir."
-                                                            customStyles={customStyles}
-                                                            striped
-                                                            defaultSortAsc={true}
-                                                            defaultSortFieldId="doorNo"
-                                                        />
-                                                    }
+                                                    <DataTable
+                                                        columns={deviceColumns}
+                                                        data={[]}
+                                                        pagination
+                                                        paginationComponentOptions={paginationOptions}
+                                                        paginationPerPage={20}
+                                                        paginationRowsPerPageOptions={[20, 30, 50]}
+                                                        selectableRows
+                                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                                        customStyles={customStyles}
+                                                        striped
+                                                        defaultSortAsc={true}
+                                                        defaultSortFieldId="doorNo"
+                                                    />
                                                 </Row>
                                                 <div style={{ display: 'flex', marginTop: 10 }}>
                                                     <OverlayTrigger
@@ -241,25 +206,22 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                                         <Tab.Pane eventKey="pessoas">
                                             <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                                 <Row>
-                                                    {loadingEmployeeData ?
-                                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                                                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                                        </div> :
-                                                        <DataTable
-                                                            columns={employeeColumns}
-                                                            data={filteredEmployeeDataTable}
-                                                            pagination
-                                                            paginationComponentOptions={paginationOptions}
-                                                            paginationPerPage={10}
-                                                            paginationRowsPerPageOptions={[5, 10]}
-                                                            selectableRows
-                                                            noDataComponent="Não existem dados disponíveis para exibir."
-                                                            customStyles={customStyles}
-                                                            striped
-                                                            defaultSortAsc={true}
-                                                            defaultSortFieldId="enrollNumber"
-                                                        />
-                                                    }
+                                                    <DataTable
+                                                        columns={employeeColumns}
+                                                        data={employeeTableData}
+                                                        pagination
+                                                        paginationComponentOptions={paginationOptions}
+                                                        paginationPerPage={20}
+                                                        paginationRowsPerPageOptions={[20, 50, 100]}
+                                                        selectableRows
+                                                        onSelectedRowsChange={({ selectedRows }) => setSelectedRows(selectedRows)}
+                                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                                        clearSelectedRows={clearSelectionToggle}
+                                                        customStyles={customStyles}
+                                                        striped
+                                                        defaultSortAsc={true}
+                                                        defaultSortFieldId="enrollNumber"
+                                                    />
                                                 </Row>
                                                 <div style={{ display: 'flex', marginTop: 10 }}>
                                                     <OverlayTrigger
@@ -272,7 +234,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         placement="top"
                                                         overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
                                                     >
-                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={() => console.log('delete')} iconSize='1.1em' />
+                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={removeSelectedEmployees} iconSize='1.1em' />
                                                     </OverlayTrigger>
                                                 </div>
                                             </Form>
@@ -304,6 +266,18 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                     Guardar
                 </Button>
             </Modal.Footer>
+            {/* <AddTerminalToACModal
+                            open={showAddModal}
+                            onClose={() => setShowAddModal(false)}
+                            onSave={() => console.log('save')}
+                            title="Adicionar Equipamento ao Plano"
+                        /> */}
+            <AddEmployeeToACModal
+                open={showEmployeeAddModal}
+                onClose={() => setShowEmployeeAddModal(false)}
+                onSave={addEmployeesToDatatable}
+                title="Adicionar Pessoa ao Plano"
+            />
         </Modal>
     );
 };

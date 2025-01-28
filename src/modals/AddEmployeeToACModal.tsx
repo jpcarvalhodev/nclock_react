@@ -24,12 +24,8 @@ export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, ope
     const {
         data,
     } = usePersons();
-    const [formData, setFormData] = useState<T>({} as T);
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
-    const [filterText, setFilterText] = useState('');
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
 
@@ -106,17 +102,18 @@ export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, ope
 
     // Função para fechar o modal
     const handleClose = () => {
+        setClearSelectionToggle((prev) => !prev);
         onClose();
     }
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(formData);
-        onClose();
+        onSave(selectedRows as unknown as T);
+        handleClose();
     };
 
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" size="xl" centered>
+        <Modal show={open} onHide={handleClose} backdrop="static" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>

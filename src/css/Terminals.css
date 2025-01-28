@@ -52,6 +52,10 @@
     color: #000000;
 }
 
+.nav-modal .nav-link:hover {
+    color: #000000;
+}
+
 @media (max-width: 500px) {
     .deviceTabsMobile {
         flex-direction: column;

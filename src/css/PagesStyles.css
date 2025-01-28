@@ -681,11 +681,11 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 40px;
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
-    margin: 10px;
+    margin: 5px;
     max-height: 34rem;
     max-width: 50%;
 }
@@ -699,7 +699,7 @@ body {
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
-    max-height: 32rem;
+    max-height: 28rem;
     max-width: 50%;
     margin-top: 5px;
 }
@@ -709,7 +709,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2px;
+    padding: 40px;
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
@@ -719,19 +719,19 @@ body {
 }
 
 .img-carousel {
-    max-width: 32rem;
+    max-width: 30rem;
 }
 
 .img-carousel-dashboard {
     display: flex;
     justify-content: center;
     align-items: center;
-    max-width: 54rem;
+    max-width: 45rem;
 }
 
 .img-carousel-licensed {
     padding: 10px;
-    max-width: 50rem;
+    max-width: 45rem;
 }
 
 .dashboard-tabs-container {
@@ -768,7 +768,7 @@ body {
 .nav.nav-pills .nav-link {
     background-color: transparent;
     border-radius: 0;
-    color: black;
+    color: #333333;
     width: 100%;
     font-size: 17px;
     letter-spacing: 0.8px;
@@ -785,7 +785,7 @@ body {
     position: absolute;
     width: 0;
     height: 100%;
-    background-color: black;
+    background-color: #333333;
     top: 0;
     left: 0;
     z-index: -1;
@@ -803,7 +803,7 @@ body {
 }
 
 .nav.nav-pills .nav-link:hover {
-    background-color: black;
+    background-color: #333333;
     color: white;
 }
 

@@ -44,7 +44,6 @@ export const AccessControls = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
     const [initialData, setInitialData] = useState<Partial<AccessControl> | null>(null);
-    const [currentAccessControlIndex, setCurrentAccessControlIndex] = useState(0);
 
     // Função para adicionar o controle de acesso
     const addAccessControl = async (newAccessControl: Partial<AccessControl>) => {
@@ -78,6 +77,9 @@ export const AccessControls = () => {
         fetchAccessControl();
         setClearSelectionToggle((prev) => !prev);
     };
+
+    // Ordena a lista de accessControl por nome
+    const sortedAccessControl = [...accessControl].sort((a, b) => a.nome.localeCompare(b.nome));
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -134,19 +136,23 @@ export const AccessControls = () => {
         setShowUpdateModal(false);
     }
 
-    // Seleciona o controle de acesso anterior
+    // Função para selecionar o próximo controle de acesso
     const handleNextAccessControl = () => {
-        if (currentAccessControlIndex < accessControl.length - 1) {
-            setCurrentAccessControlIndex(currentAccessControlIndex + 1);
-            setSelectedAccessControl(accessControl[currentAccessControlIndex + 1]);
+        const currentIndex = sortedAccessControl.findIndex(
+            (control) => control.id === selectedAccessControl?.id
+        );
+        if (currentIndex >= 0 && currentIndex < sortedAccessControl.length - 1) {
+            setSelectedAccessControl(sortedAccessControl[currentIndex + 1]);
         }
     };
 
-    // Seleciona o controle de acesso seguinte
+    // Função para selecionar o controle de acesso anterior
     const handlePrevAccessControl = () => {
-        if (currentAccessControlIndex > 0) {
-            setCurrentAccessControlIndex(currentAccessControlIndex - 1);
-            setSelectedAccessControl(accessControl[currentAccessControlIndex - 1]);
+        const currentIndex = sortedAccessControl.findIndex(
+            (control) => control.id === selectedAccessControl?.id
+        );
+        if (currentIndex > 0) {
+            setSelectedAccessControl(sortedAccessControl[currentIndex - 1]);
         }
     };
 
@@ -157,7 +163,7 @@ export const AccessControls = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = accessControl.filter(accessControls =>
+    const filteredDataTable = sortedAccessControl.filter(accessControls =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (accessControls[key] != null && String(accessControls[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -324,10 +330,11 @@ export const AccessControls = () => {
                     onClose={handleCloseUpdateModal}
                     onDuplicate={handleDuplicate}
                     onUpdate={updateAccessControl}
+                    entity={selectedAccessControl}
                     onPrev={handlePrevAccessControl}
                     onNext={handleNextAccessControl}
-                    canMovePrev={currentAccessControlIndex > 0}
-                    canMoveNext={currentAccessControlIndex < accessControl.length - 1}
+                    canMovePrev={selectedAccessControl && accessControl.findIndex((control) => control.id === selectedAccessControl.id) > 0}
+                    canMoveNext={selectedAccessControl && accessControl.findIndex((control) => control.id === selectedAccessControl.id) < accessControl.length - 1}
                 />
             )}
         </div>

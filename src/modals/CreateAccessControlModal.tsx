@@ -2,16 +2,15 @@ import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
-import { Col, Form, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
+import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { customStyles } from "../components/CustomStylesDataTable";
-import { Devices, Doors, Employee } from "../types/Types";
-import { deviceFields, doorsFields, employeeFields } from "../fields/Fields";
-import { useTerminals } from "../context/TerminalsContext";
+import { Employee, PlanoAcessoDispositivos } from "../types/Types";
+import { employeeFields, planosAcessoDispositivosFields } from "../fields/Fields";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
-import { usePersons } from "../context/PersonsContext";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
+import { useTerminals } from "../context/TerminalsContext";
 
 // Define as propriedades do componente
 interface Props<T> {
@@ -24,9 +23,14 @@ interface Props<T> {
 
 // Define o componente
 export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, initialValuesData }: Props<T>) => {
+    const { devices, door, accessControl } = useTerminals();
     const [formData, setFormData] = useState<T>(initialValuesData as T || ({} as T));
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEmployeeAddModal, setShowEmployeeAddModal] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
+    const [devicesTableData, setDevicesTableData] = useState<PlanoAcessoDispositivos[]>([]);
+    const [employeeTableData, setEmployeeTableData] = useState<Employee[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
@@ -34,8 +38,28 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
             setFormData(initialValuesData as T || ({} as T));
         } else {
             setFormData({} as T);
+            setEmployeeTableData([]);
         }
     }, [open]);
+
+    // Função para adicionar períodos à tabela
+    const addEmployeesToDatatable = (periods: Employee[]) => {
+        setEmployeeTableData(periods);
+    };
+
+    // Função para adicionar terminais à tabela
+    const addTerminalToDatatable = (periods: PlanoAcessoDispositivos[]) => {
+        
+    };
+
+    // Função para remover períodos selecionados
+    const removeSelectedEmployees = () => {
+        const remainingData = employeeTableData.filter(
+            (emp) => !selectedRows.some((row) => row.employeeID === emp.employeeID)
+        );
+        setEmployeeTableData(remainingData);
+        setClearSelectionToggle((prev) => !prev);
+    };
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -50,30 +74,10 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     };
 
     // Define as colunas de dispositivos
-    const deviceColumns: TableColumn<Devices>[] = deviceFields
+    const deviceColumns: TableColumn<PlanoAcessoDispositivos>[] = planosAcessoDispositivosFields
         .map(field => {
-            const formatField = (row: Devices) => {
+            const formatField = (row: PlanoAcessoDispositivos) => {
                 switch (field.key) {
-                    case 'code':
-                        return row.code === 0 ? "" : row.code;
-                    case 'machineNumber':
-                        return row.code === 0 ? "" : row.machineNumber;
-                    case 'cardNumber':
-                        return row.cardNumber === 0 ? "" : row.cardNumber;
-                    case 'productTime':
-                        return new Date(row.productTime).toLocaleString() || '';
-                    case 'status':
-                        return (
-                            <div style={{
-                                height: '10px',
-                                width: '10px',
-                                backgroundColor: row.status ? 'green' : 'red',
-                                borderRadius: '50%',
-                                display: 'inline-block'
-                            }} title={row.status ? 'Online' : 'Offline'} />
-                        );
-                    case 'enabled':
-                        return row.enabled ? 'Activo' : 'Inactivo';
                     default:
                         return row[field.key];
                 }
@@ -126,19 +130,25 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
             };
         });
 
-    // Função para salvar os dados
-    const handleSave = () => {
-        onSave({} as T);
+    // Função para fechar o modal
+    const handleClose = () => {
+        setClearSelectionToggle((prev) => !prev);
         onClose();
     }
 
+    // Função para salvar os dados
+    const handleSave = () => {
+        onSave({} as T);
+        handleClose();
+    }
+
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                {/* <Col md={3}>
+                <Col md={3}>
                     <Form.Group controlId="formNome">
                         <Form.Label>Nome</Form.Label>
                         <Form.Control
@@ -172,25 +182,20 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                         <Tab.Pane eventKey="equipamentos">
                                             <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                                 <Row>
-                                                    {loadingDoorData ?
-                                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                                                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                                        </div> :
-                                                        <DataTable
-                                                            columns={doorColumns}
-                                                            data={[]}
-                                                            pagination
-                                                            paginationComponentOptions={paginationOptions}
-                                                            paginationPerPage={10}
-                                                            paginationRowsPerPageOptions={[5, 10]}
-                                                            selectableRows
-                                                            noDataComponent="Não existem dados disponíveis para exibir."
-                                                            customStyles={customStyles}
-                                                            striped
-                                                            defaultSortAsc={true}
-                                                            defaultSortFieldId="doorNo"
-                                                        />
-                                                    }
+                                                    <DataTable
+                                                        columns={deviceColumns}
+                                                        data={[]}
+                                                        pagination
+                                                        paginationComponentOptions={paginationOptions}
+                                                        paginationPerPage={20}
+                                                        paginationRowsPerPageOptions={[20, 30, 50]}
+                                                        selectableRows
+                                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                                        customStyles={customStyles}
+                                                        striped
+                                                        defaultSortAsc={true}
+                                                        defaultSortFieldId="doorNo"
+                                                    />
                                                 </Row>
                                                 <div style={{ display: 'flex', marginTop: 10 }}>
                                                     <OverlayTrigger
@@ -211,25 +216,22 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                         <Tab.Pane eventKey="pessoas">
                                             <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                                 <Row>
-                                                    {loadingEmployeeData ?
-                                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                                                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                                        </div> :
-                                                        <DataTable
-                                                            columns={employeeColumns}
-                                                            data={[]}
-                                                            pagination
-                                                            paginationComponentOptions={paginationOptions}
-                                                            paginationPerPage={10}
-                                                            paginationRowsPerPageOptions={[5, 10]}
-                                                            selectableRows
-                                                            noDataComponent="Não existem dados disponíveis para exibir."
-                                                            customStyles={customStyles}
-                                                            striped
-                                                            defaultSortAsc={true}
-                                                            defaultSortFieldId="enrollNumber"
-                                                        />
-                                                    }
+                                                    <DataTable
+                                                        columns={employeeColumns}
+                                                        data={employeeTableData}
+                                                        pagination
+                                                        paginationComponentOptions={paginationOptions}
+                                                        paginationPerPage={20}
+                                                        paginationRowsPerPageOptions={[20, 50, 100]}
+                                                        selectableRows
+                                                        onSelectedRowsChange={({ selectedRows }) => setSelectedRows(selectedRows)}
+                                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                                        clearSelectedRows={clearSelectionToggle}
+                                                        customStyles={customStyles}
+                                                        striped
+                                                        defaultSortAsc={true}
+                                                        defaultSortFieldId="enrollNumber"
+                                                    />
                                                 </Row>
                                                 <div style={{ display: 'flex', marginTop: 10 }}>
                                                     <OverlayTrigger
@@ -242,7 +244,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         placement="top"
                                                         overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
                                                     >
-                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={() => console.log('delete')} iconSize='1.1em' />
+                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={removeSelectedEmployees} iconSize='1.1em' />
                                                     </OverlayTrigger>
                                                 </div>
                                             </Form>
@@ -252,28 +254,28 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                             </Form>
                         </Tab.Pane>
                     </Tab.Content>
-                </Tab.Container> */}
+                </Tab.Container>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={onClose} >
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleClose} >
                     Fechar
                 </Button>
                 <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleSave} >
                     Guardar
                 </Button>
             </Modal.Footer>
-            {/* <AddTerminalToACModal
+            <AddTerminalToACModal
                 open={showAddModal}
                 onClose={() => setShowAddModal(false)}
-                onSave={() => console.log('save')}
+                onSave={addTerminalToDatatable}
                 title="Adicionar Equipamento ao Plano"
                 devices={devices}
-                doors={doors}
-            /> */}
+                doors={door}
+            />
             <AddEmployeeToACModal
                 open={showEmployeeAddModal}
                 onClose={() => setShowEmployeeAddModal(false)}
-                onSave={() => console.log('save')}
+                onSave={addEmployeesToDatatable}
                 title="Adicionar Pessoa ao Plano"
             />
         </Modal>

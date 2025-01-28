@@ -25,6 +25,7 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
     const [tableData, setTableData] = useState<TimePeriod[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Atualiza os campos do formulário com os valores iniciais
     useEffect(() => {
@@ -50,7 +51,7 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
             (period) => !selectedRows.some((row) => row.id === period.id)
         );
         setTableData(remainingData);
-        setSelectedRows([]);
+        setClearSelectionToggle((prev) => !prev);
     };
 
     // Define as opções de paginação de EN para PT
@@ -206,6 +207,7 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
                                             selectableRows
                                             onSelectedRowsChange={({ selectedRows }) => setSelectedRows(selectedRows)}
                                             noDataComponent="Não existem dados disponíveis para exibir."
+                                            clearSelectedRows={clearSelectionToggle}
                                             customStyles={customStyles}
                                             striped
                                         />

@@ -21,8 +21,8 @@ interface CreateModalProps<T> {
 // Define o componente
 export const AddPeriodToTimePlansModal = <T extends Record<string, any>>({ title, open, onClose, onSave }: CreateModalProps<T>) => {
     const { period } = useTerminals();
-    const [showAddModal, setShowAddModal] = useState(false);
     const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
+    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
     // Define a função de seleção de linhas
     const handleRowSelected = (state: {
@@ -100,14 +100,20 @@ export const AddPeriodToTimePlansModal = <T extends Record<string, any>>({ title
         }
     }
 
-    // Função para salvar os dados
-    const handleSave = () => {
-        onSave(selectedRows as unknown as T);
+    // Função para fechar o modal
+    const handleClose = () => {
+        setClearSelectionToggle((prev) => !prev);
         onClose();
     }
 
+    // Função para salvar os dados
+    const handleSave = () => {
+        onSave(selectedRows as unknown as T);
+        handleClose();
+    }
+
     return (
-        <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
+        <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -122,6 +128,7 @@ export const AddPeriodToTimePlansModal = <T extends Record<string, any>>({ title
                         paginationRowsPerPageOptions={[5, 10]}
                         selectableRows
                         onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
@@ -129,19 +136,13 @@ export const AddPeriodToTimePlansModal = <T extends Record<string, any>>({ title
                 </Col>
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={onClose} >
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleClose} >
                     Fechar
                 </Button>
                 <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleSave} >
                     Guardar
                 </Button>
             </Modal.Footer>
-            <AddPeriodToTimePlansModal
-                open={showAddModal}
-                onClose={() => setShowAddModal(false)}
-                onSave={() => console.log('save')}
-                title="Adicionar Horário"
-            />
         </Modal>
     );
 };

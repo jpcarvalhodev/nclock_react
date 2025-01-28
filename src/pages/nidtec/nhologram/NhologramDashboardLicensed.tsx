@@ -112,15 +112,15 @@ export const NhologramDashboardLicensed = () => {
                 </div>
                 <div className="carousel-chart-container" id="carousel-chart" style={{ marginTop: 5 }}>
                     <Carousel infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
-                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
+                        <div className="departments-groups-chart" style={{ height: '26rem' }}>
                             <h2 className="departments-groups-chart-text">Exemplo {currentYear}: { }</h2>
                             <Line className="departments-groups-chart-data" data={lineChartData} />
                         </div>
-                        <div className="departments-groups-chart" style={{ height: '28rem' }}>
+                        <div className="departments-groups-chart" style={{ height: '26rem' }}>
                             <h2 className="departments-groups-chart-text">Exemplo 2 {currentYear}: { }</h2>
                             <Line className="departments-groups-chart-data" data={lineChartData} />
                         </div>
-                        <div style={{ height: '28rem', maxWidth: '56rem', margin: 'auto' }}>
+                        <div style={{ height: '26rem', maxWidth: '56rem', margin: 'auto' }}>
                             <Calendar
                                 localizer={localizer}
                                 events={events}
@@ -139,25 +139,25 @@ export const NhologramDashboardLicensed = () => {
             </div>
             <div className="dashboard-content" style={{ marginTop: 5 }}>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '16rem' }}>
                         <h2 className="departments-groups-chart-text">Exemplo 3: { }</h2>
                         <Bar className="departments-groups-chart-data" data={barChartData} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '16rem' }}>
                         <h2 className="departments-groups-chart-text">Exemplo 4: { }</h2>
                         <Bar className="departments-groups-chart-data" data={barChartData} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '16rem' }}>
                         <h2 className="departments-groups-chart-text">Exemplo 5: { }</h2>
                         <Bar className="departments-groups-chart-data" data={barChartData} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
-                    <div className="departments-groups-chart" style={{ height: '15rem' }}>
+                    <div className="departments-groups-chart" style={{ height: '16rem' }}>
                         <h2 className="departments-groups-chart-text">Exemplo 6: { }</h2>
                         <Bar className="departments-groups-chart-data" data={barChartData} />
                     </div>

@@ -59,26 +59,31 @@ export function TreeViewAC({ onSelectDevices }: TreeViewACProps) {
 
     // Atualiza a árvore de itens ao receber os dados dos dispositivos
     useEffect(() => {
-        const buildDoorTree = door
-            .sort((a, b) => a.doorNo - b.doorNo)
-            .map(door => ({
-                id: door.id || 'Sem ID',
-                label: door.name || 'Sem Nome',
-            }));
-
         const buildDeviceTree = devices
             .sort((a, b) => a.deviceNumber - b.deviceNumber)
-            .map(device => ({
-                id: device.zktecoDeviceID || 'Sem ID',
-                label: device.deviceName || 'Sem Nome',
-                children: buildDoorTree
-            }));
+            .map((device, deviceIndex) => {
+                const deviceDoors = door
+                    .filter((d) => d.devId === device.zktecoDeviceID)
+                    .sort((a, b) => a.doorNo - b.doorNo)
+                    .map((d, doorIndex) => ({
+                        id: `device-${deviceIndex}-door-${doorIndex}-${d.id}`,
+                        label: d.name || 'Sem Nome',
+                    }));
 
-        const treeItems = [{
-            id: 'equipamento',
-            label: 'EQUIPAMENTO',
-            children: buildDeviceTree
-        }];
+                return {
+                    id: `device-${deviceIndex}-${device.zktecoDeviceID}`,
+                    label: device.deviceName || 'Sem Nome',
+                    children: deviceDoors
+                };
+            });
+
+        const treeItems = [
+            {
+                id: 'equipamento',
+                label: 'EQUIPAMENTO',
+                children: buildDeviceTree
+            }
+        ];
 
         setItems(treeItems);
         setFilteredItems(treeItems);
