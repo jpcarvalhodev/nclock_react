@@ -2213,7 +2213,7 @@ export const updateAllAux = async (aux: Auxiliaries) => {
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE AUXILIARES///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE BACKUP DA DB E IMPORTAÇÃO DE FUNCIONÁRIOS/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 export const backupDatabase = async (backup: BackupDB) => {
@@ -2236,6 +2236,19 @@ export const importBackupDatabase = async (backup: FormData) => {
     const response = await fetchWithAuth(`Configuration/ImportBackup`, {
         method: 'POST',
         body: backup
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        return errorData;
+    }
+    return response.json();
+}
+
+export const importEmployees = async (employees: FormData) => {
+    const response = await fetchWithAuth(`Employees/ImportEmployees`, {
+        method: 'POST',
+        body: employees
     });
     if (!response.ok) {
         const errorData = await response.json();

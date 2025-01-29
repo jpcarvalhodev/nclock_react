@@ -62,7 +62,9 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                 if (!doorObj) return;
 
                 const existingIndex = updatedData.findIndex(
-                    item => item?.idTerminal === device.zktecoDeviceID
+                    item =>
+                        item?.idTerminal === device.zktecoDeviceID &&
+                        item?.idPlanoHorario === period.idPlanoHorario
                 );
 
                 const newDoor = {
@@ -241,21 +243,13 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para salvar os dados
     const handleSave = () => {
-        const dispositivos = devicesTableData.map(device => ({
-            idTerminal: device.idTerminal,
-            nomeTerminal: device.nomeTerminal,
-            idPlanoHorario: device.idPlanoHorario,
-            nomePlanoHorario: device.nomePlanoHorario,
-            portas: device.portas?.map((porta: PlanoAcessoDispositivos) => ({
+        const planosAcessoDispositivos = devicesTableData.flatMap(device =>
+            (device.portas || []).map((porta: PlanoAcessoDispositivos) => ({
+                idTerminal: device.idTerminal,
                 idPorta: porta.idPorta,
-                nomePorta: porta.nomePorta,
-            })) || []
-        }));
-        const planosAcessoDispositivos = [
-            {
-                dispositivos,
-            },
-        ];
+                idPlanoHorario: device.idPlanoHorario,
+            }))
+        );
         const employeeIds = employeeTableData.map(emp => emp.employeeID);
         const payload = {
             nome: formData.nome,

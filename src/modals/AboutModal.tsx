@@ -43,7 +43,7 @@ export const AboutModal = ({ open, onClose }: AboutModalProps) => {
                             <Tab.Pane eventKey="license">
                                 <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                     <p style={{ marginTop: 20 }}><strong>Proteção Legal:</strong></p>
-                                    <p>•	O software é protegido por leis de direitos de autor e tratados internacionais.</p>
+                                    <p>•    O software é protegido por leis de direitos de autor e tratados internacionais.</p>
                                     <p>•	Qualquer reprodução ou distribuição não autorizada pode levar a sanções civis e criminais.</p>
                                     <p style={{ marginTop: 10 }}><strong>Isenção de Garantias:</strong></p>
                                     <p>•	O produto é fornecido "como está" ("as is"), sem garantias explícitas ou implícitas.</p>

@@ -66,11 +66,6 @@ export const AccessControls = () => {
         refreshAccessControl();
     }
 
-    // Busca as listagens de movimentos ao carregar a página
-    useEffect(() => {
-        fetchAccessControl();
-    }, []);
-
     // Função para atualizar as listagens de movimentos
     const refreshAccessControl = () => {
         fetchAccessControl();

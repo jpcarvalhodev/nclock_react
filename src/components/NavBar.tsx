@@ -76,15 +76,12 @@ import { AboutModal } from '../modals/AboutModal';
 import open_door from '../assets/img/navbar/nkiosk/open_door.png';
 import count from '../assets/img/navbar/nkiosk/count.png';
 import cleanings from '../assets/img/navbar/nkiosk/cleaning.png';
-import certificate from '../assets/img/navbar/certificate.png';
 import { LicenseModal } from '../modals/LicenseModal';
 import { useLicense } from '../context/LicenseContext';
 import { usePersons } from '../context/PersonsContext';
 import { KioskOptionsModal } from '../modals/KioskOptions';
 import contact from '../assets/img/navbar/ajuda/contact.png';
 import { ContactModal } from '../modals/ContactModal';
-import sensor from '../assets/img/navbar/nkiosk/sensor.png';
-import cell from '../assets/img/navbar/nkiosk/cell.png';
 import { fetchWithAuth } from './FetchWithAuth';
 import { PrintButton } from './PrintButton';
 import { useTerminals } from '../context/TerminalsContext';
@@ -97,7 +94,6 @@ import ribbonControlLock from '../assets/img/navbar/navbar/ribbonControlLock.png
 import analysis from '../assets/img/navbar/npatrol/analysis.png';
 import routes from '../assets/img/navbar/npatrol/routes.png';
 import points from '../assets/img/navbar/ncard/points.png';
-import counts from '../assets/img/navbar/nkiosk/counter.png';
 import programming from '../assets/img/navbar/nvisitor/programming.png';
 import securityDevice from '../assets/img/navbar/nsecur/securityDevice.png';
 import arm from '../assets/img/navbar/nsecur/arm.png';
@@ -160,7 +156,6 @@ import inOut from '../assets/img/navbar/ndoor/inOut.png';
 import reservation from '../assets/img/navbar/ndoor/reservation.png';
 import down from '../assets/img/navbar/nfurniture/down.png';
 import up from '../assets/img/navbar/nfurniture/up.png';
-import panel from '../assets/img/navbar/nkiosk/panel.png';
 import ledMonitor from '../assets/img/navbar/nled/ledMonitor.png';
 import cars from '../assets/img/navbar/npark/cars.png';
 import payBooth from '../assets/img/navbar/npark/payBooth.png';
@@ -221,6 +216,8 @@ import visitorAccess from '../assets/img/navbar/naccess/visitorAccess.png';
 import supplier from '../assets/img/navbar/ninvoice/supplier.png';
 import favourite from '../assets/img/navbar/navbar/favourite.svg';
 import mail from '../assets/img/navbar/navbar/mail.svg';
+import { ImportEmployeesModal } from '../modals/ImportEmployeesModal';
+import backup from '../assets/img/navbar/configuracao/backup.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -304,7 +301,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
 	const { setScrollPosition } = useCardScroll();
 	const { handleAddAds } = useAds();
-	const { loginLogs, historyLogs, exportBackupDB, importBackupDB } = useEntity();
+	const { loginLogs, historyLogs, exportBackupDB, importBackupDB, importEmployees } = useEntity();
 	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
 	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
 	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
@@ -455,6 +452,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showCardDropdown, setShowCardDropdown] = useState(false);
 	const [showBackupDBModal, setShowBackupDBModal] = useState(false);
 	const [showTaskDropdown, setShowTaskDropdown] = useState(false);
+	const [showImportEmployeesModal, setShowImportEmployeesModal] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -1861,6 +1859,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Função para abrir o modal de backup da base de dados
 	const toggleBackupDBModal = () => setShowBackupDBModal(!showBackupDBModal);
+
+	// Função para abrir o modal de importação de funcionários
+	const toggleImportEmployees = () => setShowImportEmployeesModal(!showImportEmployeesModal);
 
 	// Função para abrir o anydesk em uma nova janela
 	const handleAnydeskWindow = () => {
@@ -11837,7 +11838,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button onClick={toggleBackupDBModal} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={imports} alt="botão backup bd" />
+														<img src={backup} alt="botão backup bd" />
 													</span>
 													<span className="text">Backup BD</span>
 												</Button>
@@ -11892,7 +11893,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+												<Button onClick={toggleImportEmployees} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
 														<img src={imports} alt="botão importar" />
 													</span>
@@ -12172,6 +12173,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 				onUpdate={(formData: FormData) => Promise.resolve(importBackupDB(formData))}
 				fields={backupDBFields}
 				title='Backup BD'
+			/>
+			<ImportEmployeesModal
+				open={showImportEmployeesModal}
+				onClose={() => setShowImportEmployeesModal(false)}
+				onUpdate={(formData: FormData) => Promise.resolve(importEmployees(formData))}
+				title='Importar Funcionários'
 			/>
 		</nav>
 	);

@@ -44,8 +44,7 @@ export const UpdateTimePlansModal = <T extends Record<string, any>>({ title, ope
 
     // Função para adicionar períodos à tabela
     const updatePeriodsToDatatable = (periods: TimePeriod[]) => {
-        const updatedData = [...tableData, ...periods];
-        setTableData(updatedData);
+        setTableData([...tableData, ...periods]);
     };
 
     // Função para remover períodos selecionados

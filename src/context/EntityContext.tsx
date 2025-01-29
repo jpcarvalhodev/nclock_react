@@ -31,6 +31,7 @@ export interface EntityContextType {
     fetchAllHistoryLogs: () => void;
     exportBackupDB: (backup: BackupDB) => void;
     importBackupDB: (backup: FormData) => void;
+    importEmployees: (employees: FormData) => void;
 }
 
 // Cria o contexto
@@ -139,8 +140,20 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await apiService.importBackupDatabase(backup);
             toast.success(data.message || 'Backup restaurado com sucesso!');
+            window.location.reload();
         } catch (error) {
             console.error('Erro ao restaurar o backup:', error);
+        }
+    }
+
+    // Função para importar os funcionários
+    const importEmployees = async (employees: FormData) => {
+        try {
+            const data = await apiService.importEmployees(employees);
+            toast.success(data.message || 'Funcionários importados com sucesso!');
+            window.location.reload();
+        } catch (error) {
+            console.error('Erro ao importar os funcionários:', error);
         }
     }
 
@@ -155,7 +168,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB }}>
+        <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees }}>
             {children}
         </EntityContext.Provider>
     );

@@ -11,6 +11,8 @@ import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
 import { useTerminals } from "../context/TerminalsContext";
+import { usePersons } from "../context/PersonsContext";
+import { id } from "date-fns/locale";
 
 // Define as propriedades do componente
 interface Props<T> {
@@ -27,8 +29,9 @@ interface Props<T> {
 }
 
 // Define o componente
-export const UpdateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, entity, canMoveNext, canMovePrev, onNext, onPrev }: Props<T>) => {
+export const UpdateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onDuplicate, onUpdate, entity, canMoveNext, canMovePrev, onNext, onPrev }: Props<T>) => {
     const { devices, door } = useTerminals();
+    const { employees } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEmployeeAddModal, setShowEmployeeAddModal] = useState(false);
@@ -38,27 +41,28 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
     const [employeeTableData, setEmployeeTableData] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
-    console.log(entity);
-
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         if (open) {
             setFormData({ ...entity });
-            const loadedDevices = entity.planosAcessoDispositivos?.flatMap(
-                (pad: PlanoAcessoDispositivos) => pad.dispositivos || []
-            ) ?? [];
+
+            const loadedDevices = entity.planosAcessoDispositivos
+                ?.flatMap((pad: PlanoAcessoDispositivos) => pad.dispositivos || []) ?? [];
             setDevicesTableData(loadedDevices);
-            setEmployeeTableData(entity.employees ?? []);
+            const loadedEmployees = entity.employees
+                .map((emp: Employee) => employees.find((e) => e.employeeID === emp.id))
+                .filter((emp: Employee) => emp !== undefined) as Employee[];
+            setEmployeeTableData(loadedEmployees);
         } else {
             setFormData({} as T);
             setDevicesTableData([]);
             setEmployeeTableData([]);
         }
-    }, [open, entity]);
+    }, [open, entity, employees]);
 
     // Função para adicionar períodos à tabela
     const addEmployeesToDatatable = (periods: Employee[]) => {
-        setEmployeeTableData(periods);
+        setEmployeeTableData([...employeeTableData, ...periods]);
     };
 
     // Função para adicionar terminais, portas e plano de horários à tabela
@@ -74,7 +78,9 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                 if (!doorObj) return;
 
                 const existingIndex = updatedData.findIndex(
-                    item => item?.idTerminal === device.zktecoDeviceID
+                    item =>
+                        item?.idTerminal === device.zktecoDeviceID &&
+                        item?.idPlanoHorario === period.idPlanoHorario
                 );
 
                 const newDoor = {
@@ -130,6 +136,13 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
         );
         setEmployeeTableData(remainingData);
         setClearSelectionToggle((prev) => !prev);
+    };
+
+    // Função para manipular o clique no botão Duplicar
+    const handleDuplicateClick = () => {
+        if (!onDuplicate) return;
+        const { nome, ...dataWithoutId } = formData;
+        onDuplicate(dataWithoutId as T);
     };
 
     // Define as opções de paginação de EN para PT
@@ -264,6 +277,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
         const employeeIds = employeeTableData.map(emp => emp.employeeID);
 
         const payload = {
+            id: formData.id,
             nome: formData.nome,
             planosAcessoDispositivos,
             employeeIds,
@@ -401,6 +415,9 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
                 </OverlayTrigger>
+                <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleDuplicateClick} >
+                    Duplicar
+                </Button>
                 <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={onClose} >
                     Fechar
                 </Button>
