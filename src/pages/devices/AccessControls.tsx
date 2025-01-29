@@ -15,9 +15,9 @@ import { useTerminals } from "../../context/TerminalsContext";
 import { accessControlFields } from "../../fields/Fields";
 import { AccessControl } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { DeleteACModal } from "../../modals/DeleteACModal";
 import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
 import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
+import { DeleteModal } from "../../modals/DeleteModal";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -64,7 +64,6 @@ export const AccessControls = () => {
         await handleDeleteAccessControl(id);
         setClearSelectionToggle((prev) => !prev);
         refreshAccessControl();
-        window.location.reload();
     }
 
     // Busca as listagens de movimentos ao carregar a página
@@ -79,7 +78,11 @@ export const AccessControls = () => {
     };
 
     // Ordena a lista de accessControl por nome
-    const sortedAccessControl = [...accessControl].sort((a, b) => a.nome.localeCompare(b.nome));
+    const sortedAccessControl = [...accessControl].sort((a, b) => {
+        const aNome = a.nome || '';
+        const bNome = b.nome || '';
+        return aNome.localeCompare(bNome);
+    });
 
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
@@ -308,14 +311,14 @@ export const AccessControls = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            {/* {selectedAccessToDelete && (
-                <DeleteACModal
+            {selectedAccessToDelete && (
+                <DeleteModal
                     open={showDeleteModal}
                     onClose={() => setShowDeleteModal(false)}
                     onDelete={deleteAccessControl}
-                    entity={selectedAccessToDelete}
+                    entityId={selectedAccessToDelete}
                 />
-            )} */}
+            )}
             <CreateAccessControlModal
                 title="Adicionar Plano de Acesso"
                 open={showAddModal}

@@ -266,6 +266,8 @@ export const Contacts = () => {
                         return row.zoneName || '';
                     case 'externalEntityId':
                         return row.externalEntityName || '';
+                    case 'accPlanoAcessoId':
+                        return row.accPlanoAcessoName || '';
                     case 'photo':
                         return row.photo ? 'Imagem disponível' : 'Sem imagem';
                     case 'cardNumber':

@@ -14,6 +14,7 @@ import { EmployeeCard } from '../types/Types';
 
 import { CreateModalDeptGrp } from './CreateModalDeptGrp';
 import { useEntity } from '../context/EntityContext';
+import { useTerminals } from '../context/TerminalsContext';
 
 // Define o tipo FormControlElement
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -54,6 +55,7 @@ interface UpdateModalProps<T extends Entity> {
 export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
   const { fetchAllDepartments, fetchAllGroups, fetchAllCategories, fetchAllProfessions, fetchAllZones, fetchAllExternalEntitiesData, handleAddDepartment, handleAddGroup } = usePersons();
   const { fetchAllEntity } = useEntity();
+  const { fetchAccessControl } = useTerminals();
   const [formData, setFormData] = useState<T>({ ...entity });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -140,6 +142,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       const zones = await fetchAllZones();
       const externalEntities = await fetchAllExternalEntitiesData();
       const entities = await fetchAllEntity();
+      const accessPlan = await fetchAccessControl();
+      const sortedAccessPlan = accessPlan.sort((a, b) => a.nome.localeCompare(b.nome));
       setDropdownData({
         departmentId: departments,
         groupId: groups,
@@ -147,7 +151,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         professionId: professions,
         zoneId: zones,
         externalEntityId: externalEntities.ExternalEntities,
-        entidadeId: entities
+        entidadeId: entities,
+        accPlanoAcessoId: sortedAccessPlan
       });
       if (entities.length === 1) {
         setFormData((prevState) => ({
@@ -156,7 +161,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         }));
       }
     } catch (error) {
-      console.error('Erro ao buscar os dados', error);
+      console.error("Erro ao buscar os dados", error);
     }
   };
 
@@ -224,6 +229,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         case 'externalEntityId':
           return option.externalEntityID === value;
         case 'entidadeId':
+          return option.id === value;
+        case 'accPlanoAcessoId':
           return option.id === value;
         default:
           return false;
@@ -421,7 +428,11 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       zoneName: formData.zoneName,
 
       externalEntityId: formData.externalEntityId,
-      externalEntityName: formData.externalEntityName
+      externalEntityName: formData.externalEntityName,
+
+      accPlanoAcessoId: formData.accPlanoAcessoId,
+      accPlanoAcessoName: formData.accPlanoAcessoName
+
     } as any;
 
     let employeeCardsData: any[] = [];
@@ -898,6 +909,28 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                           <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
                         </InputGroup.Text>
                       </InputGroup>
+                    </Form.Group>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Group controlId="formAccPlanoAcessoId">
+                      <Form.Label>Plano de Acesso</Form.Label>
+                      <Form.Control
+                        as="select"
+                        className="custom-input-height custom-select-font-size"
+                        value={formData.accPlanoAcessoId || ''}
+                        onChange={(e) => handleDropdownChange('accPlanoAcessoId', e)}
+                      >
+                        <option value="">Selecione...</option>
+                        {dropdownData.accPlanoAcessoId?.map((option: any) => {
+                          let optionId = option.id;
+                          let optionName = option.nome
+                          return (
+                            <option key={optionId} value={optionId}>
+                              {optionName}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
                     </Form.Group>
                   </Col>
                 </Row>

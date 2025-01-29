@@ -90,6 +90,8 @@ const formatField = (item: DataItem, fieldKey: FieldKey, device: Devices[], mbDe
             return item.externalEntityName || '';
         case 'entidadeId':
             return item.entidadeName || '';
+        case 'accPlanoAcessoId':
+            return item.accPlanoAcessoName || '';
         case 'inOutMode':
             if (item.inOutModeDescription) {
                 return item.inOutModeDescription || '';

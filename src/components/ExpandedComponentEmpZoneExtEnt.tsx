@@ -124,6 +124,9 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                         case 'externalEntityId':
                             displayValue = (data as Employee)['externalEntityName'] || '';
                             break;
+                        case 'accPlanoAcessoId':
+                            displayValue = (data as Employee)['accPlanoAcessoName'] || '';
+                            break;
                         case 'roles':
                             displayValue = value ? value.join(', ') : 'Conta sem tipo especificado';
                             break;

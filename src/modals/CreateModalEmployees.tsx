@@ -15,6 +15,7 @@ import { Employee, EmployeeCard } from "../types/Types";
 
 import { CreateModalDeptGrp } from "./CreateModalDeptGrp";
 import { useEntity } from "../context/EntityContext";
+import { useTerminals } from "../context/TerminalsContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -44,6 +45,7 @@ interface Props<T> {
 export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
   const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllCategories, fetchAllProfessions, fetchAllZones, fetchAllExternalEntitiesData, handleAddDepartment, handleAddGroup } = usePersons();
   const { fetchAllEntity } = useEntity();
+  const { fetchAccessControl } = useTerminals();
   const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -145,6 +147,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
       const zones = await fetchAllZones();
       const externalEntities = await fetchAllExternalEntitiesData();
       const entities = await fetchAllEntity();
+      const accessPlan = await fetchAccessControl();
+      const sortedAccessPlan = accessPlan.sort((a, b) => a.nome.localeCompare(b.nome));
       setDropdownData({
         departmentId: departments,
         groupId: groups,
@@ -153,6 +157,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         zoneId: zones,
         externalEntityId: externalEntities.ExternalEntities,
         entidadeId: entities,
+        accPlanoAcessoId: sortedAccessPlan
       });
       if (entities.length === 1) {
         setFormData((prevState) => ({
@@ -257,6 +262,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         case 'externalEntityId':
           return option.externalEntityID === value;
         case 'entidadeId':
+          return option.id === value;
+        case 'accPlanoAcessoId':
           return option.id === value;
         default:
           return false;
@@ -405,7 +412,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
       zoneName: formData.zoneName,
 
       externalEntityId: formData.externalEntityId,
-      externalEntityName: formData.externalEntityName
+      externalEntityName: formData.externalEntityName,
+
+      accPlanoAcessoId: formData.accPlanoAcessoId,
+      accPlanoAcessoName: formData.accPlanoAcessoName
+
     } as any;
 
     let employeeCardsData: any[] = [];
@@ -877,6 +888,28 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                           <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
                         </InputGroup.Text>
                       </InputGroup>
+                    </Form.Group>
+                  </Col>
+                  <Col md={3}>
+                    <Form.Group controlId="formAccPlanoAcessoId">
+                      <Form.Label>Plano de Acesso</Form.Label>
+                      <Form.Control
+                        as="select"
+                        className="custom-input-height custom-select-font-size"
+                        value={formData.accPlanoAcessoId || ''}
+                        onChange={(e) => handleDropdownChange('accPlanoAcessoId', e)}
+                      >
+                        <option value="">Selecione...</option>
+                        {dropdownData.accPlanoAcessoId?.map((option: any) => {
+                          let optionId = option.id;
+                          let optionName = option.nome
+                          return (
+                            <option key={optionId} value={optionId}>
+                              {optionName}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
                     </Form.Group>
                   </Col>
                 </Row>

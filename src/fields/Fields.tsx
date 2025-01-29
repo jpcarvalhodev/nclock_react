@@ -39,6 +39,7 @@ export const employeeFields = [
     { label: 'Grupo', key: 'groupId', type: 'dropdown', required: true },
     { label: 'Zona', key: 'zoneId', type: 'dropdown' },
     { label: 'Entidade Externa', key: 'externalEntityId', type: 'dropdown' },
+    { label: 'Plano de Acesso', key: 'accPlanoAcessoId', type: 'dropdown' },
 ];
 
 export const departmentFields = [
@@ -354,10 +355,10 @@ export const accessControlFields = [
 
 export const planosAcessoDispositivosFields = [
     { key: 'nomePlanoAcesso', label: 'Plano de Acesso', type: 'string' },
+    { key: 'nomeTerminal', label: 'Terminal', type: 'string' },
     { key: 'nomePlanoHorario', label: 'Plano de Horário', type: 'string' },
     { key: 'nivel', label: 'Nível', type: 'string' },
-    { key: 'nomeTerminal', label: 'Terminal', type: 'string' },
-    { key: 'portas', label: 'Porta', type: 'string' },
+    { key: 'nomePorta', label: 'Portas', type: 'string' },
 ];
 
 export const doorsFields = [

@@ -1,5 +1,5 @@
 body {
-    overflow: hidden;
+    overflow: visible;
 }
 
 .nav-container,
@@ -478,8 +478,9 @@ body {
     border-bottom: none !important;
 }
 
-.dropdown-menu-logos {
-    min-width: 200px;
+.dropdown-menu-logos,
+.dropdown-menu-logo {
+    min-width: 150px;
 }
 
 .submenu {
@@ -492,10 +493,6 @@ body {
 
 .submenu>div {
     cursor: pointer;
-}
-
-.menu-item-image {
-    width: 30px;
 }
 
 .menu-item-text {

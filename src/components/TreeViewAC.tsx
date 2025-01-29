@@ -66,12 +66,12 @@ export function TreeViewAC({ onSelectDevices }: TreeViewACProps) {
                     .filter((d) => d.devId === device.zktecoDeviceID)
                     .sort((a, b) => a.doorNo - b.doorNo)
                     .map((d, doorIndex) => ({
-                        id: `device-${deviceIndex}-door-${doorIndex}-${d.id}`,
+                        id: `devices-${deviceIndex}-door-${d.id}`,
                         label: d.name || 'Sem Nome',
                     }));
 
                 return {
-                    id: `device-${deviceIndex}-${device.zktecoDeviceID}`,
+                    id: `device-${deviceIndex}-deviceid-${device.zktecoDeviceID}`,
                     label: device.deviceName || 'Sem Nome',
                     children: deviceDoors
                 };
@@ -109,6 +109,20 @@ export function TreeViewAC({ onSelectDevices }: TreeViewACProps) {
         const newSelectedIds = new Set(itemIds);
         const previouslySelectedIds = new Set(selectedDevicesIds);
 
+        function updateParentSelection(itemId: string) {
+            const item = itemsMap.get(itemId);
+            if (item?.id.startsWith('device-')) {
+                newSelectedIds.add(item.id);
+            } else if (item) {
+                const parent = Array.from(itemsMap.values()).find(parent =>
+                    parent.children?.some(child => child.id === item.id)
+                );
+                if (parent) {
+                    newSelectedIds.add(parent.id);
+                }
+            }
+        }
+
         function updateChildSelection(itemId: string, isSelected: boolean) {
             const item = itemsMap.get(itemId);
             if (item) {
@@ -126,7 +140,10 @@ export function TreeViewAC({ onSelectDevices }: TreeViewACProps) {
         const addedIds = Array.from(newSelectedIds).filter(id => !previouslySelectedIds.has(id));
         const removedIds = Array.from(previouslySelectedIds).filter(id => !newSelectedIds.has(id));
 
-        addedIds.forEach(id => updateChildSelection(id, true));
+        addedIds.forEach(id => {
+            updateChildSelection(id, true);
+            updateParentSelection(id);
+        });
         removedIds.forEach(id => updateChildSelection(id, false));
 
         setSelectedDevicesIds(Array.from(newSelectedIds));

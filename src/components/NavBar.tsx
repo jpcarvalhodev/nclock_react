@@ -1150,14 +1150,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 				alt: 'pessoas',
 				key: 'pessoas',
 				submenu: [
-					{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', alt: 'pessoas' },
-					{ label: 'Listagem Geral de Departamentos', key: 'geral_departamentos', alt: 'pessoas' },
-					{ label: 'Listagem Geral de Grupos', key: 'geral_grupos', alt: 'pessoas' },
-					{ label: 'Listagem Geral de Categorias', key: 'geral_categorias', alt: 'pessoas' },
-					{ label: 'Listagem Geral de Profissões', key: 'geral_profissoes', alt: 'pessoas' },
-					{ label: 'Listagem Geral de Zonas', key: 'geral_zonas', alt: 'pessoas' },
-					/* { label: 'Listagem Geral de Fracções', key: 'geral_fraccoes', alt: 'pessoas' }, */
-					{ label: 'Listagem Geral de Entidades Externas', key: 'geral_entext', alt: 'pessoas' }
+					{ label: 'Listagem Pessoas', key: 'geral_pessoas', alt: 'pessoas' },
+					{ label: 'Listagem Departamentos', key: 'geral_departamentos', alt: 'pessoas' },
+					{ label: 'Listagem Grupos', key: 'geral_grupos', alt: 'pessoas' },
+					{ label: 'Listagem Categorias', key: 'geral_categorias', alt: 'pessoas' },
+					{ label: 'Listagem Profissões', key: 'geral_profissoes', alt: 'pessoas' },
+					{ label: 'Listagem Zonas', key: 'geral_zonas', alt: 'pessoas' },
+					/* { label: 'Listagem Fracções', key: 'geral_fraccoes', alt: 'pessoas' }, */
+					{ label: 'Listagem Entidades Externas', key: 'geral_entext', alt: 'pessoas' }
 				],
 			},
 			dispositivos: {
@@ -1166,10 +1166,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 				alt: 'dispositivos',
 				key: 'dispositivos',
 				submenu: [
-					{ label: 'Listagem Geral de Equipamentos', key: 'geral_equipamentos', alt: 'dispositivos' },
-					{ label: 'Listagem Geral de Controlo de Acessos', key: 'geral_controlo', alt: 'dispositivos' },
-					{ label: 'Listagem Geral de Períodos', key: 'geral_periodos', alt: 'dispositivos' },
-					{ label: 'Listagem Geral de Fecho e Abertura', key: 'geral_fecho', alt: 'dispositivos' }
+					{ label: 'Listagem Equipamentos', key: 'geral_equipamentos', alt: 'dispositivos' },
+					{ label: 'Listagem Controlo Acessos', key: 'geral_controlo', alt: 'dispositivos' },
+					{ label: 'Listagem Períodos', key: 'geral_periodos', alt: 'dispositivos' },
+					{ label: 'Listagem Fecho e Abertura', key: 'geral_fecho', alt: 'dispositivos' }
 				],
 			},
 			configuracao: {
@@ -1178,9 +1178,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 				alt: 'configuração',
 				key: 'configuracao',
 				submenu: [
-					{ label: 'Listagem Geral de Utilizadores', key: 'geral_utilizadores', alt: 'configuração' },
-					{ label: 'Listagem Geral de Logins', key: 'geral_logins', alt: 'configuração' },
-					{ label: 'Listagem Geral de Histórico', key: 'geral_historico', alt: 'configuração' }
+					{ label: 'Listagem Utilizadores', key: 'geral_utilizadores', alt: 'configuração' },
+					{ label: 'Listagem Logins', key: 'geral_logins', alt: 'configuração' },
+					{ label: 'Listagem Histórico', key: 'geral_historico', alt: 'configuração' }
 				],
 			}
 		};
@@ -1296,11 +1296,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 	}, [license]);
 
 	// Define o componente do item de menu
-	const MenuItem = ({ active, onClick, alt, label }: MenuItem) => (
+	const MenuItem = ({ active, onClick, label }: MenuItem) => (
 		<li
 			className={`image-text ${active ? 'active' : ''}`}
 			onClick={onClick}
-			style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}
+			style={{ flexDirection: 'row' }}
 		>
 			<span className='menu-item-text'>{label}</span>
 		</li>
@@ -1384,15 +1384,15 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 		const isPageNotRequired = pathsNotRequired.some(path => location.pathname.includes(path));
 
-		const isWideMenu = menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk' || menuKey === 'contador' || menuKey === 'sensor' || menuKey === 'fotocelula' || menuKey === 'painel' || menuKey === 'revista';
+		const isWideMenu = menuKey === 'cliente' || menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk' || menuKey === 'contador' || menuKey === 'sensor' || menuKey === 'fotocelula' || menuKey === 'painel' || menuKey === 'revista';
 		const isWideSubmenu = menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
 		const isWideSubmenuMain = menuKey === 'cliente' || menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace'
 
 		return (
 			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
-				style={{
-					minWidth: isWideMenu ? '150px' : 'auto',
-				}}
+				/* style={{
+					width: isWideMenu ? '150px' : 'auto',
+				}} */
 			>
 				<MenuItem
 					key={menuKey as string}
@@ -1413,7 +1413,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				/>
 				{activeMenu === menuKey && menu.submenu && (
 					<div className="submenu" style={{
-						minWidth: isWideSubmenu || isWideSubmenuMain ? '255px' : 'auto',
+						minWidth: isWideSubmenu || isWideSubmenuMain ? '230px' : 'auto',
 						right: isWideSubmenu && !isPageNotRequired ? '100%' : 'auto',
 						left: isWideSubmenu && !isPageNotRequired ? 'auto' : '100%',
 					}}>
@@ -2126,7 +2126,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
 									<span className="logo">NSOFTWARES</span>
 								</Dropdown.Toggle>
-								<Dropdown.Menu>
+								<Dropdown.Menu className='dropdown-menu-logo'>
 									<div style={{ position: 'relative' }}>
 										{Object.keys(menuStructureStart).map((menuKey) => renderMenu(menuKey, menuStructureStart))}
 									</div>
@@ -2203,7 +2203,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
 							<span className="logo">NSOFTWARES</span>
 						</Dropdown.Toggle>
-						<Dropdown.Menu>
+						<Dropdown.Menu className='dropdown-menu-logo'>
 							<div style={{ position: 'relative' }}>
 								{Object.keys(menuStructureStart).map((menuKey) => renderMenu(menuKey, menuStructureStart))}
 							</div>

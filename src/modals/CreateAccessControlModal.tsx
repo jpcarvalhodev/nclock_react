@@ -11,6 +11,7 @@ import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { useTerminals } from "../context/TerminalsContext";
+import { set } from "date-fns";
 
 // Define as propriedades do componente
 interface Props<T> {
@@ -23,12 +24,13 @@ interface Props<T> {
 
 // Define o componente
 export const CreateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onSave, initialValuesData }: Props<T>) => {
-    const { devices, door, accessControl } = useTerminals();
+    const { devices, door } = useTerminals();
     const [formData, setFormData] = useState<T>(initialValuesData as T || ({} as T));
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEmployeeAddModal, setShowEmployeeAddModal] = useState(false);
+    const [deviceSelectedRows, setDeviceSelectedRows] = useState<Partial<PlanoAcessoDispositivos>[]>([]);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
-    const [devicesTableData, setDevicesTableData] = useState<PlanoAcessoDispositivos[]>([]);
+    const [devicesTableData, setDevicesTableData] = useState<Partial<PlanoAcessoDispositivos>[]>([]);
     const [employeeTableData, setEmployeeTableData] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
 
@@ -47,12 +49,69 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
         setEmployeeTableData(periods);
     };
 
-    // Função para adicionar terminais à tabela
-    const addTerminalToDatatable = (periods: PlanoAcessoDispositivos[]) => {
-        
+    // Função para adicionar terminais, portas e plano de horários à tabela
+    const addTerminalToDatatable = (periods: Partial<PlanoAcessoDispositivos>[]) => {
+        setDevicesTableData(prevData => {
+            const updatedData = [...prevData];
+
+            periods.forEach(period => {
+                const device = devices.find(d => d.zktecoDeviceID === period.idTerminal);
+                const doorObj = door.find(d => d.id === period.idPorta);
+
+                if (!device) return;
+                if (!doorObj) return;
+
+                const existingIndex = updatedData.findIndex(
+                    item => item?.idTerminal === device.zktecoDeviceID
+                );
+
+                const newDoor = {
+                    idPorta: doorObj.id,
+                    nomePorta: doorObj.name,
+                };
+
+                if (existingIndex !== -1) {
+                    const existingItem = updatedData[existingIndex];
+
+                    if (!existingItem?.portas) {
+                        if (existingItem) {
+                            existingItem.portas = [];
+                        }
+                    }
+
+                    const doorAlreadyExists = existingItem?.portas.some(
+                        (p: PlanoAcessoDispositivos) => p.idPorta === newDoor.idPorta
+                    );
+
+                    if (!doorAlreadyExists) {
+                        existingItem?.portas.push(newDoor);
+                    }
+
+                } else {
+                    updatedData.push({
+                        idTerminal: device.zktecoDeviceID || '',
+                        nomeTerminal: device.deviceName || '',
+                        idPlanoHorario: period.idPlanoHorario || '',
+                        nomePlanoHorario: period.nomePlanoHorario || '',
+                        portas: [newDoor],
+                    } as unknown as Partial<PlanoAcessoDispositivos[]>);
+                }
+            });
+
+            return updatedData;
+        });
     };
 
-    // Função para remover períodos selecionados
+    // Função para remover terminais selecionados
+    const removeSelectedDevices = () => {
+        const remainingData = devicesTableData.filter(
+            (dev) => !deviceSelectedRows.some((row) => row.idTerminal === dev.idTerminal)
+        );
+        setDevicesTableData(remainingData);
+        setClearSelectionToggle((prev) => !prev);
+    };
+
+    // Função para remover funcionários selecionados
     const removeSelectedEmployees = () => {
         const remainingData = employeeTableData.filter(
             (emp) => !selectedRows.some((row) => row.employeeID === emp.employeeID)
@@ -68,29 +127,71 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     };
 
     // Função para atualizar os campos do formulário
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value, type } = e.target;
+        const parsedValue = type === 'number' ? Number(value) : value;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: parsedValue
+        }));
     };
 
+    // Define as colunas que serão exibidas
+    const includedDeviceColumns = ['nomeTerminal', 'nomePlanoHorario', 'nomePorta'];
+
     // Define as colunas de dispositivos
-    const deviceColumns: TableColumn<PlanoAcessoDispositivos>[] = planosAcessoDispositivosFields
+    const deviceColumns: TableColumn<Partial<PlanoAcessoDispositivos>>[] = planosAcessoDispositivosFields
+        .filter(field => includedDeviceColumns.includes(field.key))
         .map(field => {
-            const formatField = (row: PlanoAcessoDispositivos) => {
+
+            const selectorField = (row: Partial<PlanoAcessoDispositivos>) => {
+                if (field.key === 'nomePorta' && row.portas && row.portas.length > 0) {
+                    return row.portas.map((p: PlanoAcessoDispositivos) => p.nomePorta).join(', ');
+                }
+                return row[field.key] || '';
+            };
+
+            const cellField = (row: Partial<PlanoAcessoDispositivos>) => {
+                if (!row) return '';
+
                 switch (field.key) {
+                    case 'nomePorta': {
+                        if (row.portas && row.portas.length > 0) {
+                            const fullText = row.portas.map((p: PlanoAcessoDispositivos) => p.nomePorta).join(', ');
+
+                            if (fullText.length <= 45) {
+                                return fullText;
+                            }
+
+                            const truncatedText = fullText.slice(0, 45) + '...';
+
+                            return (
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip className="custom-tooltip">{fullText}</Tooltip>}
+                                >
+                                    <span>{truncatedText}</span>
+                                </OverlayTrigger>
+                            );
+                        }
+                        return '';
+                    }
                     default:
-                        return row[field.key];
+                        return row[field.key] || '';
                 }
             };
+
             return {
                 id: field.key,
-                name: (
-                    <>
-                        {field.label}
-                    </>
-                ),
-                selector: row => formatField(row),
+                name: field.label,
+                selector: selectorField,
+                cell: cellField,
                 sortable: true,
+                sortFunction: (rowA, rowB) => {
+                    const aVal = (rowA.nomeTerminal || '').toLowerCase();
+                    const bVal = (rowB.nomeTerminal || '').toLowerCase();
+                    return aVal.localeCompare(bVal);
+                },
             };
         });
 
@@ -133,14 +234,37 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     // Função para fechar o modal
     const handleClose = () => {
         setClearSelectionToggle((prev) => !prev);
+        setEmployeeTableData([]);
+        setDevicesTableData([]);
         onClose();
     }
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave({} as T);
+        const dispositivos = devicesTableData.map(device => ({
+            idTerminal: device.idTerminal,
+            nomeTerminal: device.nomeTerminal,
+            idPlanoHorario: device.idPlanoHorario,
+            nomePlanoHorario: device.nomePlanoHorario,
+            portas: device.portas?.map((porta: PlanoAcessoDispositivos) => ({
+                idPorta: porta.idPorta,
+                nomePorta: porta.nomePorta,
+            })) || []
+        }));
+        const planosAcessoDispositivos = [
+            {
+                dispositivos,
+            },
+        ];
+        const employeeIds = employeeTableData.map(emp => emp.employeeID);
+        const payload = {
+            nome: formData.nome,
+            planosAcessoDispositivos,
+            employeeIds,
+        };
+        onSave(payload as unknown as T);
         handleClose();
-    }
+    };
 
     return (
         <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
@@ -155,7 +279,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                             className="custom-input-height custom-select-font-size"
                             type="text"
                             name="nome"
-                            value={formData.morada}
+                            value={formData.nome || ''}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -180,21 +304,22 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                     </Nav>
                                     <Tab.Content>
                                         <Tab.Pane eventKey="equipamentos">
-                                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                            <div style={{ marginTop: 10, marginBottom: 10 }}>
                                                 <Row>
                                                     <DataTable
                                                         columns={deviceColumns}
-                                                        data={[]}
+                                                        data={devicesTableData}
                                                         pagination
                                                         paginationComponentOptions={paginationOptions}
                                                         paginationPerPage={20}
                                                         paginationRowsPerPageOptions={[20, 30, 50]}
                                                         selectableRows
+                                                        onSelectedRowsChange={({ selectedRows }) => setDeviceSelectedRows(selectedRows)}
                                                         noDataComponent="Não existem dados disponíveis para exibir."
                                                         customStyles={customStyles}
                                                         striped
                                                         defaultSortAsc={true}
-                                                        defaultSortFieldId="doorNo"
+                                                        defaultSortFieldId="nomeTerminal"
                                                     />
                                                 </Row>
                                                 <div style={{ display: 'flex', marginTop: 10 }}>
@@ -208,13 +333,13 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         placement="top"
                                                         overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
                                                     >
-                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={() => console.log('delete')} iconSize='1.1em' />
+                                                        <CustomOutlineButton icon="bi bi-trash-fill" onClick={removeSelectedDevices} iconSize='1.1em' />
                                                     </OverlayTrigger>
                                                 </div>
-                                            </Form>
+                                            </div>
                                         </Tab.Pane>
                                         <Tab.Pane eventKey="pessoas">
-                                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                            <div style={{ marginTop: 10, marginBottom: 10 }}>
                                                 <Row>
                                                     <DataTable
                                                         columns={employeeColumns}
@@ -247,7 +372,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         <CustomOutlineButton icon="bi bi-trash-fill" onClick={removeSelectedEmployees} iconSize='1.1em' />
                                                     </OverlayTrigger>
                                                 </div>
-                                            </Form>
+                                            </div>
                                         </Tab.Pane>
                                     </Tab.Content>
                                 </Tab.Container>

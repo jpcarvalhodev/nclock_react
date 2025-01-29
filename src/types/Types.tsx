@@ -48,6 +48,8 @@ export type Employee = {
     zoneName: string;
     externalEntityId: string;
     externalEntityName: string;
+    accPlanoAcessoId: string;
+    accPlanoAcessoName: string;
 };
 
 export type Department = {

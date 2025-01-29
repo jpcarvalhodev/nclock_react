@@ -10,6 +10,8 @@ import DataTable from 'react-data-table-component';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { TreeViewAC } from '../components/TreeViewAC';
 import { useTerminals } from '../context/TerminalsContext';
+import { id } from 'date-fns/locale';
+import { toast } from 'react-toastify';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -42,6 +44,7 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza os dados do dropdown ao abrir o modal
     useEffect(() => {
@@ -74,10 +77,10 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
             }
         });
         if (selectedOption) {
-            const idKey = key;
             setFormData(prevState => ({
                 ...prevState,
-                [idKey]: value
+                idPlanoHorario: value,
+                nomePlanoHorario: selectedOption.nome || '',
             }));
         } else {
             setFormData(prevState => ({
@@ -125,7 +128,6 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
                 }
                 return row.deviceName || '';
             },
-            grow: 8,
             ignoreRowClick: true,
             allowOverflow: true,
             wrap: false,
@@ -135,15 +137,36 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
     // Função para fechar o modal
     const handleClose = () => {
         setClearSelectionToggle((prev) => !prev);
+        setFormData({} as PlanoAcessoDispositivos);
         onClose();
     }
 
     // Função para salvar os dados
     const handleSave = () => {
-        const dataToSave = {
-            ...formData,
-            idTerminal: selectedDevicesIds
-        };
+        if (!formData.idPlanoHorario) {
+            setShowValidationErrors(true);
+            toast.warn('Selecione um plano de horário primeiro.');
+            return;
+        }
+        const idTerminals = selectedDevicesIds
+            .filter(id => id.includes("deviceid-"))
+            .map(id => id.split("deviceid-")[1]);
+
+        const idDoors = selectedDevicesIds
+            .filter(id => id.includes("door-"))
+            .map(id => id.split("door-")[1]);
+
+        const dataToSave = [];
+        for (const terminalID of idTerminals) {
+            for (const doorID of idDoors) {
+                dataToSave.push({
+                    idTerminal: terminalID,
+                    idPorta: doorID,
+                    idPlanoHorario: formData.idPlanoHorario,
+                    nomePlanoHorario: formData.nomePlanoHorario,
+                });
+            }
+        }
         onSave(dataToSave as unknown as T);
         handleClose();
     };
@@ -160,7 +183,7 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
                             <Form.Label>Plano de Horário</Form.Label>
                             <Form.Control
                                 as="select"
-                                className={`custom-input-height custom-select-font-size`}
+                                className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                 value={formData.idPlanoHorario || ''}
                                 onChange={(e) => handleDropdownChange('timePlanId', e)}
                             >

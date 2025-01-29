@@ -40,7 +40,7 @@ export interface DeviceContextType {
     handleUpdateMBDevice: (device: MBDevice) => Promise<void>;
     handleDeleteMBDevice: (id: string) => Promise<void>;
     accessControl: AccessControl[];
-    fetchAccessControl: () => Promise<void>;
+    fetchAccessControl: () => Promise<AccessControl[]>;
     handleAddAccessControl: (newAccessControl: Partial<AccessControl>) => Promise<void>;
     handleUpdateAccessControl: (newAccessControl: Partial<AccessControl>) => Promise<void>;
     handleDeleteAccessControl: (id: string) => Promise<void>;
@@ -363,13 +363,15 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar a listagem de controle de acesso
-    const fetchAccessControl = async () => {
+    const fetchAccessControl = async (): Promise<AccessControl[]> => {
         try {
             const data = await apiService.fetchAllAccessControl();
             setAccessControl(data);
+            return data;
         } catch (error) {
             console.error('Erro ao buscar os dados de controle de acesso:', error);
         }
+        return [];
     };
 
     // Função para adicionar o controle de acesso

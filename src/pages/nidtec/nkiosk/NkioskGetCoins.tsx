@@ -564,7 +564,7 @@ export const NkioskGetCoins = () => {
                         </div>
                         <div style={{ display: "flex" }}>
                             <div style={{ marginLeft: 10, marginRight: 10 }}>
-                                <strong>Valor Total: </strong>Recolhas - {totalAmount.toFixed(2)}€ | Diferença - {totalAmountDifference.toFixed(2)}€
+                                <strong>Valor Total Online: </strong>Recolhas - {totalAmount.toFixed(2)}€ | Diferença - {totalAmountDifference.toFixed(2)}€
                             </div>
                         </div>
                     </div>
