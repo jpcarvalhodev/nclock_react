@@ -11,13 +11,13 @@ import { NavBar } from "../../components/NavBar";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
+import { usePersons } from "../../context/PersonsContext";
 import { categoryFields, externalEntityTypeFields } from "../../fields/Fields";
-import { ExternalEntityTypes } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
-import { usePersons } from "../../context/PersonsContext";
+import { ExternalEntityTypes } from "../../types/Types";
 
 // Define a interface para os filtros
 interface Filters {

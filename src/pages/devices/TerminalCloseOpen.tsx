@@ -1,8 +1,10 @@
+import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
+import * as apiService from "../../api/apiService";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
@@ -13,11 +15,9 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../components/TreeViewDevice";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
-import * as apiService from "../../api/apiService";
 import { mbDeviceCloseOpenFields } from "../../fields/Fields";
-import { MBDeviceCloseOpen } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { TextField, TextFieldProps } from "@mui/material";
+import { MBDeviceCloseOpen } from "../../types/Types";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

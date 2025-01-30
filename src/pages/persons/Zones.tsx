@@ -6,23 +6,23 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
+import { usePersons } from "../../context/PersonsContext";
 import { zoneFields } from "../../fields/Fields";
-import { Zone } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { CreateModalZones } from "../../modals/CreateModalZones";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { UpdateModalZones } from "../../modals/UpdateModalZones";
+import { Zone } from "../../types/Types";
 
 import DataTable, { TableColumn } from 'react-data-table-component';
 
-import { CreateModalZones } from "../../modals/CreateModalZones";
-import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
-import { UpdateModalZones } from "../../modals/UpdateModalZones";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextField, TextFieldProps } from "@mui/material";
-import { usePersons } from "../../context/PersonsContext";
 
 
 // Define a interface para os filtros

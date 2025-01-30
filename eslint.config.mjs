@@ -1,54 +1,76 @@
+import jsPkg from "@eslint/js";
+const { configs: jsConfigs } = jsPkg;
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import reactPlugin from "eslint-plugin-react";
+const { configs: reactConfigs } = reactPlugin;
+import importPlugin from "eslint-plugin-import";
 import globals from "globals";
-import pluginJs from "@eslint/js";
-import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
 
-/** @type {import('eslint').Linter.Config[]} */
+/** @type {import("eslint").Linter.FlatConfig[]} */
 export default [
   {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
-    languageOptions: { globals: globals.browser },
-    ...pluginJs.configs.recommended,
-    ...tseslint.configs.recommended,
-    ...pluginReact.configs.flat.recommended,
+
+    languageOptions: {
+      parser: tsParser,
+      globals: {
+        ...globals.browser
+      }
+    },
+
+    plugins: {
+      "@typescript-eslint": tsPlugin,
+      react: reactPlugin,
+      import: importPlugin
+    },
+
+    settings: {
+      react: {
+        version: "detect"
+      },
+      "import/resolver": {
+        typescript: {
+          project: "./tsconfig.json"
+        }
+      }
+    },
+
     rules: {
+      ...jsConfigs.recommended.rules,
+      ...tsPlugin.configs.recommended.rules,
+      ...reactConfigs.recommended.rules,
+      "react/react-in-jsx-scope": "off",
       "import/no-unresolved": "warn",
       "import/named": "warn",
       "import/no-duplicates": "warn",
       "import/order": [
         "warn",
         {
-          "groups": [
-            "builtin",
-            "external",
-            "internal",
-            "parent",
-            "sibling",
-            "index"
-          ],
-          "pathGroups": [
+          groups: ["builtin", "external", "internal", "parent", "sibling", "index"],
+          pathGroups: [
             {
-              "pattern": "components/**",
-              "group": "internal"
+              pattern: "components/**",
+              group: "internal"
             },
             {
-              "pattern": "common/**",
-              "group": "internal"
+              pattern: "common/**",
+              group: "internal"
             },
             {
-              "pattern": "routes/**",
-              "group": "internal"
+              pattern: "routes/**",
+              group: "internal"
             },
             {
-              "pattern": "assets/**",
-              "group": "internal",
-              "position": "after"
+              pattern: "assets/**",
+              group: "internal",
+              position: "after"
             }
           ],
-          "pathGroupsExcludedImportTypes": ["builtin"],
-          "alphabetize": {
-            "order": "asc",
-            "caseInsensitive": true
+          pathGroupsExcludedImportTypes: ["builtin"],
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true
           }
         }
       ]

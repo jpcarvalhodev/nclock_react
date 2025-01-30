@@ -1,11 +1,11 @@
 import { ArcElement, BarElement, CategoryScale, ChartData, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
+import { useEffect, useState } from 'react';
 import { Bar, Pie } from "react-chartjs-2";
 
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
 import { usePersons } from '../../../context/PersonsContext';
-import { useEffect, useState } from 'react';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 

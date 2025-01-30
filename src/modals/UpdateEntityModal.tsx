@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
+import * as apiService from "../api/apiService";
 import no_entity from '../assets/img/navbar/no_entity.png';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../api/apiService";
 
 // Define a interface para os itens de erro
 interface ErrorDetails {
@@ -54,7 +54,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-    const fileInputRef = React.createRef<HTMLInputElement>();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para validar o formulário
@@ -252,7 +252,7 @@ export const UpdateEntityModal = <T extends Entity>({ title, open, onClose, onUp
                             </Col>
                         </Row>
                         <Col md={6}>
-                            <Form.Group controlId="formEnabled" className='mt-4' style={{ marginBottom: 14 }}>
+                            <Form.Group controlId="formEnabled" style={{ marginBottom: 38 }}>
                                 <Form.Check
                                     type="switch"
                                     name="enabled"

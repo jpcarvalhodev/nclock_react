@@ -6,23 +6,23 @@ import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
+import { usePersons } from "../../context/PersonsContext";
 import { professionFields } from "../../fields/Fields";
-import { Profession } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
+import { Profession } from "../../types/Types";
 
 import DataTable, { TableColumn } from 'react-data-table-component';
 
-import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
-import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
 import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
-import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { customStyles } from "../../components/CustomStylesDataTable";
 
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { TextField, TextFieldProps } from "@mui/material";
-import { usePersons } from "../../context/PersonsContext";
 
 
 // Define a interface para os filtros

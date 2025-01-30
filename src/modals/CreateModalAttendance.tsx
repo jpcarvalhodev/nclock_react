@@ -1,13 +1,13 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
-import { Devices, Employee } from '../types/Types';
-import { useTerminals } from '../context/TerminalsContext';
 import { usePersons } from '../context/PersonsContext';
+import { useTerminals } from '../context/TerminalsContext';
+import { Devices, Employee } from '../types/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

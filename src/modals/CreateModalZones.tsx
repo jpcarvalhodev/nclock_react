@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
@@ -30,7 +30,7 @@ interface Props<T> {
 export const CreateModalZones = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
-    const fileInputRef = React.createRef<HTMLInputElement>();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [showValidationErrors, setShowValidationErrors] = useState(false);

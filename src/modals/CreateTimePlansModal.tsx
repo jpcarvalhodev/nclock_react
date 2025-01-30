@@ -4,10 +4,10 @@ import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
 import { Col, Form, Nav, OverlayTrigger, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { customStyles } from "../components/CustomStylesDataTable";
-import { TimePeriod } from "../types/Types";
-import { timePeriodFields } from "../fields/Fields";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { customStyles } from "../components/CustomStylesDataTable";
+import { timePeriodFields } from "../fields/Fields";
+import { TimePeriod } from "../types/Types";
 import { AddPeriodToTimePlansModal } from "./AddPeriodToTimePlansModal";
 
 // Define as propriedades do componente

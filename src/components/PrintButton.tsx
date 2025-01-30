@@ -2,13 +2,13 @@ import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import { useEffect, useState } from 'react';
 import { Button, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-import { useTerminals } from '../context/TerminalsContext';
 import * as apiService from "../api/apiService";
+import { useEntity } from '../context/EntityContext';
+import { useTerminals } from '../context/TerminalsContext';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { CustomSpinner } from './CustomSpinner';
 import { PDFDocument } from './PDFDocument';
-import { useEntity } from '../context/EntityContext';
 
 
 // Interfaces para os itens de dados e campos

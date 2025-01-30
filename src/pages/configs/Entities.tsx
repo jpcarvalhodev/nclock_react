@@ -14,10 +14,9 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { useEntity } from "../../context/EntityContext";
 import { useNavbar } from "../../context/NavbarContext";
 import { entityFields } from "../../fields/Fields";
-import { Entity } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
-
+import { Entity } from "../../types/Types";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

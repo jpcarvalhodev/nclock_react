@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -169,57 +169,39 @@ export const UpdateModalAds = <T extends Entity>({ title, open, onClose, onUpdat
     // Função para salvar os dados
     const handleSave = () => {
         const dataToSend = new FormData();
-        const imageFiles: FileWithOrder[] = [];
-        const videoFiles: FileWithOrder[] = [];
 
         dataToSend.append('id', entity.id);
-
-        files.forEach(fileWithOrder => {
-            if (allowedImageExtensions.some(ext => fileWithOrder.file.name.toLowerCase().endsWith(ext))) {
-                imageFiles.push(fileWithOrder);
-            } else if (allowedVideoExtensions.some(ext => fileWithOrder.file.name.toLowerCase().endsWith(ext))) {
-                videoFiles.push(fileWithOrder);
-            }
-        });
-
-        if (formData.Creador) {
-            dataToSend.append('Creador', formData.Creador);
-        }
 
         if (formData.desativar) {
             dataToSend.append('Desativar', formData.desativar);
         }
 
-        if (imageFiles.length > 0) {
-            if (formData.nomeArquivo) {
-                dataToSend.append('Nome', formData.nomeArquivo);
-            }
-            dataToSend.append('Ordem', imageFiles.map(f => f.ordem.toString()).join(','));
-            imageFiles.forEach(f => {
-                dataToSend.append('NovosArquivos', f.file, f.file.name);
-            });
+        if (formData.Creador) {
+            dataToSend.append('Creador', formData.Creador);
         }
 
-        if (videoFiles.length > 0) {
-            if (formData.nomeArquivo) {
-                dataToSend.append('Nome', formData.nomeArquivo);
-            }
-            dataToSend.append('Ordem', videoFiles.map(f => f.ordem.toString()).join(','));
-            videoFiles.forEach(f => {
-                dataToSend.append('NovosArquivos', f.file, f.file.name);
-            });
-        }
+        files.forEach(fileWithOrder => {
+            const { file, ordem } = fileWithOrder;
 
-        if (formData.tempoExecucaoImagens && imageFiles.length > 0) {
+            if (allowedImageExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
+                dataToSend.append('imagens', file, file.name);
+                dataToSend.append('OrdensImagens', ordem.toString());
+            } else if (allowedVideoExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
+                dataToSend.append('videos', file, file.name);
+                dataToSend.append('OrdensVideos', ordem.toString());
+            }
+        });
+
+        if (formData.tempoExecucaoImagens) {
             dataToSend.append('TemposExecucaoImagens', formData.tempoExecucaoImagens);
         }
 
-        if (formData.dataFim && imageFiles.length > 0) {
-            dataToSend.append('DataFim', formData.dataFim);
+        if (formData.dataFim) {
+            dataToSend.append('DatasFimImagens', formData.dataFim);
         }
 
-        if (formData.dataFim && videoFiles.length > 0) {
-            dataToSend.append('DataFim', formData.dataFim);
+        if (formData.dataFim) {
+            dataToSend.append('DatasFimVideos', formData.dataFim);
         }
 
         onUpdate(dataToSend);

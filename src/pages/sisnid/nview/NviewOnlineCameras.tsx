@@ -4,6 +4,7 @@ import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
 
+import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
@@ -12,13 +13,12 @@ import { NavBar } from "../../../components/NavBar";
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../api/apiService";
 import { cameraFields } from "../../../fields/Fields";
-import { Cameras } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
+import { Cameras } from "../../../types/Types";
 
 
 // Define a interface para as propriedades do componente CustomSearchBox

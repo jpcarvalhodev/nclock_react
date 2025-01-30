@@ -4,9 +4,9 @@ import '../../css/ForgotPassword.css';
 import { Button, FormControl, InputGroup } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
-import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
 import hidepass from "../../assets/img/login/hidepass.png";
 import showpass from "../../assets/img/login/showpass.png";
+import { fetchWithoutAuth } from '../../components/FetchWithoutAuth';
 
 // Define a página de redefinição de senha
 export const ResetPassword = () => {

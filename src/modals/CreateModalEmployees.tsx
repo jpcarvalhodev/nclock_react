@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
@@ -9,13 +9,13 @@ import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
 import modalAvatar from "../assets/img/navbar/navbar/modalAvatar.png";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { useEntity } from "../context/EntityContext";
 import { usePersons } from "../context/PersonsContext";
+import { useTerminals } from "../context/TerminalsContext";
 import { departmentFields, groupFields } from "../fields/Fields";
 import { Employee, EmployeeCard } from "../types/Types";
 
 import { CreateModalDeptGrp } from "./CreateModalDeptGrp";
-import { useEntity } from "../context/EntityContext";
-import { useTerminals } from "../context/TerminalsContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -50,7 +50,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
   const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
-  const fileInputRef = React.createRef<HTMLInputElement>();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [showDeptModal, setShowDeptModal] = useState(false);

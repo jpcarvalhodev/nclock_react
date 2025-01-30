@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -156,53 +156,35 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
     // Função para salvar os dados
     const handleSave = () => {
         const dataToSend = new FormData();
-        const imageFiles: FileWithOrder[] = [];
-        const videoFiles: FileWithOrder[] = [];
-
-        files.forEach(fileWithOrder => {
-            if (allowedImageExtensions.some(ext => fileWithOrder.file.name.toLowerCase().endsWith(ext))) {
-                imageFiles.push(fileWithOrder);
-            } else if (allowedVideoExtensions.some(ext => fileWithOrder.file.name.toLowerCase().endsWith(ext))) {
-                videoFiles.push(fileWithOrder);
-            }
-        });
 
         if (formData.Creador) {
             dataToSend.append('Creador', formData.Creador);
         }
 
-        if (imageFiles.length > 0) {
-            if (formData.nomeArquivo) {
-                dataToSend.append('NomesImagens', formData.nomeArquivo);
+        files.forEach(fileWithOrder => {
+            const { file, ordem } = fileWithOrder;
+    
+            if (allowedImageExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
+                dataToSend.append('imagens', file, file.name);
+                dataToSend.append('OrdensImagens', ordem.toString());
+            } else if (allowedVideoExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
+                dataToSend.append('videos', file, file.name);
+                dataToSend.append('OrdensVideos', ordem.toString());
             }
-            dataToSend.append('OrdensImagens', imageFiles.map(f => f.ordem.toString()).join(','));
-            imageFiles.forEach(f => {
-                dataToSend.append('imagens', f.file, f.file.name);
-            });
-        }
+        });
 
-        if (videoFiles.length > 0) {
-            if (formData.nomeArquivo) {
-                dataToSend.append('NomesVideos', formData.nomeArquivo);
-            }
-            dataToSend.append('OrdensVideos', videoFiles.map(f => f.ordem.toString()).join(','));
-            videoFiles.forEach(f => {
-                dataToSend.append('videos', f.file, f.file.name);
-            });
-        }
-
-        if (formData.tempoExecucaoImagens && imageFiles.length > 0) {
+        if (formData.tempoExecucaoImagens) {
             dataToSend.append('TemposExecucaoImagens', formData.tempoExecucaoImagens);
         }
 
-        if (formData.dataFim && imageFiles.length > 0) {
+        if (formData.dataFim) {
             dataToSend.append('DatasFimImagens', formData.dataFim);
         }
 
-        if (formData.dataFim && videoFiles.length > 0) {
+        if (formData.dataFim) {
             dataToSend.append('DatasFimVideos', formData.dataFim);
         }
-
+        
         onSave(dataToSend);
         handleClose();
     };

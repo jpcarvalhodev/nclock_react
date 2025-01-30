@@ -2,6 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from '../api/apiService';
+import { LoadingModal } from '../modals/LoadingModal';
 import { BackupDB, Entity, Logs } from '../types/Types';
 
 // Função para baixar o arquivo usando um URL fornecido
@@ -42,6 +43,9 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const [entity, setEntity] = useState<Entity[]>([]);
     const [loginLogs, setLoginLogs] = useState<Logs[]>([]);
     const [historyLogs, setHistoryLogs] = useState<Logs[]>([]);
+    const [loadingExportBackup, setLoadingExportBackup] = useState(false);
+    const [loadingImportBackup, setLoadingImportBackup] = useState(false);
+    const [loadingImportEmployees, setLoadingImportEmployees] = useState(false);
 
     // Função para buscar todas as entidades
     const fetchAllEntity = async (): Promise<Entity[]> => {
@@ -125,35 +129,44 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     // Função para exportar o backup do banco de dados
     const exportBackupDB = async (backup: BackupDB) => {
         try {
+            setLoadingExportBackup(true);
             const data = await apiService.backupDatabase(backup);
+            setLoadingExportBackup(false);
             if (data.downloadUrl) {
                 downloadFile(data.downloadUrl);
                 toast.success(data.message || 'Backup realizado com sucesso!');
             }
         } catch (error) {
             console.error('Erro ao realizar o backup:', error);
+            setLoadingExportBackup(false);
         }
     }
 
     // Função para importar o backup do banco de dados
     const importBackupDB = async (backup: FormData) => {
         try {
+            setLoadingImportBackup(true);
             const data = await apiService.importBackupDatabase(backup);
+            setLoadingImportBackup(false);
             toast.success(data.message || 'Backup restaurado com sucesso!');
             window.location.reload();
         } catch (error) {
             console.error('Erro ao restaurar o backup:', error);
+            setLoadingImportBackup(false);
         }
     }
 
     // Função para importar os funcionários
     const importEmployees = async (employees: FormData) => {
         try {
+            setLoadingImportEmployees(true);
             const data = await apiService.importEmployees(employees);
+            setLoadingImportEmployees(false);
             toast.success(data.message || 'Funcionários importados com sucesso!');
             window.location.reload();
         } catch (error) {
             console.error('Erro ao importar os funcionários:', error);
+            setLoadingImportEmployees(false);
         }
     }
 
@@ -170,6 +183,9 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     return (
         <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees }}>
             {children}
+            <LoadingModal
+                show={loadingExportBackup || loadingImportBackup || loadingImportEmployees}
+            />
         </EntityContext.Provider>
     );
 };

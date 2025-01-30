@@ -16,11 +16,11 @@ import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
 import { mbDeviceFields } from "../../fields/Fields";
-import { MBDevice } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
+import { MBDevice } from "../../types/Types";
 
 // Define a interface para os filtros
 interface Filters {

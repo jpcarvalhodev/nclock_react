@@ -4,12 +4,12 @@ import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 
 import DataTable, { TableColumn } from 'react-data-table-component';
+import Split from 'react-split';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { TreeViewData } from '../components/TreeView';
-import Split from 'react-split';
-import { Employee } from '../types/Types';
-import { employeeFields } from '../fields/Fields';
 import { usePersons } from '../context/PersonsContext';
+import { employeeFields } from '../fields/Fields';
+import { Employee } from '../types/Types';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
@@ -17,10 +17,11 @@ interface CreateModalProps<T> {
     open: boolean;
     onClose: () => void;
     onSave: (data: T) => void;
+    entity?: T;
 }
 
 // Define o componente
-export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, open, onClose, onSave }: CreateModalProps<T>) => {
+export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, open, onClose, onSave, entity }: CreateModalProps<T>) => {
     const {
         data,
     } = usePersons();
@@ -31,9 +32,11 @@ export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, ope
 
     // Atualiza os funcionários filtrados ao abrir o modal
     useEffect(() => {
-        if (open)
-            setFilteredEmployees(data.employees);
-    }, [open, data.employees]);
+        if (open) {
+            const filtered = data.employees.filter(employee => !entity?.some((e: Employee) => e.employeeID === employee.employeeID));
+            setFilteredEmployees(filtered);
+        }
+    }, [open, data.employees, entity?.employees]);
 
     // Atualiza os funcionários filtrados com base nos funcionários selecionados
     useEffect(() => {

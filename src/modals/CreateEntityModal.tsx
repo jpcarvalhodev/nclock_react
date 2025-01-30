@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
@@ -30,7 +30,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-    const fileInputRef = React.createRef<HTMLInputElement>();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para validar o formulário
@@ -204,7 +204,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
                             </Col>
                         </Row>
                         <Col md={6}>
-                            <Form.Group controlId="formEnabled" className='mt-4' style={{ marginBottom: 14 }}>
+                            <Form.Group controlId="formEnabled" style={{ marginBottom: 38 }}>
                                 <Form.Check
                                     type="switch"
                                     name="enabled"

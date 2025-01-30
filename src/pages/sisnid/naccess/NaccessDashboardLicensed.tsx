@@ -14,8 +14,8 @@ import { useNavbar } from "../../../context/NavbarContext";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, getDay, parse, setYear, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Bar } from "react-chartjs-2";
-import { Line } from "react-chartjs-2";
+import { Bar , Line } from "react-chartjs-2";
+
 
 // Define a linguagem do calendário
 const locales = {

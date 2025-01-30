@@ -117,7 +117,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Função para buscar todos os dados
-    const fetchAllData = useCallback(async (entity: string = 'all') => {
+    const fetchAllData = useCallback(async (entity = 'all') => {
         try {
             const allData = await apiService.fetchAllData();
             let newData: DataState = {

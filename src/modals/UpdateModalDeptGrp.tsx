@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Col, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -12,8 +12,8 @@ import { employeeFields } from '../fields/Fields';
 import { Department, Employee, Group } from '../types/Types';
 
 import { CreateModalEmployees } from './CreateModalEmployees';
-import { UpdateModalEmployees } from './UpdateModalEmployees';
 import { MoveEmployeeToDeptGrpModal } from './MoveEmployeeToDeptGrpModal';
+import { UpdateModalEmployees } from './UpdateModalEmployees';
 
 
 // Define a interface para os itens de campo

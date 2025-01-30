@@ -22,12 +22,12 @@ import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from "../../context/PersonsContext";
 import { TerminalsProvider, useTerminals } from "../../context/TerminalsContext";
 import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../fields/Fields";
-import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalDevices } from "../../modals/CreateModalDevices";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { DoorModal } from "../../modals/DoorModal";
 import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
+import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../types/Types";
 
 // Define a interface para os filtros
 interface Filters {

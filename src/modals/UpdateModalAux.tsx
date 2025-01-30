@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -176,7 +176,7 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
                 <div className="container-fluid">
                     <Row>
                         <Col md={3}>
-                            <Form.Group controlId="formEnabled" className='d-flex justify-content-between mt-3' style={{ marginBottom: 13.5 }}>
+                            <Form.Group controlId="formEnabled" className='d-flex justify-content-between' style={{ marginBottom: 40 }}>
                                 <Form.Label>Activo</Form.Label>
                                 <Form.Check
                                     type="switch"

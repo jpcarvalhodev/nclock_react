@@ -12,11 +12,11 @@ import { TreeViewData } from '../../components/TreeView';
 import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from '../../context/PersonsContext';
 import { employeeFields } from '../../fields/Fields';
-import { Employee } from '../../types/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 import { DeleteModal } from '../../modals/DeleteModal';
 import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
+import { Employee } from '../../types/Types';
 import { CustomOutlineButton } from '../../components/CustomOutlineButton';
 import { ExportButton } from '../../components/ExportButton';
 

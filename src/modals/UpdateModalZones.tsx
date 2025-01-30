@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -42,7 +42,7 @@ export const UpdateModalZones = <T extends Entity>({ open, onClose, onUpdate, on
     const [formData, setFormData] = useState<T>({ ...entity });
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
-    const fileInputRef = React.createRef<HTMLInputElement>();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 

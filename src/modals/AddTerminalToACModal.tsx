@@ -5,13 +5,12 @@ import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { Col, Row } from 'react-bootstrap';
 
-import { Devices, DevicesDoors, Doors, PlanoAcessoDispositivos } from '../types/Types';
 import DataTable from 'react-data-table-component';
+import { toast } from 'react-toastify';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { TreeViewAC } from '../components/TreeViewAC';
 import { useTerminals } from '../context/TerminalsContext';
-import { id } from 'date-fns/locale';
-import { toast } from 'react-toastify';
+import { Devices, DevicesDoors, Doors, PlanoAcessoDispositivos } from '../types/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -129,7 +128,6 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
                 return row.deviceName || '';
             },
             ignoreRowClick: true,
-            allowOverflow: true,
             wrap: false,
         }
     ];

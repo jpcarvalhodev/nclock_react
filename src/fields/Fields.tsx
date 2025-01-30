@@ -338,7 +338,7 @@ export const accessControlFields = [
     { key: 'dataInicio', label: 'Data de Início', type: 'Date' },
     { key: 'dataFim', label: 'Data de Fim', type: 'Date' },
     { key: 'opc', label: 'OPC', type: 'number' },
-    { key: 'activo', label: 'Ativo', type: 'boolean' },
+    { key: 'activo', label: 'Activo', type: 'boolean' },
     { key: 'saldoZonaCarregamento', label: 'Saldo na Zona de Carregamento', type: 'boolean' },
     { key: 'saldoZonaLotacao', label: 'Saldo na Zona de Lotação', type: 'boolean' },
     { key: 'asWithAc', label: 'AS com AC', type: 'boolean' },

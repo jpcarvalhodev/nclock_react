@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -13,11 +13,11 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
 import { accessControlFields } from "../../fields/Fields";
-import { AccessControl } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
 import { CreateAccessControlModal } from "../../modals/CreateAccessControlModal";
 import { DeleteModal } from "../../modals/DeleteModal";
+import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
+import { AccessControl } from "../../types/Types";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

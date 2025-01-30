@@ -5,8 +5,8 @@ import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 
-import { TimePeriod } from '../types/Types';
 import { useTerminals } from '../context/TerminalsContext';
+import { TimePeriod } from '../types/Types';
 
 // Define a interface para as propriedades do componente
 interface FieldConfig {

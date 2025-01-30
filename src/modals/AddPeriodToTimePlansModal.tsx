@@ -5,10 +5,10 @@ import '../css/PagesStyles.css';
 
 import DataTable, { TableColumn } from 'react-data-table-component';
 import { customStyles } from '../components/CustomStylesDataTable';
-import { TimePeriod } from '../types/Types';
-import { timePeriodFields } from '../fields/Fields';
-import { Col } from 'react-bootstrap';
 import { useTerminals } from '../context/TerminalsContext';
+import { timePeriodFields } from '../fields/Fields';
+import { TimePeriod } from '../types/Types';
+import { Col } from 'react-bootstrap';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {

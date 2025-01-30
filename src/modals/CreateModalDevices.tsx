@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
@@ -51,7 +51,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
     const [isFormValid, setIsFormValid] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState('');
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
-    const fileInputRef = React.createRef<HTMLInputElement>();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [noData, setNoData] = useState<Doors[]>([]);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [showValidationErrors, setShowValidationErrors] = useState(false);

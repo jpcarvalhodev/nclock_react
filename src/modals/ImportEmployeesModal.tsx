@@ -50,7 +50,14 @@ export const ImportEmployeesModal = <T extends Record<string, any>>({ title, ope
                 <Form style={{ marginTop: 20, marginBottom: 20, display: 'flex' }}>
                     <Row style={{ flex: 1.5 }}>
                         <Col md={6}>
-                            <input type="file" onChange={handleFileChange} />
+                            <Form.Group controlId="formFile">
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="file"
+                                    multiple
+                                    onChange={handleFileChange}
+                                />
+                            </Form.Group>
                         </Col>
                     </Row>
                 </Form>

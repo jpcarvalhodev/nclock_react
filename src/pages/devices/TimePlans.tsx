@@ -12,12 +12,12 @@ import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
-import { TimePlan } from "../../types/Types";
+import { timePlanFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateTimePlansModal } from "../../modals/CreateTimePlansModal";
-import { UpdateTimePlansModal } from "../../modals/UpdateTimePlansModal";
-import { timePlanFields } from "../../fields/Fields";
 import { DeleteModal } from "../../modals/DeleteModal";
+import { UpdateTimePlansModal } from "../../modals/UpdateTimePlansModal";
+import { TimePlan } from "../../types/Types";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -150,21 +150,24 @@ export const TimePlans = () => {
         setShowUpdateModal(false);
     }
 
+    // Ordena os planos de horários por nome
+    const sortedTimePlans = [...timePlans].sort((a, b) => (a.nome || "").localeCompare(b.nome || ""));
+
     // Função para selecionar o próximo plano de horário
     const handleNextTimePlan = () => {
-        const currentIndex = timePlans.findIndex((plan) => plan.nome === selectedTimePlan?.nome);
+        const currentIndex = sortedTimePlans.findIndex((plan) => plan.nome === selectedTimePlan?.nome);
 
-        if (currentIndex >= 0 && currentIndex < timePlans.length - 1) {
-            setSelectedTimePlan(timePlans[currentIndex + 1]);
+        if (currentIndex >= 0 && currentIndex < sortedTimePlans.length - 1) {
+            setSelectedTimePlan(sortedTimePlans[currentIndex + 1]);
         }
     };
 
     // Função para selecionar o plano de horário anterior
     const handlePrevTimePlan = () => {
-        const currentIndex = timePlans.findIndex((plan) => plan.nome === selectedTimePlan?.nome);
+        const currentIndex = sortedTimePlans.findIndex((plan) => plan.nome === selectedTimePlan?.nome);
 
         if (currentIndex > 0) {
-            setSelectedTimePlan(timePlans[currentIndex - 1]);
+            setSelectedTimePlan(sortedTimePlans[currentIndex - 1]);
         }
     };
 
@@ -189,7 +192,7 @@ export const TimePlans = () => {
             }
             return false;
         })
-    );
+    ).sort((a, b) => a.nome.localeCompare(b.nome));
 
     // Define as colunas da tabela
     const columns: TableColumn<TimePlan>[] = timePlanFields

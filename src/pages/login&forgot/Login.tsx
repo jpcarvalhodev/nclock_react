@@ -4,23 +4,23 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 
+import * as apiService from "../../api/apiService";
 import hidepass from "../../assets/img/login/hidepass.png";
 import showpass from "../../assets/img/login/showpass.png";
 import profileAvatar from "../../assets/img/navbar/navbar/profileAvatar.png";
 import no_entity from "../../assets/img/navbar/no_entity.png";
-import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
-import { useLicense } from "../../context/LicenseContext";
-import { usePersons } from "../../context/PersonsContext";
-import * as apiService from "../../api/apiService";
-import { License, LicenseKey } from "../../types/Types";
-import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
-import { useNavbar } from "../../context/NavbarContext";
-import { useTerminals } from "../../context/TerminalsContext";
-import { useEntity } from "../../context/EntityContext";
-import { useAttendance } from "../../context/MovementContext";
-import { useAds } from "../../context/AdsContext";
-import { useKiosk } from "../../context/KioskContext";
 import { CustomSpinner } from "../../components/CustomSpinner";
+import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
+import { useAds } from "../../context/AdsContext";
+import { useEntity } from "../../context/EntityContext";
+import { useKiosk } from "../../context/KioskContext";
+import { useLicense } from "../../context/LicenseContext";
+import { useAttendance } from "../../context/MovementContext";
+import { useNavbar } from "../../context/NavbarContext";
+import { usePersons } from "../../context/PersonsContext";
+import { useTerminals } from "../../context/TerminalsContext";
+import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
+import { License, LicenseKey } from "../../types/Types";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

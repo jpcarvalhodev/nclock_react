@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { toast } from 'react-toastify';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { customStyles } from '../components/CustomStylesDataTable';
+import { usePersons } from '../context/PersonsContext';
 import { employeeFields } from '../fields/Fields';
 import { Department, Employee, Group } from '../types/Types';
 
 import { CreateModalEmployees } from './CreateModalEmployees';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
-import { usePersons } from '../context/PersonsContext';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

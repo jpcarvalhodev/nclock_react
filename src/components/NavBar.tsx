@@ -1,99 +1,167 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from 'react';
+import { Button, Navbar } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
-import absent from '../assets/img/navbar/nclock/absent.png';
-import unknown from '../assets/img/navbar/nclock/unknown.png';
-import extra from '../assets/img/navbar/nclock/extra.png';
-import limit from '../assets/img/navbar/nclock/limit.png';
-import work from '../assets/img/navbar/nclock/work.png';
-import addHour from '../assets/img/navbar/nclock/addHour.png';
-import rules from '../assets/img/navbar/nclock/rules.png';
-import medicalLeave from '../assets/img/navbar/nclock/medicalLeave.png';
-import vacation from '../assets/img/navbar/nclock/vacation.png';
-import holidays from '../assets/img/navbar/nclock/holidays.png';
-import autorization from '../assets/img/navbar/nclock/autorization.png';
-import calendar from '../assets/img/navbar/nclock/calendar.png';
-import monthly from '../assets/img/navbar/nclock/monthly.png';
-import exchange from '../assets/img/navbar/nclock/exchange.png';
-import availability from '../assets/img/navbar/nclock/availability.png';
-import plans from '../assets/img/navbar/nclock/plans.png';
-import settings from '../assets/img/navbar/nclock/settings.png';
+import { toast } from 'react-toastify';
+import * as apiService from "../api/apiService";
+import about from '../assets/img/navbar/ajuda/about.png';
+import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
+import contact from '../assets/img/navbar/ajuda/contact.png';
+import helpdesk from '../assets/img/navbar/ajuda/helpdesk.png';
+import manual from '../assets/img/navbar/ajuda/manual.png';
+import version from '../assets/img/navbar/ajuda/version.png';
+import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
+import backup from '../assets/img/navbar/configuracao/backup.png';
+import consult from '../assets/img/navbar/configuracao/consult.png';
+import database from '../assets/img/navbar/configuracao/database.png';
+import document from '../assets/img/navbar/configuracao/document.png';
+import dpoConsult from '../assets/img/navbar/configuracao/dpoConsult.png';
+import entity from '../assets/img/navbar/configuracao/entity.png';
+import licenses from '../assets/img/navbar/configuracao/license.png';
+import nacionalities from '../assets/img/navbar/configuracao/nacionalities.png';
+import profiles from '../assets/img/navbar/configuracao/profiles.png';
+import timeZone from '../assets/img/navbar/configuracao/timeZone.png';
+import typeConfig from '../assets/img/navbar/configuracao/typeConfig.png';
+import users from '../assets/img/navbar/configuracao/users.png';
+import accessControls from '../assets/img/navbar/dispositivos/accessControls.png';
+import camera from '../assets/img/navbar/dispositivos/camera.png';
+import terminal from '../assets/img/navbar/dispositivos/terminal.png';
+import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
+import timePlan from '../assets/img/navbar/dispositivos/timePlan.png';
+import home from '../assets/img/navbar/home.png';
+import controlPanel from '../assets/img/navbar/naccess/controlPanel.png';
 import formation from '../assets/img/navbar/naccess/formation.png';
+import imports from '../assets/img/navbar/naccess/imports.png';
 import motives from '../assets/img/navbar/naccess/motives.png';
 import search from '../assets/img/navbar/naccess/search.png';
-import imports from '../assets/img/navbar/naccess/imports.png';
-import controlPanel from '../assets/img/navbar/naccess/controlPanel.png';
-import terminal from '../assets/img/navbar/dispositivos/terminal.png';
-import timePlan from '../assets/img/navbar/dispositivos/timePlan.png';
-import camera from '../assets/img/navbar/dispositivos/camera.png';
-import database from '../assets/img/navbar/configuracao/database.png';
-import licenses from '../assets/img/navbar/configuracao/license.png';
-import timeZone from '../assets/img/navbar/configuracao/timeZone.png';
-import nacionalities from '../assets/img/navbar/configuracao/nacionalities.png';
-import document from '../assets/img/navbar/configuracao/document.png';
-import consult from '../assets/img/navbar/configuracao/consult.png';
-import dpoConsult from '../assets/img/navbar/configuracao/dpoConsult.png';
-import about from '../assets/img/navbar/ajuda/about.png';
-import manual from '../assets/img/navbar/ajuda/manual.png';
-import helpdesk from '../assets/img/navbar/ajuda/helpdesk.png';
-import payment_card from '../assets/img/navbar/nkiosk/payment_card.png';
+import visitorAccess from '../assets/img/navbar/naccess/visitorAccess.png';
+import hardware from '../assets/img/navbar/naut/hardware.png';
+import software from '../assets/img/navbar/naut/software.png';
+import favourite from '../assets/img/navbar/navbar/favourite.svg';
+import mail from '../assets/img/navbar/navbar/mail.svg';
+import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
+import ribbonControl from '../assets/img/navbar/navbar/ribbonControl.png';
+import ribbonControlLock from '../assets/img/navbar/navbar/ribbonControlLock.png';
+import points from '../assets/img/navbar/ncard/points.png';
+import article from '../assets/img/navbar/ncity/article.png';
+import interactive from '../assets/img/navbar/ncity/interactive.png';
+import museum from '../assets/img/navbar/ncity/museum.png';
+import newsSearch from '../assets/img/navbar/ncity/newsSearch.png';
+import rent from '../assets/img/navbar/ncity/rent.png';
+import sugestion from '../assets/img/navbar/ncity/sugestion.png';
+import transportation from '../assets/img/navbar/ncity/transportation.png';
+import absent from '../assets/img/navbar/nclock/absent.png';
+import addHour from '../assets/img/navbar/nclock/addHour.png';
+import all from '../assets/img/navbar/nclock/all.png';
+import autorization from '../assets/img/navbar/nclock/autorization.png';
+import availability from '../assets/img/navbar/nclock/availability.png';
+import battery from '../assets/img/navbar/nclock/battery.png';
+import calendar from '../assets/img/navbar/nclock/calendar.png';
+import clipboard from '../assets/img/navbar/nclock/clipboard.png';
+import clock from '../assets/img/navbar/nclock/clock.png';
+import exchange from '../assets/img/navbar/nclock/exchange.png';
+import extra from '../assets/img/navbar/nclock/extra.png';
+import holidays from '../assets/img/navbar/nclock/holidays.png';
+import hourDatabase from '../assets/img/navbar/nclock/hourDatabase.png';
+import limit from '../assets/img/navbar/nclock/limit.png';
+import medicalLeave from '../assets/img/navbar/nclock/medicalLeave.png';
+import monthly from '../assets/img/navbar/nclock/monthly.png';
+import movement from '../assets/img/navbar/nclock/movement.png';
+import plans from '../assets/img/navbar/nclock/plans.png';
+import plusMinus from '../assets/img/navbar/nclock/plusMinus.png';
+import presence from '../assets/img/navbar/nclock/presence.png';
+import processing from '../assets/img/navbar/nclock/processing.png';
+import request from '../assets/img/navbar/nclock/request.png';
+import rules from '../assets/img/navbar/nclock/rules.png';
+import segmentation from '../assets/img/navbar/nclock/segmentation.png';
+import settings from '../assets/img/navbar/nclock/settings.png';
+import time from '../assets/img/navbar/nclock/time.png';
+import unknown from '../assets/img/navbar/nclock/unknown.png';
+import vacation from '../assets/img/navbar/nclock/vacation.png';
+import work from '../assets/img/navbar/nclock/work.png';
+import workPlan from '../assets/img/navbar/nclock/workPlan.png';
+import price from '../assets/img/navbar/nconnect/price.png';
+import summary from '../assets/img/navbar/ncount/summary.png';
+import recovery from '../assets/img/navbar/ncyber/recovery.png';
+import shield from '../assets/img/navbar/ncyber/shield.png';
+import library from '../assets/img/navbar/ndecor/library.png';
+import threeDimension from '../assets/img/navbar/ndecor/threeDimension.png';
+import bonus from '../assets/img/navbar/ndigital/bonus.png';
+import efficiency from '../assets/img/navbar/ndigital/efficiency.png';
+import simple from '../assets/img/navbar/ndigital/simple.png';
+import deadFiles from '../assets/img/navbar/ndoc/deadFiles.png';
+import digitalFile from '../assets/img/navbar/ndoc/digitalFile.png';
+import file from '../assets/img/navbar/ndoc/file.png';
+import folder from '../assets/img/navbar/ndoc/folder.png';
+import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
+import doorIn from '../assets/img/navbar/ndoor/doorIn.png';
+import doorRoom from '../assets/img/navbar/ndoor/doorRoom.png';
+import inOut from '../assets/img/navbar/ndoor/inOut.png';
+import reservation from '../assets/img/navbar/ndoor/reservation.png';
+import broken from '../assets/img/navbar/nequip/broken.png';
+import extinguish from '../assets/img/navbar/nfire/extinguish.png';
+import firePrevention from '../assets/img/navbar/nfire/firePrevention.png';
+import down from '../assets/img/navbar/nfurniture/down.png';
+import up from '../assets/img/navbar/nfurniture/up.png';
+import account from '../assets/img/navbar/ninvoice/account.png';
+import credit from '../assets/img/navbar/ninvoice/credit.png';
+import deal from '../assets/img/navbar/ninvoice/deal.png';
+import eBill from '../assets/img/navbar/ninvoice/eBill.png';
+import invoice from '../assets/img/navbar/ninvoice/invoice.png';
+import point from '../assets/img/navbar/ninvoice/point.png';
+import receipt from '../assets/img/navbar/ninvoice/receipt.png';
+import supplier from '../assets/img/navbar/ninvoice/supplier.png';
+import alert from '../assets/img/navbar/nkiosk/alert.png';
+import barrier from '../assets/img/navbar/nkiosk/barrier.png';
+import card_report from '../assets/img/navbar/nkiosk/card_report.png';
 import coin from '../assets/img/navbar/nkiosk/coin.png';
+import payment_card from '../assets/img/navbar/nkiosk/payment_card.png';
 import intercom from '../assets/img/navbar/nkiosk/intercom.png';
 import kiosk from '../assets/img/navbar/nkiosk/kiosk.png';
-import barrier from '../assets/img/navbar/nkiosk/barrier.png';
+import registry from '../assets/img/navbar/nkiosk/registry.png';
 import ads from '../assets/img/navbar/nled/ads.png';
-import video from '../assets/img/navbar/nled/video.png';
 import image from '../assets/img/navbar/nled/image.png';
+import video from '../assets/img/navbar/nled/video.png';
 import online from '../assets/img/navbar/nkiosk/online.png';
-import card_report from '../assets/img/navbar/nkiosk/card_report.png';
 import coin_report from '../assets/img/navbar/nkiosk/coin_report.png';
 import offline from '../assets/img/navbar/nkiosk/offline.png';
 import maps from '../assets/img/navbar/nkiosk/maps.png';
 import log from '../assets/img/navbar/nkiosk/logs.png';
 import bell from '../assets/img/navbar/nkiosk/bell.png';
-import registry from '../assets/img/navbar/nkiosk/registry.png';
-import alert from '../assets/img/navbar/nkiosk/alert.png';
-import accessControls from '../assets/img/navbar/dispositivos/accessControls.png';
-import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
-import home from '../assets/img/navbar/home.png';
-import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
 import open from '../assets/img/navbar/nkiosk/open.png';
 import print from '../assets/img/navbar/nkiosk/print.png';
 import graphs from '../assets/img/navbar/nkiosk/graphs.png';
-import version from '../assets/img/navbar/ajuda/version.png';
 import module from '../assets/img/navbar/nkiosk/module.png';
-import { CreateModalAds } from '../modals/CreateModalAds';
-import { Button, Navbar } from 'react-bootstrap';
-import Dropdown from 'react-bootstrap/Dropdown';
+import cars from '../assets/img/navbar/npark/cars.png';
+import payBooth from '../assets/img/navbar/npark/payBooth.png';
+import close from '../assets/img/navbar/npartition/close.png';
+import tick from '../assets/img/navbar/npartition/tick.png';
+import analysis from '../assets/img/navbar/npatrol/analysis.png';
+import routes from '../assets/img/navbar/npatrol/routes.png';
+import { useEntity } from '../context/EntityContext';
+import { useLicense } from '../context/LicenseContext';
 import { accessControlFields, adsFields, backupDBFields, categoryFields, counterFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, limpezasEOcorrenciasFields, logsFields, manualOpenDoorFields, mbDeviceCloseOpenFields, professionFields, recolhaMoedeiroEContadorFields, registerFields, timePeriodFields, transactionCardFields, transactionMBFields, zoneFields } from '../fields/Fields';
+import { CreateModalAds } from '../modals/CreateModalAds';
 import { EmailOptionsModal } from '../modals/EmailOptions';
-import * as apiService from "../api/apiService";
-import { toast } from 'react-toastify';
 import { AboutModal } from '../modals/AboutModal';
 import open_door from '../assets/img/navbar/nkiosk/open_door.png';
 import count from '../assets/img/navbar/nkiosk/count.png';
 import cleanings from '../assets/img/navbar/nkiosk/cleaning.png';
-import { LicenseModal } from '../modals/LicenseModal';
-import { useLicense } from '../context/LicenseContext';
-import { usePersons } from '../context/PersonsContext';
+import { ImportEmployeesModal } from '../modals/ImportEmployeesModal';
 import { KioskOptionsModal } from '../modals/KioskOptions';
-import contact from '../assets/img/navbar/ajuda/contact.png';
+import { LicenseModal } from '../modals/LicenseModal';
+import { usePersons } from '../context/PersonsContext';
 import { ContactModal } from '../modals/ContactModal';
+import { TerminalOptionsModal } from '../modals/TerminalOptions';
+import { EmailUser, KioskConfig } from '../types/Types';
 import { fetchWithAuth } from './FetchWithAuth';
 import { PrintButton } from './PrintButton';
 import { useTerminals } from '../context/TerminalsContext';
-import { useEntity } from '../context/EntityContext';
 import { useKiosk } from '../context/KioskContext';
-import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
-import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
-import ribbonControl from '../assets/img/navbar/navbar/ribbonControl.png';
-import ribbonControlLock from '../assets/img/navbar/navbar/ribbonControlLock.png';
-import analysis from '../assets/img/navbar/npatrol/analysis.png';
-import routes from '../assets/img/navbar/npatrol/routes.png';
-import points from '../assets/img/navbar/ncard/points.png';
 import programming from '../assets/img/navbar/nvisitor/programming.png';
 import securityDevice from '../assets/img/navbar/nsecur/securityDevice.png';
 import arm from '../assets/img/navbar/nsecur/arm.png';
@@ -108,9 +176,7 @@ import group from '../assets/img/navbar/pessoas/groups.png';
 import person from '../assets/img/navbar/pessoas/person.png';
 import profession from '../assets/img/navbar/pessoas/professions.png';
 import zone from '../assets/img/navbar/pessoas/zones.png';
-import { EmailUser, KioskConfig } from '../types/Types';
 import { BackupDBModal } from '../modals/BackupDBModal';
-import { TerminalOptionsModal } from '../modals/TerminalOptions';
 import realTime from '../assets/img/navbar/nsmart/realTime.png';
 import monitoring from '../assets/img/navbar/nsmart/monitoring.png';
 import simulation from '../assets/img/navbar/nreality/simulation.png';
@@ -125,42 +191,7 @@ import renewable from '../assets/img/navbar/npower/renewable.png';
 import monophase from '../assets/img/navbar/npower/monophase.png';
 import biphase from '../assets/img/navbar/npower/biphase.png';
 import triphase from '../assets/img/navbar/npower/triphase.png';
-import firePrevention from '../assets/img/navbar/nfire/firePrevention.png';
-import extinguish from '../assets/img/navbar/nfire/extinguish.png';
-import interactive from '../assets/img/navbar/ncity/interactive.png';
-import rent from '../assets/img/navbar/ncity/rent.png';
-import article from '../assets/img/navbar/ncity/article.png';
-import newsSearch from '../assets/img/navbar/ncity/newsSearch.png';
-import sugestion from '../assets/img/navbar/ncity/sugestion.png';
-import museum from '../assets/img/navbar/ncity/museum.png';
-import transportation from '../assets/img/navbar/ncity/transportation.png';
-import all from '../assets/img/navbar/nclock/all.png';
-import battery from '../assets/img/navbar/nclock/battery.png';
-import clipboard from '../assets/img/navbar/nclock/clipboard.png';
-import clock from '../assets/img/navbar/nclock/clock.png';
-import hourDatabase from '../assets/img/navbar/nclock/hourDatabase.png';
-import movement from '../assets/img/navbar/nclock/movement.png';
-import plusMinus from '../assets/img/navbar/nclock/plusMinus.png';
-import presence from '../assets/img/navbar/nclock/presence.png';
-import processing from '../assets/img/navbar/nclock/processing.png';
-import request from '../assets/img/navbar/nclock/request.png';
-import segmentation from '../assets/img/navbar/nclock/segmentation.png';
-import time from '../assets/img/navbar/nclock/time.png';
-import workPlan from '../assets/img/navbar/nclock/workPlan.png';
-import price from '../assets/img/navbar/nconnect/price.png';
-import library from '../assets/img/navbar/ndecor/library.png';
-import threeDimension from '../assets/img/navbar/ndecor/threeDimension.png';
-import doorIn from '../assets/img/navbar/ndoor/doorIn.png';
-import doorRoom from '../assets/img/navbar/ndoor/doorRoom.png';
-import inOut from '../assets/img/navbar/ndoor/inOut.png';
-import reservation from '../assets/img/navbar/ndoor/reservation.png';
-import down from '../assets/img/navbar/nfurniture/down.png';
-import up from '../assets/img/navbar/nfurniture/up.png';
 import ledMonitor from '../assets/img/navbar/nled/ledMonitor.png';
-import cars from '../assets/img/navbar/npark/cars.png';
-import payBooth from '../assets/img/navbar/npark/payBooth.png';
-import close from '../assets/img/navbar/npartition/close.png';
-import tick from '../assets/img/navbar/npartition/tick.png';
 import patrols from '../assets/img/navbar/npatrol/patrols.png';
 import bandwidth from '../assets/img/navbar/nping/bandwidth.png';
 import network from '../assets/img/navbar/nping/network.png';
@@ -180,44 +211,13 @@ import cost from '../assets/img/navbar/nsoftware/cost.png';
 import management from '../assets/img/navbar/nsystem/management.png';
 import flow from '../assets/img/navbar/nsystem/flow.png';
 import integration from '../assets/img/navbar/nsystem/integration.png';
-import shield from '../assets/img/navbar/ncyber/shield.png';
-import recovery from '../assets/img/navbar/ncyber/recovery.png';
-import efficiency from '../assets/img/navbar/ndigital/efficiency.png';
-import bonus from '../assets/img/navbar/ndigital/bonus.png';
-import simple from '../assets/img/navbar/ndigital/simple.png';
 import automation from '../assets/img/navbar/nserver/automation.png';
 import feedback from '../assets/img/navbar/nserver/feedback.png';
-import hardware from '../assets/img/navbar/naut/hardware.png';
-import software from '../assets/img/navbar/naut/software.png';
-import broken from '../assets/img/navbar/nequip/broken.png';
 import production from '../assets/img/navbar/nproject/production.png';
 import making from '../assets/img/navbar/nproject/making.png';
-import summary from '../assets/img/navbar/ncount/summary.png';
-import invoice from '../assets/img/navbar/ninvoice/invoice.png';
-import credit from '../assets/img/navbar/ninvoice/credit.png';
-import deal from '../assets/img/navbar/ninvoice/deal.png';
-import receipt from '../assets/img/navbar/ninvoice/receipt.png';
-import eBill from '../assets/img/navbar/ninvoice/eBill.png';
-import account from '../assets/img/navbar/ninvoice/account.png';
-import point from '../assets/img/navbar/ninvoice/point.png';
-import folder from '../assets/img/navbar/ndoc/folder.png';
-import file from '../assets/img/navbar/ndoc/file.png';
-import deadFiles from '../assets/img/navbar/ndoc/deadFiles.png';
-import digitalFile from '../assets/img/navbar/ndoc/digitalFile.png';
-import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
 import ticket from '../assets/img/navbar/nticket/ticket.png';
 import { useAttendance } from '../context/MovementContext';
 import employee from '../assets/img/navbar/pessoas/employee.png';
-import entity from '../assets/img/navbar/configuracao/entity.png';
-import users from '../assets/img/navbar/configuracao/users.png';
-import profiles from '../assets/img/navbar/configuracao/profiles.png';
-import typeConfig from '../assets/img/navbar/configuracao/typeConfig.png';
-import visitorAccess from '../assets/img/navbar/naccess/visitorAccess.png';
-import supplier from '../assets/img/navbar/ninvoice/supplier.png';
-import favourite from '../assets/img/navbar/navbar/favourite.svg';
-import mail from '../assets/img/navbar/navbar/mail.svg';
-import { ImportEmployeesModal } from '../modals/ImportEmployeesModal';
-import backup from '../assets/img/navbar/configuracao/backup.png';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -637,7 +637,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const softwareEnabled = getSoftwareEnabledStatus(license);
 
 	// Função para atualizar o estado a partir do localStorage
-	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix: string = ''): void {
+	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix = ''): void {
 		const stateValue = localStorage.getItem(`${prefix}${key}`) === 'true';
 		setterFunction(stateValue);
 	}
@@ -1912,7 +1912,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	};
 
 	// Função para fechar e reabrir a ribbon
-	const toggleRibbonVisibility = (ribbonName: RibbonToggler, forceToggle: boolean = false) => {
+	const toggleRibbonVisibility = (ribbonName: RibbonToggler, forceToggle = false) => {
 
 		if (lockRibbon && !forceToggle) {
 			return;
@@ -11895,9 +11895,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button onClick={toggleImportEmployees} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
 													<span className="icon">
-														<img src={imports} alt="botão importar" />
+														<img src={imports} alt="botão importar pessoas" />
 													</span>
-													<span className="text">Importar</span>
+													<span className="text">Importar Pessoas</span>
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
@@ -12178,7 +12178,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				open={showImportEmployeesModal}
 				onClose={() => setShowImportEmployeesModal(false)}
 				onUpdate={(formData: FormData) => Promise.resolve(importEmployees(formData))}
-				title='Importar Funcionários'
+				title='Importar Pessoas'
 			/>
 		</nav>
 	);

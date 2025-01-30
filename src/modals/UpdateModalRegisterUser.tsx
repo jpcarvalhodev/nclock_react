@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Col, Form, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
 import { toast } from 'react-toastify';
 
+import * as apiService from "../api/apiService";
 import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
 import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import * as apiService from "../api/apiService";
 
 // Define a interface Entity
 export interface Entity {
@@ -59,7 +59,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({ title, open, onClos
     const [errors, setErrors] = useState<ErrorRecord>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
     const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-    const fileInputRef = React.createRef<HTMLInputElement>();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
 

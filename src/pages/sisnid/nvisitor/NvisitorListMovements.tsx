@@ -4,6 +4,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
+import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
@@ -16,11 +17,10 @@ import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { usePersons } from "../../../context/PersonsContext";
 import { TerminalsProvider, useTerminals } from "../../../context/TerminalsContext";
-import * as apiService from "../../../api/apiService";
 import { employeeFields, transactionCardFields } from "../../../fields/Fields";
-import { Employee, KioskTransactionCard } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+import { Employee, KioskTransactionCard } from "../../../types/Types";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {

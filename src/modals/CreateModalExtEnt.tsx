@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import '../css/PagesStyles.css';
@@ -38,7 +38,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
-    const fileInputRef = React.createRef<HTMLInputElement>();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [showValidationErrors, setShowValidationErrors] = useState(false);

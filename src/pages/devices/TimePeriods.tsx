@@ -15,11 +15,11 @@ import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
 import { useNavbar } from "../../context/NavbarContext";
 import { useTerminals } from "../../context/TerminalsContext";
 import { timePeriodFields } from "../../fields/Fields";
-import { TimePeriod } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalPeriods } from "../../modals/CreateModalPeriods";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
+import { TimePeriod } from "../../types/Types";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

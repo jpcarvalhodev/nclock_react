@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Col, Form, Modal, Nav, OverlayTrigger, Row, Spinner, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
@@ -69,7 +69,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
     const [deviceImage, setDeviceImage] = useState<string | ArrayBuffer | null>(null);
-    const fileInputRef = React.createRef<HTMLInputElement>();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [filters, setFilters] = useState<Record<string, string>>({});
     const [selectedDoor, setSelectedDoor] = useState<Doors | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);

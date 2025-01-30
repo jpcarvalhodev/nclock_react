@@ -3,16 +3,16 @@ import { format, getDay, parse, setYear, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Line , Bar } from 'react-chartjs-2';
 import { Carousel } from "react-responsive-carousel";
 
+import * as apiService from "../../../api/apiService";
 import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../api/apiService";
 import { Department, Employee, Group } from "../../../types/Types";
-import { Line } from 'react-chartjs-2';
-import { Bar } from 'react-chartjs-2';
+
 
 
 // Registra os elementos do ChartJS

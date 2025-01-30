@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -189,7 +189,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                 <div className="container-fluid">
                     <Row>
                         <Col md={3}>
-                            <Form.Group controlId="formEnabled" className='d-flex justify-content-between mt-3' style={{ marginBottom: 13.5 }}>
+                            <Form.Group controlId="formEnabled" className='d-flex justify-content-between' style={{ marginBottom: 30 }}>
                                 <Form.Label>Activo</Form.Label>
                                 <Form.Check
                                     type="switch"
@@ -198,7 +198,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                     onChange={handleChange}
                                 />
                             </Form.Group>
-                            <Form.Group controlId="formAllowSuaccessLock" className='d-flex justify-content-between mt-3' style={{ marginBottom: 4 }}>
+                            <Form.Group controlId="formAllowSuaccessLock" className='d-flex justify-content-between' style={{ marginBottom: 6 }}>
                                 <Form.Label>Permitir Acesso de SU ao Bloqueio</Form.Label>
                                 <Form.Check
                                     type="switch"
@@ -263,7 +263,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                             </Form.Group>
                         </Col>
                         <Col md={3}>
-                            <Form.Group controlId="formBackLock" className='d-flex justify-content-between mt-3' style={{ marginBottom: 13.5 }}>
+                            <Form.Group controlId="formBackLock" className='d-flex justify-content-between' style={{ marginBottom: 30 }}>
                                 <Form.Label>Estado da Fechadura</Form.Label>
                                 <Form.Check
                                     type="switch"

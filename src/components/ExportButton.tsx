@@ -1,17 +1,17 @@
 import { PDFDownloadLink } from '@react-pdf/renderer';
+import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { useEffect, useState } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
-import ExcelJS from 'exceljs';
 
-import { useTerminals } from '../context/TerminalsContext';
 import * as apiService from "../api/apiService";
+import { useEntity } from '../context/EntityContext';
+import { useTerminals } from '../context/TerminalsContext';
 import { AccessControl, Devices, MBDevice } from '../types/Types';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { PDFDocument } from './PDFDocument';
-import { useEntity } from '../context/EntityContext';
 
 
 // Define a interface para os itens de dados

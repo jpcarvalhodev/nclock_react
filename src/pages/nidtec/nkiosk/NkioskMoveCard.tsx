@@ -5,6 +5,7 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 import { toast } from "react-toastify";
 
+import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
@@ -15,15 +16,14 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../api/apiService";
+import { usePersons } from "../../../context/PersonsContext";
+import { useTerminals } from "../../../context/TerminalsContext";
 import { auxOutFields, employeeFields, newTransactionCardFields, transactionCardFields } from "../../../fields/Fields";
-import { Employee, KioskTransactionCard, NewTransactionCard } from "../../../types/Types";
 import { AuxOutModal } from "../../../modals/AuxOutModal";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalNewCard } from "../../../modals/CreateModalNewCard";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
-import { usePersons } from "../../../context/PersonsContext";
-import { useTerminals } from "../../../context/TerminalsContext";
+import { Employee, KioskTransactionCard, NewTransactionCard } from "../../../types/Types";
 
 
 // Define a interface SaveData

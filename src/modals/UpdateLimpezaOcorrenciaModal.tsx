@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -7,8 +7,8 @@ import '../css/PagesStyles.css';
 import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { LimpezasEOcorrencias } from '../types/Types';
 import { useTerminals } from '../context/TerminalsContext';
+import { LimpezasEOcorrencias } from '../types/Types';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

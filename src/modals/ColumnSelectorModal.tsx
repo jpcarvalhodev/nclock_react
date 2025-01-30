@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, FormCheck, Modal } from 'react-bootstrap';
 
 // Define a interface para as propriedades do componente ColumnSelectorModal

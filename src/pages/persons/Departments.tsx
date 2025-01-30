@@ -11,11 +11,11 @@ import { NavBar } from "../../components/NavBar";
 import { PrintButton } from '../../components/PrintButton';
 import { SelectFilter } from '../../components/SelectFilter';
 import { departmentFields } from '../../fields/Fields';
-import { Department } from '../../types/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { CreateModalDeptGrp } from '../../modals/CreateModalDeptGrp';
 import { DeleteModal } from '../../modals/DeleteModal';
 import { UpdateModalDeptGrp } from '../../modals/UpdateModalDeptGrp';
+import { Department } from '../../types/Types';
 
 
 import '../../css/PagesStyles.css';

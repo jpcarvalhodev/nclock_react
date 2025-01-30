@@ -16,11 +16,11 @@ import { TreeViewDataUsers } from "../../components/TreeViewRegisteredUsers";
 import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from "../../context/PersonsContext";
 import { registerFields } from "../../fields/Fields";
-import { Register } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
+import { Register } from "../../types/Types";
 
 
 // Define a interface para as propriedades do componente CustomSearchBox

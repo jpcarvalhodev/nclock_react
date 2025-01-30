@@ -13,13 +13,13 @@ import '../../css/PagesStyles.css';
 import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from '../../context/PersonsContext';
 import { employeeFields } from '../../fields/Fields';
-import { Employee } from '../../types/Types';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
 import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
+import { DeleteModal } from '../../modals/DeleteModal';
+import { Employee } from '../../types/Types';
 
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-import { DeleteModal } from '../../modals/DeleteModal';
 
 import { TextField, TextFieldProps } from '@mui/material';
 

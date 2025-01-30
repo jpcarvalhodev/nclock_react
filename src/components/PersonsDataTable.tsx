@@ -4,9 +4,9 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 
 import { usePersons } from '../context/PersonsContext';
 import { employeeFields } from '../fields/Fields';
-import { Department, Employee, Group } from '../types/Types';
 import { DeleteModal } from '../modals/DeleteModal';
 import { UpdateModalEmployees } from '../modals/UpdateModalEmployees';
+import { Department, Employee, Group } from '../types/Types';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { customStyles } from './CustomStylesDataTable';

@@ -5,6 +5,7 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 import { toast } from "react-toastify";
 
+import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
@@ -15,12 +16,11 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../api/apiService";
+import { useTerminals } from "../../../context/TerminalsContext";
 import { manualOpenDoorFields } from "../../../fields/Fields";
-import { ManualOpenDoor } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { ManualDoorOpenModal } from "../../../modals/ManualDoorOpenModal";
-import { useTerminals } from "../../../context/TerminalsContext";
+import { ManualOpenDoor } from "../../../types/Types";
 
 // Define a interface para os filtros
 interface Filters {

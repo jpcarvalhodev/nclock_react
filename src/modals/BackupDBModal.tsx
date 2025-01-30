@@ -53,7 +53,7 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
         }
     };
 
-    // Função para lidar com o clique em guardar
+    // Função para lidar com o clique em exportar
     const handleSaveClick = () => {
         onSave(formData as unknown as BackupDB);
         onClose();
@@ -108,7 +108,14 @@ export const BackupDBModal = <T extends Record<string, any>>({ title, open, onCl
                                 <Form style={{ marginTop: 20, marginBottom: 20, display: 'flex' }}>
                                     <Row style={{ flex: 1.5 }}>
                                         <Col md={6}>
-                                            <input type="file" onChange={handleFileChange} />
+                                            <Form.Group controlId="formFile">
+                                                <Form.Control
+                                                    className="custom-input-height custom-select-font-size"
+                                                    type="file"
+                                                    multiple
+                                                    onChange={handleFileChange}
+                                                />
+                                            </Form.Group>
                                         </Col>
                                     </Row>
                                 </Form>

@@ -8,17 +8,17 @@ import { SelectFilter } from "../../components/SelectFilter";
 import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from "../../context/PersonsContext";
 import { groupFields } from "../../fields/Fields";
-import { Group } from "../../types/Types";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
+import { CreateModalDeptGrp } from "../../modals/CreateModalDeptGrp";
+import { DeleteModal } from "../../modals/DeleteModal";
+import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
+import { Group } from "../../types/Types";
 
 import DataTable, { TableColumn } from 'react-data-table-component';
 
-import { CreateModalDeptGrp } from "../../modals/CreateModalDeptGrp";
-import { DeleteModal } from "../../modals/DeleteModal";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { ExportButton } from "../../components/ExportButton";
 import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
-import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
 import { customStyles } from "../../components/CustomStylesDataTable";
 
 import { OverlayTrigger, Tooltip } from "react-bootstrap";

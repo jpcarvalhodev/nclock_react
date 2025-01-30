@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -6,10 +6,10 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { Cameras } from '../types/Types';
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
+import { CustomOutlineButton } from '../components/CustomOutlineButton';
+import { Cameras } from '../types/Types';
 
 // Define a interface Entity
 export interface Entity {

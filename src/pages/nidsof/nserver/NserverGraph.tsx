@@ -2,10 +2,10 @@ import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineEl
 import { useEffect, useState } from "react";
 import { Bar , PolarArea } from "react-chartjs-2";
 
+import * as apiService from "../../../api/apiService";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../api/apiService";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);

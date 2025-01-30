@@ -16,11 +16,11 @@ import { useAds } from "../../../context/AdsContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { useTerminals } from "../../../context/TerminalsContext";
 import { adsFields } from "../../../fields/Fields";
-import { Ads } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateModalAds } from "../../../modals/CreateModalAds";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateModalAds } from "../../../modals/UpdateModalAds";
+import { Ads } from "../../../types/Types";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {

@@ -3,14 +3,14 @@ import { format, getDay, parse, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Bar , Line } from 'react-chartjs-2';
 import { Carousel } from "react-responsive-carousel";
 
 import banner_nsoftware from "../../../assets/img/carousel/banner_nsoftware.webp";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import { Bar } from 'react-chartjs-2';
-import { Line } from 'react-chartjs-2';
+
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 

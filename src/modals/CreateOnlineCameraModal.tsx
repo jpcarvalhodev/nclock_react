@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -6,10 +6,10 @@ import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
 import { Col, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
-import { Cameras } from '../types/Types';
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
 import { useTerminals } from '../context/TerminalsContext';
+import { Cameras } from '../types/Types';
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {

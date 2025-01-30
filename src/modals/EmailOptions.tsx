@@ -7,9 +7,9 @@ import { toast } from 'react-toastify';
 import hidepass from '../assets/img/login/hidepass.png';
 import showpass from '../assets/img/login/showpass.png';
 
+import { useNavbar } from '../context/NavbarContext';
 import { EmailUser } from '../types/Types';
 import { TestEmailModal } from './TestEmailModal';
-import { useNavbar } from '../context/NavbarContext';
 
 // Define a interface para os itens de erro
 interface ErrorDetails {
@@ -224,7 +224,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({ title, open, 
                                 <Form style={{ marginTop: 10, marginBottom: 10, display: 'flex' }}>
                                     <Row style={{ flex: 1.5 }}>
                                         <Col md={6}>
-                                            <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between mt-3'>
+                                            <Form.Group controlId="formEnableSSL" className='d-flex justify-content-between'>
                                                 <Form.Label>Activar SSL:</Form.Label>
                                                 <Form.Check
                                                     type="switch"

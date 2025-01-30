@@ -6,14 +6,14 @@ import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { Line, Bar } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
-import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
 import * as apiService from "../../../api/apiService";
+import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
+import { useKiosk } from '../../../context/KioskContext';
 import { useNavbar } from "../../../context/NavbarContext";
 import { useTerminals } from "../../../context/TerminalsContext";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
-import { useKiosk } from '../../../context/KioskContext';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 

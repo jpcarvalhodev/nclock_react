@@ -7,7 +7,7 @@ interface TerminalOptionsModalProps<T> {
     onClose: () => void;
     onSave: (data: T) => void;
     initialValues: Partial<T>;
-};
+}
 
 export const TerminalOptionsModal = <T extends Record<string, any>>({ open, onClose, onSave, initialValues }: TerminalOptionsModalProps<T>) => {
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });

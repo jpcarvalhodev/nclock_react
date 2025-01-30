@@ -3,18 +3,18 @@ import { format, getDay, getMonth, parse, parseISO, startOfWeek } from 'date-fns
 import { ptBR } from 'date-fns/locale';
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { Bar } from "react-chartjs-2";
+import { Bar , Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
+import * as apiService from "../../../api/apiService";
 import banner_nvisitor from "../../../assets/img/carousel/banner_nvisitor.jpg";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
-import { useNavbar } from "../../../context/NavbarContext";
-import * as apiService from "../../../api/apiService";
-import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
-import { Line } from 'react-chartjs-2';
 import { useKiosk } from '../../../context/KioskContext';
+import { useNavbar } from "../../../context/NavbarContext";
 import { useTerminals } from '../../../context/TerminalsContext';
+import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
+
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 

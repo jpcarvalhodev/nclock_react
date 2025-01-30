@@ -14,17 +14,17 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { useAttendance } from "../../../context/MovementContext";
 import { useNavbar } from "../../../context/NavbarContext";
+import { usePersons } from "../../../context/PersonsContext";
 import { employeeAttendanceTimesFields, employeeFields } from "../../../fields/Fields";
-import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 
 import Split from 'react-split';
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
 import { TextField, TextFieldProps } from "@mui/material";
-import { usePersons } from "../../../context/PersonsContext";
 
 // Define a interface para os filtros
 interface Filters {

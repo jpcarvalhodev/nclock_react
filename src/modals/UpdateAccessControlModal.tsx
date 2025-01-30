@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
 import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
-import { customStyles } from "../components/CustomStylesDataTable";
-import { Employee, PlanoAcessoDispositivos } from "../types/Types";
-import { employeeFields, planosAcessoDispositivosFields } from "../fields/Fields";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { customStyles } from "../components/CustomStylesDataTable";
+import { usePersons } from "../context/PersonsContext";
+import { useTerminals } from "../context/TerminalsContext";
+import { employeeFields, planosAcessoDispositivosFields } from "../fields/Fields";
+import { Employee, PlanoAcessoDispositivos } from "../types/Types";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
-import { useTerminals } from "../context/TerminalsContext";
-import { usePersons } from "../context/PersonsContext";
 import { id } from "date-fns/locale";
+import { UpdateTerminalOnAccessControlModal } from "./UpdateTerminalOnAccessControlModal";
 
 // Define as propriedades do componente
 interface Props<T> {
@@ -40,14 +41,25 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
     const [devicesTableData, setDevicesTableData] = useState<Partial<PlanoAcessoDispositivos>[]>([]);
     const [employeeTableData, setEmployeeTableData] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedTerminal, setSelectedTerminal] = useState<Partial<PlanoAcessoDispositivos>>({});
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
-        if (open) {
+        if (open && devicesTableData.length === 0) {
             setFormData({ ...entity });
-
-            const loadedDevices = entity.planosAcessoDispositivos
-                ?.flatMap((pad: PlanoAcessoDispositivos) => pad.dispositivos || []) ?? [];
+            const loadedDevices = entity.planosAcessoDispositivos?.flatMap((pad: PlanoAcessoDispositivos) =>
+                pad.dispositivos?.flatMap((dispositivo) =>
+                    dispositivo.portas?.map((porta) => ({
+                        idTerminal: dispositivo.idTerminal,
+                        nomeTerminal: dispositivo.nomeTerminal,
+                        idPlanoHorario: dispositivo.idPlanoHorario,
+                        nomePlanoHorario: dispositivo.nomePlanoHorario,
+                        idPorta: porta.idPorta,
+                        nomePorta: porta.nomePorta,
+                    }))
+                )
+            ) ?? [];
             setDevicesTableData(loadedDevices);
             const loadedEmployees = entity.employees
                 .map((emp: Employee) => employees.find((e) => e.employeeID === emp.id))
@@ -58,7 +70,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
             setDevicesTableData([]);
             setEmployeeTableData([]);
         }
-    }, [open, entity, employees]);
+    }, [open]);
 
     // Função para adicionar períodos à tabela
     const addEmployeesToDatatable = (periods: Employee[]) => {
@@ -74,46 +86,16 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                 const device = devices.find(d => d.zktecoDeviceID === period.idTerminal);
                 const doorObj = door.find(d => d.id === period.idPorta);
 
-                if (!device) return;
-                if (!doorObj) return;
+                if (!device || !doorObj) return;
 
-                const existingIndex = updatedData.findIndex(
-                    item =>
-                        item?.idTerminal === device.zktecoDeviceID &&
-                        item?.idPlanoHorario === period.idPlanoHorario
-                );
-
-                const newDoor = {
+                updatedData.push({
+                    idTerminal: device.zktecoDeviceID || '',
+                    nomeTerminal: device.deviceName || '',
+                    idPlanoHorario: period.idPlanoHorario || '',
+                    nomePlanoHorario: period.nomePlanoHorario || '',
                     idPorta: doorObj.id,
                     nomePorta: doorObj.name,
-                };
-
-                if (existingIndex !== -1) {
-                    const existingItem = updatedData[existingIndex];
-
-                    if (!existingItem?.portas) {
-                        if (existingItem) {
-                            existingItem.portas = [];
-                        }
-                    }
-
-                    const doorAlreadyExists = existingItem?.portas.some(
-                        (p: PlanoAcessoDispositivos) => p.idPorta === newDoor.idPorta
-                    );
-
-                    if (!doorAlreadyExists) {
-                        existingItem?.portas.push(newDoor);
-                    }
-
-                } else {
-                    updatedData.push({
-                        idTerminal: device.zktecoDeviceID || '',
-                        nomeTerminal: device.deviceName || '',
-                        idPlanoHorario: period.idPlanoHorario || '',
-                        nomePlanoHorario: period.nomePlanoHorario || '',
-                        portas: [newDoor],
-                    } as unknown as Partial<PlanoAcessoDispositivos[]>);
-                }
+                } as unknown as Partial<PlanoAcessoDispositivos[]>);
             });
 
             return updatedData;
@@ -123,11 +105,11 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
     // Função para remover terminais selecionados
     const removeSelectedDevices = () => {
         const remainingData = devicesTableData.filter(
-            (dev) => !deviceSelectedRows.some((row) => row.idTerminal === dev.idTerminal)
+            (dev) => !deviceSelectedRows.some((row) => row.idPorta === dev.idPorta)
         );
         setDevicesTableData(remainingData);
         setClearSelectionToggle((prev) => !prev);
-    };
+    };    
 
     // Função para remover funcionários selecionados
     const removeSelectedEmployees = () => {
@@ -138,11 +120,55 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
         setClearSelectionToggle((prev) => !prev);
     };
 
+    // Função para atualizar os dados do terminal
+    const handleUpdateTerminal = (updatedData: Partial<PlanoAcessoDispositivos>) => {
+    
+        const dispositivo = updatedData.planosAcessoDispositivos[0].dispositivos?.[0];
+        if (!dispositivo) {
+            console.error("Erro: dispositivo não encontrado");
+            return;
+        }
+    
+        const portaAtualizada = dispositivo.portas?.[0];
+        if (!portaAtualizada) {
+            console.error("Erro: porta não encontrada");
+            return;
+        }
+    
+        setDevicesTableData(prevData =>
+            prevData.map(item => {
+                if (
+                    item.idTerminal === dispositivo.idTerminal &&
+                    item.idPorta === portaAtualizada.idPorta
+                ) {
+                    return {
+                        ...item,
+                        idPlanoHorario: dispositivo.idPlanoHorario,
+                        nomePlanoHorario: dispositivo.nomePlanoHorario,
+                    };
+                }
+                return item;
+            })
+        );
+    };    
+
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
         if (!onDuplicate) return;
         const { nome, ...dataWithoutId } = formData;
         onDuplicate(dataWithoutId as T);
+    };
+
+    // Função para editar um terminal
+    const handleEditTerminal = (terminal: Partial<PlanoAcessoDispositivos>) => {
+        if (!terminal) return;
+        
+        const updatedTerminal = {
+            ...terminal,
+            nome: formData.nome,
+        };
+        setSelectedTerminal(updatedTerminal);
+        setShowUpdateModal(true);
     };
 
     // Define as opções de paginação de EN para PT
@@ -168,55 +194,21 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
     const deviceColumns: TableColumn<Partial<PlanoAcessoDispositivos>>[] = planosAcessoDispositivosFields
         .filter(field => includedDeviceColumns.includes(field.key))
         .map(field => {
-
-            const selectorField = (row: Partial<PlanoAcessoDispositivos>) => {
-                if (field.key === 'nomePorta' && row.portas && row.portas.length > 0) {
-                    return row.portas.map((p: PlanoAcessoDispositivos) => p.nomePorta).join(', ');
-                }
-                return row[field.key] || '';
-            };
-
-            const cellField = (row: Partial<PlanoAcessoDispositivos>) => {
-                if (!row) return '';
-
+            const formatField = (row: Partial<PlanoAcessoDispositivos>) => {
                 switch (field.key) {
-                    case 'nomePorta': {
-                        if (row.portas && row.portas.length > 0) {
-                            const fullText = row.portas.map((p: PlanoAcessoDispositivos) => p.nomePorta).join(', ');
-
-                            if (fullText.length <= 45) {
-                                return fullText;
-                            }
-
-                            const truncatedText = fullText.slice(0, 45) + '...';
-
-                            return (
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">{fullText}</Tooltip>}
-                                >
-                                    <span>{truncatedText}</span>
-                                </OverlayTrigger>
-                            );
-                        }
-                        return '';
-                    }
                     default:
-                        return row[field.key] || '';
+                        return row[field.key];
                 }
-            };
-
+            }
             return {
                 id: field.key,
-                name: field.label,
-                selector: selectorField,
-                cell: cellField,
+                name: (
+                    <>
+                        {field.label}
+                    </>
+                ),
+                selector: row => formatField(row),
                 sortable: true,
-                sortFunction: (rowA, rowB) => {
-                    const aVal = (rowA.nomeTerminal || '').toLowerCase();
-                    const bVal = (rowB.nomeTerminal || '').toLowerCase();
-                    return aVal.localeCompare(bVal);
-                },
             };
         });
 
@@ -266,23 +258,19 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para salvar os dados
     const handleSave = () => {
-        const planosAcessoDispositivos = devicesTableData.flatMap(device => {
-            return device.portas?.map((porta: PlanoAcessoDispositivos) => ({
-                idTerminal: device.idTerminal,
-                idPorta: porta.idPorta,
-                idPlanoHorario: device.idPlanoHorario,
-            })) || [];
-        });
-
+        const planosAcessoDispositivos = devicesTableData.map(device => ({
+            idTerminal: device.idTerminal,
+            idPlanoHorario: device.idPlanoHorario,
+            idPorta: device.idPorta,
+        }));
         const employeeIds = employeeTableData.map(emp => emp.employeeID);
-
         const payload = {
             id: formData.id,
             nome: formData.nome,
+            activo: formData.activo,
             planosAcessoDispositivos,
             employeeIds,
         };
-
         onUpdate(payload as unknown as T);
         handleClose();
     };
@@ -293,18 +281,34 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="modal-body-scrollable">
-                <Col md={3}>
-                    <Form.Group controlId="formNome">
-                        <Form.Label>Nome</Form.Label>
-                        <Form.Control
-                            className="custom-input-height custom-select-font-size"
-                            type="text"
-                            name="nome"
-                            value={formData.nome || ''}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                </Col>
+                <Row>
+                    <Col md={3}>
+                        <Form.Group controlId="formNome">
+                            <Form.Label>Nome</Form.Label>
+                            <Form.Control
+                                className="custom-input-height custom-select-font-size"
+                                type="text"
+                                name="nome"
+                                value={formData.nome || ''}
+                                onChange={handleChange}
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                        <Form.Group controlId="formActivo" className="d-flex align-items-center">
+                            <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo:</Form.Label>
+                            <Form.Check
+                                type="switch"
+                                id="custom-switch-activo"
+                                checked={formData.activo === true}
+                                onChange={(e) => setFormData({ ...formData, activo: e.target.checked ? true : false })}
+                                className="ms-auto"
+                                label=""
+                                name="activo"
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
                 <Tab.Container defaultActiveKey="geral">
                     <Nav variant="tabs" className="nav-modal">
                         <Nav.Item>
@@ -334,6 +338,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         paginationComponentOptions={paginationOptions}
                                                         paginationPerPage={20}
                                                         paginationRowsPerPageOptions={[20, 30, 50]}
+                                                        onRowDoubleClicked={handleEditTerminal}
                                                         selectableRows
                                                         onSelectedRowsChange={({ selectedRows }) => setDeviceSelectedRows(selectedRows)}
                                                         noDataComponent="Não existem dados disponíveis para exibir."
@@ -437,8 +442,18 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                 open={showEmployeeAddModal}
                 onClose={() => setShowEmployeeAddModal(false)}
                 onSave={addEmployeesToDatatable}
+                entity={employeeTableData}
                 title="Adicionar Pessoa ao Plano"
             />
+            {selectedTerminal && (
+                <UpdateTerminalOnAccessControlModal
+                    open={showUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
+                    onUpdate={handleUpdateTerminal}
+                    title="Atualizar Equipamento no Plano"
+                    entity={selectedTerminal}
+                />
+            )}
         </Modal>
     );
 };
