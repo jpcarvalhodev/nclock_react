@@ -32,7 +32,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 // Define a interface para as propriedades do componente TreeViewData
-interface TreeViewDataNclockProps {
+interface TreeViewDataNaccessProps {
   onSelectEmployees: (selectedEmployees: string[]) => void;
 }
 
@@ -71,7 +71,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProps) {
+export function TreeViewDataNaccess({ onSelectEmployees }: TreeViewDataNaccessProps) {
   const { data, fetchAllData } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -103,7 +103,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
         const deptCode = deptIdToCodeMap.get(emp.departmentId);
         if (departmentMap.has(deptCode)) {
           departmentMap.get(deptCode).employees.push({
-            id: `emp-${emp.employeeID}` || 'Sem ID',
+            id: `emp-${emp.enrollNumber}` || 'Sem ID',
             label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
           });
         }
@@ -156,12 +156,12 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
-      id: `unassigned-empdept-${emp.employeeID}`,
+      id: `unassigned-empdept-${emp.enrollNumber}`,
       label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
     }));
 
     const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
-      id: `unassigned-empgrp-${emp.employeeID}`,
+      id: `unassigned-empgrp-${emp.enrollNumber}`,
       label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
     }));
 

@@ -366,7 +366,7 @@ export const NkioskMoveKiosk = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Movimentos do Quiosque</span>
+                            <span >Movimentos do Quiosque</span>
                         </div>
                         <div className="datatable-header">
                             <div>

@@ -375,7 +375,7 @@ export const NkioskOccurrences = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Ocorrências</span>
+                            <span >Ocorrências</span>
                         </div>
                         <div className="datatable-header">
                             <div>

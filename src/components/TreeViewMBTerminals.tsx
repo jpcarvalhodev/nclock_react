@@ -158,19 +158,9 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
         }
     }, [selectedDevicesIds]);
 
-    // Função para definir a cor da treeview
-    const colorNavbar = () => {
-        const location = window.location.pathname;
-        if (location.endsWith('nkioskalerts')) {
-            return '#009739';
-        } else {
-            return 'black';
-        }
-    }
-
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text' style={{ color: colorNavbar() }}>Filtros</p>
+            <p className='treeview-title-text'>Filtros</p>
             <div style={{ display: 'flex' }}>
                 <CustomSearchBox
                     label="Pesquisa"

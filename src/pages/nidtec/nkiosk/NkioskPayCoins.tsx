@@ -367,7 +367,7 @@ export const NkioskPayCoins = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span style={{ color: '#009739' }}>Pagamentos no Moedeiro</span>
+                                <span >Pagamentos no Moedeiro</span>
                             </div>
                             <div className="datatable-header">
                                 <div>

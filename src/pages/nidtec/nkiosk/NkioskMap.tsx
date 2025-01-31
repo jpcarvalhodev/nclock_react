@@ -39,7 +39,7 @@ export const NkioskMap = () => {
             <NavBar style={{ backgroundColor: navbarColor }} />
             <div className='map-container'>
                 <div className="datatable-title-text">
-                    <span style={{ color: '#009739' }}>Mapa do Quiosque</span>
+                    <span >Mapa do Quiosque</span>
                 </div>
             </div>
             <div className='d-flex justify-content-center' style={{ minHeight: '60vh', flex: 1 }}>

@@ -4,6 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
 import { Col, Form, Nav, OverlayTrigger, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
+import { toast } from "react-toastify";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { timePeriodFields } from "../fields/Fields";
@@ -26,6 +27,7 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
     const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
     const [tableData, setTableData] = useState<TimePeriod[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza os campos do formulário com os valores iniciais
     useEffect(() => {
@@ -136,6 +138,11 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
 
     // Função para salvar os dados
     const handleSave = () => {
+        if (!formData.nome) {
+            setShowValidationErrors(true);
+            toast.warn('Selecione um plano de horário primeiro.');
+            return;
+        }
         const dataToSave = {
             ...formData,
             periodos: tableData.map(period => period.id),
@@ -163,7 +170,7 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
                                     <Form.Group controlId="formNome">
                                         <Form.Label>Nome</Form.Label>
                                         <Form.Control
-                                            className="custom-input-height custom-select-font-size"
+                                            className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                             type="text"
                                             name="nome"
                                             value={formData.nome}

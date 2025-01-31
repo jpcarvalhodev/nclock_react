@@ -409,7 +409,7 @@ export const NkioskListPayments = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Recebimentos Totais</span>
+                            <span >Recebimentos Totais</span>
                         </div>
                         <div className="datatable-header">
                             <div>

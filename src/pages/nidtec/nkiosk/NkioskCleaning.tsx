@@ -375,7 +375,7 @@ export const NkioskCleaning = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Limpezas</span>
+                            <span >Limpezas</span>
                         </div>
                         <div className="datatable-header">
                             <div>

@@ -95,6 +95,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     const [counter, setCounter] = useState<Counter[]>([]);
     const [totalPayments, setTotalPayments] = useState<KioskTransactionMB[]>([]);
     const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
+    const [lastRecolha, setLastRecolha] = useState<KioskTransactionMB[]>([]);
     const eventDoorId2 = '2'
     const eventDoorId3 = '3'
     const eventDoorId4 = '4'
@@ -111,7 +112,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     const unifyTotalMovements = () => {
         const combinedData = moveCard.concat(moveKiosk).concat(moveVP);
         setTotalMovements(combinedData);
-    }    
+    }
 
     // Função para buscar os pagamentos dos terminais
     const fetchAllPayTerminal = async () => {

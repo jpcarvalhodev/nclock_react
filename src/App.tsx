@@ -199,6 +199,7 @@ import { Types } from './pages/persons/Types';
 import { User } from './pages/persons/User';
 import { Visitors } from './pages/persons/Visitors';
 import { Zones } from './pages/persons/Zones';
+import { NaccessAccesses } from './pages/sisnid/naccess/NaccessAccesses';
 import { NaccessDashboard } from './pages/sisnid/naccess/NaccessDashboard';
 import { NaccessDashboardLicensed } from './pages/sisnid/naccess/NaccessDashboardLicensed';
 import { NaccessGraph } from './pages/sisnid/naccess/NaccessGraph';
@@ -287,6 +288,7 @@ function AnimatedRoutes() {
         <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
         <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />
         <Route path="/naccess/naccessgraph" element={<PageProtection><NaccessGraph /></PageProtection>} />
+        <Route path="/naccess/naccessaccesses" element={<PageProtection><NaccessAccesses /></PageProtection>} />
 
         <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
         <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />

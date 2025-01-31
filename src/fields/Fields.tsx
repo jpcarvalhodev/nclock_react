@@ -456,7 +456,7 @@ export const entityFields = [
 ];
 
 export const recolhaMoedeiroEContadorFields = [
-    { key: 'dataRecolha', label: 'Data de Início', type: 'date' },
+    { key: 'dataRecolha', label: 'Data de Recolha', type: 'date' },
     { key: 'pessoaResponsavel', label: 'Nome do Utilizador', type: 'string' },
     { key: 'numeroMoedas', label: 'Moedas Recolhidas', type: 'number', required: true },
     { key: 'numeroMoedasSistema', label: 'Moedas Sistema', type: 'number' },
@@ -466,7 +466,7 @@ export const recolhaMoedeiroEContadorFields = [
     { key: 'diferencaEuros', label: 'Diferença Valor', type: 'number' },
     { key: 'observacoes', label: 'Observações', type: 'string' },
     { key: 'deviceID', label: 'Nome do Local', type: 'string', required: true },
-    { key: 'dataFimRecolha', label: 'Data da Recolha', type: 'date' },
+    { key: 'dataFimRecolha', label: 'Data de Registo', type: 'date' },
 ];
 
 export const manualOpenDoorFields = [
@@ -563,4 +563,14 @@ export const timePlanFields = [
     { key: 'nome', label: 'Nome', type: 'string' },
     { key: 'descricao', label: 'Descrição', type: 'string' },
     { key: 'periodos', label: 'Períodos', type: 'string' },
+];
+
+export const accessesFields = [
+    { key: 'eventTime', label: 'Horário', type: 'string' },
+    { key: 'cardNo', label: 'Cartão', type: 'string' },
+    { key: 'nameUser', label: 'Nome', type: 'string' },
+    { key: 'pin', label: 'Número', type: 'string' },
+    { key: 'deviceSN', label: 'Equipamento', type: 'string' },
+    { key: 'eventDoorName', label: 'Porta', type: 'string' },
+    { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'string' },
 ];

@@ -1,4 +1,4 @@
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
@@ -12,7 +12,6 @@ import { employeeFields, planosAcessoDispositivosFields } from "../fields/Fields
 import { Employee, PlanoAcessoDispositivos } from "../types/Types";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
-import { id } from "date-fns/locale";
 import { UpdateTerminalOnAccessControlModal } from "./UpdateTerminalOnAccessControlModal";
 
 // Define as propriedades do componente
@@ -46,7 +45,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
-        if (open && devicesTableData.length === 0) {
+        if (open && entity) {
             setFormData({ ...entity });
             const loadedDevices = entity.planosAcessoDispositivos?.flatMap((pad: PlanoAcessoDispositivos) =>
                 pad.dispositivos?.flatMap((dispositivo) =>
@@ -70,7 +69,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
             setDevicesTableData([]);
             setEmployeeTableData([]);
         }
-    }, [open]);
+    }, [open, entity]);
 
     // Função para adicionar períodos à tabela
     const addEmployeesToDatatable = (periods: Employee[]) => {
@@ -109,7 +108,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
         );
         setDevicesTableData(remainingData);
         setClearSelectionToggle((prev) => !prev);
-    };    
+    };
 
     // Função para remover funcionários selecionados
     const removeSelectedEmployees = () => {
@@ -122,19 +121,19 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para atualizar os dados do terminal
     const handleUpdateTerminal = (updatedData: Partial<PlanoAcessoDispositivos>) => {
-    
+
         const dispositivo = updatedData.planosAcessoDispositivos[0].dispositivos?.[0];
         if (!dispositivo) {
             console.error("Erro: dispositivo não encontrado");
             return;
         }
-    
+
         const portaAtualizada = dispositivo.portas?.[0];
         if (!portaAtualizada) {
             console.error("Erro: porta não encontrada");
             return;
         }
-    
+
         setDevicesTableData(prevData =>
             prevData.map(item => {
                 if (
@@ -150,7 +149,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                 return item;
             })
         );
-    };    
+    };
 
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {
@@ -162,7 +161,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
     // Função para editar um terminal
     const handleEditTerminal = (terminal: Partial<PlanoAcessoDispositivos>) => {
         if (!terminal) return;
-        
+
         const updatedTerminal = {
             ...terminal,
             nome: formData.nome,
@@ -247,6 +246,12 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                 cell: (row: Employee) => formatField(row)
             };
         });
+
+    // Filtra as portas que NÃO estão na tabela para o modal de adicionar equipamento
+    const doorsInTable = devicesTableData.map((d) => d.idPorta);
+    const availableDoors = door.filter(
+        (d) => !doorsInTable.includes(d.id)
+    );
 
     // Função para fechar o modal
     const handleClose = () => {
@@ -436,7 +441,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                 onSave={addTerminalToDatatable}
                 title="Adicionar Equipamento ao Plano"
                 devices={devices}
-                doors={door}
+                doors={availableDoors}
             />
             <AddEmployeeToACModal
                 open={showEmployeeAddModal}

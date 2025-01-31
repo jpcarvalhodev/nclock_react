@@ -405,7 +405,7 @@ export const NvisitorMoveCard = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span style={{ color: '#0050a0' }}>Movimentos do Torniquete</span>
+                                <span>Movimentos do Torniquete</span>
                             </div>
                             <div className="datatable-header">
                                 <div>

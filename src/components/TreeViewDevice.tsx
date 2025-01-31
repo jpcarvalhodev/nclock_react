@@ -68,8 +68,6 @@ export function TreeViewDataDevice({ onSelectDevices }: TreeViewDataDeviceProps)
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [treeViewTitleColor, setTreeViewTitleColor] = useState('#009739');
-    const location = useLocation();
     const selectionChangedRef = { current: false };
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
@@ -161,15 +159,9 @@ export function TreeViewDataDevice({ onSelectDevices }: TreeViewDataDeviceProps)
         }
     }, [selectedDevicesIds]);
 
-    // Atualiza a cor do título da árvore de acordo com a rota
-    useEffect(() => {
-        const newColor = location.pathname.endsWith('terminalcloseopen') ? '#000000' : '#009739';
-        setTreeViewTitleColor(newColor);
-    }, [location.pathname]);
-
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text' style={{ color: treeViewTitleColor }}>Filtros</p>
+            <p className='treeview-title-text'>Filtros</p>
             <div style={{ display: 'flex' }}>
                 <CustomSearchBox
                     label="Pesquisa"

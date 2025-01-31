@@ -43,7 +43,6 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
-    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // Atualiza os dados do dropdown ao abrir o modal
     useEffect(() => {
@@ -59,6 +58,13 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
             setDropdownData({
                 timePlanId: timePlan,
             });
+            if (timePlan.length > 0) {
+                setFormData(prevState => ({
+                    ...prevState,
+                    idPlanoHorario: timePlan[0].id,
+                    nomePlanoHorario: timePlan[0].nome || '',
+                }));
+            }
         } catch (error) {
             console.error("Erro ao buscar os dados", error);
         }
@@ -113,7 +119,6 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
     // Define as colunas da tabela
     const columns = [
         {
-
             name: 'Equipamentos',
             cell: (row: DevicesDoors & { isTreeViewRow?: boolean }) => {
                 if (row.isTreeViewRow) {
@@ -141,11 +146,6 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
 
     // Função para salvar os dados
     const handleSave = () => {
-        if (!formData.idPlanoHorario) {
-            setShowValidationErrors(true);
-            toast.warn('Selecione um plano de horário primeiro.');
-            return;
-        }
         const idTerminals = selectedDevicesIds
             .filter(id => id.includes("deviceid-"))
             .map(id => id.split("deviceid-")[1]);
@@ -181,11 +181,10 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
                             <Form.Label>Plano de Horário</Form.Label>
                             <Form.Control
                                 as="select"
-                                className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
+                                className="custom-input-height custom-select-font-size"
                                 value={formData.idPlanoHorario || ''}
                                 onChange={(e) => handleDropdownChange('timePlanId', e)}
                             >
-                                <option value="">Selecione...</option>
                                 {dropdownData['timePlanId']?.map((option: any) => {
                                     let optionId = option.id;
                                     let optionName = option.nome;

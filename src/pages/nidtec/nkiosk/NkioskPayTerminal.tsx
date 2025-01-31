@@ -298,7 +298,7 @@ export const NkioskPayTerminal = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Pagamentos Multibanco</span>
+                            <span >Pagamentos Multibanco</span>
                         </div>
                         <div className="datatable-header">
                             <div>

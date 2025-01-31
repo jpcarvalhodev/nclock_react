@@ -421,7 +421,7 @@ export const NkioskListMovements = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Movimentos Totais</span>
+                            <span >Movimentos Totais</span>
                         </div>
                         <div className="datatable-header">
                             <div>

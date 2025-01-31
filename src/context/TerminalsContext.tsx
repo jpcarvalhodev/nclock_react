@@ -366,8 +366,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchAccessControl = async (): Promise<AccessControl[]> => {
         try {
             const data = await apiService.fetchAllAccessControl();
-            setAccessControl(data);
-            return data;
+            const sortedData = data.sort((a: AccessControl, b: AccessControl) => a.nome.localeCompare(b.nome));
+            setAccessControl(sortedData);
+            return sortedData;
         } catch (error) {
             console.error('Erro ao buscar os dados de controle de acesso:', error);
         }

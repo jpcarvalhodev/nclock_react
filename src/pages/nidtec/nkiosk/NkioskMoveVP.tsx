@@ -343,7 +343,7 @@ export const NkioskMoveVP = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Aberturas do Video Porteiro</span>
+                            <span >Aberturas do Video Porteiro</span>
                         </div>
                         <div className="datatable-header">
                             <div>

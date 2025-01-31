@@ -770,3 +770,15 @@ export type TimePlan = {
     descricao: string;
     periodos: string[];
 }
+
+export type Accesses = {
+    [key: string]: any;
+    id: string;
+    eventTime: string;
+    cardNo: string;
+    nameUser: string;
+    pin: string;
+    deviceSN: string;
+    eventDoorName: string;
+    verifyModeNo: string;
+}

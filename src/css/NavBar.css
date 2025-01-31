@@ -100,12 +100,7 @@ body {
 .nav-container .configuracao-tab:hover,
 .nav-item.active .nav-link.configuracao-tab,
 .nav-container .ajuda-tab:hover,
-.nav-item.active .nav-link.ajuda-tab {
-    border: none;
-    background-color: white;
-    color: black;
-}
-
+.nav-item.active .nav-link.ajuda-tab,
 .nav-container .nclock-tab:hover,
 .nav-item.active .nav-link.nclock-tab,
 .nav-container .naccess-tab:hover,
@@ -123,12 +118,7 @@ body {
 .nav-container .nview-tab:hover,
 .nav-item.active .nav-link.nview-tab,
 .nav-container .nsecur-tab:hover,
-.nav-item.active .nav-link.nsecur-tab {
-    border: none;
-    background-color: white;
-    color: #0050a0;
-}
-
+.nav-item.active .nav-link.nsecur-tab,
 .nav-container .nsoftware-tab:hover,
 .nav-item.active .nav-link.nsoftware-tab,
 .nav-container .nsystem-tab:hover,
@@ -161,7 +151,8 @@ body {
 .nav-item.active .nav-link.nservice-tab,
 .nav-container .ntask-tab:hover,
 .nav-item.active .nav-link.ntask-tab,
-.nav-container .nproduction-tab:hover .nav-item.active .nav-link.nproduction-tab,
+.nav-container .nproduction-tab:hover,
+.nav-item.active .nav-link.nproduction-tab,
 .nav-container .nticket-tab:hover,
 .nav-item.active .nav-link.nticket-tab,
 .nav-container .nsales-tab:hover,
@@ -181,12 +172,7 @@ body {
 .nav-container .noptics-tab:hover,
 .nav-item.active .nav-link.noptics-tab,
 .nav-container .ngold-tab:hover,
-.nav-item.active .nav-link.ngold-tab {
-    border: none;
-    background-color: white;
-    color: #D01313;
-}
-
+.nav-item.active .nav-link.ngold-tab,
 .nav-container .nsmart-tab:hover,
 .nav-item.active .nav-link.nsmart-tab,
 .nav-container .nreality-tab:hover,
@@ -204,12 +190,7 @@ body {
 .nav-container .nled-tab:hover,
 .nav-item.active .nav-link.nled-tab,
 .nav-container .nfire-tab:hover,
-.nav-item.active .nav-link.nfire-tab {
-    border: none;
-    background-color: white;
-    color: #009739;
-}
-
+.nav-item.active .nav-link.nfire-tab,
 .nav-container .nfurniture-tab:hover,
 .nav-item.active .nav-link.nfurniture-tab,
 .nav-container .npartition-tab:hover,
@@ -230,7 +211,7 @@ body {
 .nav-item.active .nav-link.nhome-tab {
     border: none;
     background-color: white;
-    color: #FEC629;
+    color: #000000;
 }
 
 .tab-content-navbar {

@@ -424,7 +424,7 @@ export const NvisitorListMovements = () => {
                         </div>
                         <div className="datatable-container">
                             <div className="datatable-title-text">
-                                <span style={{ color: '#0050a0' }}>Listagem de Movimentos</span>
+                                <span>Listagem de Movimentos</span>
                             </div>
                             <div className="datatable-header">
                                 <div>

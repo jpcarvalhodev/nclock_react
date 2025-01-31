@@ -4,8 +4,10 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import '../css/PagesStyles.css';
-import { Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { Col, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
+import hidepass from '../assets/img/login/hidepass.png';
+import showpass from '../assets/img/login/showpass.png';
 import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { useTerminals } from '../context/TerminalsContext';
 
@@ -50,6 +52,8 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
     const [isFormValid, setIsFormValid] = useState(false);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [showValidationErrors, setShowValidationErrors] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showForcePassword, setShowForcePassword] = useState(false);
 
     // Usa useEffect para inicializar o formulário
     useEffect(() => {
@@ -179,6 +183,16 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
         { value: 1, label: 'Normalmente Aberto' },
         { value: 2, label: 'Normalmente Fechado' }
     ];
+
+    // Alterna a visibilidade da password
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    // Alterna a visibilidade da password
+    const toggleForcePasswordVisibility = () => {
+        setShowForcePassword(!showForcePassword);
+    };
 
     return (
         <Modal show={open} onHide={onClose} backdrop="static" size="xl" centered>
@@ -375,13 +389,30 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                             </Form.Group>
                             <Form.Group controlId="formSupperPwd">
                                 <Form.Label>Password de Emergência</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="password"
-                                    name="supperPwd"
-                                    value={formData.supperPwd}
-                                    onChange={handleChange}
-                                />
+                                <InputGroup>
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        name="supperPwd"
+                                        value={formData.supperPwd}
+                                        onChange={handleChange}
+                                        type={showPassword ? "text" : "password"}
+                                    />
+                                    <InputGroup.Text
+                                        onClick={togglePasswordVisibility}
+                                        style={{
+                                            cursor: 'pointer',
+                                            background: 'transparent',
+                                            borderLeft: 'none',
+                                            height: '30px',
+                                        }}
+                                    >
+                                        <img
+                                            src={showPassword ? hidepass : showpass}
+                                            alt={showPassword ? "Esconder password" : "Mostrar password"}
+                                            style={{ width: 20, height: 20 }}
+                                        />
+                                    </InputGroup.Text>
+                                </InputGroup>
                             </Form.Group>
                         </Col>
                         <Col md={3}>
@@ -408,13 +439,30 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                             </Form.Group>
                             <Form.Group controlId="formForcePwd">
                                 <Form.Label>Password de Coação</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="password"
-                                    name="forcePwd"
-                                    value={formData.forcePwd}
-                                    onChange={handleChange}
-                                />
+                                <InputGroup>
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type={showForcePassword ? "text" : "password"}
+                                        name="forcePwd"
+                                        value={formData.forcePwd}
+                                        onChange={handleChange}
+                                    />
+                                    <InputGroup.Text
+                                        onClick={toggleForcePasswordVisibility}
+                                        style={{
+                                            cursor: 'pointer',
+                                            background: 'transparent',
+                                            borderLeft: 'none',
+                                            height: '30px',
+                                        }}
+                                    >
+                                        <img
+                                            src={showForcePassword ? hidepass : showpass}
+                                            alt={showForcePassword ? "Esconder password" : "Mostrar password"}
+                                            style={{ width: 20, height: 20 }}
+                                        />
+                                    </InputGroup.Text>
+                                </InputGroup>
                             </Form.Group>
                             <Form.Group controlId="formPassmodeTimesegId">
                                 <Form.Label>Faixa Horária Modo de Passagem</Form.Label>

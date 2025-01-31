@@ -370,7 +370,7 @@ export const NvisitorMoveKiosk = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#0050a0' }}>Movimentos do Quiosque</span>
+                            <span>Movimentos do Quiosque</span>
                         </div>
                         <div className="datatable-header">
                             <div>

@@ -2,17 +2,19 @@ import { ReactNode, createContext, useCallback, useContext, useEffect, useState 
 import { toast } from "react-toastify";
 
 import * as apiService from "../api/apiService";
-import { EmployeeAttendanceTimes } from "../types/Types";
+import { Accesses, EmployeeAttendanceTimes } from "../types/Types";
 
 // Definindo o tipo de contexto
 export interface AttendanceContextType {
     attendance: EmployeeAttendanceTimes[];
+    access: Accesses[];
     startDate: string;
     endDate: string;
     setStartDate: (date: string) => void;
     setEndDate: (date: string) => void;
     fetchAllAttendances: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
     fetchAllAttendancesBetweenDates: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
+    fetchAllAccesses: () => Promise<Accesses[]>;
     handleAddAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
     handleAddImportedAttendance: (attendance: Partial<EmployeeAttendanceTimes>[]) => Promise<void>;
     handleUpdateAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
@@ -46,6 +48,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+    const [access, setAccess] = useState<Accesses[]>([]);
 
     // Função para buscar todas as assiduidades
     const fetchAllAttendances = useCallback(async (options?: FetchOptions): Promise<EmployeeAttendanceTimes[]> => {
@@ -83,6 +86,18 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
             return [];
         }
     }, [startDate, endDate]);
+
+    // Função para buscar todos os acessos
+    const fetchAllAccesses = async (): Promise<Accesses[]> => {
+        try {
+            const data = await apiService.fetchKioskTransactionDoorAsync();
+            setAccess(data);
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar acessos:', error);
+        }
+        return [];
+    }
 
     // Função para adicionar uma nova assiduidade
     const handleAddAttendance = async (attendances: EmployeeAttendanceTimes) => {
@@ -144,12 +159,14 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     // Definindo o valor do contexto
     const contextValue = {
         attendance,
+        access,
         startDate,
         endDate,
         setStartDate,
         setEndDate,
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
+        fetchAllAccesses,
         handleAddAttendance,
         handleAddImportedAttendance,
         handleUpdateAttendance,

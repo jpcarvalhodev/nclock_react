@@ -23,7 +23,7 @@ import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecol
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { ResetCoinModal } from "../../../modals/ResetCoinModal";
 import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
-import { RecolhaMoedeiroEContador, ResetCoin } from "../../../types/Types";
+import { KioskTransactionMB, RecolhaMoedeiroEContador, ResetCoin } from "../../../types/Types";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -453,7 +453,7 @@ export const NkioskGetCoins = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Recolhas do Moedeiro</span>
+                            <span >Recolhas do Moedeiro</span>
                         </div>
                         <div className="datatable-header">
                             <div>

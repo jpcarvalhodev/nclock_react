@@ -1,276 +1,223 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from 'react';
+import { Button, Navbar } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/NavBar.css';
-import absent from '../assets/img/navbar/nclock/absent.png';
-import unknown from '../assets/img/navbar/nclock/unknown.png';
-import work from '../assets/img/navbar/nclock/work.png';
-import extra from '../assets/img/navbar/nclock/extra.png';
-import limit from '../assets/img/navbar/nclock/limit.png';
-import addHour from '../assets/img/navbar/nclock/addHour.png';
-import rules from '../assets/img/navbar/nclock/rules.png';
-import medicalLeave from '../assets/img/navbar/nclock/medicalLeave.png';
-import vacation from '../assets/img/navbar/nclock/vacation.png';
-import holidays from '../assets/img/navbar/nclock/holidays.png';
-import autorization from '../assets/img/navbar/nclock/autorization.png';
-import calendar from '../assets/img/navbar/nclock/calendar.png';
-import monthly from '../assets/img/navbar/nclock/monthly.png';
-import exchange from '../assets/img/navbar/nclock/exchange.png';
-import availability from '../assets/img/navbar/nclock/availability.png';
-import plans from '../assets/img/navbar/nclock/plans.png';
-import settings from '../assets/img/navbar/nclock/settings.png';
+import { toast } from 'react-toastify';
+import * as apiService from "../api/apiService";
+import about from '../assets/img/navbar/ajuda/about.png';
+import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
+import contact from '../assets/img/navbar/ajuda/contact.png';
+import helpdesk from '../assets/img/navbar/ajuda/helpdesk.png';
+import manual from '../assets/img/navbar/ajuda/manual.png';
+import version from '../assets/img/navbar/ajuda/version.png';
+import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
+import backup from '../assets/img/navbar/configuracao/backup.png';
+import consult from '../assets/img/navbar/configuracao/consult.png';
+import database from '../assets/img/navbar/configuracao/database.png';
+import document from '../assets/img/navbar/configuracao/document.png';
+import dpoConsult from '../assets/img/navbar/configuracao/dpoConsult.png';
+import entity from '../assets/img/navbar/configuracao/entity.png';
+import licenses from '../assets/img/navbar/configuracao/license.png';
+import nacionalities from '../assets/img/navbar/configuracao/nacionalities.png';
+import profiles from '../assets/img/navbar/configuracao/profiles.png';
+import timeZone from '../assets/img/navbar/configuracao/timeZone.png';
+import typeConfig from '../assets/img/navbar/configuracao/typeConfig.png';
+import users from '../assets/img/navbar/configuracao/users.png';
+import accessControls from '../assets/img/navbar/dispositivos/accessControls.png';
+import camera from '../assets/img/navbar/dispositivos/camera.png';
+import terminal from '../assets/img/navbar/dispositivos/terminal.png';
+import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
+import timePlan from '../assets/img/navbar/dispositivos/timePlan.png';
+import home from '../assets/img/navbar/home.png';
+import controlPanel from '../assets/img/navbar/naccess/controlPanel.png';
 import formation from '../assets/img/navbar/naccess/formation.png';
+import imports from '../assets/img/navbar/naccess/imports.png';
 import motives from '../assets/img/navbar/naccess/motives.png';
 import search from '../assets/img/navbar/naccess/search.png';
-import imports from '../assets/img/navbar/naccess/imports.png';
-import controlPanel from '../assets/img/navbar/naccess/controlPanel.png';
-import terminal from '../assets/img/navbar/dispositivos/terminal.png';
-import timePlan from '../assets/img/navbar/dispositivos/timePlan.png';
-import camera from '../assets/img/navbar/dispositivos/camera.png';
-import database from '../assets/img/navbar/configuracao/database.png';
-import licenses from '../assets/img/navbar/configuracao/license.png';
-import timeZone from '../assets/img/navbar/configuracao/timeZone.png';
-import nacionalities from '../assets/img/navbar/configuracao/nacionalities.png';
-import document from '../assets/img/navbar/configuracao/document.png';
-import consult from '../assets/img/navbar/configuracao/consult.png';
-import dpoConsult from '../assets/img/navbar/configuracao/dpoConsult.png';
-import about from '../assets/img/navbar/ajuda/about.png';
-import manual from '../assets/img/navbar/ajuda/manual.png';
-import helpdesk from '../assets/img/navbar/ajuda/helpdesk.png';
-import nsoftware from '../assets/img/navbar/navbar/nsoftware.webp';
-import nsystem from '../assets/img/navbar/navbar/nsystem.webp';
-import napp from '../assets/img/navbar/navbar/napp.webp';
-import ncyber from '../assets/img/navbar/navbar/ncyber.webp';
-import ndigital from '../assets/img/navbar/navbar/ndigital.webp';
-import nserver from '../assets/img/navbar/navbar/nserver.webp';
-import naut from '../assets/img/navbar/navbar/naut.webp';
-import nequip from '../assets/img/navbar/navbar/nequip.webp';
-import nproject from '../assets/img/navbar/navbar/nproject.webp';
-import nsoftwares from '../assets/img/navbar/navbar/nsoftwares.png';
-import nidsof from '../assets/img/navbar/navbar/nidsof.webp';
-import nidplace from '../assets/img/navbar/navbar/nidplace.webp';
-import nidtec from '../assets/img/navbar/navbar/nidtec.png';
-import nsmart from '../assets/img/navbar/navbar/nsmart.webp';
-import nreality from '../assets/img/navbar/navbar/nreality.webp';
-import nhologram from '../assets/img/navbar/navbar/nhologram.webp';
-import npower from '../assets/img/navbar/navbar/npower.webp';
-import ncharge from '../assets/img/navbar/navbar/ncharge.webp';
-import ncity from '../assets/img/navbar/navbar/ncity.png';
-import nkiosk from '../assets/img/navbar/navbar/nkiosk.webp';
-import nled from '../assets/img/navbar/navbar/nled.webp';
-import nfire from '../assets/img/navbar/navbar/nfire.webp';
-import nfurniture from '../assets/img/navbar/navbar/nfurniture.webp';
-import nping from '../assets/img/navbar/navbar/nping.webp';
-import nconnect from '../assets/img/navbar/navbar/nconnect.webp';
-import nlight from '../assets/img/navbar/navbar/nlight.webp';
-import ncomfort from '../assets/img/navbar/navbar/ncomfort.webp';
-import nsound from '../assets/img/navbar/navbar/nsound.webp';
-import nhome from '../assets/img/navbar/navbar/nhome.webp';
-import ndecor from '../assets/img/navbar/navbar/ndecor.webp';
-import npartition from '../assets/img/navbar/navbar/npartition.webp';
-import payment_card from '../assets/img/navbar/nkiosk/payment_card.png';
-import coin from '../assets/img/navbar/nkiosk/coin.png';
-import intercom from '../assets/img/navbar/nkiosk/intercom.png';
-import kiosk from '../assets/img/navbar/nkiosk/kiosk.png';
-import barrier from '../assets/img/navbar/nkiosk/barrier.png';
-import ads from '../assets/img/navbar/nled/ads.png';
-import video from '../assets/img/navbar/nled/video.png';
-import image from '../assets/img/navbar/nled/image.png';
-import online from '../assets/img/navbar/nkiosk/online.png';
-import card_report from '../assets/img/navbar/nkiosk/card_report.png';
-import coin_report from '../assets/img/navbar/nkiosk/coin_report.png';
-import offline from '../assets/img/navbar/nkiosk/offline.png';
-import maps from '../assets/img/navbar/nkiosk/maps.png';
-import log from '../assets/img/navbar/nkiosk/logs.png';
-import bell from '../assets/img/navbar/nkiosk/bell.png';
-import registry from '../assets/img/navbar/nkiosk/registry.png';
-import alert from '../assets/img/navbar/nkiosk/alert.png';
-import accessControls from '../assets/img/navbar/nkiosk/accessControl.png';
-import anydesk from '../assets/img/navbar/ajuda/anydesk.png';
-import home from '../assets/img/navbar/home.png';
-import terminalmb from '../assets/img/navbar/dispositivos/terminalmb.png';
-import open from '../assets/img/navbar/nkiosk/open.png';
-import print from '../assets/img/navbar/nkiosk/print.png';
-import graphs from '../assets/img/navbar/nkiosk/graphs.png';
-import version from '../assets/img/navbar/ajuda/version.png';
-import module from '../assets/img/navbar/nkiosk/module.png';
-import { CreateModalAds } from '../modals/CreateModalAds';
-import { Button, Navbar } from 'react-bootstrap';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { accessControlFields, adsFields, backupDBFields, categoryFields, counterFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, limpezasEOcorrenciasFields, logsFields, manualOpenDoorFields, mbDeviceCloseOpenFields, professionFields, recolhaMoedeiroEContadorFields, registerFields, timePeriodFields, transactionCardFields, transactionMBFields, zoneFields } from '../fields/Fields';
-import { EmailOptionsModal } from '../modals/EmailOptions';
-import * as apiService from "../api/apiService";
-import { toast } from 'react-toastify';
-import { AboutModal } from '../modals/AboutModal';
-import ncount from '../assets/img/navbar/navbar/ncount.png';
-import nbuild from '../assets/img/navbar/navbar/nbuild.png';
-import ncaravan from '../assets/img/navbar/navbar/ncaravan.png';
-import nmechanic from '../assets/img/navbar/navbar/nmechanic.png';
-import nevents from '../assets/img/navbar/navbar/nevents.png';
-import nservice from '../assets/img/navbar/navbar/nservice.png';
-import ntask from '../assets/img/navbar/navbar/ntask.png';
-import nproduction from '../assets/img/navbar/navbar/nproduction.png';
-import nticket from '../assets/img/navbar/navbar/nticket.png';
-import nsales from '../assets/img/navbar/navbar/nsales.png';
-import ninvoice from '../assets/img/navbar/navbar/ninvoice.png';
-import ndoc from '../assets/img/navbar/navbar/ndoc.png';
-import nsports from '../assets/img/navbar/navbar/nsports.png';
-import ngym from '../assets/img/navbar/navbar/ngym.png';
-import nschool from '../assets/img/navbar/navbar/nschool.png';
-import nclinic from '../assets/img/navbar/navbar/nclinic.png';
-import noptics from '../assets/img/navbar/navbar/noptics.png';
-import ngold from '../assets/img/navbar/navbar/ngold.png';
-import open_door from '../assets/img/navbar/nkiosk/open_door.png';
-import count from '../assets/img/navbar/nkiosk/count.png';
-import cleanings from '../assets/img/navbar/nkiosk/cleaning.png';
-import certificate from '../assets/img/navbar/certificate.png';
-import { LicenseModal } from '../modals/LicenseModal';
-import { useLicense } from '../context/LicenseContext';
-import { usePersons } from '../context/PersonsContext';
-import { KioskOptionsModal } from '../modals/KioskOptions';
-import contact from '../assets/img/navbar/ajuda/contact.png';
-import { ContactModal } from '../modals/ContactModal';
-import sensor from '../assets/img/navbar/nkiosk/sensor.png';
-import cell from '../assets/img/navbar/nkiosk/cell.png';
-import { fetchWithAuth } from './FetchWithAuth';
-import { PrintButton } from './PrintButton';
-import { useTerminals } from '../context/TerminalsContext';
-import { useEntity } from '../context/EntityContext';
-import { useKiosk } from '../context/KioskContext';
-import whatsapp from '../assets/img/navbar/ajuda/whatsapp.png';
-import naccess from '../assets/img/navbar/navbar/naccess.webp';
-import ncard from '../assets/img/navbar/navbar/ncard.webp';
-import nclock from '../assets/img/navbar/navbar/nclock.webp';
-import ndoor from '../assets/img/navbar/navbar/ndoor.webp';
-import npark from '../assets/img/navbar/navbar/npark.webp';
-import npatrol from '../assets/img/navbar/navbar/npatrol.webp';
-import nsecur from '../assets/img/navbar/navbar/nsecur.webp';
-import nview from '../assets/img/navbar/navbar/nview.webp';
-import nvisitor from '../assets/img/navbar/navbar/nvisitor.webp';
+import visitorAccess from '../assets/img/navbar/naccess/visitorAccess.png';
+import hardware from '../assets/img/navbar/naut/hardware.png';
+import software from '../assets/img/navbar/naut/software.png';
+import favourite from '../assets/img/navbar/navbar/favourite.svg';
+import mail from '../assets/img/navbar/navbar/mail.svg';
 import profileAvatar from '../assets/img/navbar/navbar/profileAvatar.png';
 import ribbonControl from '../assets/img/navbar/navbar/ribbonControl.png';
 import ribbonControlLock from '../assets/img/navbar/navbar/ribbonControlLock.png';
-import sisnidlogo from '../assets/img/navbar/navbar/sisnidlogo.webp';
-import analysis from '../assets/img/navbar/npatrol/analysis.png';
-import routes from '../assets/img/navbar/npatrol/routes.png';
 import points from '../assets/img/navbar/ncard/points.png';
-import counts from '../assets/img/navbar/nkiosk/counter.png';
-import programming from '../assets/img/navbar/nvisitor/programming.png';
-import securityDevice from '../assets/img/navbar/nsecur/securityDevice.png';
-import arm from '../assets/img/navbar/nsecur/arm.png';
-import disarm from '../assets/img/navbar/nsecur/disarm.png';
-import division from '../assets/img/navbar/nsecur/division.png';
-import panic from '../assets/img/navbar/nsecur/panic.png';
-import night from '../assets/img/navbar/nsecur/night.png';
-import category from '../assets/img/navbar/pessoas/categories.png';
-import department from '../assets/img/navbar/pessoas/departments.png';
-import externalEntities from '../assets/img/navbar/pessoas/externalEntities.png';
-import group from '../assets/img/navbar/pessoas/groups.png';
-import person from '../assets/img/navbar/pessoas/person.png';
-import profession from '../assets/img/navbar/pessoas/professions.png';
-import zone from '../assets/img/navbar/pessoas/zones.png';
-import { EmailUser, KioskConfig } from '../types/Types';
-import { BackupDBModal } from '../modals/BackupDBModal';
-import { TerminalOptionsModal } from '../modals/TerminalOptions';
-import realTime from '../assets/img/navbar/nsmart/realTime.png';
-import monitoring from '../assets/img/navbar/nsmart/monitoring.png';
-import simulation from '../assets/img/navbar/nreality/simulation.png';
-import power from '../assets/img/navbar/npower/power.png';
-import eolic from '../assets/img/navbar/npower/eolic.png';
-import solar from '../assets/img/navbar/npower/solar.png';
-import fisical from '../assets/img/navbar/npower/fisical.png';
-import hourglass from '../assets/img/navbar/npower/hourglass.png';
-import year from '../assets/img/navbar/npower/year.png';
-import energy from '../assets/img/navbar/npower/energy.png';
-import renewable from '../assets/img/navbar/npower/renewable.png';
-import monophase from '../assets/img/navbar/npower/monophase.png';
-import biphase from '../assets/img/navbar/npower/biphase.png';
-import triphase from '../assets/img/navbar/npower/triphase.png';
-import firePrevention from '../assets/img/navbar/nfire/firePrevention.png';
-import extinguish from '../assets/img/navbar/nfire/extinguish.png';
-import interactive from '../assets/img/navbar/ncity/interactive.png';
-import rent from '../assets/img/navbar/ncity/rent.png';
 import article from '../assets/img/navbar/ncity/article.png';
-import newsSearch from '../assets/img/navbar/ncity/newsSearch.png';
-import sugestion from '../assets/img/navbar/ncity/sugestion.png';
+import interactive from '../assets/img/navbar/ncity/interactive.png';
 import museum from '../assets/img/navbar/ncity/museum.png';
+import newsSearch from '../assets/img/navbar/ncity/newsSearch.png';
+import rent from '../assets/img/navbar/ncity/rent.png';
+import sugestion from '../assets/img/navbar/ncity/sugestion.png';
 import transportation from '../assets/img/navbar/ncity/transportation.png';
+import absent from '../assets/img/navbar/nclock/absent.png';
+import addHour from '../assets/img/navbar/nclock/addHour.png';
 import all from '../assets/img/navbar/nclock/all.png';
+import autorization from '../assets/img/navbar/nclock/autorization.png';
+import availability from '../assets/img/navbar/nclock/availability.png';
 import battery from '../assets/img/navbar/nclock/battery.png';
+import calendar from '../assets/img/navbar/nclock/calendar.png';
 import clipboard from '../assets/img/navbar/nclock/clipboard.png';
 import clock from '../assets/img/navbar/nclock/clock.png';
+import exchange from '../assets/img/navbar/nclock/exchange.png';
+import extra from '../assets/img/navbar/nclock/extra.png';
+import holidays from '../assets/img/navbar/nclock/holidays.png';
 import hourDatabase from '../assets/img/navbar/nclock/hourDatabase.png';
+import limit from '../assets/img/navbar/nclock/limit.png';
+import medicalLeave from '../assets/img/navbar/nclock/medicalLeave.png';
+import monthly from '../assets/img/navbar/nclock/monthly.png';
 import movement from '../assets/img/navbar/nclock/movement.png';
+import plans from '../assets/img/navbar/nclock/plans.png';
 import plusMinus from '../assets/img/navbar/nclock/plusMinus.png';
 import presence from '../assets/img/navbar/nclock/presence.png';
 import processing from '../assets/img/navbar/nclock/processing.png';
 import request from '../assets/img/navbar/nclock/request.png';
+import rules from '../assets/img/navbar/nclock/rules.png';
 import segmentation from '../assets/img/navbar/nclock/segmentation.png';
+import settings from '../assets/img/navbar/nclock/settings.png';
 import time from '../assets/img/navbar/nclock/time.png';
+import unknown from '../assets/img/navbar/nclock/unknown.png';
+import vacation from '../assets/img/navbar/nclock/vacation.png';
+import work from '../assets/img/navbar/nclock/work.png';
 import workPlan from '../assets/img/navbar/nclock/workPlan.png';
 import price from '../assets/img/navbar/nconnect/price.png';
+import summary from '../assets/img/navbar/ncount/summary.png';
+import recovery from '../assets/img/navbar/ncyber/recovery.png';
+import shield from '../assets/img/navbar/ncyber/shield.png';
 import library from '../assets/img/navbar/ndecor/library.png';
 import threeDimension from '../assets/img/navbar/ndecor/threeDimension.png';
+import bonus from '../assets/img/navbar/ndigital/bonus.png';
+import efficiency from '../assets/img/navbar/ndigital/efficiency.png';
+import simple from '../assets/img/navbar/ndigital/simple.png';
+import deadFiles from '../assets/img/navbar/ndoc/deadFiles.png';
+import digitalFile from '../assets/img/navbar/ndoc/digitalFile.png';
+import file from '../assets/img/navbar/ndoc/file.png';
+import folder from '../assets/img/navbar/ndoc/folder.png';
+import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
 import doorIn from '../assets/img/navbar/ndoor/doorIn.png';
 import doorRoom from '../assets/img/navbar/ndoor/doorRoom.png';
 import inOut from '../assets/img/navbar/ndoor/inOut.png';
 import reservation from '../assets/img/navbar/ndoor/reservation.png';
+import broken from '../assets/img/navbar/nequip/broken.png';
+import extinguish from '../assets/img/navbar/nfire/extinguish.png';
+import firePrevention from '../assets/img/navbar/nfire/firePrevention.png';
 import down from '../assets/img/navbar/nfurniture/down.png';
 import up from '../assets/img/navbar/nfurniture/up.png';
-import panel from '../assets/img/navbar/nkiosk/panel.png';
+import account from '../assets/img/navbar/ninvoice/account.png';
+import credit from '../assets/img/navbar/ninvoice/credit.png';
+import deal from '../assets/img/navbar/ninvoice/deal.png';
+import eBill from '../assets/img/navbar/ninvoice/eBill.png';
+import invoice from '../assets/img/navbar/ninvoice/invoice.png';
+import point from '../assets/img/navbar/ninvoice/point.png';
+import receipt from '../assets/img/navbar/ninvoice/receipt.png';
+import supplier from '../assets/img/navbar/ninvoice/supplier.png';
+import alert from '../assets/img/navbar/nkiosk/alert.png';
+import barrier from '../assets/img/navbar/nkiosk/barrier.png';
+import bell from '../assets/img/navbar/nkiosk/bell.png';
+import card_report from '../assets/img/navbar/nkiosk/card_report.png';
+import cleanings from '../assets/img/navbar/nkiosk/cleaning.png';
+import coin from '../assets/img/navbar/nkiosk/coin.png';
+import coin_report from '../assets/img/navbar/nkiosk/coin_report.png';
+import count from '../assets/img/navbar/nkiosk/count.png';
+import graphs from '../assets/img/navbar/nkiosk/graphs.png';
+import intercom from '../assets/img/navbar/nkiosk/intercom.png';
+import kiosk from '../assets/img/navbar/nkiosk/kiosk.png';
+import log from '../assets/img/navbar/nkiosk/logs.png';
+import maps from '../assets/img/navbar/nkiosk/maps.png';
+import module from '../assets/img/navbar/nkiosk/module.png';
+import offline from '../assets/img/navbar/nkiosk/offline.png';
+import online from '../assets/img/navbar/nkiosk/online.png';
+import open from '../assets/img/navbar/nkiosk/open.png';
+import open_door from '../assets/img/navbar/nkiosk/open_door.png';
+import payment_card from '../assets/img/navbar/nkiosk/payment_card.png';
+import print from '../assets/img/navbar/nkiosk/print.png';
+import registry from '../assets/img/navbar/nkiosk/registry.png';
+import ads from '../assets/img/navbar/nled/ads.png';
+import image from '../assets/img/navbar/nled/image.png';
 import ledMonitor from '../assets/img/navbar/nled/ledMonitor.png';
+import video from '../assets/img/navbar/nled/video.png';
 import cars from '../assets/img/navbar/npark/cars.png';
 import payBooth from '../assets/img/navbar/npark/payBooth.png';
 import close from '../assets/img/navbar/npartition/close.png';
 import tick from '../assets/img/navbar/npartition/tick.png';
+import analysis from '../assets/img/navbar/npatrol/analysis.png';
 import patrols from '../assets/img/navbar/npatrol/patrols.png';
+import routes from '../assets/img/navbar/npatrol/routes.png';
 import bandwidth from '../assets/img/navbar/nping/bandwidth.png';
 import network from '../assets/img/navbar/nping/network.png';
-import test from '../assets/img/navbar/nping/test.webp';
-import businessAreas from '../assets/img/navbar/pessoas/businessAreas.png';
-import fonts from '../assets/img/navbar/pessoas/fonts.png';
-import fraccoes from '../assets/img/navbar/pessoas/fraccoes.png';
-import internalContacts from '../assets/img/navbar/pessoas/internalContacts.png';
-import interventionAreas from '../assets/img/navbar/pessoas/interventionAreas.png';
-import types from '../assets/img/navbar/pessoas/types.png';
-import { useAds } from '../context/AdsContext';
-import { useCardScroll } from '../context/CardScrollContext';
-import { useNavbar } from '../context/NavbarContext';
-import create from '../assets/img/navbar/nsoftware/create.png';
-import optimization from '../assets/img/navbar/nsoftware/optimization.png';
-import cost from '../assets/img/navbar/nsoftware/cost.png';
-import management from '../assets/img/navbar/nsystem/management.png';
-import flow from '../assets/img/navbar/nsystem/flow.png';
-import integration from '../assets/img/navbar/nsystem/integration.png';
-import shield from '../assets/img/navbar/ncyber/shield.png';
-import recovery from '../assets/img/navbar/ncyber/recovery.png';
-import efficiency from '../assets/img/navbar/ndigital/efficiency.png';
-import bonus from '../assets/img/navbar/ndigital/bonus.png';
-import simple from '../assets/img/navbar/ndigital/simple.png';
+import test from '../assets/img/navbar/nping/test.png';
+import biphase from '../assets/img/navbar/npower/biphase.png';
+import energy from '../assets/img/navbar/npower/energy.png';
+import eolic from '../assets/img/navbar/npower/eolic.png';
+import fisical from '../assets/img/navbar/npower/fisical.png';
+import hourglass from '../assets/img/navbar/npower/hourglass.png';
+import monophase from '../assets/img/navbar/npower/monophase.png';
+import power from '../assets/img/navbar/npower/power.png';
+import renewable from '../assets/img/navbar/npower/renewable.png';
+import solar from '../assets/img/navbar/npower/solar.png';
+import triphase from '../assets/img/navbar/npower/triphase.png';
+import year from '../assets/img/navbar/npower/year.png';
+import making from '../assets/img/navbar/nproject/making.png';
+import production from '../assets/img/navbar/nproject/production.png';
+import simulation from '../assets/img/navbar/nreality/simulation.png';
+import arm from '../assets/img/navbar/nsecur/arm.png';
+import disarm from '../assets/img/navbar/nsecur/disarm.png';
+import division from '../assets/img/navbar/nsecur/division.png';
+import night from '../assets/img/navbar/nsecur/night.png';
+import panic from '../assets/img/navbar/nsecur/panic.png';
+import securityDevice from '../assets/img/navbar/nsecur/securityDevice.png';
 import automation from '../assets/img/navbar/nserver/automation.png';
 import feedback from '../assets/img/navbar/nserver/feedback.png';
-import hardware from '../assets/img/navbar/naut/hardware.png';
-import software from '../assets/img/navbar/naut/software.png';
-import broken from '../assets/img/navbar/nequip/broken.png';
-import production from '../assets/img/navbar/nproject/production.png';
-import making from '../assets/img/navbar/nproject/making.png';
-import summary from '../assets/img/navbar/ncount/summary.png';
-import invoice from '../assets/img/navbar/ninvoice/invoice.png';
-import credit from '../assets/img/navbar/ninvoice/credit.png';
-import deal from '../assets/img/navbar/ninvoice/deal.png';
-import receipt from '../assets/img/navbar/ninvoice/receipt.png';
-import eBill from '../assets/img/navbar/ninvoice/eBill.png';
-import account from '../assets/img/navbar/ninvoice/account.png';
-import point from '../assets/img/navbar/ninvoice/point.png';
-import folder from '../assets/img/navbar/ndoc/folder.png';
-import file from '../assets/img/navbar/ndoc/file.png';
-import deadFiles from '../assets/img/navbar/ndoc/deadFiles.png';
-import digitalFile from '../assets/img/navbar/ndoc/digitalFile.png';
-import workflow from '../assets/img/navbar/ndoc/workflow.png';
-import onlineConsulting from '../assets/img/navbar/ndoc/onlineConsulting.png';
+import monitoring from '../assets/img/navbar/nsmart/monitoring.png';
+import realTime from '../assets/img/navbar/nsmart/realTime.png';
+import cost from '../assets/img/navbar/nsoftware/cost.png';
+import create from '../assets/img/navbar/nsoftware/create.png';
+import optimization from '../assets/img/navbar/nsoftware/optimization.png';
+import flow from '../assets/img/navbar/nsystem/flow.png';
+import integration from '../assets/img/navbar/nsystem/integration.png';
+import management from '../assets/img/navbar/nsystem/management.png';
 import ticket from '../assets/img/navbar/nticket/ticket.png';
+import programming from '../assets/img/navbar/nvisitor/programming.png';
+import businessAreas from '../assets/img/navbar/pessoas/businessAreas.png';
+import category from '../assets/img/navbar/pessoas/categories.png';
+import department from '../assets/img/navbar/pessoas/departments.png';
+import employee from '../assets/img/navbar/pessoas/employee.png';
+import externalEntities from '../assets/img/navbar/pessoas/externalEntities.png';
+import fonts from '../assets/img/navbar/pessoas/fonts.png';
+import fraccoes from '../assets/img/navbar/pessoas/fraccoes.png';
+import group from '../assets/img/navbar/pessoas/groups.png';
+import internalContacts from '../assets/img/navbar/pessoas/internalContacts.png';
+import interventionAreas from '../assets/img/navbar/pessoas/interventionAreas.png';
+import person from '../assets/img/navbar/pessoas/person.png';
+import profession from '../assets/img/navbar/pessoas/professions.png';
+import types from '../assets/img/navbar/pessoas/types.png';
+import zone from '../assets/img/navbar/pessoas/zones.png';
+import { useAds } from '../context/AdsContext';
+import { useCardScroll } from '../context/CardScrollContext';
+import { useEntity } from '../context/EntityContext';
+import { useKiosk } from '../context/KioskContext';
+import { useLicense } from '../context/LicenseContext';
+import { useAttendance } from '../context/MovementContext';
+import { useNavbar } from '../context/NavbarContext';
+import { usePersons } from '../context/PersonsContext';
+import { useTerminals } from '../context/TerminalsContext';
+import { accessControlFields, adsFields, backupDBFields, categoryFields, counterFields, departmentFields, deviceFields, emailFields, employeeFields, externalEntityFields, groupFields, kioskConfigFields, licenseFields, limpezasEOcorrenciasFields, logsFields, manualOpenDoorFields, mbDeviceCloseOpenFields, professionFields, recolhaMoedeiroEContadorFields, registerFields, timePeriodFields, transactionCardFields, transactionMBFields, zoneFields } from '../fields/Fields';
+import { AboutModal } from '../modals/AboutModal';
+import { BackupDBModal } from '../modals/BackupDBModal';
+import { ContactModal } from '../modals/ContactModal';
+import { CreateModalAds } from '../modals/CreateModalAds';
+import { EmailOptionsModal } from '../modals/EmailOptions';
+import { ImportEmployeesModal } from '../modals/ImportEmployeesModal';
+import { KioskOptionsModal } from '../modals/KioskOptions';
+import { LicenseModal } from '../modals/LicenseModal';
+import { TerminalOptionsModal } from '../modals/TerminalOptions';
+import { EmailUser, KioskConfig } from '../types/Types';
+import { fetchWithAuth } from './FetchWithAuth';
+import { PrintButton } from './PrintButton';
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -295,7 +242,6 @@ interface MenuItem {
 	active?: boolean;
 	onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 	label: string;
-	image?: any;
 	alt?: string;
 	key: string;
 	className?: string;
@@ -355,11 +301,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
 	const { setScrollPosition } = useCardScroll();
 	const { handleAddAds } = useAds();
-	const { loginLogs, historyLogs, exportBackupDB, importBackupDB } = useEntity();
+	const { loginLogs, historyLogs, exportBackupDB, importBackupDB, importEmployees } = useEntity();
 	const { license, getSoftwareEnabledStatus, handleUpdateLicense } = useLicense();
 	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
 	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
-	const { payTerminal, payCoins, totalPayments, moveCard, moveKiosk, totalMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter } = useKiosk();
+	const { payTerminal, payCoins, totalPayments, moveCard, moveKiosk, totalMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter, fetchAllPayTerminal, fetchAllPayCoins, fetchAllMoveCard, fetchAllMoveKiosk, fetchAndUnifyPaymentsForNavbar, fetchAndUnifyMovementsForNavbar } = useKiosk();
+	const { fetchAllAttendances } = useAttendance();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
 	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
@@ -505,6 +452,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const [showCardDropdown, setShowCardDropdown] = useState(false);
 	const [showBackupDBModal, setShowBackupDBModal] = useState(false);
 	const [showTaskDropdown, setShowTaskDropdown] = useState(false);
+	const [showImportEmployeesModal, setShowImportEmployeesModal] = useState(false);
 
 	// Função para atualizar o estado da aba
 	const ribbonSetters = {
@@ -689,7 +637,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const softwareEnabled = getSoftwareEnabledStatus(license);
 
 	// Função para atualizar o estado a partir do localStorage
-	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix: string = ''): void {
+	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix = ''): void {
 		const stateValue = localStorage.getItem(`${prefix}${key}`) === 'true';
 		setterFunction(stateValue);
 	}
@@ -897,7 +845,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
 			const softwareName = tabName;
 			const isSoftwareEnabled = softwareEnabled[softwareName] ? true : false;
-			const isSoftwareCliente = menuStructureStart.cliente.submenu?.some(item => item.label.toLowerCase() === softwareName) ? true : false;
+			const isSoftwareCliente = menuStructureStart.cliente.submenu?.some(item => item.key === softwareName) ? true : false;
 			const finalRoute = (softwareName && isSoftwareEnabled && isSoftwareCliente) ? `${route}licensed` : route;
 
 			if (activeTab === tabName) {
@@ -1025,96 +973,98 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Define a estrutura do menu de softwares
 	useEffect(() => {
 
+		const enabledSoftware = getSoftwareEnabledStatus(license);
+
+		const filterUnlicensedSoftware = (submenu: MenuItem[]): MenuItem[] => {
+			return submenu.filter(item => enabledSoftware[item.key] === false);
+		};
+
 		// Estrutura de menu original
 		const originalMenuStructure: MenuStructure = {
 			sisnid: {
 				label: 'SISNID - Segurança',
-				image: sisnidlogo,
 				alt: 'SISNID',
 				key: 'sisnid',
 				submenu: [
-					{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
-					{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
-					{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
-					{ label: 'Npark', image: npark, alt: 'npark', key: 'npark' },
-					{ label: 'Ndoor', image: ndoor, alt: 'ndoor', key: 'ndoor' },
-					{ label: 'Npatrol', image: npatrol, alt: 'npatrol', key: 'npatrol' },
-					{ label: 'Ncard', image: ncard, alt: 'ncard', key: 'ncard' },
-					{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
-					{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
-					{ label: 'Nsoftware', image: sisnidlogo, alt: 'nsoftware', key: 'nsoftware' }
+					{ label: 'Nclock - Assiduidade', alt: 'nclock', key: 'nclock' },
+					{ label: 'Naccess - Acessos', alt: 'naccess', key: 'naccess' },
+					{ label: 'Nvisitor - Torniquetes', alt: 'nvisitor', key: 'nvisitor' },
+					{ label: 'Npark - Parques', alt: 'npark', key: 'npark' },
+					{ label: 'Ndoor - Automatismos', alt: 'ndoor', key: 'ndoor' },
+					{ label: 'Npatrol - Rondas', alt: 'npatrol', key: 'npatrol' },
+					{ label: 'Ncard - Cartões', alt: 'ncard', key: 'ncard' },
+					{ label: 'Nview - Vigilância', alt: 'nview', key: 'nview' },
+					{ label: 'Nsecur - Alarmes', alt: 'nsecur', key: 'nsecur' },
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 			nidsof: {
 				label: 'NIDSOF - Gestão',
-				image: nidsof,
 				alt: 'NIDSOF',
 				key: 'nidsof',
 				submenu: [
-					{ label: 'Nsoftware', image: nsoftware, alt: 'nsoftware', key: 'nsoftware' },
-					{ label: 'Nsystem', image: nsystem, alt: 'nsystem', key: 'nsystem' },
-					{ label: 'Napp', image: napp, alt: 'napp', key: 'napp' },
-					{ label: 'Ncyber', image: ncyber, alt: 'ncyber', key: 'ncyber' },
-					{ label: 'Ndigital', image: ndigital, alt: 'ndigital', key: 'ndigital' },
-					{ label: 'Nserver', image: nserver, alt: 'nserver', key: 'nserver' },
-					{ label: 'Naut', image: naut, alt: 'naut', key: 'naut' },
-					{ label: 'Nequip', image: nequip, alt: 'nequip', key: 'nequip' },
-					{ label: 'Nproject', image: nproject, alt: 'nproject', key: 'nproject' },
-					{ label: 'Ncount', image: ncount, alt: 'ncount', key: 'ncount' },
-					{ label: 'Nbuild', image: nbuild, alt: 'nbuild', key: 'nbuild' },
-					{ label: 'Ncaravan', image: ncaravan, alt: 'ncaravan', key: 'ncaravan' },
-					{ label: 'Nmechanic', image: nmechanic, alt: 'nmechanic', key: 'nmechanic' },
-					{ label: 'Nevents', image: nevents, alt: 'nevents', key: 'nevents' },
-					{ label: 'Nservice', image: nservice, alt: 'nservice', key: 'nservice' },
-					{ label: 'Ntask', image: ntask, alt: 'ntask', key: 'ntask' },
-					{ label: 'Nproduction', image: nproduction, alt: 'nproduction', key: 'nproduction' },
-					{ label: 'Nticket', image: nticket, alt: 'nticket', key: 'nticket' },
-					{ label: 'Nsales', image: nsales, alt: 'nsales', key: 'nsales' },
-					{ label: 'Ninvoice', image: ninvoice, alt: 'ninvoice', key: 'ninvoice' },
-					{ label: 'Ndoc', image: ndoc, alt: 'ndoc', key: 'ndoc' },
-					{ label: 'Nsports', image: nsports, alt: 'nsports', key: 'nsports' },
-					{ label: 'Ngym', image: ngym, alt: 'ngym', key: 'ngym' },
-					{ label: 'Nschool', image: nschool, alt: 'nschool', key: 'nschool' },
-					{ label: 'Nclinic', image: nclinic, alt: 'nclinic', key: 'nclinic' },
-					{ label: 'Noptics', image: noptics, alt: 'noptics', key: 'noptics' },
-					{ label: 'Ngold', image: ngold, alt: 'ngold', key: 'ngold' },
-					{ label: 'Nsoftware', image: nidsof, alt: 'nsoftware', key: 'nsoftware' }
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' },
+					{ label: 'Nsystem - Sistemas', alt: 'nsystem', key: 'nsystem' },
+					{ label: 'Napp - Aplicativos', alt: 'napp', key: 'napp' },
+					{ label: 'Ncyber - Cibernética', alt: 'ncyber', key: 'ncyber' },
+					{ label: 'Ndigital - Transformação', alt: 'ndigital', key: 'ndigital' },
+					{ label: 'Nserver - Integração', alt: 'nserver', key: 'nserver' },
+					{ label: 'Naut - Automação', alt: 'naut', key: 'naut' },
+					{ label: 'Nequip - Equipamentos', alt: 'nequip', key: 'nequip' },
+					{ label: 'Nproject - Projetos', alt: 'nproject', key: 'nproject' },
+					{ label: 'Ncount - Contador', alt: 'ncount', key: 'ncount' },
+					{ label: 'Nbuild - Obras', alt: 'nbuild', key: 'nbuild' },
+					{ label: 'Ncaravan - Autocaravanas', alt: 'ncaravan', key: 'ncaravan' },
+					{ label: 'Nmechanic - Oficinas', alt: 'nmechanic', key: 'nmechanic' },
+					{ label: 'Nevents - Eventos', alt: 'nevents', key: 'nevents' },
+					{ label: 'Nservice - Serviços', alt: 'nservice', key: 'nservice' },
+					{ label: 'Ntask - Tarefas', alt: 'ntask', key: 'ntask' },
+					{ label: 'Nproduction - Produção', alt: 'nproduction', key: 'nproduction' },
+					{ label: 'Nticket - Bilhetes', alt: 'nticket', key: 'nticket' },
+					{ label: 'Nsales - CRM', alt: 'nsales', key: 'nsales' },
+					{ label: 'Ninvoice - Faturação', alt: 'ninvoice', key: 'ninvoice' },
+					{ label: 'Ndoc - Documental', alt: 'ndoc', key: 'ndoc' },
+					{ label: 'Nsports - Desporto', alt: 'nsports', key: 'nsports' },
+					{ label: 'Ngym - Ginásios', alt: 'ngym', key: 'ngym' },
+					{ label: 'Nschool - Escolar', alt: 'nschool', key: 'nschool' },
+					{ label: 'Nclinic - Clínicas', alt: 'nclinic', key: 'nclinic' },
+					{ label: 'Noptics - Ópticas', alt: 'noptics', key: 'noptics' },
+					{ label: 'Ngold - Ourivesarias', alt: 'ngold', key: 'ngold' },
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 			nidtec: {
 				label: 'NIDTEC - Tecnologia',
-				image: nidtec,
 				alt: 'NIDTEC',
 				key: 'nidtec',
 				submenu: [
-					{ label: 'Nsmart', image: nsmart, alt: 'nsmart', key: 'nsmart' },
-					{ label: 'Nreality', image: nreality, alt: 'nreality', key: 'nreality' },
-					{ label: 'Nhologram', image: nhologram, alt: 'nhologram', key: 'nhologram' },
-					{ label: 'Npower', image: npower, alt: 'npower', key: 'npower' },
-					{ label: 'Ncharge', image: ncharge, alt: 'ncharge', key: 'ncharge' },
-					{ label: 'Ncity', image: ncity, alt: 'ncity', key: 'ncity' },
-					{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
-					{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
-					{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
-					{ label: 'Nsoftware', image: nidtec, alt: 'nsoftware', key: 'nsoftware' }
+					{ label: 'Nsmart - Inteligência', alt: 'nsmart', key: 'nsmart' },
+					{ label: 'Nreality - Virtual', alt: 'nreality', key: 'nreality' },
+					{ label: 'Nhologram - Hologramas', alt: 'nhologram', key: 'nhologram' },
+					{ label: 'Npower - Energias', alt: 'npower', key: 'npower' },
+					{ label: 'Ncharge - Recarga', alt: 'ncharge', key: 'ncharge' },
+					{ label: 'Ncity - Mobilidade', alt: 'ncity', key: 'ncity' },
+					{ label: 'Nkiosk - Quiosques', alt: 'nkiosk', key: 'nkiosk' },
+					{ label: 'Nled - Multimédia', alt: 'nled', key: 'nled' },
+					{ label: 'Nfire - Incêndios', alt: 'nfire', key: 'nfire' },
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 			nidplace: {
 				label: 'NIDPLACE - Conforto',
-				image: nidplace,
 				alt: 'NIDPLACE',
 				key: 'nidplace',
 				submenu: [
-					{ label: 'Nfurniture', image: nfurniture, alt: 'nfurniture', key: 'nfurniture' },
-					{ label: 'Npartition', image: npartition, alt: 'npartition', key: 'npartition' },
-					{ label: 'Ndecor', image: ndecor, alt: 'ndecor', key: 'ndecor' },
-					{ label: 'Nping', image: nping, alt: 'nping', key: 'nping' },
-					{ label: 'Nconnect', image: nconnect, alt: 'nconnect', key: 'nconnect' },
-					{ label: 'Nlight', image: nlight, alt: 'nlight', key: 'nlight' },
-					{ label: 'Ncomfort', image: ncomfort, alt: 'ncomfort', key: 'ncomfort' },
-					{ label: 'Nsound', image: nsound, alt: 'nsound', key: 'nsound' },
-					{ label: 'Nhome', image: nhome, alt: 'nhome', key: 'nhome' },
-					{ label: 'Nsoftware', image: nidplace, alt: 'nsoftware', key: 'nsoftware' }
+					{ label: 'Nfurniture - Mobiliário', alt: 'nfurniture', key: 'nfurniture' },
+					{ label: 'Npartition - Divisórias', alt: 'npartition', key: 'npartition' },
+					{ label: 'Ndecor - Design', alt: 'ndecor', key: 'ndecor' },
+					{ label: 'Nping - Redes', alt: 'nping', key: 'nping' },
+					{ label: 'Nconnect - Electricidade', alt: 'nconnect', key: 'nconnect' },
+					{ label: 'Nlight - Iluminação', alt: 'nlight', key: 'nlight' },
+					{ label: 'Ncomfort - Climatização', alt: 'ncomfort', key: 'ncomfort' },
+					{ label: 'Nsound - Áudio', alt: 'nsound', key: 'nsound' },
+					{ label: 'Nhome - Domótica', alt: 'nhome', key: 'nhome' },
+					{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' }
 				],
 			},
 
@@ -1123,48 +1073,44 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const newMenuStructure: MenuStructure = {};
 		Object.keys(originalMenuStructure).forEach(key => {
 			const menu = originalMenuStructure[key];
+			const filteredSubmenu = menu.submenu ? filterUnlicensedSoftware(menu.submenu) : [];
 			newMenuStructure[key] = {
 				...menu,
-				submenu: menu.submenu
+				submenu: filteredSubmenu
 			};
 		});
 
 		setMenuStructureNG(newMenuStructure);
-	}, []);
+	}, [license]);
 
 	// Estrutura de menu opcional para o nkiosk
 	const KioskOptionalMenuStructure: MenuStructure = {
 		contador: {
 			label: 'Contador Passagem',
-			image: counts,
 			alt: 'contador',
 			key: 'contador',
 			onClick: () => toast.info('Módulo de Contagem de Pessoas. Sistema pode ser utilizado em diversos contextos, como: Contagem: Controle de entradas e saída de pessoas.'),
 		},
 		sensor: {
 			label: 'Sensor Movimento',
-			image: sensor,
 			alt: 'sensor',
 			key: 'sensor',
 			onClick: () => toast.info('Módulo de Sensores de Movimento. Sistema pode ser utilizado em diversos contextos, como: Local: Detetar movimento de uma determinada área.'),
 		},
 		fotocelula: {
 			label: 'Fotocélula Segurança',
-			image: cell,
 			alt: 'fotocélula',
 			key: 'fotocelula',
 			onClick: () => toast.info('Módulo de Fotocélulas de Segurança. Sistema pode ser utilizado em diversos contextos, como: Zona: Alerta de um movimento indesejado num local.'),
 		},
 		painel: {
 			label: 'Painel de Movimentos',
-			image: panel,
 			alt: 'painel',
 			key: 'painel',
 			onClick: () => toast.info('Módulo de Painel de Movimentos. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Visualizar Registos Online com Foto'),
 		},
 		revista: {
 			label: 'Revistas Aleatórias',
-			image: search,
 			alt: 'revista',
 			key: 'revista',
 			onClick: () => toast.info('Módulo de Revistas Aleatórias. Sistema pode ser utilizado em diversos contextos, como: Movimentos: Inspecionar aleatoriamente pessoas.'),
@@ -1175,21 +1121,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const TaskOptionalMenuStructure: MenuStructure = {
 		contador: {
 			label: 'Contador Passagem',
-			image: counts,
 			alt: 'contador',
 			key: 'contador',
 			onClick: () => toast.info('Módulo de Contagem de Pessoas. Sistema pode ser utilizado em diversos contextos, como: Contagem: Controle de entradas e saída de pessoas.'),
 		},
 		sensor: {
 			label: 'Sensor Movimento',
-			image: sensor,
 			alt: 'sensor',
 			key: 'sensor',
 			onClick: () => toast.info('Módulo de Sensores de Movimento. Sistema pode ser utilizado em diversos contextos, como: Local: Detetar movimento de uma determinada área.'),
 		},
 		fotocelula: {
 			label: 'Fotocélula Segurança',
-			image: cell,
 			alt: 'fotocélula',
 			key: 'fotocelula',
 			onClick: () => toast.info('Módulo de Fotocélulas de Segurança. Sistema pode ser utilizado em diversos contextos, como: Zona: Alerta de um movimento indesejado num local.'),
@@ -1201,18 +1144,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const ListingMenuStructure = {
 			pessoas: {
 				label: 'Listagem Pessoas',
-				image: person,
+				image: visitorAccess,
 				alt: 'pessoas',
 				key: 'pessoas',
 				submenu: [
-					{ label: 'Listagem Geral de Pessoas', key: 'geral_pessoas', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Departamentos', key: 'geral_departamentos', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Grupos', key: 'geral_grupos', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Categorias', key: 'geral_categorias', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Profissões', key: 'geral_profissoes', image: person, alt: 'pessoas' },
-					{ label: 'Listagem Geral de Zonas', key: 'geral_zonas', image: person, alt: 'pessoas' },
-					/* { label: 'Listagem Geral de Fracções', key: 'geral_fraccoes', image: person, alt: 'pessoas' }, */
-					{ label: 'Listagem Geral de Entidades Externas', key: 'geral_entext', image: person, alt: 'pessoas' }
+					{ label: 'Listagem Pessoas', key: 'geral_pessoas', alt: 'pessoas' },
+					{ label: 'Listagem Departamentos', key: 'geral_departamentos', alt: 'pessoas' },
+					{ label: 'Listagem Grupos', key: 'geral_grupos', alt: 'pessoas' },
+					{ label: 'Listagem Categorias', key: 'geral_categorias', alt: 'pessoas' },
+					{ label: 'Listagem Profissões', key: 'geral_profissoes', alt: 'pessoas' },
+					{ label: 'Listagem Zonas', key: 'geral_zonas', alt: 'pessoas' },
+					/* { label: 'Listagem Fracções', key: 'geral_fraccoes', alt: 'pessoas' }, */
+					{ label: 'Listagem Entidades Externas', key: 'geral_entext', alt: 'pessoas' }
 				],
 			},
 			dispositivos: {
@@ -1221,10 +1164,10 @@ export const NavBar = ({ style }: NavBarProps) => {
 				alt: 'dispositivos',
 				key: 'dispositivos',
 				submenu: [
-					{ label: 'Listagem Geral de Equipamentos', key: 'geral_equipamentos', image: terminal, alt: 'dispositivos' },
-					{ label: 'Listagem Geral de Controlo de Acessos', key: 'geral_controlo', image: terminal, alt: 'dispositivos' },
-					{ label: 'Listagem Geral de Períodos', key: 'geral_periodos', image: terminal, alt: 'dispositivos' },
-					{ label: 'Listagem Geral de Fecho e Abertura', key: 'geral_fecho', image: terminal, alt: 'dispositivos' }
+					{ label: 'Listagem Equipamentos', key: 'geral_equipamentos', alt: 'dispositivos' },
+					{ label: 'Listagem Controlo Acessos', key: 'geral_controlo', alt: 'dispositivos' },
+					{ label: 'Listagem Períodos', key: 'geral_periodos', alt: 'dispositivos' },
+					{ label: 'Listagem Fecho e Abertura', key: 'geral_fecho', alt: 'dispositivos' }
 				],
 			},
 			configuracao: {
@@ -1233,9 +1176,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 				alt: 'configuração',
 				key: 'configuracao',
 				submenu: [
-					{ label: 'Listagem Geral de Utilizadores', key: 'geral_utilizadores', image: settings, alt: 'configuração' },
-					{ label: 'Listagem Geral de Logins', key: 'geral_logins', image: settings, alt: 'configuração' },
-					{ label: 'Listagem Geral de Histórico', key: 'geral_historico', image: settings, alt: 'configuração' }
+					{ label: 'Listagem Utilizadores', key: 'geral_utilizadores', alt: 'configuração' },
+					{ label: 'Listagem Logins', key: 'geral_logins', alt: 'configuração' },
+					{ label: 'Listagem Histórico', key: 'geral_historico', alt: 'configuração' }
 				],
 			}
 		};
@@ -1243,22 +1186,21 @@ export const NavBar = ({ style }: NavBarProps) => {
 		// Estrutura do menu de listagens para o nkiosk
 		const nkioskSubmenu = {
 			label: 'Listagem Nkiosk',
-			image: nkiosk,
 			alt: 'nkiosk',
 			key: 'nkiosk',
 			submenu: [
-				{ label: 'Listagem Recebimento Multibanco', key: 'recebimento_multibanco', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Recebimento Moedeiro', key: 'recebimento_moedeiro', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Recebimentos Totais', key: 'recebimento_totais', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Movimento Torniquete', key: 'movimento_torniquete', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Movimento Quiosque', key: 'movimento_quiosque', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Movimentos Totais', key: 'movimento_totais', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Remota Video Porteiro', key: 'remota_vp', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Remota Abertura Manual', key: 'remota_abertura', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Registos Recolha Moedas', key: 'registo_recolhas', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Registos Limpeza Geral', key: 'registo_limpeza', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Registos Contador', key: 'registo_contador', image: nkiosk, alt: 'nkiosk' },
-				{ label: 'Listagem Registos Ocorrências', key: 'registo_ocorrencias', image: nkiosk, alt: 'nkiosk' }
+				{ label: 'Listagem Recebimento Multibanco', key: 'recebimento_multibanco', alt: 'nkiosk' },
+				{ label: 'Listagem Recebimento Moedeiro', key: 'recebimento_moedeiro', alt: 'nkiosk' },
+				{ label: 'Listagem Recebimentos Totais', key: 'recebimento_totais', alt: 'nkiosk' },
+				{ label: 'Listagem Movimento Torniquete', key: 'movimento_torniquete', alt: 'nkiosk' },
+				{ label: 'Listagem Movimento Quiosque', key: 'movimento_quiosque', alt: 'nkiosk' },
+				{ label: 'Listagem Movimentos Totais', key: 'movimento_totais', alt: 'nkiosk' },
+				{ label: 'Listagem Remota Video Porteiro', key: 'remota_vp', alt: 'nkiosk' },
+				{ label: 'Listagem Remota Abertura Manual', key: 'remota_abertura', alt: 'nkiosk' },
+				{ label: 'Listagem Registos Recolha Moedas', key: 'registo_recolhas', alt: 'nkiosk' },
+				{ label: 'Listagem Registos Limpeza Geral', key: 'registo_limpeza', alt: 'nkiosk' },
+				{ label: 'Listagem Registos Contador', key: 'registo_contador', alt: 'nkiosk' },
+				{ label: 'Listagem Registos Ocorrências', key: 'registo_ocorrencias', alt: 'nkiosk' }
 			],
 		}
 
@@ -1282,67 +1224,66 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const enabledSoftware = getSoftwareEnabledStatus(license);
 
 		const filteredSubmenu = [
-			{ label: 'Nclock', image: nclock, alt: 'nclock', key: 'nclock' },
-			{ label: 'Naccess', image: naccess, alt: 'naccess', key: 'naccess' },
-			{ label: 'Nvisitor', image: nvisitor, alt: 'nvisitor', key: 'nvisitor' },
-			{ label: 'Npark', image: npark, alt: 'npark', key: 'npark' },
-			{ label: 'Ndoor', image: ndoor, alt: 'ndoor', key: 'ndoor' },
-			{ label: 'Npatrol', image: npatrol, alt: 'npatrol', key: 'npatrol' },
-			{ label: 'Ncard', image: ncard, alt: 'ncard', key: 'ncard' },
-			{ label: 'Nview', image: nview, alt: 'nview', key: 'nview' },
-			{ label: 'Nsecur', image: nsecur, alt: 'nsecur', key: 'nsecur' },
-			{ label: 'Nsoftware', image: nsoftware, alt: 'nsoftware', key: 'nsoftware' },
-			{ label: 'Nsystem', image: nsystem, alt: 'nsystem', key: 'nsystem' },
-			{ label: 'Napp', image: napp, alt: 'napp', key: 'napp' },
-			{ label: 'Ncyber', image: ncyber, alt: 'ncyber', key: 'ncyber' },
-			{ label: 'Ndigital', image: ndigital, alt: 'ndigital', key: 'ndigital' },
-			{ label: 'Nserver', image: nserver, alt: 'nserver', key: 'nserver' },
-			{ label: 'Naut', image: naut, alt: 'naut', key: 'naut' },
-			{ label: 'Nequip', image: nequip, alt: 'nequip', key: 'nequip' },
-			{ label: 'Nproject', image: nproject, alt: 'nproject', key: 'nproject' },
-			{ label: 'Ncount', image: ncount, alt: 'ncount', key: 'ncount' },
-			{ label: 'Nbuild', image: nbuild, alt: 'nbuild', key: 'nbuild' },
-			{ label: 'Ncaravan', image: ncaravan, alt: 'ncaravan', key: 'ncaravan' },
-			{ label: 'Nmechanic', image: nmechanic, alt: 'nmechanic', key: 'nmechanic' },
-			{ label: 'Nevents', image: nevents, alt: 'nevents', key: 'nevents' },
-			{ label: 'Nservice', image: nservice, alt: 'nservice', key: 'nservice' },
-			{ label: 'Ntask', image: ntask, alt: 'ntask', key: 'ntask' },
-			{ label: 'Nproduction', image: nproduction, alt: 'nproduction', key: 'nproduction' },
-			{ label: 'Nticket', image: nticket, alt: 'nticket', key: 'nticket' },
-			{ label: 'Nsales', image: nsales, alt: 'nsales', key: 'nsales' },
-			{ label: 'Ninvoice', image: ninvoice, alt: 'ninvoice', key: 'ninvoice' },
-			{ label: 'Ndoc', image: ndoc, alt: 'ndoc', key: 'ndoc' },
-			{ label: 'Nsports', image: nsports, alt: 'nsports', key: 'nsports' },
-			{ label: 'Ngym', image: ngym, alt: 'ngym', key: 'ngym' },
-			{ label: 'Nschool', image: nschool, alt: 'nschool', key: 'nschool' },
-			{ label: 'Nclinic', image: nclinic, alt: 'nclinic', key: 'nclinic' },
-			{ label: 'Noptics', image: noptics, alt: 'noptics', key: 'noptics' },
-			{ label: 'Ngold', image: ngold, alt: 'ngold', key: 'ngold' },
-			{ label: 'Nsmart', image: nsmart, alt: 'nsmart', key: 'nsmart' },
-			{ label: 'Nreality', image: nreality, alt: 'nreality', key: 'nreality' },
-			{ label: 'Nhologram', image: nhologram, alt: 'nhologram', key: 'nhologram' },
-			{ label: 'Npower', image: npower, alt: 'npower', key: 'npower' },
-			{ label: 'Ncharge', image: ncharge, alt: 'ncharge', key: 'ncharge' },
-			{ label: 'Ncity', image: ncity, alt: 'ncity', key: 'ncity' },
-			{ label: 'Nkiosk', image: nkiosk, alt: 'nkiosk', key: 'nkiosk' },
-			{ label: 'Nled', image: nled, alt: 'nled', key: 'nled' },
-			{ label: 'Nfire', image: nfire, alt: 'nfire', key: 'nfire' },
-			{ label: 'Nfurniture', image: nfurniture, alt: 'nfurniture', key: 'nfurniture' },
-			{ label: 'Npartition', image: npartition, alt: 'npartition', key: 'npartition' },
-			{ label: 'Ndecor', image: ndecor, alt: 'ndecor', key: 'ndecor' },
-			{ label: 'Nping', image: nping, alt: 'nping', key: 'nping' },
-			{ label: 'Nconnect', image: nconnect, alt: 'nconnect', key: 'nconnect' },
-			{ label: 'Nlight', image: nlight, alt: 'nlight', key: 'nlight' },
-			{ label: 'Ncomfort', image: ncomfort, alt: 'ncomfort', key: 'ncomfort' },
-			{ label: 'Nsound', image: nsound, alt: 'nsound', key: 'nsound' },
-			{ label: 'Nhome', image: nhome, alt: 'nhome', key: 'nhome' },
-		].filter(item => enabledSoftware[item.label.toLowerCase()]);
+			{ label: 'Nclock - Assiduidade', alt: 'nclock', key: 'nclock' },
+			{ label: 'Naccess - Acessos', alt: 'naccess', key: 'naccess' },
+			{ label: 'Nvisitor - Torniquetes', alt: 'nvisitor', key: 'nvisitor' },
+			{ label: 'Npark - Parques', alt: 'npark', key: 'npark' },
+			{ label: 'Ndoor - Automatismos', alt: 'ndoor', key: 'ndoor' },
+			{ label: 'Npatrol - Rondas', alt: 'npatrol', key: 'npatrol' },
+			{ label: 'Ncard - Cartões', alt: 'ncard', key: 'ncard' },
+			{ label: 'Nview - Vigilância', alt: 'nview', key: 'nview' },
+			{ label: 'Nsecur - Alarmes', alt: 'nsecur', key: 'nsecur' },
+			{ label: 'Nsoftware - Programação', alt: 'nsoftware', key: 'nsoftware' },
+			{ label: 'Nsystem - Sistemas', alt: 'nsystem', key: 'nsystem' },
+			{ label: 'Napp - Aplicativos', alt: 'napp', key: 'napp' },
+			{ label: 'Ncyber - Cibernética', alt: 'ncyber', key: 'ncyber' },
+			{ label: 'Ndigital - Transformação', alt: 'ndigital', key: 'ndigital' },
+			{ label: 'Nserver - Integração', alt: 'nserver', key: 'nserver' },
+			{ label: 'Naut - Automação', alt: 'naut', key: 'naut' },
+			{ label: 'Nequip - Equipamentos', alt: 'nequip', key: 'nequip' },
+			{ label: 'Nproject - Projetos', alt: 'nproject', key: 'nproject' },
+			{ label: 'Ncount - Contador', alt: 'ncount', key: 'ncount' },
+			{ label: 'Nbuild - Obras', alt: 'nbuild', key: 'nbuild' },
+			{ label: 'Ncaravan - Autocaravanas', alt: 'ncaravan', key: 'ncaravan' },
+			{ label: 'Nmechanic - Oficinas', alt: 'nmechanic', key: 'nmechanic' },
+			{ label: 'Nevents - Eventos', alt: 'nevents', key: 'nevents' },
+			{ label: 'Nservice - Serviços', alt: 'nservice', key: 'nservice' },
+			{ label: 'Ntask - Tarefas', alt: 'ntask', key: 'ntask' },
+			{ label: 'Nproduction - Produção', alt: 'nproduction', key: 'nproduction' },
+			{ label: 'Nticket - Bilhetes', alt: 'nticket', key: 'nticket' },
+			{ label: 'Nsales - CRM', alt: 'nsales', key: 'nsales' },
+			{ label: 'Ninvoice - Faturação', alt: 'ninvoice', key: 'ninvoice' },
+			{ label: 'Ndoc - Documental', alt: 'ndoc', key: 'ndoc' },
+			{ label: 'Nsports - Desporto', alt: 'nsports', key: 'nsports' },
+			{ label: 'Ngym - Ginásios', alt: 'ngym', key: 'ngym' },
+			{ label: 'Nschool - Escolar', alt: 'nschool', key: 'nschool' },
+			{ label: 'Nclinic - Clínicas', alt: 'nclinic', key: 'nclinic' },
+			{ label: 'Noptics - Ópticas', alt: 'noptics', key: 'noptics' },
+			{ label: 'Ngold - Ourivesarias', alt: 'ngold', key: 'ngold' },
+			{ label: 'Nsmart - Inteligência', alt: 'nsmart', key: 'nsmart' },
+			{ label: 'Nreality - Virtual', alt: 'nreality', key: 'nreality' },
+			{ label: 'Nhologram - Hologramas', alt: 'nhologram', key: 'nhologram' },
+			{ label: 'Npower - Energias', alt: 'npower', key: 'npower' },
+			{ label: 'Ncharge - Recarga', alt: 'ncharge', key: 'ncharge' },
+			{ label: 'Ncity - Mobilidade', alt: 'ncity', key: 'ncity' },
+			{ label: 'Nkiosk - Quiosques', alt: 'nkiosk', key: 'nkiosk' },
+			{ label: 'Nled - Multimédia', alt: 'nled', key: 'nled' },
+			{ label: 'Nfire - Incêndios', alt: 'nfire', key: 'nfire' },
+			{ label: 'Nfurniture - Mobiliário', alt: 'nfurniture', key: 'nfurniture' },
+			{ label: 'Npartition - Divisórias', alt: 'npartition', key: 'npartition' },
+			{ label: 'Ndecor - Design', alt: 'ndecor', key: 'ndecor' },
+			{ label: 'Nping - Redes', alt: 'nping', key: 'nping' },
+			{ label: 'Nconnect - Electricidade', alt: 'nconnect', key: 'nconnect' },
+			{ label: 'Nlight - Iluminação', alt: 'nlight', key: 'nlight' },
+			{ label: 'Ncomfort - Climatização', alt: 'ncomfort', key: 'ncomfort' },
+			{ label: 'Nsound - Áudio', alt: 'nsound', key: 'nsound' },
+			{ label: 'Nhome - Domótica', alt: 'nhome', key: 'nhome' },
+		].filter(item => enabledSoftware[item.key]);
 
 		const dynamicMenuStructure = {
-			dashboard: { label: 'INÍCIO', image: nsoftwares, alt: 'INÍCIO', key: 'dashboard' },
+			dashboard: { label: 'INÍCIO', alt: 'INÍCIO', key: 'dashboard' },
 			cliente: {
 				label: 'LICENÇAS',
-				image: certificate,
 				alt: 'LICENÇAS',
 				key: 'cliente',
 				submenu: filteredSubmenu,
@@ -1353,13 +1294,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 	}, [license]);
 
 	// Define o componente do item de menu
-	const MenuItem = ({ active, onClick, image, alt, label }: MenuItem) => (
+	const MenuItem = ({ active, onClick, label }: MenuItem) => (
 		<li
 			className={`image-text ${active ? 'active' : ''}`}
 			onClick={onClick}
-			style={{ display: 'flex', flexDirection: 'row' }}
+			style={{ flexDirection: 'row' }}
 		>
-			<img src={image} alt={alt} className='menu-item-image' />
 			<span className='menu-item-text'>{label}</span>
 		</li>
 	);
@@ -1418,7 +1358,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const handleMouseLeave = () => {
 		const timeoutId = setTimeout(() => {
 			setActiveMenu(null);
-		}, 300);
+		}, 200);
 		setSubmenuTimeout(timeoutId);
 	};
 
@@ -1442,14 +1382,15 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 		const isPageNotRequired = pathsNotRequired.some(path => location.pathname.includes(path));
 
-		const isWideMenu = menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk' || menuKey === 'contador' || menuKey === 'sensor' || menuKey === 'fotocelula' || menuKey === 'painel' || menuKey === 'revista';
+		const isWideMenu = menuKey === 'cliente' || menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk' || menuKey === 'contador' || menuKey === 'sensor' || menuKey === 'fotocelula' || menuKey === 'painel' || menuKey === 'revista';
 		const isWideSubmenu = menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
+		const isWideSubmenuMain = menuKey === 'cliente' || menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace'
 
 		return (
 			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
-				style={{
-					minWidth: isWideMenu ? '200px' : 'auto',
-				}}
+				/* style={{
+					width: isWideMenu ? '150px' : 'auto',
+				}} */
 			>
 				<MenuItem
 					key={menuKey as string}
@@ -1464,14 +1405,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 							handleTab(String(menuKey));
 						}
 					}}
-					image={menu.image}
 					alt={menu.alt}
 					label={menu.label}
 					className="menu-item"
 				/>
 				{activeMenu === menuKey && menu.submenu && (
 					<div className="submenu" style={{
-						width: isWideSubmenu ? '300px' : 'auto',
+						minWidth: isWideSubmenu || isWideSubmenuMain ? '230px' : 'auto',
 						right: isWideSubmenu && !isPageNotRequired ? '100%' : 'auto',
 						left: isWideSubmenu && !isPageNotRequired ? 'auto' : '100%',
 					}}>
@@ -1480,7 +1420,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 								key={item.key}
 								active={activeMenu === item.key}
 								onClick={() => handleMenuItemClick(item)}
-								image={item.image}
 								alt={item.alt}
 								label={item.label}
 								className="submenu-item"
@@ -1501,62 +1440,62 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Defina o mapeamento das cores para cada aba
 	const tabColors: Record<string, { navbarColor: string; footerColor: string }> = {
-		default: { navbarColor: '#000000', footerColor: '#000000' },
-		dashboard: { navbarColor: '#000000', footerColor: '#000000' },
-		nclock: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		naccess: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		nvisitor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		npark: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		ndoor: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		npatrol: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		ncard: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		nview: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		nsecur: { navbarColor: '#0050a0', footerColor: '#0050a0' },
-		nsoftware: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nsystem: { navbarColor: '#D01313', footerColor: '#D01313' },
-		napp: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ncyber: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ndigital: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nserver: { navbarColor: '#D01313', footerColor: '#D01313' },
-		naut: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nequip: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nproject: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ncount: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nbuild: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ncaravan: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nmechanic: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nevents: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nservice: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ntask: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nproduction: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nticket: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nsales: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ninvoice: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ndoc: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nsports: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ngym: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nschool: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nclinic: { navbarColor: '#D01313', footerColor: '#D01313' },
-		noptics: { navbarColor: '#D01313', footerColor: '#D01313' },
-		ngold: { navbarColor: '#D01313', footerColor: '#D01313' },
-		nsmart: { navbarColor: '#009739', footerColor: '#009739' },
-		nreality: { navbarColor: '#009739', footerColor: '#009739' },
-		nhologram: { navbarColor: '#009739', footerColor: '#009739' },
-		npower: { navbarColor: '#009739', footerColor: '#009739' },
-		ncharge: { navbarColor: '#009739', footerColor: '#009739' },
-		ncity: { navbarColor: '#009739', footerColor: '#009739' },
-		nkiosk: { navbarColor: '#009739', footerColor: '#009739' },
-		nled: { navbarColor: '#009739', footerColor: '#009739' },
-		nfire: { navbarColor: '#009739', footerColor: '#009739' },
-		nfurniture: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		npartition: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		ndecor: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nping: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nconnect: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nlight: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		ncomfort: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nsound: { navbarColor: '#FEC629', footerColor: '#FEC629' },
-		nhome: { navbarColor: '#FEC629', footerColor: '#FEC629' },
+		default: { navbarColor: '#333333', footerColor: '#333333' },
+		dashboard: { navbarColor: '#333333', footerColor: '#333333' },
+		nclock: { navbarColor: '#333333', footerColor: '#333333' },
+		naccess: { navbarColor: '#333333', footerColor: '#333333' },
+		nvisitor: { navbarColor: '#333333', footerColor: '#333333' },
+		npark: { navbarColor: '#333333', footerColor: '#333333' },
+		ndoor: { navbarColor: '#333333', footerColor: '#333333' },
+		npatrol: { navbarColor: '#333333', footerColor: '#333333' },
+		ncard: { navbarColor: '#333333', footerColor: '#333333' },
+		nview: { navbarColor: '#333333', footerColor: '#333333' },
+		nsecur: { navbarColor: '#333333', footerColor: '#333333' },
+		nsoftware: { navbarColor: '#333333', footerColor: '#333333' },
+		nsystem: { navbarColor: '#333333', footerColor: '#333333' },
+		napp: { navbarColor: '#333333', footerColor: '#333333' },
+		ncyber: { navbarColor: '#333333', footerColor: '#333333' },
+		ndigital: { navbarColor: '#333333', footerColor: '#333333' },
+		nserver: { navbarColor: '#333333', footerColor: '#333333' },
+		naut: { navbarColor: '#333333', footerColor: '#333333' },
+		nequip: { navbarColor: '#333333', footerColor: '#333333' },
+		nproject: { navbarColor: '#333333', footerColor: '#333333' },
+		ncount: { navbarColor: '#333333', footerColor: '#333333' },
+		nbuild: { navbarColor: '#333333', footerColor: '#333333' },
+		ncaravan: { navbarColor: '#333333', footerColor: '#333333' },
+		nmechanic: { navbarColor: '#333333', footerColor: '#333333' },
+		nevents: { navbarColor: '#333333', footerColor: '#333333' },
+		nservice: { navbarColor: '#333333', footerColor: '#333333' },
+		ntask: { navbarColor: '#333333', footerColor: '#333333' },
+		nproduction: { navbarColor: '#333333', footerColor: '#333333' },
+		nticket: { navbarColor: '#333333', footerColor: '#333333' },
+		nsales: { navbarColor: '#333333', footerColor: '#333333' },
+		ninvoice: { navbarColor: '#333333', footerColor: '#333333' },
+		ndoc: { navbarColor: '#333333', footerColor: '#333333' },
+		nsports: { navbarColor: '#333333', footerColor: '#333333' },
+		ngym: { navbarColor: '#333333', footerColor: '#333333' },
+		nschool: { navbarColor: '#333333', footerColor: '#333333' },
+		nclinic: { navbarColor: '#333333', footerColor: '#333333' },
+		noptics: { navbarColor: '#333333', footerColor: '#333333' },
+		ngold: { navbarColor: '#333333', footerColor: '#333333' },
+		nsmart: { navbarColor: '#333333', footerColor: '#333333' },
+		nreality: { navbarColor: '#333333', footerColor: '#333333' },
+		nhologram: { navbarColor: '#333333', footerColor: '#333333' },
+		npower: { navbarColor: '#333333', footerColor: '#333333' },
+		ncharge: { navbarColor: '#333333', footerColor: '#333333' },
+		ncity: { navbarColor: '#333333', footerColor: '#333333' },
+		nkiosk: { navbarColor: '#333333', footerColor: '#333333' },
+		nled: { navbarColor: '#333333', footerColor: '#333333' },
+		nfire: { navbarColor: '#333333', footerColor: '#333333' },
+		nfurniture: { navbarColor: '#333333', footerColor: '#333333' },
+		npartition: { navbarColor: '#333333', footerColor: '#333333' },
+		ndecor: { navbarColor: '#333333', footerColor: '#333333' },
+		nping: { navbarColor: '#333333', footerColor: '#333333' },
+		nconnect: { navbarColor: '#333333', footerColor: '#333333' },
+		nlight: { navbarColor: '#333333', footerColor: '#333333' },
+		ncomfort: { navbarColor: '#333333', footerColor: '#333333' },
+		nsound: { navbarColor: '#333333', footerColor: '#333333' },
+		nhome: { navbarColor: '#333333', footerColor: '#333333' },
 	};
 
 	// useEffect para atualizar as cores da navbar e do footer e manter a ribbon da tab ativa
@@ -1921,6 +1860,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 	// Função para abrir o modal de backup da base de dados
 	const toggleBackupDBModal = () => setShowBackupDBModal(!showBackupDBModal);
 
+	// Função para abrir o modal de importação de funcionários
+	const toggleImportEmployees = () => setShowImportEmployeesModal(!showImportEmployeesModal);
+
 	// Função para abrir o anydesk em uma nova janela
 	const handleAnydeskWindow = () => {
 		window.open('https://anydesk.com/pt');
@@ -1970,7 +1912,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	};
 
 	// Função para fechar e reabrir a ribbon
-	const toggleRibbonVisibility = (ribbonName: RibbonToggler, forceToggle: boolean = false) => {
+	const toggleRibbonVisibility = (ribbonName: RibbonToggler, forceToggle = false) => {
 
 		if (lockRibbon && !forceToggle) {
 			return;
@@ -2177,7 +2119,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<Navbar.Collapse id="basic-navbar-nav" className='navbar-collapse-items'>
 						<div className='logos mobile-only'>
 							<Dropdown onMouseOver={() => setShowDropdown(true)}
-								onMouseLeave={() => setTimeout(() => setShowDropdown(false), 300)}
+								onMouseLeave={() => setTimeout(() => setShowDropdown(false), 200)}
 								show={showDropdown}
 								className='dropdown-icon'
 								id='dropdown-navbar'
@@ -2185,7 +2127,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
 									<span className="logo">NSOFTWARES</span>
 								</Dropdown.Toggle>
-								<Dropdown.Menu>
+								<Dropdown.Menu className='dropdown-menu-logo'>
 									<div style={{ position: 'relative' }}>
 										{Object.keys(menuStructureStart).map((menuKey) => renderMenu(menuKey, menuStructureStart))}
 									</div>
@@ -2212,7 +2154,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 							<div className='logos mobile-only mobile-adjust'>
 								<Dropdown
 									onMouseOver={() => setShowSoftwaresDropdown(true)}
-									onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 300)}
+									onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 200)}
 									show={showSoftwaresDropdown}
 									className='dropdown-icon'
 									id='dropdown-navbar'
@@ -2234,7 +2176,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						<div className="user-section mobile-only">
 							<Dropdown
 								onMouseOver={() => setShowUserDropdown(true)}
-								onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 300)}
+								onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 200)}
 								show={showUserDropdown}
 								className='dropdown-icon'
 								id='dropdown-navbar'
@@ -2254,7 +2196,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				</Navbar>
 				<div className='logos mobile-hidden'>
 					<Dropdown onMouseOver={() => setShowDropdown(true)}
-						onMouseLeave={() => setTimeout(() => setShowDropdown(false), 300)}
+						onMouseLeave={() => setTimeout(() => setShowDropdown(false), 200)}
 						show={showDropdown}
 						className='dropdown-icon'
 						id='dropdown-navbar'
@@ -2262,7 +2204,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						<Dropdown.Toggle variant="basic" id="dropdown-basic-2">
 							<span className="logo">NSOFTWARES</span>
 						</Dropdown.Toggle>
-						<Dropdown.Menu>
+						<Dropdown.Menu className='dropdown-menu-logo'>
 							<div style={{ position: 'relative' }}>
 								{Object.keys(menuStructureStart).map((menuKey) => renderMenu(menuKey, menuStructureStart))}
 							</div>
@@ -2289,7 +2231,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 					<div className='logos mobile-hidden'>
 						<Dropdown
 							onMouseOver={() => setShowSoftwaresDropdown(true)}
-							onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 300)}
+							onMouseLeave={() => setTimeout(() => setShowSoftwaresDropdown(false), 200)}
 							show={showSoftwaresDropdown}
 							className='dropdown-icon'
 							id='dropdown-navbar'
@@ -2309,9 +2251,19 @@ export const NavBar = ({ style }: NavBarProps) => {
 					</li>
 				</ul>
 				<div className="user-section mobile-hidden">
+					<Button onClick={() => toast.warn('Funcionalidade de favoritos em desenvolvimento')} className='btn btn-light navbar-buttons'>
+						<span className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+							<img src={favourite} alt="botão favoritos" />
+						</span>
+					</Button>
+					<Button onClick={() => toast.warn('Funcionalidade de mensagens em desenvolvimento')} className='btn btn-light navbar-buttons' style={{ marginLeft: 5 }}>
+						<span className="icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+							<img src={mail} alt="botão mensagens" />
+						</span>
+					</Button>
 					<Dropdown
 						onMouseOver={() => setShowUserDropdown(true)}
-						onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 300)}
+						onMouseLeave={() => setTimeout(() => setShowUserDropdown(false), 200)}
 						show={showUserDropdown}
 						className='dropdown-icon'
 						id='dropdown-navbar'
@@ -2354,9 +2306,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos nclock') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Link to="/nclock/nclockmovement" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclock/nclockmovement' ? 'current-active' : ''}`}>
+												<Link to="/nclock/nclockmovement" onClick={() => fetchAllAttendances({ filterFunc: data => data.filter(att => att.type !== 3) })} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nclock/nclockmovement' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={movement} alt="botão assiduidade" />
+														<img src={hourDatabase} alt="botão assiduidade" />
 													</span>
 													<span className="text">Assiduidade</span>
 												</Link>
@@ -2368,13 +2320,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 													</span>
 													<span className="text">Presenças</span>
 												</Link>
-												<Link to='/nclock/nclockrequests' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockrequests' ? 'current-active' : ''}`}>
+												<Link to='/nclock/nclockrequests' onClick={() => fetchAllAttendances({ filterFunc: data => data.filter(att => att.type === 3) })} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockrequests' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={request} alt="botão alterações" />
 													</span>
 													<span className="text">Alterações</span>
 												</Link>
-												<Link to='/nclock/nclockall' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockall' ? 'current-active' : ''}`}>
+												<Link to='/nclock/nclockall' onClick={() => fetchAllAttendances()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nclock/nclockall' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={all} alt="botão totais" />
 													</span>
@@ -2565,7 +2517,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div style={{ width: 130 }}>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={vacation} alt="botão alterações" />
+														<img src={calendar} alt="botão alterações" />
 													</span>
 													<span className="text">Alterações</span>
 												</Button>
@@ -2614,7 +2566,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={exchange} alt="botão planos" />
 													</span>
-													<span className="text">Planos</span>
+													<span className="text">Trocas</span>
 												</Button>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
@@ -2658,7 +2610,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-informacoes'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4" style={{ position: 'relative' }}>
@@ -2753,12 +2705,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+												<Link to="/naccess/naccessaccesses" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={movement} alt="botão acessos" />
 													</span>
 													<span className="text">Acessos</span>
-												</Button>
+												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
@@ -2787,7 +2739,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão visitantes" />
+														<img src={visitorAccess} alt="botão visitantes" />
 													</span>
 													<span className="text">Visitantes</span>
 												</Button>
@@ -2887,7 +2839,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -2982,13 +2934,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos nvisitor') && (
 										<div className="btn-group" role="group">
 											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
-												<Link to='/nvisitor/nvisitormovecard' type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '/nvisitor/nvisitormovecard' ? 'current-active' : ''}`}>
+												<Link to='/nvisitor/nvisitormovecard' onClick={() => fetchAllMoveCard()} type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '/nvisitor/nvisitormovecard' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={barrier} alt="botão movimentos cartão" />
 													</span>
 													<span className="text">Torniquete</span>
 												</Link>
-												<Link to='/nvisitor/nvisitormovekiosk' type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '/nvisitor/nvisitormovekiosk' ? 'current-active' : ''}`}>
+												<Link to='/nvisitor/nvisitormovekiosk' onClick={() => fetchAllMoveKiosk()} type="button" className={`btn btn-light ribbon-button mt-2 ${currentRoute === '/nvisitor/nvisitormovekiosk' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={kiosk} alt="botão movimentos porteiro" />
 													</span>
@@ -2996,7 +2948,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
-												<Link to="/nvisitor/nvisitorlistmovements" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '/nvisitor/nvisitorlistmovements' ? 'current-active' : ''}`}>
+												<Link to="/nvisitor/nvisitorlistmovements" onClick={() => fetchAndUnifyMovementsForNavbar()} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '/nvisitor/nvisitorlistmovements' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={coin_report} alt="botão movimentos totais" />
 													</span>
@@ -3035,7 +2987,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 												<Button /* to='' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão visitantes" />
+														<img src={visitorAccess} alt="botão visitantes" />
 													</span>
 													<span className="text">Visitantes</span>
 												</Button>
@@ -3052,7 +3004,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão visitantes" />
+														<img src={visitorAccess} alt="botão visitantes" />
 													</span>
 													<span className="text">Visitantes</span>
 												</Button>
@@ -3094,7 +3046,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas mt-2" id="dropdown-basic-4">
@@ -3320,7 +3272,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3490,7 +3442,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3654,7 +3606,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3793,7 +3745,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3831,7 +3783,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowCardDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowCardDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowCardDropdown(false); }, 200)}
 													show={showCardDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3945,7 +3897,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4152,7 +4104,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4299,7 +4251,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4404,7 +4356,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={barrier} alt="botão parquemanto" />
+														<img src={cars} alt="botão parquemanto" />
 													</span>
 													<span className="text">Parqueamento</span>
 												</Button>
@@ -4473,7 +4425,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4620,7 +4572,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4775,7 +4727,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4930,7 +4882,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5077,7 +5029,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5224,7 +5176,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5337,7 +5289,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão visitas" />
+														<img src={visitorAccess} alt="botão visitas" />
 													</span>
 													<span className="text">Visitas</span>
 												</Button>
@@ -5445,7 +5397,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5600,7 +5552,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5697,7 +5649,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão contador pessoas" />
+														<img src={visitorAccess} alt="botão contador pessoas" />
 													</span>
 													<span className="text">Contador Pessoas</span>
 												</Button>
@@ -5738,7 +5690,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={group} alt="botão equipas trabalho" />
+														<img src={profiles} alt="botão equipas trabalho" />
 													</span>
 													<span className="text">Equipas Trabalho</span>
 												</Button>
@@ -5797,7 +5749,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5952,7 +5904,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6057,7 +6009,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={barrier} alt="botão parqueamento" />
+														<img src={cars} alt="botão parqueamento" />
 													</span>
 													<span className="text">Parqueamento</span>
 												</Button>
@@ -6091,7 +6043,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6230,7 +6182,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6369,7 +6321,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6508,7 +6460,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6647,7 +6599,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6685,7 +6637,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowTaskDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowTaskDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowTaskDropdown(false); }, 200)}
 													show={showTaskDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6799,7 +6751,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6946,7 +6898,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7085,7 +7037,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7182,19 +7134,19 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="grid-container">
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão clientes" />
+														<img src={visitorAccess} alt="botão clientes" />
 													</span>
 													<span className="text">Clientes</span>
 												</Button>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Visitors' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={department} alt="botão fornecedores" />
+														<img src={supplier} alt="botão fornecedores" />
 													</span>
 													<span className="text">Fornecedores</span>
 												</Button>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={externalEntities} alt="botão entidades" />
+														<img src={entity} alt="botão entidades" />
 													</span>
 													<span className="text">Entidades</span>
 												</Button>
@@ -7346,7 +7298,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="grid-container">
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={person} alt="botão pessoal" />
+														<img src={visitorAccess} alt="botão pessoal" />
 													</span>
 													<span className="text">Pessoal</span>
 												</Button>
@@ -7364,7 +7316,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={group} alt="botão organigrama" />
+														<img src={profiles} alt="botão organigrama" />
 													</span>
 													<span className="text">Organigrama</span>
 												</Button>
@@ -7404,7 +7356,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas mt-2" id="dropdown-basic-4">
@@ -7550,7 +7502,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={workflow} alt="botão workflow" />
+														<img src={flow} alt="botão workflow" />
 													</span>
 													<span className="text">Workflow</span>
 												</Button>
@@ -7591,7 +7543,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={externalEntities} alt="botão entidades" />
+														<img src={entity} alt="botão entidades" />
 													</span>
 													<span className="text">Entidades</span>
 												</Button>
@@ -7625,7 +7577,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7764,7 +7716,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7903,7 +7855,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8042,7 +7994,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8181,7 +8133,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8320,7 +8272,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8459,7 +8411,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8614,7 +8566,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8753,7 +8705,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8892,7 +8844,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9165,7 +9117,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9329,7 +9281,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9535,7 +9487,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={externalEntities} alt="botão comércio" />
+														<img src={entity} alt="botão comércio" />
 													</span>
 													<span className="text">Comércio</span>
 												</Button>
@@ -9610,7 +9562,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9705,13 +9657,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'recebimentos nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
-												<Link to="/nkiosk/nkioskpayterminal" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskpayterminal' ? 'current-active' : ''}`}>
+												<Link to="/nkiosk/nkioskpayterminal" onClick={() => fetchAllPayTerminal()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskpayterminal' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={payment_card} alt="botão pagamento terminal" />
 													</span>
 													<span className="text">Multibanco</span>
 												</Link>
-												<Link to='/nkiosk/nkioskpaycoins' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskpaycoins' ? 'current-active' : ''}`}>
+												<Link to='/nkiosk/nkioskpaycoins' onClick={() => fetchAllPayCoins()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskpaycoins' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={coin} alt="botão pagamento moedas" />
 													</span>
@@ -9719,7 +9671,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
-												<Link to="/nkiosk/nkiosklistpayments" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkiosklistpayments' ? 'current-active' : ''}`}>
+												<Link to="/nkiosk/nkiosklistpayments" onClick={() => fetchAndUnifyPaymentsForNavbar()} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkiosklistpayments' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={card_report} alt="botão pagamentos totais" />
 													</span>
@@ -9736,13 +9688,13 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos nkiosk') && (
 										<div className="btn-group" role="group">
 											<div className="grid-container" style={{ gridTemplateColumns: '1fr' }}>
-												<Link to='/nkiosk/nkioskmovecard' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovecard' ? 'current-active' : ''}`}>
+												<Link to='/nkiosk/nkioskmovecard' onClick={() => fetchAllMoveCard()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovecard' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={barrier} alt="botão movimentos cartão" />
 													</span>
 													<span className="text">Torniquete</span>
 												</Link>
-												<Link to='/nkiosk/nkioskmovekiosk' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovekiosk' ? 'current-active' : ''}`}>
+												<Link to='/nkiosk/nkioskmovekiosk' onClick={() => fetchAllMoveKiosk()} type="button" className={`btn btn-light ribbon-button ${currentRoute === '/nkiosk/nkioskmovekiosk' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={kiosk} alt="botão movimentos porteiro" />
 													</span>
@@ -9750,7 +9702,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Link>
 											</div>
 											<div className="icon-text-pessoas">
-												<Link to="/nkiosk/nkiosklistmovements" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkiosklistmovements' ? 'current-active' : ''}`}>
+												<Link to="/nkiosk/nkiosklistmovements" onClick={() => fetchAndUnifyMovementsForNavbar()} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/nkiosk/nkiosklistmovements' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={coin_report} alt="botão movimentos totais" />
 													</span>
@@ -9867,7 +9819,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9905,7 +9857,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowKioskDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowKioskDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowKioskDropdown(false); }, 200)}
 													show={showKioskDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10058,7 +10010,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10197,7 +10149,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10344,7 +10296,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10524,7 +10476,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10671,7 +10623,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10826,7 +10778,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10973,7 +10925,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11112,7 +11064,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11251,7 +11203,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="comfort" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11390,7 +11342,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="sound" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11529,7 +11481,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 300)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="home" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11617,37 +11569,37 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className="grid-container">
 												<Link to="/persons/Employees" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Employees' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão funcionários" />
+														<img src={employee} alt="botão funcionários" />
 													</span>
 													<span className="text">Funcionários</span>
 												</Link>
 												<Link to='/persons/Visitors' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Visitors' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão visitantes" />
+														<img src={employee} alt="botão visitantes" />
 													</span>
 													<span className="text">Visitantes</span>
 												</Link>
 												<Link to='/persons/ExternalEmployees' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/ExternalEmployees' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão subcontratados" />
+														<img src={employee} alt="botão subcontratados" />
 													</span>
 													<span className="text">Subcontratados</span>
 												</Link>
 												<Link to='/persons/Contacts' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Contacts' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão contactos" />
+														<img src={employee} alt="botão contactos" />
 													</span>
 													<span className="text">Contactos</span>
 												</Link>
 												<Link to='/persons/User' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/User' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão utentes" />
+														<img src={employee} alt="botão utentes" />
 													</span>
 													<span className="text">Utentes</span>
 												</Link>
 												<Link to='/persons/Temporaries' type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/Temporaries' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão provisórios" />
+														<img src={employee} alt="botão provisórios" />
 													</span>
 													<span className="text">Provisórios</span>
 												</Link>
@@ -11708,42 +11660,38 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									{(!isMobile || visibleGroup === 'entidades pessoas') && (
 										<div className="btn-group" role="group">
-											<div className='icon-text-informacoes'>
-												<Link to="/persons/externalentities" type="button" className={`btn btn-light ribbon-button ribbon-button-entidades ${currentRoute === '/persons/externalentities' ? 'current-active' : ''}`}>
+											<div className="grid-container-entidades">
+												<Link to="/persons/externalentities" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/externalentities' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={externalEntities} alt="botão entidades externas" />
 													</span>
 													<span className="text">Entidades Externas</span>
 												</Link>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={interventionAreas} alt="botão áreas de intervenção" />
+													</span>
+													<span className="text">Áreas Intervenção</span>
+												</Button>
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+													<span className="icon">
+														<img src={businessAreas} alt="botão áreas de negócios" />
+													</span>
+													<span className="text">Áreas Negócios</span>
+												</Button>
 											</div>
 											<div>
 												<Link to="/persons/types" type="button" className={`btn btn-light ribbon-button ${currentRoute === '/persons/types' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={types} alt="botão tipos" />
 													</span>
-													<span className="text">Tipos</span>
+													<span className="text">Tipos Entidades</span>
 												</Link>
 												<Button /* to='#' */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
 														<img src={fonts} alt="botão fontes" />
 													</span>
-													<span className="text">Fontes</span>
-												</Button>
-											</div>
-											<div className='icon-text-informacoes'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-entidades ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={interventionAreas} alt="botão áreas de intervenção" />
-													</span>
-													<span className="text">Áreas de Intervenção</span>
-												</Button>
-											</div>
-											<div className='icon-text-informacoes'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-entidades ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
-													<span className="icon">
-														<img src={businessAreas} alt="botão áreas de negócios" />
-													</span>
-													<span className="text">Áreas de Negócios</span>
+													<span className="text">Origem Entidade</span>
 												</Button>
 											</div>
 										</div>
@@ -11755,8 +11703,8 @@ export const NavBar = ({ style }: NavBarProps) => {
 								<div className="group">
 									{(!isMobile || visibleGroup === 'informacoes pessoas') && (
 										<div className="btn-group" role="group">
-											<div className='icon-text-informacoes'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-entidades ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+											<div className="grid-container-entidades">
+												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
 														<img src={internalContacts} alt="botão contactos internos" />
 													</span>
@@ -11801,23 +11749,23 @@ export const NavBar = ({ style }: NavBarProps) => {
 													<span className="icon">
 														<img src={clock} alt="botão períodos" />
 													</span>
-													<span className="text">Períodos de Horários</span>
+													<span className="text">Períodos Horários</span>
 												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
-												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
+												<Link to="/devices/timeplans" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={timePlan} alt="botão planos de horários" />
 													</span>
-													<span className="text">Planos de Horários</span>
-												</Button>
+													<span className="text">Planos Horários</span>
+												</Link>
 											</div>
 											<div className="icon-text-pessoas">
 												<Link to="/devices/accesscontrols" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/devices/accesscontrols' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={accessControls} alt="botão controle de acesso " />
 													</span>
-													<span className="text">Planos de Acessos</span>
+													<span className="text">Planos Acessos</span>
 												</Link>
 											</div>
 											<div className='icon-text-pessoas'>
@@ -11890,7 +11838,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button onClick={toggleBackupDBModal} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={imports} alt="botão backup bd" />
+														<img src={backup} alt="botão backup bd" />
 													</span>
 													<span className="text">Backup BD</span>
 												</Button>
@@ -11898,7 +11846,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Link to="/configs/entities" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/configs/entities' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={department} alt="botão entidade" />
+														<img src={entity} alt="botão entidade" />
 													</span>
 													<span className="text">Entidade</span>
 												</Link>
@@ -11945,6 +11893,14 @@ export const NavBar = ({ style }: NavBarProps) => {
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>
+												<Button onClick={toggleImportEmployees} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
+													<span className="icon">
+														<img src={imports} alt="botão importar pessoas" />
+													</span>
+													<span className="text">Importar Pessoas</span>
+												</Button>
+											</div>
+											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
 														<img src={settings} alt="botão opções" />
@@ -11964,7 +11920,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Button /* to="#" */ type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`} disabled>
 													<span className="icon">
-														<img src={group} alt="botão perfis" />
+														<img src={profiles} alt="botão perfis" />
 													</span>
 													<span className="text">Perfis</span>
 												</Button>
@@ -11972,7 +11928,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Link to="/configs/newusers" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '/configs/newusers' ? 'current-active' : ''}`}>
 													<span className="icon">
-														<img src={person} alt="botão utilizadores" />
+														<img src={users} alt="botão utilizadores" />
 													</span>
 													<span className="text">Utilizadores</span>
 												</Link>
@@ -11997,7 +11953,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 											<div>
 												<Button /* to="#" */ type="button" className="btn btn-light ribbon-button-ent" disabled>
 													<span className="icon">
-														<img src={types} alt="botão tipos" />
+														<img src={typeConfig} alt="botão tipos" />
 													</span>
 													<span className="text">Tipos</span>
 												</Button>
@@ -12218,10 +12174,15 @@ export const NavBar = ({ style }: NavBarProps) => {
 				fields={backupDBFields}
 				title='Backup BD'
 			/>
+			<ImportEmployeesModal
+				open={showImportEmployeesModal}
+				onClose={() => setShowImportEmployeesModal(false)}
+				onUpdate={(formData: FormData) => Promise.resolve(importEmployees(formData))}
+				title='Importar Pessoas'
+			/>
 		</nav>
 	);
 };
-
 
 
 

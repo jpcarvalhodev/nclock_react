@@ -156,7 +156,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                         numeroMoedasSistema: deviceCount.contagemTransacoes,
                         diferencaMoedas: (formData.numeroMoedas || 0) - (deviceCount.contagemTransacoes || 0),
                         diferencaEuros: (formData.valorTotalRecolhido || 0) - (deviceCount.contagemTransacoes * (kioskConfig.amount ?? 0))
-                        
+
                     }));
                 }
             } catch (error) {
@@ -200,7 +200,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        setFormData({ ...initialValues, ...initialValuesData });
+        setFormData({});
         setShowValidationErrors(false);
         onClose();
     }
@@ -230,20 +230,16 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                 <div className="container-fluid">
                     <Row>
                         <Col md={2}>
-                            <Form.Group controlId="formDataRecolha">
-                                <Form.Label>Data de Início</Form.Label>
-                                <OverlayTrigger
-                                    placement="right"
-                                    overlay={<Tooltip id="tooltip-dataRecolha">Campo obrigatório</Tooltip>}
-                                >
-                                    <Form.Control
-                                        className="custom-input-height custom-select-font-size"
-                                        type="datetime-local"
-                                        name="dataRecolha"
-                                        value={formData.dataRecolha ? new Date(formData.dataRecolha).toISOString().slice(0, 16) : ''}
-                                        onChange={handleChange}
-                                    />
-                                </OverlayTrigger>
+                            <Form.Group controlId="formDataFimRecolha">
+                                <Form.Label>Data de Registo</Form.Label>
+                                <Form.Control
+                                    className="custom-input-height custom-select-font-size"
+                                    type="datetime-local"
+                                    name="dataFimRecolha"
+                                    value={formData.dataFimRecolha ? new Date(formData.dataFimRecolha).toISOString().slice(0, 16) : ''}
+                                    onChange={handleChange}
+                                    readOnly
+                                />
                             </Form.Group>
                             <Form.Group controlId="formValorTotalSistema">
                                 <Form.Label>Valor Sistema</Form.Label>
@@ -251,7 +247,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                                     className="custom-input-height custom-select-font-size"
                                     type="text"
                                     name="valorTotalSistema"
-                                    value={formData.valorTotalSistema === undefined ? 0 : `${formData.valorTotalSistema}€`}
+                                    value={formData.valorTotalSistema === undefined ? "0,00€" : `${formData.valorTotalSistema.toFixed(2).replace(".", ",")}€`}
                                     onChange={handleChange}
                                     readOnly
                                 />
@@ -304,7 +300,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                                     className="custom-input-height custom-select-font-size"
                                     type="text"
                                     name="diferencaEuros"
-                                    value={formData.diferencaEuros === undefined ? 0 : `${formData.diferencaEuros}€`}
+                                    value={formData.diferencaEuros === undefined ? "0,00€" : `${formData.diferencaEuros.toFixed(2).replace(".", ",")}€`}
                                     onChange={handleChange}
                                     readOnly
                                 />
@@ -366,23 +362,34 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                                     className="custom-input-height custom-select-font-size"
                                     type="text"
                                     name="valorTotalRecolhido"
-                                    value={formData.valorTotalRecolhido === undefined ? 0 : `${formData.valorTotalRecolhido}€`}
+                                    value={formData.valorTotalRecolhido === undefined ? "0,00€" : `${formData.valorTotalRecolhido.toFixed(2).replace(".", ",")}€`}
                                     onChange={handleChange}
                                     readOnly
                                 />
                             </Form.Group>
-                            <Form.Group controlId="formDataFimRecolha">
-                                <Form.Label>Data da Recolha</Form.Label>
-                                <Form.Control
-                                    className="custom-input-height custom-select-font-size"
-                                    type="datetime-local"
-                                    name="dataFimRecolha"
-                                    value={formData.dataFimRecolha ? new Date(formData.dataFimRecolha).toISOString().slice(0, 16) : ''}
-                                    onChange={handleChange}
-                                    readOnly
-                                />
+                            <Form.Group controlId="formDataRecolha">
+                                <Form.Label>Data de Recolha</Form.Label>
+                                <OverlayTrigger
+                                    placement="right"
+                                    overlay={<Tooltip id="tooltip-dataRecolha">Campo obrigatório</Tooltip>}
+                                >
+                                    <Form.Control
+                                        className="custom-input-height custom-select-font-size"
+                                        type="datetime-local"
+                                        name="dataRecolha"
+                                        value={formData.dataRecolha ? new Date(formData.dataRecolha).toISOString().slice(0, 16) : ''}
+                                        onChange={handleChange}
+                                    />
+                                </OverlayTrigger>
                             </Form.Group>
                         </Col>
+                        <Col md={2}>
+                            <div style={{ backgroundColor: '#d1d1d1', padding: '10px', borderRadius: '5px', textAlign: "center" }}>
+                                <p style={{ margin: '0' }}>Observação: Insira primeiro a quantidade de moedas e depois selecione o local.</p>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col md={10}>
                             <Form.Group controlId="formObservacoes">
                                 <Form.Label>Observações</Form.Label>

@@ -105,7 +105,7 @@ export const NkioskGraph = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="dashboard-title-text" style={{ color: '#009739' }}>
+            <div className="dashboard-title-text" >
                 <span>Gráficos de Pagamentos e Movimentos</span>
             </div>
             <div className="dashboard-content">

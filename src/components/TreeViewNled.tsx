@@ -160,7 +160,7 @@ export function TreeViewDataNled({ onSelectDevices }: TreeViewDataNledProps) {
 
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text' style={{ color: '#009739' }}>Filtros</p>
+            <p className='treeview-title-text'>Filtros</p>
             <div style={{ display: 'flex' }}>
                 <CustomSearchBox
                     label="Pesquisa"

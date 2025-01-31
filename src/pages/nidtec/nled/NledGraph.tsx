@@ -141,7 +141,7 @@ export const NledGraph = () => {
     return (
         <div className="dashboard-container">
             <NavBar style={{ backgroundColor: navbarColor }} />
-            <div className="dashboard-title-text" style={{ color: '#009739' }}>
+            <div className="dashboard-title-text" >
                 <span>Gráficos de Publicidade</span>
             </div>
             <div className="dashboard-content">

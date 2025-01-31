@@ -4,35 +4,13 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 
-import { useTerminals } from '../context/TerminalsContext';
-import { DevicesDoors, Doors } from '../types/Types';
+import { Devices, DevicesDoors, Doors } from '../types/Types';
 
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewACProps {
     onSelectDevices: (selectedDevices: string[]) => void;
     devices: DevicesDoors;
     doors: Doors[];
-}
-
-// Função para filtrar os itens
-function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem[], Set<string>] {
-    let expandedIds = new Set<string>();
-
-    function filterRecursively(item: TreeViewBaseItem): TreeViewBaseItem | null {
-        const matchesSearch = item.label?.toLowerCase().includes(term.toLowerCase());
-        const children = item.children || [];
-        const filteredChildren = children.map(filterRecursively).filter((child): child is TreeViewBaseItem => child !== null);
-
-        if (matchesSearch || filteredChildren.length > 0) {
-            expandedIds.add(item.id);
-            return { ...item, children: filteredChildren };
-        }
-
-        return null;
-    }
-
-    const filteredItems = items.map(filterRecursively).filter((item): item is TreeViewBaseItem => item !== null);
-    return [filteredItems, expandedIds];
 }
 
 // Função para coletar todos os IDs expansíveis
@@ -49,8 +27,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewAC({ onSelectDevices }: TreeViewACProps) {
-    const { devices, door } = useTerminals();
+export function TreeViewAC({ onSelectDevices, devices, doors }: TreeViewACProps) {
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
@@ -60,9 +37,9 @@ export function TreeViewAC({ onSelectDevices }: TreeViewACProps) {
     // Atualiza a árvore de itens ao receber os dados dos dispositivos
     useEffect(() => {
         const buildDeviceTree = devices
-            .sort((a, b) => a.deviceNumber - b.deviceNumber)
-            .map((device, deviceIndex) => {
-                const deviceDoors = door
+            .sort((a: Devices, b: Devices) => a.deviceNumber - b.deviceNumber)
+            .map((device: Devices, deviceIndex: number) => {
+                const deviceDoors = doors
                     .filter((d) => d.devId === device.zktecoDeviceID)
                     .sort((a, b) => a.doorNo - b.doorNo)
                     .map((d, doorIndex) => ({
@@ -70,12 +47,15 @@ export function TreeViewAC({ onSelectDevices }: TreeViewACProps) {
                         label: d.name || 'Sem Nome',
                     }));
 
+                if (deviceDoors.length === 0) return null;
+
                 return {
                     id: `device-${deviceIndex}-deviceid-${device.zktecoDeviceID}`,
                     label: device.deviceName || 'Sem Nome',
                     children: deviceDoors
                 };
-            });
+            })
+            .filter(Boolean);
 
         const treeItems = [
             {
@@ -89,7 +69,7 @@ export function TreeViewAC({ onSelectDevices }: TreeViewACProps) {
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-    }, [devices]);
+    }, [devices, doors]);
 
     // Função para lidar com a expansão dos itens
     const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {

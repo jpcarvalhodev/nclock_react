@@ -319,7 +319,7 @@ export const NkioskCounter = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Contador de Dados</span>
+                            <span >Contador de Dados</span>
                         </div>
                         <div className="datatable-header">
                             <div>

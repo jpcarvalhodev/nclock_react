@@ -49,7 +49,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
     useEffect(() => {
         if (entity) {
             const kioskData: Partial<KioskConfig> = {
-                amount: entity.amount,
+                amount: typeof entity.amount === 'number' ? entity.amount.toFixed(2) : entity.amount,
                 totalMoedas: entity.totalMoedas,
                 emails: Array.isArray(entity.emails) ? entity.emails : entity.emails ? entity.emails.split(', ') : []
             };
@@ -223,7 +223,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({ title, open, 
                                                 >
                                                     <Form.Control
                                                         className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                                        type="string"
+                                                        type="text"
                                                         name="amount"
                                                         value={kioskFormData.amount || ''}
                                                         onChange={handleChange}

@@ -230,7 +230,7 @@ export const Login = () => {
             fetchAllPayTerminal(),
             fetchEmailConfig(),
             fetchKioskConfig(),
-            fetchAllTasks()
+            fetchAllTasks(),
           ]);
           setLoading(false);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);

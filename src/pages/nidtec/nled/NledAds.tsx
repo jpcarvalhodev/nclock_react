@@ -351,7 +351,7 @@ export const NledAds = () => {
                     </div>
                     <div className="datatable-container">
                         <div className="datatable-title-text">
-                            <span style={{ color: '#009739' }}>Publicidade</span>
+                            <span >Publicidade</span>
                         </div>
                         <div className="datatable-header">
                             <div>

@@ -316,7 +316,7 @@ export const NkioskDoorOpen = () => {
                         <TreeViewDataDevice onSelectDevices={handleSelectFromTreeView} />
                     </div>
                     <div className="datatable-container">
-                        <div className="datatable-title-text" style={{ color: '#009739' }}>
+                        <div className="datatable-title-text" >
                             <span>Aberturas Manuais</span>
                         </div>
                         <div className="datatable-header">

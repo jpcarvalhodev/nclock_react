@@ -164,7 +164,7 @@ export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
 
     return (
         <Box className="TreeViewContainer">
-            <p className='treeview-title-text' style={{ color: '#000000' }}>Filtros</p>
+            <p className='treeview-title-text'>Filtros</p>
             <div style={{ display: 'flex' }}>
                 <CustomSearchBox
                     label="Pesquisa"

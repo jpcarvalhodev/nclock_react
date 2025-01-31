@@ -72,13 +72,6 @@ export const AccessControls = () => {
         setClearSelectionToggle((prev) => !prev);
     };
 
-    // Ordena a lista de accessControl por nome
-    const sortedAccessControl = [...accessControl].sort((a, b) => {
-        const aNome = a.nome || '';
-        const bNome = b.nome || '';
-        return aNome.localeCompare(bNome);
-    });
-
     // Função para selecionar as colunas
     const toggleColumn = (columnName: string) => {
         if (selectedColumns.includes(columnName)) {
@@ -136,21 +129,23 @@ export const AccessControls = () => {
 
     // Função para selecionar o próximo controle de acesso
     const handleNextAccessControl = () => {
-        const currentIndex = sortedAccessControl.findIndex(
+        const currentIndex = accessControl.findIndex(
             (control) => control.id === selectedAccessControl?.id
         );
-        if (currentIndex >= 0 && currentIndex < sortedAccessControl.length - 1) {
-            setSelectedAccessControl(sortedAccessControl[currentIndex + 1]);
+        if (currentIndex >= 0 && currentIndex < accessControl.length - 1) {
+            const newEntity = { ...accessControl[currentIndex + 1] };
+            setSelectedAccessControl(newEntity);
         }
     };
 
     // Função para selecionar o controle de acesso anterior
     const handlePrevAccessControl = () => {
-        const currentIndex = sortedAccessControl.findIndex(
+        const currentIndex = accessControl.findIndex(
             (control) => control.id === selectedAccessControl?.id
         );
         if (currentIndex > 0) {
-            setSelectedAccessControl(sortedAccessControl[currentIndex - 1]);
+            const newEntity = { ...accessControl[currentIndex - 1] };
+            setSelectedAccessControl(newEntity);
         }
     };
 
@@ -161,7 +156,7 @@ export const AccessControls = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = sortedAccessControl.filter(accessControls =>
+    const filteredDataTable = accessControl.filter(accessControls =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (accessControls[key] != null && String(accessControls[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&

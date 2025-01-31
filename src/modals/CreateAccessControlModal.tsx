@@ -4,6 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
 import { Col, Form, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
+import { toast } from "react-toastify";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { useTerminals } from "../context/TerminalsContext";
@@ -11,7 +12,6 @@ import { employeeFields, planosAcessoDispositivosFields } from "../fields/Fields
 import { Employee, PlanoAcessoDispositivos } from "../types/Types";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
-import { set } from "date-fns";
 
 // Define as propriedades do componente
 interface Props<T> {
@@ -33,6 +33,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     const [devicesTableData, setDevicesTableData] = useState<Partial<PlanoAcessoDispositivos>[]>([]);
     const [employeeTableData, setEmployeeTableData] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [showValidationErrors, setShowValidationErrors] = useState(false);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
@@ -85,7 +86,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
         );
         setDevicesTableData(remainingData);
         setClearSelectionToggle((prev) => !prev);
-    }; 
+    };
 
     // Função para remover funcionários selecionados
     const removeSelectedEmployees = () => {
@@ -184,6 +185,11 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
 
     // Função para salvar os dados
     const handleSave = () => {
+        if (!formData.nome) {
+            setShowValidationErrors(true);
+            toast.warn('Digite um nome primeiro.');
+            return;
+        }
         const planosAcessoDispositivos = devicesTableData.map(device => ({
             idTerminal: device.idTerminal,
             idPlanoHorario: device.idPlanoHorario,
@@ -211,7 +217,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                         <Form.Group controlId="formNome">
                             <Form.Label>Nome</Form.Label>
                             <Form.Control
-                                className="custom-input-height custom-select-font-size"
+                                className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                 type="text"
                                 name="nome"
                                 value={formData.nome || ''}
