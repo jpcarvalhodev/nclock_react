@@ -14,7 +14,9 @@ export interface AttendanceContextType {
     setEndDate: (date: string) => void;
     fetchAllAttendances: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
     fetchAllAttendancesBetweenDates: (options?: FetchOptions) => Promise<EmployeeAttendanceTimes[]>;
-    fetchAllAccesses: () => Promise<Accesses[]>;
+    fetchAllAccessesbyDevice: () => Promise<Accesses[]>;
+    fetchAllAccessesbyDoor: (eventDoorId: number, deviceSN: string) => Promise<Accesses[]>;
+    handleAddAccess: (access: Accesses) => Promise<void>;
     handleAddAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
     handleAddImportedAttendance: (attendance: Partial<EmployeeAttendanceTimes>[]) => Promise<void>;
     handleUpdateAttendance: (attendance: EmployeeAttendanceTimes) => Promise<void>;
@@ -87,16 +89,41 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [startDate, endDate]);
 
-    // Função para buscar todos os acessos
-    const fetchAllAccesses = async (): Promise<Accesses[]> => {
+    // Função para buscar todos os acessos por dispositivo
+    const fetchAllAccessesbyDevice = async (): Promise<Accesses[]> => {
         try {
-            const data = await apiService.fetchKioskTransactionDoorAsync();
+            const data = await apiService.fetchAllAccessesByDevice();
             setAccess(data);
             return data;
         } catch (error) {
             console.error('Erro ao buscar acessos:', error);
         }
         return [];
+    }
+
+    // Função para buscar todos os acessos
+    const fetchAllAccessesbyDoor = async (eventDoorId: number, deviceSN: string): Promise<Accesses[]> => {
+        try {
+            const data = await apiService.fetchAllAccessesByDoor(eventDoorId, deviceSN);
+            setAccess(data);
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar acessos:', error);
+        }
+        return [];
+    }
+
+    // Função para adicionar um novo acesso
+    const handleAddAccess = async (accesses: Accesses) => {
+        try {
+            const newAccess = await apiService.addAccessTransaction(accesses);
+            setAccess([...access, newAccess]);
+            toast.success(newAccess.message || 'acesso adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar novo acesso:', error);
+        } finally {
+            fetchAllAccessesbyDevice();
+        }
     }
 
     // Função para adicionar uma nova assiduidade
@@ -166,7 +193,9 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         setEndDate,
         fetchAllAttendances,
         fetchAllAttendancesBetweenDates,
-        fetchAllAccesses,
+        fetchAllAccessesbyDevice,
+        fetchAllAccessesbyDoor,
+        handleAddAccess,
         handleAddAttendance,
         handleAddImportedAttendance,
         handleUpdateAttendance,

@@ -26,6 +26,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataProps {
   onSelectEmployees: (employeeIds: string[]) => void;
+  employees?: Employee[];
 }
 
 // Função para filtrar os itens
@@ -63,7 +64,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
+export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps) {
   const { data, fetchAllData } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -76,7 +77,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
   useEffect(() => {
     const departments = data.departments;
     const groups = data.groups;
-    const allEmployees = data.employees;
+    const allEmployees = (employees && employees.length > 0) ? employees : data.employees;
 
     const departmentMap = new Map();
     const deptIdToCodeMap = new Map();
@@ -198,7 +199,7 @@ export function TreeViewData({ onSelectEmployees }: TreeViewDataProps) {
     setFilteredItems(treeItems);
     const allExpandableIds = collectAllExpandableItemIds(treeItems);
     setExpandedIds(allExpandableIds);
-  }, [data]);
+  }, [data, employees]);
 
   // Filtra os itens ao mudar o termo de pesquisa
   useEffect(() => {

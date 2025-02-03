@@ -14,6 +14,7 @@ import { useKiosk } from '../../../context/KioskContext';
 import { useNavbar } from "../../../context/NavbarContext";
 import { useTerminals } from '../../../context/TerminalsContext';
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
+import { useNavigate } from 'react-router-dom';
 
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
@@ -93,6 +94,7 @@ export const NvisitorDashboardLicensed = () => {
     const [todayKioskLineChartData, setTodayKioskLineChartData] = useState<ChartData>({ labels: [], datasets: [] });
     const [todayTotalCard, setTodayTotalCard] = useState<KioskTransactionCard[]>([]);
     const [todayTotalKiosk, setTodayTotalKiosk] = useState<KioskTransactionCard[]>([]);
+    const navigate = useNavigate();
     const eventDoorId3 = '3';
     const eventDoorId4 = '4';
     const [barChartData, setBarChartData] = useState({
@@ -271,7 +273,7 @@ export const NvisitorDashboardLicensed = () => {
                     <Carousel infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div className="departments-groups-chart" style={{ height: '26rem' }}>
                             <h2 className="departments-groups-chart-text">Total de Movimentos em {currentYear}: { }</h2>
-                            <Line className="departments-groups-chart-data" data={moveLineChartData} />
+                            <Line className="departments-groups-chart-data" data={moveLineChartData} onClick={() => navigate('/nvisitor/nvisitorListMovements')} style={{ cursor: "pointer" }} />
                         </div>
                         <div style={{ height: '26rem', maxWidth: '56rem', margin: 'auto' }}>
                             <Calendar
@@ -306,13 +308,13 @@ export const NvisitorDashboardLicensed = () => {
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
                     <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Torniquete Hoje: { }</h2>
-                        <Bar className="departments-groups-chart-data" data={todayCardLineChartData} />
+                        <Bar className="departments-groups-chart-data" data={todayCardLineChartData} onClick={() => navigate('/nvisitor/nvisitorMoveCard')} style={{ cursor: "pointer" }} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
                     <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Quiosque Hoje: { }</h2>
-                        <Bar className="departments-groups-chart-data" data={todayKioskLineChartData} />
+                        <Bar className="departments-groups-chart-data" data={todayKioskLineChartData} onClick={() => navigate('/nvisitor/nvisitorMoveKiosk')} style={{ cursor: "pointer" }} />
                     </div>
                 </div>
             </div>

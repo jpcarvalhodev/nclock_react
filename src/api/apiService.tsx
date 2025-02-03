@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 
 import { fetchWithAuth } from "../components/FetchWithAuth";
 
-import { AccessControl, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, MBDevice, ManualOpenDoor, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, TimePlan, Zone } from "../types/Types";
+import { AccessControl, Accesses, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, MBDevice, ManualOpenDoor, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, TimePlan, Zone } from "../types/Types";
 
 // URL base para as APIs
 export const BASE_URL = process.env.REACT_APP_API_BASE;
@@ -301,7 +301,7 @@ export const fetchAllManualDoorOpen = async (startDate?: string, endDate?: strin
 
 export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employeeID?: string[] | null) => {
     let url = `Zkteco/SendEmployeesToDevice/${zktecoDeviceID}`;
-    
+
     if (employeeID) {
         const employeeIdParams = employeeID.map(id => `employeeIds=${id}`).join('&');
         url += `?${employeeIdParams}`;
@@ -403,7 +403,7 @@ export const sendClockToDevice = async (serialNumber: string, timeZoneId?: strin
 
 export const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID?: string[] | null) => {
     let url = `Zkteco/DeleteEmployeesToDevice/${zktecoDeviceID}`;
-    
+
     if (employeeID) {
         const employeeIdParams = employeeID.map(id => `employeeIds=${id}`).join('&');
         url += `?${employeeIdParams}`;
@@ -1894,12 +1894,12 @@ export const addOccurrence = async (occurrence: LimpezasEOcorrencias) => {
 
 export const updateCleaning = async (cleaning: LimpezasEOcorrencias) => {
     const response = await fetchWithAuth(`KioskTransaction/UpdateLimpezasWCAsync?id=${cleaning.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(cleaning)
-        });
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cleaning)
+    });
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);
@@ -1910,12 +1910,12 @@ export const updateCleaning = async (cleaning: LimpezasEOcorrencias) => {
 
 export const updateOccurrence = async (occurrence: LimpezasEOcorrencias) => {
     const response = await fetchWithAuth(`KioskTransaction/UpdateKioskOcorrencia?id=${occurrence.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(occurrence)
-        });
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(occurrence)
+    });
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);
@@ -2254,6 +2254,82 @@ export const importEmployees = async (employees: FormData) => {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);
         return errorData;
+    }
+    return response.json();
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE ACESSOS/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllAccessesByDevice = async (deviceSN?: string, startDate?: string, endDate?: string) => {
+    const params: string[] = [];
+
+    if (deviceSN) {
+        params.push(`deviceSNList=${deviceSN}`);
+    }
+
+    if (startDate && endDate) {
+        params.push(`startTime=${startDate}`);
+        params.push(`endTime=${endDate}`);
+    }
+
+    let url = `AccPlanoAcesso/GetTransactionsByDeviceSN`;
+    if (params.length > 0) {
+        url += `?${params.join('&')}`;
+    }
+
+    const response = await fetchWithAuth(url);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error();
+    }
+    return response.json();
+};
+
+export const fetchAllAccessesByDoor = async (eventDoorId: number, deviceSN: string, startDate?: string, endDate?: string) => {
+    const params: string[] = [];
+
+    if (eventDoorId) {
+        params.push(`eventDoorId=${eventDoorId}`);
+    }
+
+    if (deviceSN) {
+        params.push(`deviceSNList=${deviceSN}`);
+    }
+
+    if (startDate && endDate) {
+        params.push(`startTime=${startDate}`);
+        params.push(`endTime=${endDate}`);
+    }
+
+    let url = `AccPlanoAcesso/GetTransactionsByDeviceSN`;
+    if (params.length > 0) {
+        url += `?${params.join('&')}`;
+    }
+
+    const response = await fetchWithAuth(url);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        throw new Error();
+    }
+    return response.json();
+};
+
+export const addAccessTransaction = async (access: Partial<Accesses>) => {
+    const response = await fetchWithAuth(`KioskTransaction/AddTransaction`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(access)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
     }
     return response.json();
 }

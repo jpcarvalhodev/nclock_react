@@ -165,6 +165,7 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
                 });
             }
         }
+        
         onSave(dataToSave as unknown as T);
         handleClose();
     };

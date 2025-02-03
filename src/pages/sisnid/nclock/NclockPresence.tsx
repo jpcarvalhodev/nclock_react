@@ -216,7 +216,7 @@ export const NclockPresence = () => {
             }
             return false;
         })
-    );
+    ).sort((a, b) => new Date(b.attendanceTime).getTime() - new Date(a.attendanceTime).getTime());
 
     // Função para abrir o modal de edição
     const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
@@ -285,13 +285,14 @@ export const NclockPresence = () => {
         rangeSeparatorText: 'de',
     };
 
-    // Define a função de seleção de linhas
+    // Define a função selecionar uma linha
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;
         selectedRows: EmployeeAttendanceTimes[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Função para obter os campos selecionados baseado em selectedColumns

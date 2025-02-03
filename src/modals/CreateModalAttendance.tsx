@@ -108,14 +108,10 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     const fetchDropdownOptions = async () => {
         try {
             const employees = await fetchAllEmployees();
+            const sortedEmployees = employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
             const devices = await fetchAllDevices();
             const sortedDevices = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
-            setDropdownData(prevState => ({
-                ...prevState,
-                employeeId: employees,
-                deviceId: sortedDevices
-            }));
-            const selectedEmployee = employees.find(emp => emp.employeeID === initialValues.selectedEmployeeIds);
+            const selectedEmployee = sortedEmployees.find(emp => emp.employeeID === initialValues.selectedEmployeeIds);
             if (selectedEmployee) {
                 setFormData(prevState => ({
                     ...prevState,
@@ -124,9 +120,13 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                     enrollNumber: selectedEmployee.enrollNumber
                 }));
             }
+            setDropdownData(prevState => ({
+                ...prevState,
+                employeeId: selectedEmployee ? [selectedEmployee] : undefined,
+                deviceId: sortedDevices
+            }));
         } catch (error) {
-            toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
-            console.error(error);
+            console.error('Erro ao buscar os dados de funcionários e dispositivos.');
         }
     };
 

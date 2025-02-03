@@ -779,6 +779,9 @@ export type Accesses = {
     nameUser: string;
     pin: string;
     deviceSN: string;
+    deviceName: string;
+    eventName: string;
+    eventDoorId: string;
     eventDoorName: string;
-    verifyModeNo: string;
+    readerName: string;
 }

@@ -114,12 +114,11 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                     employeeId: employeeResponse
                 }));
             } else {
-                toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
+                console.error('Erro ao buscar os dados de funcionários.');
                 return;
             }
         } catch (error) {
-            toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
-            console.error(error);
+            console.error('Erro ao buscar os dados de funcionários e dispositivos.');
         }
     };
 

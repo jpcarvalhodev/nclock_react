@@ -11,9 +11,8 @@ import { usePersons } from '../context/PersonsContext';
 import { employeeFields } from '../fields/Fields';
 import { Department, Employee, Group } from '../types/Types';
 
-import { CreateModalEmployees } from './CreateModalEmployees';
-import { MoveEmployeeToDeptGrpModal } from './MoveEmployeeToDeptGrpModal';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
+import { AddEmployeeToDeptGrpModal } from './AddEmployeeToDeptGrpModal';
 
 
 // Define a interface para os itens de campo
@@ -57,7 +56,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         fetchAllEmployees,
         fetchAllDepartments,
         fetchAllGroups,
-        handleAddEmployee,
         handleUpdateEmployee,
     } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
@@ -72,9 +70,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [selectedDeptOrGroup, setSelectedDeptOrGroup] = useState<Department | Group | null>(null);
-    const [selectedEmployees, setSelectedEmployees] = useState<Employee[]>([]);
-    const [showMoveEmployeeModal, setShowMoveEmployeeModal] = useState(false);
     const [dropdownData, setDropdownData] = useState<{ departments: Department[]; groups: Group[] }>({
         departments: [],
         groups: []
@@ -143,18 +138,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         fetchSubdepartments();
     }, [open, entity, dropdownData.departments]);
 
-    // Função para adicionar um funcionário e um cartão
-    const addEmployeeAndCard = async (employee: Partial<Employee>) => {
-        await handleAddEmployee(employee as Employee);
-        if (entityType === 'department') {
-            fetchAllDepartments();
-        } else {
-            fetchAllGroups();
-        }
-        setShowEmployeeModal(false);
-        setClearSelectionToggle((prev) => !prev);
-    }
-
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
@@ -162,6 +145,14 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
             fetchAllDepartments();
         } else {
             fetchAllGroups();
+        }
+        const updatedEmployees = await fetchAllEmployees();
+        setEmployees(updatedEmployees);
+
+        if (entityType === 'department') {
+            setEmployeeData(updatedEmployees.filter(emp => emp.departmentId === formData.departmentID));
+        } else {
+            setEmployeeData(updatedEmployees.filter(emp => emp.groupId === formData.groupID));
         }
         setShowUpdateEmployeeModal(false);
         setClearSelectionToggle((prev) => !prev);
@@ -283,21 +274,14 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     const handleRowSelectedDeptGrp = (state: { selectedRows: (Department | Group)[] }) => {
         if (state.selectedRows.length > 0) {
             const lastSelected = state.selectedRows[state.selectedRows.length - 1];
-            setSelectedDeptOrGroup(lastSelected);
             if (entityType === 'department') {
                 handleDepartmentClick(lastSelected.departmentID);
             } else {
                 handleGroupClick(lastSelected.groupID);
             }
         } else {
-            setSelectedDeptOrGroup(null);
             setEmployeeData([]);
         }
-    };
-
-    // Função para lidar com a seleção no DataTable de Funcionários
-    const handleRowSelectedEmployees = (state: { selectedRows: Employee[] }) => {
-        setSelectedEmployees(state.selectedRows);
     };
 
     // Função que atualiza o funcionário selecionado com o novo departamento/grupo selecionado
@@ -557,7 +541,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     onRowDoubleClicked={handleEmployeeClick}
                                     clearSelectedRows={clearSelectionToggle}
                                     selectableRows
-                                    onSelectedRowsChange={handleRowSelectedEmployees}
                                     selectableRowsNoSelectAll={true}
                                     defaultSortAsc={true}
                                     defaultSortFieldId="enrollNumber"
@@ -567,19 +550,9 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                             <div style={{ display: 'flex' }}>
                                 <OverlayTrigger
                                     placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Novo Funcionário</Tooltip>}
+                                    overlay={<Tooltip className="custom-tooltip">Adicionar Funcionário</Tooltip>}
                                 >
-                                    <CustomOutlineButton
-                                        className="action-button"
-                                        icon="bi-plus"
-                                        onClick={() => setShowEmployeeModal(true)}
-                                    />
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">{tooltipText}</Tooltip>}
-                                >
-                                    <CustomOutlineButton className="action-button" icon="bi bi-arrow-left-right" onClick={() => setShowMoveEmployeeModal(true)} />
+                                    <CustomOutlineButton className="action-button" icon="bi bi-person-plus" onClick={() => setShowEmployeeModal(true)}/>
                                 </OverlayTrigger>
                             </div>
                         </Col>
@@ -615,13 +588,12 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                 </Button>
             </Modal.Footer>
             {showEmployeeModal && (
-                <CreateModalEmployees
-                    title="Adicionar Funcionário"
+                <AddEmployeeToDeptGrpModal
+                    title='Adicionar Funcionário'
                     open={showEmployeeModal}
                     onClose={() => setShowEmployeeModal(false)}
-                    onSave={addEmployeeAndCard}
-                    fields={employeeFields}
-                    initialValues={{}}
+                    onSave={updateEmployeeAndCard}
+                    entity={entity}
                 />
             )}
             {selectedEmployee && (
@@ -638,16 +610,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                     onPrev={handlePrevEmployee}
                 />
             )}
-            <MoveEmployeeToDeptGrpModal
-                open={showMoveEmployeeModal}
-                onClose={() => setShowMoveEmployeeModal(false)}
-                onUpdate={handleSwitchDeptOrGrp}
-                entityType={entityType}
-                title="Mover Funcionário"
-                employees={employees}
-                departments={dropdownData.departments}
-                groups={dropdownData.groups}
-            />
         </Modal>
     );
 };

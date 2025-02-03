@@ -6,11 +6,13 @@ interface ExpandedComponentProps {
 
 // Define o componente
 export const ExpandedComponentGeneric = ({ data, fields }: ExpandedComponentProps) => {
+    
     const formatDisplayValue = (value: any): string => {
-        if (typeof value === 'object' && value !== null) {
-            return JSON.stringify(value, null, 2);
-        } else if (value === undefined) { 
+        if (value === null || value === undefined) {
             return '';
+        }
+        if (typeof value === 'object') {
+            return JSON.stringify(value, null, 2);
         }
         return value.toString();
     };

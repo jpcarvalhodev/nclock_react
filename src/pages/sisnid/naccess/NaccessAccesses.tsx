@@ -12,8 +12,9 @@ import { PrintButton } from '../../../components/PrintButton';
 import { SelectFilter } from '../../../components/SelectFilter';
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 
+import * as apiService from "../../../api/apiService";
 import "../../../css/PagesStyles.css";
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Nav, OverlayTrigger, Tab, Tooltip } from 'react-bootstrap';
 
 import { useAttendance } from '../../../context/MovementContext';
 import { useNavbar } from "../../../context/NavbarContext";
@@ -24,6 +25,7 @@ import { TextField, TextFieldProps } from '@mui/material';
 import { Accesses, Employee } from "../../../types/Types";
 import { accessesFields, employeeFields } from "../../../fields/Fields";
 import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
+import { CreateModalAccess } from "../../../modals/CreateModalAccess";
 
 // Define a interface para os filtros
 interface Filters {
@@ -54,7 +56,8 @@ const formatDateToEndOfDay = (date: Date): string => {
 export const NaccessAccesses = () => {
     const {
         access,
-        fetchAllAccesses,
+        fetchAllAccessesbyDevice,
+        handleAddAccess,
     } = useAttendance();
     const currentDate = new Date();
     const pastDate = new Date();
@@ -65,7 +68,7 @@ export const NaccessAccesses = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [filteredAccess, setFilteredAccess] = useState<Accesses[]>([]);
     const [showAddAccessModal, setShowAddAccessModal] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'nameUser', 'pin', 'deviceSN']);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'cardNo', 'nameUser', 'pin', 'deviceName']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
     const [resetSelection, setResetSelection] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Accesses[]>([]);
@@ -78,6 +81,83 @@ export const NaccessAccesses = () => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
 
+    // Função para buscar todos as assiduidades entre datas
+    const fetchAccessesBetweenDates = async () => {
+        try {
+            const data = await apiService.fetchAllAccessesByDevice(undefined, startDate, endDate);
+            setFilteredAccess(data);
+        } catch (error) {
+            console.error("Erro ao buscar acessos entre datas:", error);
+            setFilteredAccess([]);
+        }
+    }
+
+    // Função para buscar os pagamentos dos terminais de hoje
+    const fetchAccessesToday = async () => {
+        const today = new Date();
+        const start = formatDateToStartOfDay(today);
+        const end = formatDateToEndOfDay(today);
+        try {
+            const data = await apiService.fetchAllAccessesByDevice(undefined, start, end);
+            setFilteredAccess(data);
+        } catch (error) {
+            console.error("Erro ao buscar acessos hoje:", error);
+            setFilteredAccess([]);
+        }
+        setStartDate(start);
+        setEndDate(end);
+    }
+
+    // Função para buscar os pagamentos dos terminais de ontem
+    const fetchAccessesForPreviousDay = async () => {
+        const prevDate = new Date(startDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+
+        const start = formatDateToStartOfDay(prevDate);
+        const end = formatDateToEndOfDay(prevDate);
+
+        try {
+            const data = await apiService.fetchAllAccessesByDevice(undefined, start, end);
+            setFilteredAccess(data);
+        } catch (error) {
+            console.error("Erro ao buscar acessos ontem:", error);
+            setFilteredAccess([]);
+        }
+        setStartDate(start);
+        setEndDate(end);
+    };
+
+    // Função para buscar os pagamentos dos terminais de amanhã
+    const fetchAccessesForNextDay = async () => {
+        const newDate = new Date(endDate);
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+            console.error("Não é possível buscar acessos para uma data no futuro.");
+            return;
+        }
+
+        const start = formatDateToStartOfDay(newDate);
+        const end = formatDateToEndOfDay(newDate);
+
+        try {
+            const data = await apiService.fetchAllAccessesByDevice(undefined, start, end);
+            setFilteredAccess(data);
+        } catch (error) {
+            console.error("Erro ao buscar acessos amanhã:", error);
+            setFilteredAccess([]);
+        }
+        setStartDate(start);
+        setEndDate(end);
+    };
+
+    // Função para adicionar um acesso
+    const addAccess = async (access: Accesses) => {
+        await handleAddAccess(access);
+        refreshAccess();
+        setClearSelectionToggle((prev) => !prev);
+    }
+
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
@@ -87,7 +167,7 @@ export const NaccessAccesses = () => {
 
     // Busca os movimentos ao carregar a página
     useEffect(() => {
-        fetchAllAccesses();
+        fetchAllAccessesbyDevice();
     }, []);
 
     // Atualiza a seleção ao resetar
@@ -151,29 +231,39 @@ export const NaccessAccesses = () => {
 
     // Função para resetar as colunas
     const handleResetColumns = () => {
-        setSelectedColumns(['eventTime', 'nameUser', 'pin', 'cardNo', 'deviceSN']);
+        setSelectedColumns(['eventTime', 'cardNo', 'nameUser', 'pin', 'deviceName']);
     };
 
     // Função para atualizar os funcionários
     const refreshAccess = () => {
-        fetchAllAccesses();
+        fetchAllAccessesbyDevice();
         setStartDate(formatDateToStartOfDay(pastDate));
         setEndDate(formatDateToEndOfDay(currentDate));
         setClearSelectionToggle((prev) => !prev);
     };
 
-    /* // Função para abrir o modal de adição de assiduidade
-    const handleOpenAddAttendanceModal = () => {
+    // Define a função selecionar uma linha
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: Accesses[];
+    }) => {
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => Number(a.pin) - Number(b.pin));
+        setSelectedRows(sortedSelectedRows);
+    };
+
+    // Função para abrir o modal de adição de acesso
+    const handleOpenAddAccessModal = () => {
         if (selectedEmployeeIds.length > 0) {
             setInitialData({
                 ...initialData,
                 selectedEmployeeIds: selectedEmployeeIds[0]
             });
-            setShowAddAttendanceModal(true);
+            setShowAddAccessModal(true);
         } else {
             toast.warn('Selecione um funcionário primeiro!');
         }
-    } */
+    }
 
     // Filtra os dados da tabela
     const filteredDataTable = filteredAccess.filter(attendances =>
@@ -190,34 +280,41 @@ export const NaccessAccesses = () => {
             }
             return false;
         })
-    );
+    ).sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
 
     // Função para abrir o modal de edição
     const handleOpenEditModal = (person: Accesses) => {
-        const employeeDetails = employees.find(emp => emp.employeeID === person.employeeId);
+        const employeeDetails = employees.find(emp => emp.shortName === person.nameUser);
         if (employeeDetails) {
             setSelectedEmployee(employeeDetails);
             setShowEditModal(true);
         } else {
-            console.error("Funcionário não encontrado:", person.employeeName);
+            console.error("Funcionário não encontrado:", person.nameUser);
         }
     };
 
     // Define as colunas
     const columns: TableColumn<Accesses>[] = accessesFields
-        .filter(field => selectedColumns.includes(field.key))
+        .filter(field => selectedColumns.includes(field.key) && field.key !== 'eventDoorId')
         .map(field => {
-            if (field.key === 'nameUser') {
+            if (field.key === 'eventTime') {
                 return {
                     ...field,
                     name: field.label,
-                    cell: (row: Accesses) => (
-                        <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
-                            {row.employeeName}
-                        </div>
-                    )
+                    cell: (row: Accesses) => new Date(row.eventTime).toLocaleString('pt')
                 };
-            }
+            } else
+                if (field.key === 'nameUser') {
+                    return {
+                        ...field,
+                        name: field.label,
+                        cell: (row: Accesses) => (
+                            <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
+                                {row.nameUser}
+                            </div>
+                        )
+                    };
+                }
             const formatField = (row: Accesses) => {
                 switch (field.key) {
                     default:
@@ -284,7 +381,7 @@ export const NaccessAccesses = () => {
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi-plus" onClick={() => toast.warn('Funcionalidade ainda não implementada')} iconSize='1.1em'
+                                    <CustomOutlineButton icon="bi-plus" onClick={handleOpenAddAccessModal} iconSize='1.1em'
                                     />
                                 </OverlayTrigger>
                                 <OverlayTrigger
@@ -297,24 +394,24 @@ export const NaccessAccesses = () => {
                                 <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
-                            {/* <div className="date-range-search">
+                            <div className="date-range-search">
                                 <OverlayTrigger
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Movimentos Hoje</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchMovementsToday} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchAccessesToday} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 <OverlayTrigger
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Movimentos Dia Anterior</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchMovementsForPreviousDay} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchAccessesForPreviousDay} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 <OverlayTrigger
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Movimentos Dia Seguinte</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
+                                    <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchAccessesForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
                                 </OverlayTrigger>
                                 <input
                                     type="datetime-local"
@@ -333,43 +430,56 @@ export const NaccessAccesses = () => {
                                     placement="top"
                                     overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                                 >
-                                    <CustomOutlineButton icon="bi-search" onClick={fetchMovementsBetweenDates} iconSize='1.1em' />
+                                    <CustomOutlineButton icon="bi-search" onClick={fetchAccessesBetweenDates} iconSize='1.1em' />
                                 </OverlayTrigger>
-                            </div> */}
+                            </div>
                         </div>
-                        <DataTable
-                            columns={columns}
-                            data={filteredDataTable}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            paginationPerPage={20}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="eventTime"
-                        />
+                        <Tab.Container defaultActiveKey="movimentos">
+                            <Nav variant="tabs" className="nav-modal">
+                                <Nav.Item>
+                                    <Nav.Link eventKey="movimentos">Movimentos</Nav.Link>
+                                </Nav.Item>
+                            </Nav>
+                            <Tab.Content>
+                                <Tab.Pane eventKey="movimentos">
+                                    <div style={{ marginTop: 10 }}>
+                                        <DataTable
+                                            columns={columns}
+                                            data={filteredDataTable}
+                                            pagination
+                                            paginationComponentOptions={paginationOptions}
+                                            selectableRows
+                                            paginationPerPage={20}
+                                            clearSelectedRows={clearSelectionToggle}
+                                            selectableRowsHighlight
+                                            onSelectedRowsChange={handleRowSelected}
+                                            noDataComponent="Não existem dados disponíveis para exibir."
+                                            customStyles={customStyles}
+                                            striped
+                                            defaultSortAsc={true}
+                                            defaultSortFieldId="eventTime"
+                                        />
+                                    </div>
+                                </Tab.Pane>
+                            </Tab.Content>
+                        </Tab.Container>
                     </div>
                 </Split>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />
-            {/* {showAddAccessModal && (
-                <CreateModalAttendance
+            {showAddAccessModal && (
+                <CreateModalAccess
                     open={showAddAccessModal}
                     onClose={() => setShowAddAccessModal(false)}
-                    onSave={addAttendance}
-                    title='Adicionar Assiduidade'
-                    fields={employeeAttendanceTimesFields}
+                    onSave={addAccess}
+                    title='Adicionar Acesso'
+                    fields={accessesFields}
                     initialValues={initialData}
-                    entityType='movimentos'
                 />
-            )} */}
+            )}
             {showColumnSelector && (
                 <ColumnSelectorModal
-                    columns={accessesFields}
+                    columns={accessesFields.filter(field => field.key !== 'eventDoorId')}
                     selectedColumns={selectedColumns}
                     onClose={() => setShowColumnSelector(false)}
                     onColumnToggle={handleColumnToggle}

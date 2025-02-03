@@ -14,6 +14,7 @@ import { useKiosk } from '../../../context/KioskContext';
 import { useNavbar } from "../../../context/NavbarContext";
 import { useTerminals } from "../../../context/TerminalsContext";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
+import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -92,6 +93,7 @@ export const NkioskDashboardLicensed = () => {
     const [todayTotalCoin, setTodayTotalCoin] = useState<KioskTransactionCard[]>([]);
     const [todayTotalCard, setTodayTotalCard] = useState<KioskTransactionCard[]>([]);
     const [todayTotalKiosk, setTodayTotalKiosk] = useState<KioskTransactionCard[]>([]);
+    const navigate = useNavigate();
     const eventDoorId2 = '2';
     const eventDoorId3 = '3';
     const eventDoorId4 = '4';
@@ -352,11 +354,11 @@ export const NkioskDashboardLicensed = () => {
                     <Carousel infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
                         <div className="departments-groups-chart" style={{ height: '26rem' }}>
                             <h2 className="departments-groups-chart-text">Total de Pagamentos em {currentYear}: { }</h2>
-                            <Line className="departments-groups-chart-data" data={payLineChartData} />
+                            <Line className="departments-groups-chart-data" data={payLineChartData} onClick={() => navigate('/nkiosk/nkioskListPayments')} style={{ cursor: "pointer" }} />
                         </div>
                         <div className="departments-groups-chart" style={{ height: '26rem' }}>
                             <h2 className="departments-groups-chart-text">Total de Movimentos em {currentYear}: { }</h2>
-                            <Line className="departments-groups-chart-data" data={moveLineChartData} />
+                            <Line className="departments-groups-chart-data" data={moveLineChartData} onClick={() => navigate('/nkiosk/nkioskListMovements')} style={{ cursor: "pointer" }} />
                         </div>
                         <div style={{ height: '26rem', maxWidth: '56rem', margin: 'auto' }}>
                             <Calendar
@@ -379,25 +381,25 @@ export const NkioskDashboardLicensed = () => {
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
                     <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Multibanco Hoje: { }</h2>
-                        <Bar className="departments-groups-chart-data" data={todayMbLineChartData} />
+                        <Bar className="departments-groups-chart-data" data={todayMbLineChartData} onClick={() => navigate('/nkiosk/nkioskPayTerminal')} style={{ cursor: "pointer" }} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
                     <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Moedeiro Hoje: { }</h2>
-                        <Bar className="departments-groups-chart-data" data={todayCoinLineChartData} />
+                        <Bar className="departments-groups-chart-data" data={todayCoinLineChartData} onClick={() => navigate('/nkiosk/nkioskPayCoins')} style={{ cursor: "pointer" }} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
                     <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Torniquete Hoje: { }</h2>
-                        <Bar className="departments-groups-chart-data" data={todayCardLineChartData} />
+                        <Bar className="departments-groups-chart-data" data={todayCardLineChartData} onClick={() => navigate('/nkiosk/nkioskMoveCard')} style={{ cursor: "pointer" }} />
                     </div>
                 </div>
                 <div className="carousel-chart-container-graphs" id="carousel-chart">
                     <div className="departments-groups-chart" style={{ height: '15rem' }}>
                         <h2 className="departments-groups-chart-text">Total do Quiosque Hoje: { }</h2>
-                        <Bar className="departments-groups-chart-data" data={todayKioskLineChartData} />
+                        <Bar className="departments-groups-chart-data" data={todayKioskLineChartData} onClick={() => navigate('/nkiosk/nkioskMoveKiosk')} style={{ cursor: "pointer" }} />
                     </div>
                 </div>
             </div>

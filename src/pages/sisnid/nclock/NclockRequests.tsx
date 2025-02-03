@@ -339,7 +339,7 @@ export const NclockRequests = () => {
             }
             return false;
         })
-    );
+    ).sort((a, b) => new Date(b.attendanceTime).getTime() - new Date(a.attendanceTime).getTime());
 
     // Define os dados iniciais ao duplicar
     const handleDuplicate = (attendance: Partial<EmployeeAttendanceTimes>) => {
@@ -411,7 +411,7 @@ export const NclockRequests = () => {
         rangeSeparatorText: 'de',
     };
 
-    // Define a função de seleção de linhas
+    // Define a função selecionar uma linha
     const handleRowSelected = (state: {
         allSelected: boolean;
         selectedCount: number;

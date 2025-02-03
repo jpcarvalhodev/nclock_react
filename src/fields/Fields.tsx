@@ -570,7 +570,10 @@ export const accessesFields = [
     { key: 'cardNo', label: 'Cartão', type: 'string' },
     { key: 'nameUser', label: 'Nome', type: 'string' },
     { key: 'pin', label: 'Número', type: 'string' },
-    { key: 'deviceSN', label: 'Equipamento', type: 'string' },
+    { key: 'deviceName', label: 'Local', type: 'string' },
+    { key: 'deviceSN', label: 'Serial do Equipamento', type: 'string', required: true },
+    { key: 'eventDoorId', label: 'Porta', type: 'number', required: true },
     { key: 'eventDoorName', label: 'Porta', type: 'string' },
-    { key: 'verifyModeNo', label: 'Modo de Verificação', type: 'string' },
+    { key: 'readerName', label: 'Leitor', type: 'string' },
+    { key: 'eventName', label: 'Evento', type: 'string' },
 ];

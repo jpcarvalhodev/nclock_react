@@ -111,7 +111,6 @@ export const UpdateTerminalOnAccessControlModal = <T extends Record<string, any>
                 }
             ],
         };
-        console.log('Payload', payload);
         onUpdate(payload as unknown as T);
         handleClose();
     };

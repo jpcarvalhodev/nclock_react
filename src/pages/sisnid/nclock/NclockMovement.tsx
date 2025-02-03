@@ -273,6 +273,15 @@ export const NclockMovement = () => {
         }
     }
 
+    // Define a função selecionar uma linha
+    const handleRowSelected = (state: {
+        allSelected: boolean;
+        selectedCount: number;
+        selectedRows: EmployeeAttendanceTimes[];
+    }) => {
+        setSelectedRows(state.selectedRows);
+    };
+
     // Remove o campo de observação, número, nome do funcionário e o tipo
     const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeName' && field.key !== 'type' && field.key !== 'deviceNumber');
 
@@ -291,7 +300,7 @@ export const NclockMovement = () => {
             }
             return false;
         })
-    );
+    ).sort((a, b) => new Date(b.attendanceTime).getTime() - new Date(a.attendanceTime).getTime());
 
     // Função para abrir o modal de edição
     const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
@@ -464,6 +473,7 @@ export const NclockMovement = () => {
                             selectableRows
                             paginationPerPage={20}
                             clearSelectedRows={clearSelectionToggle}
+                            onSelectedRowsChange={handleRowSelected}
                             selectableRowsHighlight
                             noDataComponent="Não existem dados disponíveis para exibir."
                             customStyles={customStyles}
@@ -488,7 +498,7 @@ export const NclockMovement = () => {
             )}
             {showColumnSelector && (
                 <ColumnSelectorModal
-                    columns={filteredColumns}
+                    columns={filteredColumns.filter(field => field.key !== 'employeeId')}
                     selectedColumns={selectedColumns}
                     onClose={() => setShowColumnSelector(false)}
                     onColumnToggle={handleColumnToggle}

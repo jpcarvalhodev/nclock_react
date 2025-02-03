@@ -17,11 +17,11 @@ interface CreateModalProps<T> {
     open: boolean;
     onClose: () => void;
     onSave: (data: T) => void;
-    entity?: T;
+    entity?: Partial<Employee>;
 }
 
 // Define o componente
-export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, open, onClose, onSave, entity }: CreateModalProps<T>) => {
+export const AddEmployeeToDeptGrpModal = <T extends Record<string, any>>({ title, open, onClose, onSave, entity }: CreateModalProps<T>) => {
     const {
         data,
     } = usePersons();
@@ -30,23 +30,27 @@ export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, ope
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
 
-    // Atualiza os funcionários filtrados ao abrir o modal
-    useEffect(() => {
-        if (open) {
-            const filtered = data.employees.filter(employee => !entity?.some((e: Employee) => e.employeeID === employee.employeeID));
-            setFilteredEmployees(filtered);
-        }
-    }, [open, data.employees, entity?.employees]);
-
     // Atualiza os funcionários filtrados com base nos funcionários selecionados
     useEffect(() => {
-        if (selectedEmployeeIds.length > 0) {
-            const filtered = data.employees.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
-            setFilteredEmployees(filtered);
-        } else {
-            setFilteredEmployees(data.employees);
+        let employeesToShow = data.employees;
+
+        if (entity) {
+            if (entity.departmentID) {
+                employeesToShow = employeesToShow.filter(employee => employee.departmentId !== entity.departmentID);
+            }
+            if (entity.groupID) {
+                employeesToShow = employeesToShow.filter(employee => employee.groupId !== entity.groupID);
+            }
         }
-    }, [selectedEmployeeIds, data.employees]);
+
+        if (selectedEmployeeIds.length > 0) {
+            employeesToShow = employeesToShow.filter(employee =>
+                selectedEmployeeIds.includes(employee.employeeID)
+            );
+        }
+
+        setFilteredEmployees(employeesToShow);
+    }, [selectedEmployeeIds, data.employees, entity]);
 
     // Define as opções de paginação de EN para PT
     const paginationOptions = {
@@ -111,7 +115,26 @@ export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, ope
 
     // Função para salvar os dados
     const handleSave = () => {
-        onSave(selectedRows as unknown as T);
+        const updatedEmployees = selectedRows.map(employee => ({
+            ...employee,
+            ...(entity?.departmentID
+                ? { departmentId: entity.departmentID, departmentName: entity.name }
+                : {}),
+            ...(entity?.groupID
+                ? { groupId: entity.groupID, groupName: entity.name }
+                : {})
+        }));
+
+        const selectedEmployee = updatedEmployees[0];
+
+        const { employeeCards, ...employeeData } = selectedEmployee;
+
+        const payload = {
+            employee: employeeData,
+            employeeCards: employeeCards && employeeCards.length > 0 ? employeeCards : []
+        };
+
+        onSave(payload as unknown as T);
         handleClose();
     };
 

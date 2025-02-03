@@ -38,7 +38,7 @@ export const Login = () => {
   const { fetchAds } = useAds();
   const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
-  const { fetchAllAttendances } = useAttendance();
+  const { fetchAllAttendances, fetchAllAccessesbyDevice } = useAttendance();
   const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
   const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks } = useKiosk();
@@ -210,6 +210,7 @@ export const Login = () => {
             fetchAllLoginLogs(),
             fetchAllHistoryLogs(),
             fetchAllAttendances(),
+            fetchAllAccessesbyDevice(),
             fetchAllMBDevices(),
             fetchAccessControl(),
             fetchAllMBCloseOpen(),

@@ -258,7 +258,7 @@ export const NclockAll = () => {
             }
             return false;
         })
-    );
+    ).sort((a, b) => new Date(b.attendanceTime).getTime() - new Date(a.attendanceTime).getTime());
 
     // Função para abrir o modal de edição
     const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
@@ -333,7 +333,8 @@ export const NclockAll = () => {
         selectedCount: number;
         selectedRows: EmployeeAttendanceTimes[];
     }) => {
-        setSelectedRows(state.selectedRows);
+        const sortedSelectedRows = state.selectedRows.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+        setSelectedRows(sortedSelectedRows);
     };
 
     // Função para obter os campos selecionados baseado em selectedColumns

@@ -63,7 +63,7 @@ export const Groups = () => {
     const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Group[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-
+    
     // Função para adicionar um grupo
     const addGroup = async (group: Group) => {
         await handleAddGroup(group);
