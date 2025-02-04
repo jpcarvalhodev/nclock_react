@@ -55,8 +55,8 @@ type OptionType = Employee | Devices | Doors;
 
 // Define o componente
 export const CreateModalAccess = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-    const { fetchAllEmployees } = usePersons();
-    const { fetchAllDevices, fetchAllDoorData } = useTerminals();
+    const { employees } = usePersons();
+    const { devices, door } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
     const [dropdownData, setDropdownData] = useState<DropdownData>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -113,12 +113,9 @@ export const CreateModalAccess = <T extends Record<string, any>>({ title, open, 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const employees = await fetchAllEmployees();
             const sortedEmployees = employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
-            const devices = await fetchAllDevices();
             const sortedDevices = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
-            const doors = await fetchAllDoorData();
-            const sortedDoors = doors.sort((a, b) => a.doorNo - b.doorNo);
+            const sortedDoors = door.sort((a, b) => a.doorNo - b.doorNo);
             const selectedEmployee = sortedEmployees.find(emp => emp.employeeID === initialValues.selectedEmployeeIds);
             setDropdownData(prevState => ({
                 ...prevState,
@@ -302,7 +299,7 @@ export const CreateModalAccess = <T extends Record<string, any>>({ title, open, 
                             <Form.Label>Porta<span style={{ color: 'red' }}> *</span></Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-eventTime">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-eventDoorId">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     as="select"
@@ -349,7 +346,7 @@ export const CreateModalAccess = <T extends Record<string, any>>({ title, open, 
                             <Form.Label>Funcionário</Form.Label>
                             <OverlayTrigger
                                 placement="right"
-                                overlay={<Tooltip id="tooltip-eventTime">Campo obrigatório</Tooltip>}
+                                overlay={<Tooltip id="tooltip-pin">Campo obrigatório</Tooltip>}
                             >
                                 <Form.Control
                                     as="select"
@@ -363,7 +360,7 @@ export const CreateModalAccess = <T extends Record<string, any>>({ title, open, 
                                         let optionName = option.name;
                                         return (
                                             <option key={optionId} value={optionId}>
-                                                {optionName}
+                                                {optionId} - {optionName}
                                             </option>
                                         );
                                     })}

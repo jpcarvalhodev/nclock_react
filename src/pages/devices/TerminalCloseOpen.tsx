@@ -46,12 +46,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define o componente de terminais
 export const TerminalCloseOpen = () => {
-    const {
-        mbDevices,
-        mbCloseOpen,
-        setMbCloseOpen,
-        fetchAllMBCloseOpen
-    } = useTerminals();
+    const { mbDevices, mbCloseOpen, setMbCloseOpen, fetchAllMBCloseOpen } = useTerminals();
     const { navbarColor, footerColor } = useNavbar();
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'tpId', 'fechoImage', 'aberturaImage']);

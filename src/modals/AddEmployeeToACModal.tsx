@@ -22,9 +22,7 @@ interface CreateModalProps<T> {
 
 // Define o componente
 export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, open, onClose, onSave, entity }: CreateModalProps<T>) => {
-    const {
-        data,
-    } = usePersons();
+    const { data } = usePersons();
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);

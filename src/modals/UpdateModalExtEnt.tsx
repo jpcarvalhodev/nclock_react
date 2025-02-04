@@ -45,7 +45,7 @@ interface UpdateModalProps<T extends Entity> {
 
 // Exporta o componente
 export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const { fetchAllEmployees, fetchAllExternalEntitiesData } = usePersons();
+    const { employees, dataEE } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
@@ -116,24 +116,21 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
     // Função para buscar os funcionários
     const fetchEmployees = async () => {
         try {
-            const employeeResponse = await fetchAllEmployees();
-            setDropdownData(prev => ({ ...prev, responsibleName: employeeResponse }));
+            setDropdownData(prev => ({ ...prev, responsibleName: employees }));
         } catch (error) {
-            toast.error('Erro ao buscar os dados dos funcionários.');
-            console.error(error);
+            console.error('Erro ao buscar os dados dos funcionários.');
         }
     };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const externalEntityTypesResponse = await fetchAllExternalEntitiesData();
-            setDropdownData({
-                externalEntityTypeId: externalEntityTypesResponse.ExternalEntityTypes
-            });
+            setDropdownData(prev => ({
+                ...prev,
+                externalEntityTypeId: dataEE?.externalEntityTypes || []
+            }));
         } catch (error) {
-            toast.error('Erro ao buscar os dados de tipos.');
-            console.error(error);
+            console.error('Erro ao buscar os dados de tipos.');
         }
     };
 
@@ -225,6 +222,8 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
             switch (key) {
                 case 'externalEntityTypeId':
                     return option.externalEntityTypeId === value;
+                case 'responsibleName':
+                    return option.employeeID === value;
                 default:
                     return false;
             }
@@ -360,7 +359,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
                                                 <option value="">Selecione...</option>
                                                 {dropdownData.responsibleName && dropdownData.responsibleName.map((employee) => (
                                                     <option key={employee.id} value={employee.id}>
-                                                        {employee.name}
+                                                        {employee.enrollNumber} - {employee.name}
                                                     </option>
                                                 ))}
                                             </Form.Control>

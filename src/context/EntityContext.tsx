@@ -18,8 +18,8 @@ const downloadFile = async (url: string) => {
 
 // Define o tipo do contexto
 export interface EntityContextType {
-    entity: Entity[];
-    setEntity: React.Dispatch<React.SetStateAction<Entity[]>>;
+    entities: Entity[];
+    setEntities: React.Dispatch<React.SetStateAction<Entity[]>>;
     fetchAllEntity: () => Promise<Partial<Entity[]>>;
     addEntity: (entity: FormData) => void;
     updateEntity: (entity: FormData) => void;
@@ -40,7 +40,7 @@ export const EntityContext = createContext<EntityContextType | undefined>(undefi
 
 // Provider do contexto
 export const EntityProvider = ({ children }: { children: ReactNode }) => {
-    const [entity, setEntity] = useState<Entity[]>([]);
+    const [entities, setEntities] = useState<Entity[]>([]);
     const [loginLogs, setLoginLogs] = useState<Logs[]>([]);
     const [historyLogs, setHistoryLogs] = useState<Logs[]>([]);
     const [loadingExportBackup, setLoadingExportBackup] = useState(false);
@@ -51,11 +51,11 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const fetchAllEntity = async (): Promise<Entity[]> => {
         try {
             const data = await apiService.fetchAllCompanyConfig();
-            setEntity(Array.isArray(data) ? data : []);
+            setEntities(Array.isArray(data) ? data : []);
             return data;
         } catch (error) {
             console.error('Erro ao buscar entidades:', error);
-            setEntity([]);
+            setEntities([]);
         }
         return [];
     }
@@ -64,7 +64,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const addEntity = async (entity: FormData) => {
         try {
             const data = await apiService.addCompanyConfig(entity);
-            setEntity(Array.isArray(data) ? data : []);
+            setEntities(Array.isArray(data) ? data : []);
             toast.success('Entidade adicionada com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar entidade:', error);
@@ -77,7 +77,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const updateEntity = async (entity: FormData) => {
         try {
             const data = await apiService.updateCompanyConfig(entity);
-            setEntity(Array.isArray(data) ? data : []);
+            setEntities(Array.isArray(data) ? data : []);
             toast.success('Entidade atualizada com sucesso!');
         } catch (error) {
             console.error('Erro ao atualizar entidade:', error);
@@ -181,7 +181,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <EntityContext.Provider value={{ entity, setEntity, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees }}>
+        <EntityContext.Provider value={{ entities, setEntities, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees }}>
             {children}
             <LoadingModal
                 show={loadingExportBackup || loadingImportBackup || loadingImportEmployees}

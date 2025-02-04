@@ -11,9 +11,7 @@ import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 import { Footer } from "../../../components/Footer";
 import { NavBar } from "../../../components/NavBar";
 import { useNavbar } from "../../../context/NavbarContext";
-import { Department, Employee, Group } from "../../../types/Types";
-
-
+import { Employee } from "../../../types/Types";
 
 // Registra os elementos do ChartJS
 ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);

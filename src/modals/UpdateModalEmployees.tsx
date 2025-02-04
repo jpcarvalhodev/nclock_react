@@ -53,9 +53,9 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-  const { fetchAllDepartments, fetchAllGroups, fetchAllCategories, fetchAllProfessions, fetchAllZones, fetchAllExternalEntitiesData, handleAddDepartment, handleAddGroup } = usePersons();
-  const { fetchAllEntity } = useEntity();
-  const { fetchAccessControl } = useTerminals();
+  const { departments, groups, categories, professions, dataEE, zones, handleAddDepartment, handleAddGroup } = usePersons();
+  const { entities } = useEntity();
+  const { accessControl } = useTerminals();
   const [formData, setFormData] = useState<T>({ ...entity });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -135,24 +135,15 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   // Função para buscar as opções do dropdown
   const fetchDropdownOptions = async () => {
     try {
-      const departments = await fetchAllDepartments();
-      const groups = await fetchAllGroups();
-      const categories = await fetchAllCategories();
-      const professions = await fetchAllProfessions();
-      const zones = await fetchAllZones();
-      const externalEntities = await fetchAllExternalEntitiesData();
-      const entities = await fetchAllEntity();
-      const accessPlan = await fetchAccessControl();
-      const sortedAccessPlan = accessPlan.sort((a, b) => a.nome.localeCompare(b.nome));
       setDropdownData({
         departmentId: departments,
         groupId: groups,
         categoryId: categories,
         professionId: professions,
         zoneId: zones,
-        externalEntityId: externalEntities.ExternalEntities,
+        externalEntityId: dataEE.externalEntity,
         entidadeId: entities,
-        accPlanoAcessoId: sortedAccessPlan
+        accPlanoAcessoId: accessControl
       });
       if (entities.length === 1) {
         setFormData((prevState) => ({
@@ -241,7 +232,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       const idKey = key;
       setFormData(prevState => ({
         ...prevState,
-        [idKey]: value
+        [idKey]: value,
+        ...(key === 'accPlanoAcessoId' && { accPlanoAcessoName: selectedOption.nome })
       }));
     } else {
       setFormData(prevState => ({
@@ -437,7 +429,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
     let employeeCardsData: any[] = [];
 
-    if (cardFormData.cardNumber && cardFormData.cardNumber.trim() !== "") {
+    if (cardFormData.cardNumber && cardFormData.cardNumber.trim() !== "" || cardFormData.devicePassword && cardFormData.devicePassword.trim() !== "") {
       employeeCardsData = [
         {
           cardId: cardFormData.cardId,

@@ -577,3 +577,8 @@ export const accessesFields = [
     { key: 'readerName', label: 'Leitor', type: 'string' },
     { key: 'eventName', label: 'Evento', type: 'string' },
 ];
+
+export const readersFields = [
+    { key: 'nameReader', label: 'Nome', type: 'string' },
+    { key: 'doorName', label: 'Porta', type: 'string' },
+];

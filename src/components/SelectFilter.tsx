@@ -1,4 +1,4 @@
-import { AccessControl, Ads, Category, Department, Devices, Doors, Employee, EmployeeAndCard, EmployeeAttendanceTimes, EmployeeDevices, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskTransaction, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, Logs, MBDevice, ManualOpenDoor, Profession, RecolhaMoedeiroEContador, Register, Zone } from "../types/Types";
+import { AccessControl, Ads, Category, Department, Devices, Doors, Employee, EmployeeAndCard, EmployeeAttendanceTimes, EmployeeDevices, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskTransaction, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, Logs, MBDevice, ManualOpenDoor, Profession, Readers, RecolhaMoedeiroEContador, Register, Zone } from "../types/Types";
 
 import { Dropdown } from "react-bootstrap";
 import "../css/PagesStyles.css"
@@ -7,7 +7,7 @@ import ReactDOM from "react-dom";
 import { useTerminals } from "../context/TerminalsContext";
 
 // Tipos de dados
-type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction | KioskTransactionCard | KioskTransactionMB | Register | Doors | MBDevice | RecolhaMoedeiroEContador | ManualOpenDoor | LimpezasEOcorrencias | Logs;
+type DataItem = Employee | Department | Category | Group | Profession | Zone | ExternalEntity | ExternalEntityTypes | EmployeeAttendanceTimes | Devices | EmployeeDevices | EmployeeAndCard | EmployeeFP | EmployeeFace | Ads | KioskTransaction | KioskTransactionCard | KioskTransactionMB | Register | Doors | MBDevice | RecolhaMoedeiroEContador | ManualOpenDoor | LimpezasEOcorrencias | Logs | Readers;
 
 // Propriedades do componente de filtro de seleção
 interface SelectFilterProps {
@@ -115,7 +115,7 @@ const formatDataItem = (item: DataItem, column: string, device: Devices[], mbDev
             return mbDevice.find(mbDevice => mbDevice.id === item.tpId)?.nomeQuiosque || '';
         case "doorName": {
             const found = accessControl.find((acObj) => acObj.employeesId === item.employeesId);
-            if (!found) {
+            if (!found || !Array.isArray(found.acc)) {
                 return "";
             }
             const doorNames = found.acc.map((accItem: AccessControl) => accItem.doorName);
@@ -140,8 +140,11 @@ const formatDataItem = (item: DataItem, column: string, device: Devices[], mbDev
 export const SelectFilter = ({ column, setFilters, data }: SelectFilterProps) => {
     const { devices, mbDevices, accessControl } = useTerminals();
 
+    // Garante que data seja um array
+    const dataArray = Array.isArray(data) ? data : [];
+
     // Formata os dados
-    const options = Array.from(new Set(data.map(item => formatDataItem(item, column, devices, mbDevices, accessControl))));
+    const options = Array.from(new Set(dataArray.map(item => formatDataItem(item, column, devices, mbDevices, accessControl))));
 
     // Obter o elemento do portal
     const portalElement = document.getElementById('portal-root');

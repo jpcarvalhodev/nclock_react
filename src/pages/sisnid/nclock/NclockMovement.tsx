@@ -53,11 +53,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a página movimentos
 export const NclockMovement = () => {
-    const {
-        fetchAllAttendances,
-        fetchAllAttendancesBetweenDates,
-        handleAddAttendance,
-    } = useAttendance();
+    const { fetchAllAttendances, fetchAllAttendancesBetweenDates, handleAddAttendance } = useAttendance();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);

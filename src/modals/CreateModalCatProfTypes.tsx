@@ -36,7 +36,7 @@ interface CodeItem {
 
 // Define o componente
 export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
-    const { fetchAllCategories, fetchAllProfessions, fetchAllExternalEntitiesData } = usePersons();
+    const { categories, professions, dataEE } = usePersons();
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -86,72 +86,56 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
         return isValid;
     };
 
-    // Usa useEffect para buscar os dados de categoria/profissão
+    // Função para buscar os dados de categoria, profissão ou tipo
     useEffect(() => {
         if (open) {
-            fetchEntityData();
-            setFormData(initialValues);
+            let newFormData = { ...initialValues };
+
+            let data: CodeItem[] | undefined;
+            let requiresNextCode = false;
+            let requiresNextOrder = false;
+
+            switch (entityType) {
+                case 'categorias':
+                    data = categories;
+                    requiresNextCode = true;
+                    break;
+                case 'profissões':
+                    data = professions;
+                    requiresNextCode = true;
+                    break;
+                case 'tipos':
+                    newFormData = { ...newFormData, dateInserted: new Date().toISOString().slice(0, 16) };
+                    data = dataEE?.externalEntityTypes;
+                    requiresNextOrder = true;
+                    break;
+                default:
+                    console.error(`Tipo de entidade '${entityType}' não existe.`);
+                    break;
+            }
+
+            if (data && Array.isArray(data)) {
+                if (requiresNextCode) {
+                    const maxCode = data.reduce(
+                        (max: number, item: CodeItem) => Math.max(max, item.code ?? 0),
+                        0
+                    ) + 1;
+                    (newFormData as any).code = maxCode;
+                }
+                if (requiresNextOrder) {
+                    const maxOrder = data.reduce(
+                        (max: number, item: CodeItem) => Math.max(max, item.order ?? 0),
+                        0
+                    ) + 1;
+                    (newFormData as any).order = maxOrder;
+                }
+            }
+
+            setFormData(newFormData);
         } else {
             setFormData({});
         }
-    }, [open]);
-
-    // Função para buscar os dados de categoria, profissão ou tipo
-    const fetchEntityData = async () => {
-        let url: (() => Promise<CodeItem[]>) | CodeItem[] | undefined;
-        let requiresNextCode = false;
-        let requiresNextOrder = false;
-        switch (entityType) {
-            case 'categorias':
-                url = () => fetchAllCategories();
-                requiresNextCode = true;
-                break;
-            case 'profissões':
-                url = () => fetchAllProfessions();
-                requiresNextCode = true;
-                break;
-            case 'tipos':
-                url = (await fetchAllExternalEntitiesData()).ExternalEntityTypes;
-                requiresNextOrder = true;
-                break;
-            default:
-                console.error(`Tipo de entidade '${entityType}' não existe.`);
-                return;
-        }
-        try {
-            const response = typeof url === 'function' ? await url() : await Promise.resolve(url);
-            if (response) {
-                const data: CodeItem[] = response
-
-                if (requiresNextCode) {
-                    const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code ?? 0), 0) + 1;
-
-                    setFormData(prevState => ({
-                        ...prevState,
-                        code: maxCode
-                    }));
-                } else {
-                    setFormData(prevState => ({
-                        ...prevState,
-                    }));
-                }
-                if (requiresNextOrder) {
-                    const maxOrder = data.reduce((max: number, item: CodeItem) => Math.max(max, item.order ?? 0), 0) + 1;
-
-                    setFormData(prevState => ({
-                        ...prevState,
-                        order: maxOrder
-                    }));
-                } else {
-                    setFormData(prevState => ({
-                        ...prevState,
-                    }));
-                }
-            }
-        } catch (error) {
-            console.error(`Erro ao buscar dados de ${entityType}:`, error);
-        }
-    };
+    }, [open, initialValues, categories, professions, dataEE, entityType]);
 
     // Função para lidar com o fecho
     const handleClose = () => {

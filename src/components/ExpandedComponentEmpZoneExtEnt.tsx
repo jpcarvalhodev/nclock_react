@@ -29,10 +29,7 @@ interface ExpandedComponentProps<T> {
 }
 
 // Define o componente
-export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | ExternalEntity | Register | Entity>({
-    data,
-    fields
-}: ExpandedComponentProps<T>) => {
+export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | ExternalEntity | Register | Entity>({ data, fields }: ExpandedComponentProps<T>) => {
     if (!data) {
         return <div>Sem dados disponíveis</div>;
     }

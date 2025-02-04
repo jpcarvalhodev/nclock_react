@@ -33,7 +33,7 @@ interface Field {
 
 // Define o componente
 export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields }: CreateModalProps<T>) => {
-    const { fetchAllDevices, fetchAllDoorData } = useTerminals();
+    const { devices, door } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -89,11 +89,9 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const door = await fetchAllDoorData();
-            const device = await fetchAllDevices();
             setDropdownData({
                 doorId: door,
-                deviceId: device
+                deviceId: devices
             });
             setAllDoors(door);
         } catch (error) {

@@ -19,7 +19,7 @@ interface Props<T> {
 
 // Define o componente
 export const UpdateTerminalOnAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onUpdate, entity }: Props<T>) => {
-    const { fetchTimePlans } = useTerminals();
+    const { timePlans } = useTerminals();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
 
@@ -41,8 +41,7 @@ export const UpdateTerminalOnAccessControlModal = <T extends Record<string, any>
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const timePlan = await fetchTimePlans();
-            const sortedTimePlan = timePlan.sort((a: any, b: any) => a.nome.localeCompare(b.nome));
+            const sortedTimePlan = timePlans.sort((a: any, b: any) => a.nome.localeCompare(b.nome));
             setDropdownData({
                 timePlanId: sortedTimePlan,
             });

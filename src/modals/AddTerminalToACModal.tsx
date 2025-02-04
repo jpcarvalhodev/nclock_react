@@ -38,7 +38,7 @@ const getCustomStyles = () => ({
 
 // Define o componente
 export const AddTerminalToACModal = <T extends Record<string, any>>({ title, open, onClose, onSave, devices, doors }: CreateModalProps<T>) => {
-    const { fetchTimePlans } = useTerminals();
+    const { timePlans } = useTerminals();
     const [formData, setFormData] = useState<PlanoAcessoDispositivos>({} as PlanoAcessoDispositivos);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -54,15 +54,14 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({ title, ope
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const timePlan = await fetchTimePlans();
             setDropdownData({
-                timePlanId: timePlan,
+                timePlanId: timePlans,
             });
-            if (timePlan.length > 0) {
+            if (timePlans.length > 0) {
                 setFormData(prevState => ({
                     ...prevState,
-                    idPlanoHorario: timePlan[0].id,
-                    nomePlanoHorario: timePlan[0].nome || '',
+                    idPlanoHorario: timePlans[0].id,
+                    nomePlanoHorario: timePlans[0].nome || '',
                 }));
             }
         } catch (error) {

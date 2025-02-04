@@ -785,3 +785,13 @@ export type Accesses = {
     eventDoorName: string;
     readerName: string;
 }
+
+export type Readers = {
+    [key: string]: any;
+    id: string;
+    deviceId: string;
+    deviceName: string;
+    nameReader: string;
+    doorId: string;
+    doorName: string;
+}

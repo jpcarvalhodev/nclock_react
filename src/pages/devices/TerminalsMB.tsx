@@ -39,14 +39,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define o componente de terminais
 export const TerminalsMB = () => {
-    const {
-        mbDevices,
-        fetchAllMBDevices,
-        restartMBDevice,
-        handleAddMBDevice,
-        handleUpdateMBDevice,
-        handleDeleteMBDevice,
-    } = useTerminals();
+    const { mbDevices, fetchAllMBDevices, restartMBDevice, handleAddMBDevice, handleUpdateMBDevice, handleDeleteMBDevice } = useTerminals();
     const { navbarColor, footerColor } = useNavbar();
     const [showAddModal, setShowAddModal] = useState(false);
     const [userTabKey, setUserTabKey] = useState('onOff');

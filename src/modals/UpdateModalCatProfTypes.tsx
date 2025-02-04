@@ -42,12 +42,13 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define a interface para os itens de código
 interface CodeItem {
-    code: number;
+    code?: number;
+    order?: number;
 }
 
 // Exporta o componente
 export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, entityType, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const { fetchAllCategories, fetchAllProfessions, fetchAllExternalEntitiesData } = usePersons();
+    const { categories, professions, dataEE } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -106,39 +107,50 @@ export const UpdateModalCatProfTypes = <T extends Entity>({ open, onClose, onUpd
     }, [open, entity]);
 
     // Função para buscar os dados de categoria, profissão ou tipo
-    const fetchEntityData = async () => {
-        try {
-            let data: CodeItem[] = [];
-            switch (entityType) {
-                case 'categorias': {
-                    const categories = await fetchAllCategories();
-                    data = categories;
-                    break;
-                }
-                case 'profissões': {
-                    const professions = await fetchAllProfessions();
-                    data = professions;
-                    break;
-                }
-                case 'tipos': {
-                    const externalEntitiesData = await fetchAllExternalEntitiesData();
-                    data = externalEntitiesData.ExternalEntityTypes.map(item => ({
-                        code: item.code,
-                        ...item
-                    }));
-                    break;
-                }
-                default:
-                    console.error(`Tipo de entidade '${entityType}' não existe.`);
-                    return;
+    const fetchEntityData = () => {
+        let data: CodeItem[] | undefined;
+        let requiresNextCode = false;
+        let requiresNextOrder = false;
+
+        switch (entityType) {
+            case 'categorias':
+                data = categories;
+                requiresNextCode = true;
+                break;
+            case 'profissões':
+                data = professions;
+                requiresNextCode = true;
+                break;
+            case 'tipos':
+                data = dataEE?.externalEntityTypes;
+                requiresNextOrder = true;
+                break;
+            default:
+                console.error(`Tipo de entidade '${entityType}' não existe.`);
+                return;
+        }
+
+        if (data && Array.isArray(data)) {
+            if (requiresNextCode) {
+                const maxCode = data.reduce(
+                    (max: number, item: CodeItem) => Math.max(max, item.code ?? 0),
+                    0
+                ) + 1;
+                setFormData(prevState => ({
+                    ...prevState,
+                    code: maxCode,
+                }));
             }
-            const maxCode = data.reduce((max: number, item: CodeItem) => Math.max(max, item.code), 0) + 1;
-            setFormData(prevState => ({
-                ...prevState,
-                code: maxCode
-            }));
-        } catch (error) {
-            console.error(`Erro ao buscar dados de ${entityType}:`, error);
+            if (requiresNextOrder) {
+                const maxOrder = data.reduce(
+                    (max: number, item: CodeItem) => Math.max(max, item.order ?? 0),
+                    0
+                ) + 1;
+                setFormData(prevState => ({
+                    ...prevState,
+                    order: maxOrder,
+                }));
+            }
         }
     };
 

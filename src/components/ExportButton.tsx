@@ -256,7 +256,7 @@ const exportToTXT = (data: DataItem[], fileName: string, device: Devices[], mbDe
 // Define o componente
 export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProps) => {
     const { devices, mbDevices, accessControl } = useTerminals();
-    const { entity } = useEntity();
+    const { entities } = useEntity();
     const fileName = 'dados_exportados';
     const dataToExport = selectedData.length > 0 ? selectedData : allData;
     const [entityLogo, setEntityLogo] = useState<Blob | null>(null);
@@ -291,7 +291,7 @@ export const ExportButton = ({ allData, selectedData, fields }: ExportButtonProp
                 <Dropdown.Item onClick={() => exportToXLSX(dataToExport, fileName, fields, devices, mbDevices, accessControl)}>Exportar em XLSX</Dropdown.Item>
                 <Dropdown.Item as="button">
                     <PDFDownloadLink
-                        document={<PDFDocument data={dataToExport} fields={fields} entity={entity} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} accessControl={accessControl} />}
+                        document={<PDFDocument data={dataToExport} fields={fields} entity={entities} entityLogo={entityLogo} device={devices} mbDevice={mbDevices} accessControl={accessControl} />}
                         fileName={`${fileName}.pdf`}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                     >

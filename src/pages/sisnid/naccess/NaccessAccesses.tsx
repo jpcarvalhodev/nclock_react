@@ -54,11 +54,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a página de acessos
 export const NaccessAccesses = () => {
-    const {
-        access,
-        fetchAllAccessesbyDevice,
-        handleAddAccess,
-    } = useAttendance();
+    const { access, fetchAllAccessesbyDevice, handleAddAccess } = useAttendance();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -297,24 +293,17 @@ export const NaccessAccesses = () => {
     const columns: TableColumn<Accesses>[] = accessesFields
         .filter(field => selectedColumns.includes(field.key) && field.key !== 'eventDoorId')
         .map(field => {
-            if (field.key === 'eventTime') {
+            if (field.key === 'nameUser') {
                 return {
                     ...field,
                     name: field.label,
-                    cell: (row: Accesses) => new Date(row.eventTime).toLocaleString('pt')
+                    cell: (row: Accesses) => (
+                        <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
+                            {row.nameUser}
+                        </div>
+                    )
                 };
-            } else
-                if (field.key === 'nameUser') {
-                    return {
-                        ...field,
-                        name: field.label,
-                        cell: (row: Accesses) => (
-                            <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
-                                {row.nameUser}
-                            </div>
-                        )
-                    };
-                }
+            }
             const formatField = (row: Accesses) => {
                 switch (field.key) {
                     default:

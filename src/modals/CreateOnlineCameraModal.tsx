@@ -33,7 +33,7 @@ interface Field {
 
 // Define o componente
 export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: CreateModalProps<T>) => {
-    const { fetchCameras } = useTerminals();
+    const { cameras } = useTerminals();
     const [formData, setFormData] = useState<Partial<Cameras>>(initialValues);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -98,9 +98,8 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
     useEffect(() => {
         const fetchCamerasAndSetNextNumber = async () => {
             try {
-                const data = await fetchCameras();
-                if (data && data.length > 0) {
-                    const maxNumber = data.reduce((max: number, data: Cameras) => Math.max(max, data.numeroCamera), 0);
+                if (cameras && cameras.length > 0) {
+                    const maxNumber = cameras.reduce((max: number, data: Cameras) => Math.max(max, data.numeroCamera), 0);
                     const nextCameraNumber = maxNumber + 1;
 
                     if (!initialValues.numeroCamera) {

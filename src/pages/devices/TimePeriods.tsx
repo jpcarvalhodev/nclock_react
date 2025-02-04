@@ -33,13 +33,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const TimePeriods = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const {
-        period,
-        fetchTimePeriods,
-        handleAddPeriod,
-        handleUpdatePeriod,
-        handleDeletePeriod,
-    } = useTerminals();
+    const { period, fetchTimePeriods, handleAddPeriod, handleUpdatePeriod, handleDeletePeriod } = useTerminals();
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Feriado']);
     const [filterText, setFilterText] = useState("");

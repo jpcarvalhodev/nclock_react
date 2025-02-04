@@ -42,10 +42,7 @@ interface Props<T> {
 }
 
 export const CreateModalDevices = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-    const {
-        devices,
-        fetchAllDevices,
-    } = useTerminals();
+    const { devices } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, enabled: true });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -114,7 +111,6 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // UseEffect para atualizar lista de todos os dispositivos
     useEffect(() => {
-        fetchAllDevices();
         const fetchDevicesAndSetNextNumber = async () => {
             try {
                 if (devices && devices.length > 0) {

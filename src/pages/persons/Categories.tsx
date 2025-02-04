@@ -43,13 +43,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de categorias
 export const Categories = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const {
-        categories,
-        fetchAllCategories,
-        handleAddCategory,
-        handleUpdateCategory,
-        handleDeleteCategory,
-    } = usePersons();
+    const { categories, fetchAllCategories, handleAddCategory, handleUpdateCategory, handleDeleteCategory } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'description']);

@@ -20,7 +20,6 @@ import { Employee } from '../../types/Types';
 
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-
 import { TextField, TextFieldProps } from '@mui/material';
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -35,13 +34,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de pessoas
 export const Persons = () => {
-    const {
-        data,
-        setData,
-        fetchAllDisabledEmployees,
-        handleAddEmployee,
-        handleDeleteEmployee
-    } = usePersons();
+    const { data, setData, fetchAllDisabledEmployees, handleAddEmployee, handleDeleteEmployee } = usePersons();
     const { navbarColor, footerColor } = useNavbar();
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);

@@ -34,7 +34,7 @@ interface Props<T> {
 
 // Define o componente
 export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-    const { fetchAllEmployees, fetchAllExternalEntitiesData } = usePersons();
+    const { employees, dataEE } = usePersons();
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
@@ -93,24 +93,21 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
     // Função para buscar os funcionários
     const fetchEmployees = async () => {
         try {
-            const employeeResponse = await fetchAllEmployees();
-            setDropdownData(prev => ({ ...prev, responsibleName: employeeResponse }));
+            setDropdownData(prev => ({ ...prev, responsibleName: employees }));
         } catch (error) {
-            toast.error('Erro ao buscar os dados dos funcionários.');
-            console.error(error);
+            console.error('Erro ao buscar os dados dos funcionários.');
         }
     };
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const externalEntityTypesResponse = await fetchAllExternalEntitiesData();
-            setDropdownData({
-                externalEntityTypeId: externalEntityTypesResponse.ExternalEntityTypes
-            });
+            setDropdownData(prev => ({
+                ...prev,
+                externalEntityTypeId: dataEE?.externalEntityTypes || []
+            }));
         } catch (error) {
-            toast.error('Erro ao buscar os dados de tipos.');
-            console.error(error);
+            console.error('Erro ao buscar os dados de tipos.');
         }
     };
 
@@ -128,7 +125,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
         } else {
             setFormData({});
         }
-    }, [open]);
+    }, [open, employees, dataEE, initialValues]);
 
     // Define a mudança de foto
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,6 +194,8 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
             switch (key) {
                 case 'externalEntityTypeId':
                     return option.externalEntityTypeId === value;
+                case 'responsibleName':
+                    return option.employeeID === value;
                 default:
                     return false;
             }
@@ -332,7 +331,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                                 <option value="">Selecione...</option>
                                                 {dropdownData.responsibleName && dropdownData.responsibleName.map((employee) => (
                                                     <option key={employee.employeeID} value={employee.employeeID}>
-                                                        {employee.name}
+                                                        {employee.enrollNumber} - {employee.name}
                                                     </option>
                                                 ))}
                                             </Form.Control>

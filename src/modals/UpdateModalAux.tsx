@@ -44,7 +44,7 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const { fetchTimePeriods } = useTerminals();
+    const { period } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -106,9 +106,8 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const timezones = await fetchTimePeriods();
             setDropdownData({
-                timezoneId: timezones
+                timezoneId: period
             });
         } catch (error) {
             console.error('Erro ao buscar os dados de dispositivos e períodos', error);

@@ -46,7 +46,7 @@ interface Field {
 
 // Define o componente
 export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, onClose, onUpdate, onDuplicate, fields, entity, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const { fetchAllDevices } = useTerminals();
+    const { devices } = useTerminals();
     const [formData, setFormData] = useState<Partial<LimpezasEOcorrencias>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -110,7 +110,6 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({ title, open, on
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const devices = await fetchAllDevices();
             setDropdownData({
                 deviceId: devices
             });

@@ -52,8 +52,8 @@ interface DropdownData {
 
 // Define o componente
 export const CreateModalAttendance = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
-    const { fetchAllEmployees } = usePersons();
-    const { fetchAllDevices } = useTerminals();
+    const { employees } = usePersons();
+    const { devices } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
     const [dropdownData, setDropdownData] = useState<DropdownData>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -107,9 +107,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const employees = await fetchAllEmployees();
             const sortedEmployees = employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
-            const devices = await fetchAllDevices();
             const sortedDevices = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
             const selectedEmployee = sortedEmployees.find(emp => emp.employeeID === initialValues.selectedEmployeeIds);
             if (selectedEmployee) {
@@ -294,7 +292,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
                                             <option value="">Selecione...</option>
                                             {dropdownData.employeeId?.map((option) => (
                                                 <option key={option.employeeID} value={option.employeeID}>
-                                                    {option.name}
+                                                    {option.enrollNumber} - {option.name}
                                                 </option>
                                             ))}
                                         </Form.Control>

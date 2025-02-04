@@ -18,11 +18,12 @@ import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
 import { useTerminals } from "../context/TerminalsContext";
-import { auxiliariesFields, doorsFields } from "../fields/Fields";
-import { Auxiliaries, Doors } from "../types/Types";
+import { auxiliariesFields, doorsFields, readersFields } from "../fields/Fields";
+import { Auxiliaries, Doors, Readers } from "../types/Types";
 
 import { UpdateModalAux } from "./UpdateModalAux";
 import { UpdateModalDoor } from "./UpdateModalDoor";
+import { UpdateModalReaders } from "./UpdateModalReaders";
 
 // Define a interface Entity
 export interface Entity {
@@ -57,14 +58,7 @@ interface UpdateModalProps<T extends Entity> {
 }
 
 export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const {
-        door,
-        aux,
-        period,
-        fetchAllDoorData,
-        handleUpdateDoor,
-        handleUpdateAux,
-    } = useTerminals();
+    const { door, aux, period, fetchReaders, handleUpdateReaders, handleUpdateDoor, handleUpdateAux } = useTerminals();
     const [formData, setFormData] = useState<T>({ ...entity } as T);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -89,11 +83,17 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const [loadingAuxOutData, setLoadingAuxOutData] = useState(false);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
     const [showIpValidationErrors, setShowIpValidationErrors] = useState(false);
+    const [loadingReaderData, setLoadingReaderData] = useState(false);
+    const [selectedReader, setSelectedReader] = useState<Readers | null>(null);
+    const [filteredReaders, setFilteredReaders] = useState<Readers[]>([]);
+    const [showReaderUpdateModal, setShowReaderUpdateModal] = useState(false);
+    const [currentReaderIndex, setCurrentReaderIndex] = useState(0);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
         if (open && entity) {
             fetchDoors();
+            fetchAllReaders();
             fetchAuxiliaries();
             setFormData({ ...entity } as T);
             const matchedDevice = deviceOptions.find(option => option.label === entity.model);
@@ -157,6 +157,13 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         setFilteredDoors(filteredDoors);
     }
 
+    // Função para buscar as portas
+    const fetchAllReaders = async () => {
+        const data = await fetchReaders(entity.zktecoDeviceID);
+        const filteredReaders = data.filter((reader: Readers) => reader.deviceId === entity.zktecoDeviceID);
+        setFilteredReaders(filteredReaders);
+    }
+
     // Função para buscar as auxiliares
     const fetchAuxiliaries = async () => {
         const filteredAuxiliaries = aux.filter((aux: Auxiliaries) => aux.deviceId === entity.zktecoDeviceID);
@@ -177,7 +184,14 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const updateDoor = async (door: Doors) => {
         await handleUpdateDoor(door);
         setLoadingDoorData(false);
-        refreshDoorsAndAux();
+        refreshDoorsReadersAndAux();
+    }
+
+    // Função para lidar com a atualização dos leitores
+    const updateReader = async (reader: Readers) => {
+        await handleUpdateReaders(reader);
+        setLoadingReaderData(false);
+        refreshDoorsReadersAndAux();
     }
 
     // Função para lidar com a atualização das auxiliares
@@ -185,12 +199,13 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         await handleUpdateAux(aux);
         setLoadingAuxInData(false);
         setLoadingAuxOutData(false);
-        refreshDoorsAndAux();
+        refreshDoorsReadersAndAux();
     }
 
     // Função para atualizar as portas e auxiliares
-    const refreshDoorsAndAux = () => {
-        fetchAllDoorData();
+    const refreshDoorsReadersAndAux = () => {
+        fetchDoors();
+        fetchAllReaders();
         fetchAuxiliaries();
     }
 
@@ -301,13 +316,13 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         Object.keys(filters).every(key =>
             filters[key] === "" || String(door[key]) === String(filters[key])
         )
-    );
+    ).sort((a, b) => a.doorNo - b.doorNo);
 
     // Seleciona a entidade anterior
     const handleNextDoor = () => {
-        if (currentDoorIndex < door.length - 1) {
+        if (currentDoorIndex < filteredDataTable.length - 1) {
             setCurrentDoorIndex(currentDoorIndex + 1);
-            setSelectedDoor(door[currentDoorIndex + 1]);
+            setSelectedDoor(filteredDataTable[currentDoorIndex + 1]);
         }
     };
 
@@ -315,7 +330,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const handlePrevDoor = () => {
         if (currentDoorIndex > 0) {
             setCurrentDoorIndex(currentDoorIndex - 1);
-            setSelectedDoor(door[currentDoorIndex - 1]);
+            setSelectedDoor(filteredDataTable[currentDoorIndex - 1]);
         }
     };
 
@@ -363,12 +378,79 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             };
         });
 
+    // Define as colunas que serão exibidas
+    const includedReaderColumns = ['nameReader', 'doorName'];
+
+    // Filtra os dados da tabela
+    const filteredReaderDataTable = filteredReaders.filter(aux =>
+        Object.keys(filters).every(key =>
+            filters[key] === "" || String(aux[key]) === String(filters[key])
+        )
+    ).sort((a, b) => a.nameReader.localeCompare(b.nameReader));
+
+    // Define as colunas
+    const readerColumns: TableColumn<Readers>[] = readersFields
+        .filter(field => includedReaderColumns.includes(field.key))
+        .map(field => {
+            const formatField = (row: Readers) => {
+                switch (field.key) {
+                    default:
+                        return row[field.key] || '';
+                }
+            };
+            return {
+                id: field.key,
+                name: (
+                    <>
+                        {field.label}
+                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredReaderDataTable} />
+                    </>
+                ),
+                selector: (row: Readers) => {
+                    if (field.key === 'readerName') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                },
+                sortable: true,
+                cell: (row: Readers) => {
+                    if (field.key === 'readerName') {
+                        return row[field.key];
+                    }
+                    return formatField(row);
+                }
+            };
+        });
+
+    // Função para lidar com a edição dos leitores
+    const handleEditReaders = (row: Readers) => {
+        setSelectedReader(row);
+        setShowReaderUpdateModal(true);
+        setLoadingReaderData(true);
+    }
+
+    // Seleciona a entidade anterior
+    const handleNextReader = () => {
+        if (currentReaderIndex < filteredReaderDataTable.length - 1) {
+            setCurrentReaderIndex(currentReaderIndex + 1);
+            setSelectedReader(filteredReaderDataTable[currentReaderIndex + 1]);
+        }
+    };
+
+    // Seleciona a entidade seguinte
+    const handlePrevReader = () => {
+        if (currentReaderIndex > 0) {
+            setCurrentReaderIndex(currentReaderIndex - 1);
+            setSelectedReader(filteredReaderDataTable[currentReaderIndex - 1]);
+        }
+    };
+
     // Filtra os dados da tabela
     const filteredAuxDataTable = auxiliaries.filter(aux =>
         Object.keys(filters).every(key =>
             filters[key] === "" || String(aux[key]) === String(filters[key])
         )
-    );
+    ).sort((a, b) => a.auxNo - b.auxNo);
 
     // Função para lidar com a edição das auxiliares
     const handleEditAux = (row: Auxiliaries, type: 'in' | 'out') => {
@@ -629,6 +711,9 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                     <Nav.Link eventKey="portas">Portas</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
+                                    <Nav.Link eventKey="leitores">Leitores</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
                                     <Nav.Link eventKey="auxiliares">Auxiliares</Nav.Link>
                                 </Nav.Item>
                             </Nav>
@@ -813,6 +898,32 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                         </Row>
                                     </Form>
                                 </Tab.Pane>
+                                <Tab.Pane eventKey="leitores">
+                                    <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                        <Row>
+                                            {loadingReaderData ?
+                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                </div> :
+                                                <DataTable
+                                                    columns={readerColumns}
+                                                    data={filteredReaderDataTable}
+                                                    pagination
+                                                    paginationComponentOptions={paginationOptions}
+                                                    paginationPerPage={5}
+                                                    paginationRowsPerPageOptions={[5, 10]}
+                                                    selectableRows
+                                                    onRowDoubleClicked={handleEditReaders}
+                                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                                    customStyles={customStyles}
+                                                    striped
+                                                    defaultSortAsc={true}
+                                                    defaultSortFieldId="readerName"
+                                                />
+                                            }
+                                        </Row>
+                                    </Form>
+                                </Tab.Pane>
                                 <Tab.Pane eventKey="auxiliares">
                                     <Form style={{ marginTop: 10, marginBottom: 10 }}>
                                         <Row style={{ display: "flex", flexDirection: "column" }}>
@@ -881,7 +992,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     entity={selectedDoor}
                     fields={doorsFields}
                     title="Atualizar Porta"
-                    canMoveNext={currentDoorIndex < door.length - 1}
+                    canMoveNext={currentDoorIndex < filteredDataTable.length - 1}
                     canMovePrev={currentDoorIndex > 0}
                     onNext={handleNextDoor}
                     onPrev={handlePrevDoor}
@@ -913,6 +1024,23 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     canMovePrev={currentAuxOutIndex > 0}
                     onNext={() => handleNextAux('out')}
                     onPrev={() => handlePrevAux('out')}
+                />
+            )}
+            {selectedReader && (
+                <UpdateModalReaders
+                    open={showReaderUpdateModal}
+                    onClose={() => {
+                        setShowReaderUpdateModal(false)
+                        setLoadingReaderData(false)
+                    }}
+                    onUpdate={updateReader}
+                    entity={selectedReader}
+                    fields={readersFields}
+                    title="Atualizar Leitor"
+                    canMoveNext={currentReaderIndex < filteredReaderDataTable.length - 1}
+                    canMovePrev={currentReaderIndex > 0}
+                    onNext={handleNextReader}
+                    onPrev={handlePrevReader}
                 />
             )}
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>

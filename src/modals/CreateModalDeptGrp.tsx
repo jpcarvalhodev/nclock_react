@@ -3,13 +3,11 @@ import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bo
 import DataTable from 'react-data-table-component';
 import { toast } from 'react-toastify';
 
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
 import { customStyles } from '../components/CustomStylesDataTable';
 import { usePersons } from '../context/PersonsContext';
 import { employeeFields } from '../fields/Fields';
 import { Department, Employee, Group } from '../types/Types';
 
-import { CreateModalEmployees } from './CreateModalEmployees';
 import { UpdateModalEmployees } from './UpdateModalEmployees';
 
 // Define a interface para os itens de campo
@@ -38,17 +36,9 @@ interface Props<T> {
 
 // Define o componente
 export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClose, onSave, fields, initialValues, entityType }: Props<T>) => {
-    const {
-        fetchAllEmployees,
-        fetchAllDepartments,
-        fetchAllGroups,
-        handleAddEmployee,
-        handleUpdateEmployee,
-    } = usePersons();
+    const { employees, departments, groups, fetchAllDepartments, fetchAllGroups, handleUpdateEmployee } = usePersons();
     const [formData, setFormData] = useState<Partial<T>>(initialValues);
-    const [employees, setEmployees] = useState<Employee[]>([]);
     const [employeeData, setEmployeeData] = useState<Employee[]>([]);
-    const [showEmployeeModal, setShowEmployeeModal] = useState(false);
     const [showUpdateEmployeeModal, setShowUpdateEmployeeModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [isFormValid, setIsFormValid] = useState(false);
@@ -106,13 +96,6 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
         return isValid;
     };
 
-    // Função para adicionar um funcionário e um cartão
-    const addEmployeeAndCard = async (employee: Partial<Employee>) => {
-        await handleAddEmployee(employee as Employee);
-        setShowEmployeeModal(false);
-        setClearSelectionToggle((prev) => !prev);
-    }
-
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
@@ -155,13 +138,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
-        const isDepartment = entityType === 'department';
         try {
-            const departments = await fetchAllDepartments();
-            const groups = await fetchAllGroups();
-            const employee = await fetchAllEmployees();
-
-            setEmployees(employee);
             setDropdownData({
                 departments: departments,
                 groups: groups
@@ -169,26 +146,32 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
             const items = departments.map((item: Department) => ({
                 ...item,
-                code: (item.code)
+                code: item.code
             }));
 
             const nextCode = items.reduce((max: number, item: Department) => Math.max(max, item.code), 0) + 1;
-            setFormData(prev => ({ ...prev, code: nextCode }));
+            return nextCode;
         } catch (error) {
-            toast.error('Erro ao buscar os dados de funcionários e dispositivos.');
-            console.error(`Erro ao buscar ${isDepartment ? 'departamentos' : 'grupos'}:`, error);
+            console.error('Erro ao buscar os dados de funcionários e dispositivos.', error);
+            return undefined;
         }
     };
 
     // Atualiza o estado do componente ao abrir o modal
     useEffect(() => {
         if (open) {
-            fetchDropdownOptions();
-            setFormData(initialValues);
+            const updateForm = async () => {
+                const nextCode = await fetchDropdownOptions();
+                setFormData({
+                    ...initialValues,
+                    ...(nextCode !== undefined && { code: nextCode })
+                });
+            };
+            updateForm();
         } else {
             setFormData({});
         }
-    }, [open]);
+    }, [open, initialValues, departments, groups]);
 
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (e: React.ChangeEvent<FormControlElement>) => {
@@ -513,14 +496,6 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     noDataComponent="Não existem dados disponíveis para exibir."
                                 />
                             </div>
-                            <div style={{ display: 'flex' }}>
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Novo Funcionário</Tooltip>}
-                                >
-                                    <CustomOutlineButton className="action-button" icon="bi-plus" onClick={() => setShowEmployeeModal(true)} />
-                                </OverlayTrigger>
-                            </div>
                         </Col>
                     </Row>
                 </Form>
@@ -529,16 +504,6 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                 <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>Fechar</Button>
                 <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
             </Modal.Footer>
-            {showEmployeeModal && (
-                <CreateModalEmployees
-                    title='Adicionar Funcionário'
-                    open={showEmployeeModal}
-                    onClose={() => setShowEmployeeModal(false)}
-                    onSave={addEmployeeAndCard}
-                    fields={employeeFields}
-                    initialValues={{}}
-                />
-            )}
             {showUpdateEmployeeModal && selectedEmployee && (
                 <UpdateModalEmployees
                     title='Atualizar Funcionário'

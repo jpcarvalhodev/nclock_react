@@ -44,11 +44,7 @@ interface Filters {
 
 // Define o componente
 export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterText, filteredEmployees, data, onRefreshData, filteredData, onDuplicate, onSelectedRowsChange }: PersonsDataTableProps) => {
-    const {
-        fetchAllDisabledEmployees,
-        handleUpdateEmployee,
-        handleDeleteEmployee,
-    } = usePersons();
+    const { fetchAllDisabledEmployees, handleUpdateEmployee, handleDeleteEmployee } = usePersons();
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);

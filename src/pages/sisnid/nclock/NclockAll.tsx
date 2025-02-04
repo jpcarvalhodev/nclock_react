@@ -53,10 +53,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a página de todas as assiduidades
 export const NclockAll = () => {
-    const {
-        fetchAllAttendances,
-        fetchAllAttendancesBetweenDates,
-    } = useAttendance();
+    const { fetchAllAttendances, fetchAllAttendancesBetweenDates } = useAttendance();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);

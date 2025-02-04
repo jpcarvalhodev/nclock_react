@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 
 import { fetchWithAuth } from "../components/FetchWithAuth";
 
-import { AccessControl, Accesses, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, MBDevice, ManualOpenDoor, NewTransactionCard, Profession, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, TimePlan, Zone } from "../types/Types";
+import { AccessControl, Accesses, Ads, Auxiliaries, BackupDB, Cameras, Category, Department, Devices, DoorDevice, Doors, EmailUser, Employee, EmployeeAttendanceTimes, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, KioskConfig, License, LicenseKey, LimpezasEOcorrencias, MBDevice, ManualOpenDoor, NewTransactionCard, Profession, Readers, RecolhaMoedeiroEContador, ResetCoin, TimePeriod, TimePlan, Zone } from "../types/Types";
 
 // URL base para as APIs
 export const BASE_URL = process.env.REACT_APP_API_BASE;
@@ -1696,7 +1696,6 @@ export const updateDoor = async (door: Doors) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE LICENÇAS//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
 export const fetchLicenses = async (key: string) => {
     const response = await fetchWithAuth(`Configuration/GetLisence?key=${key}`);
     if (!response.ok) {
@@ -1742,6 +1741,36 @@ export const updateLicenses = async (key: string, licences: License[]) => {
         body: JSON.stringify(licences)
     });
 
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        return errorData;
+    }
+    return response.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE LEITORES//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export const fetchAllReaders = async (deviceId: string) => {
+    const response = await fetchWithAuth(`AccDoor/GetReadersByDeviceId?deviceId=${deviceId}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || errorData.error);
+        throw new Error();
+    }
+    return response.json();
+}
+
+export const updateReaders = async (reader: Readers) => {
+    const response = await fetchWithAuth(`AccDoor/UpdateReader?id=${reader.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reader)
+    });
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error);

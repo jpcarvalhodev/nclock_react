@@ -21,9 +21,7 @@ interface ExpandedComponentProps {
 
 // Define o componente
 export const ExpandedComponentDept = ({ data, fetchSubdepartments, isRoot }: ExpandedComponentProps) => {
-    const {
-        departments
-    } = usePersons();
+    const { departments } = usePersons();
     const [subdepartments, setSubdepartments] = useState<DepartmentData[]>(data.subdepartments || []);
 
     // Usa useEffect para buscar subdepartamentos quando o componente é montado ou data/fetchSubdepartments mudam

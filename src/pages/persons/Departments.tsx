@@ -44,15 +44,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de departamentos
 export const Departments = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const {
-        departments,
-        setDepartments,
-        fetchAllDepartments,
-        fetchAllSubDepartments,
-        handleAddDepartment,
-        handleUpdateDepartment,
-        handleDeleteDepartment
-    } = usePersons();
+    const { departments, setDepartments, fetchAllDepartments, fetchAllSubDepartments, handleAddDepartment, handleUpdateDepartment, handleDeleteDepartment } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['code', 'name', 'description']);

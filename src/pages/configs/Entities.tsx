@@ -30,7 +30,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 export const Entities = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const { entity, fetchAllEntity, updateEntity } = useEntity();
+    const { entities, fetchAllEntity, updateEntity } = useEntity();
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nome', 'nif', 'email', 'enabled']);
     const [filterText, setFilterText] = useState("");
@@ -139,9 +139,9 @@ export const Entities = () => {
     // Define a função de próxima entidade
     const handleNextEntity = () => {
         setCurrentEntityIndex(prevIndex => {
-            if (prevIndex < entity.length - 1) {
+            if (prevIndex < entities.length - 1) {
                 const newIndex = prevIndex + 1;
-                setSelectedEntity(entity[newIndex]);
+                setSelectedEntity(entities[newIndex]);
                 return newIndex;
             }
             return prevIndex;
@@ -153,7 +153,7 @@ export const Entities = () => {
         setCurrentEntityIndex(prevIndex => {
             if (prevIndex > 0) {
                 const newIndex = prevIndex - 1;
-                setSelectedEntity(entity[newIndex]);
+                setSelectedEntity(entities[newIndex]);
                 return newIndex;
             }
             return prevIndex;
@@ -177,7 +177,7 @@ export const Entities = () => {
     };
 
     // Filtra os dados da tabela
-    const filteredDataTable = Array.isArray(entity) ? entity.filter(user =>
+    const filteredDataTable = Array.isArray(entities) ? entities.filter(user =>
         Object.keys(filters).every(key =>
             filters[key] === "" || (user[key] != null && String(user[key]).toLowerCase().includes(filters[key].toLowerCase()))
         ) &&
@@ -324,7 +324,7 @@ export const Entities = () => {
                     title="Atualizar Entidade"
                     onNext={handleNextEntity}
                     onPrev={handlePrevEntity}
-                    canMoveNext={currentEntityIndex < entity.length - 1}
+                    canMoveNext={currentEntityIndex < entities.length - 1}
                     canMovePrev={currentEntityIndex > 0}
                 />
             )}

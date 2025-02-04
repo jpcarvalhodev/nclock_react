@@ -43,7 +43,7 @@ const initialValues: Partial<RecolhaMoedeiroEContador> = {
 // Define o componente
 export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValuesData }: CreateModalProps<T>) => {
     const { devices } = useTerminals();
-    const { fetchAllCoin } = useKiosk();
+    const { getCoins } = useKiosk();
     const { kioskConfig } = useNavbar();
     const [formData, setFormData] = useState<Partial<RecolhaMoedeiroEContador>>({ ...initialValues, ...initialValuesData });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -109,10 +109,9 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
     // Buscar as recolhas para o moedeiro
     const fetchRecolhas = async () => {
         try {
-            const recolhas = await fetchAllCoin();
-            const recolhaDevice = recolhas.find((recolha: RecolhaMoedeiroEContador) => devices.some(device => device.zktecoDeviceID === recolha.deviceID));
-            if (recolhas && recolhas.length > 0 && recolhaDevice) {
-                const lastRecolha = recolhas.sort((a: RecolhaMoedeiroEContador, b: RecolhaMoedeiroEContador) => new Date(b.dataFimRecolha).getTime() - new Date(a.dataFimRecolha).getTime())[0];
+            const recolhaDevice = getCoins.find((recolha: RecolhaMoedeiroEContador) => devices.some(device => device.zktecoDeviceID === recolha.deviceID));
+            if (getCoins && getCoins.length > 0 && recolhaDevice) {
+                const lastRecolha = getCoins.sort((a: RecolhaMoedeiroEContador, b: RecolhaMoedeiroEContador) => new Date(b.dataFimRecolha).getTime() - new Date(a.dataFimRecolha).getTime())[0];
                 setFormData(prevState => ({
                     ...prevState,
                     dataRecolha: new Date(new Date(lastRecolha.dataFimRecolha).getTime()).toISOString().slice(0, 16)

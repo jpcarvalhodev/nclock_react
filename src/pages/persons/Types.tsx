@@ -37,13 +37,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de tipos de entidades externas
 export const Types = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const {
-        dataEE,
-        fetchAllExternalEntitiesData,
-        handleAddExternalEntityTypes,
-        handleUpdateExternalEntityTypes,
-        handleDeleteExternalEntityTypes,
-    } = usePersons();
+    const { dataEE, fetchAllExternalEntitiesData, handleAddExternalEntityTypes, handleUpdateExternalEntityTypes, handleDeleteExternalEntityTypes } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['order', 'name']);

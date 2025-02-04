@@ -35,7 +35,7 @@ const initialValues: Partial<TimePeriod> = {
 };
 
 export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open, onClose, onSave, fields, initialValuesData }: Props<T>) => {
-    const { fetchTimePeriods } = useTerminals();
+    const { period } = useTerminals();
     const [formData, setFormData] = useState<Partial<TimePeriod>>({ ...initialValues, ...initialValuesData });
     const [isFormValid, setIsFormValid] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -91,37 +91,23 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
     // Usa useEffect para buscar o próximo ID do App ao abrir o modal
     useEffect(() => {
         if (open) {
-            fetchNextAppId();
-            if (initialValuesData.name) {
-                setFormData({ ...initialValuesData });
-            } else {
-                setFormData({ ...initialValues });
+            const baseData = initialValuesData.name ? { ...initialValuesData } : { ...initialValues };
+
+            let nextAppId = '1';
+            if (period.length > 0) {
+                const maxAppId = period.reduce((max: number, item: { appId: string }) =>
+                    Math.max(max, parseInt(item.appId, 10)), 0);
+                nextAppId = (maxAppId + 1).toString();
             }
+
+            setFormData({
+                ...baseData,
+                appId: nextAppId,
+            });
         } else {
             setFormData({});
         }
-    }, [open]);
-
-    // Função para buscar o próximo ID do App
-    const fetchNextAppId = async () => {
-        const apiData = await fetchTimePeriods();
-
-        if (apiData.length > 0) {
-            const maxAppId = apiData.reduce((max: number, item: { appId: string; }) => Math.max(max, parseInt(item.appId, 10)), 0);
-            const nextId = maxAppId + 1;
-            const nextAppId = nextId.toString();
-
-            setFormData(prevState => ({
-                ...prevState,
-                appId: nextAppId
-            }));
-        } else {
-            setFormData(prevState => ({
-                ...prevState,
-                appId: '1'
-            }));
-        }
-    }
+    }, [open, period, initialValuesData]);
 
     // Função para lidar com a mudança de valor
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -158,8 +144,8 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
         const updatedData = { ...data };
 
         Object.keys(daysOfWeek).forEach(day => {
-            const startKeys = [`${day}Start1`, `${day}Start2`, `${day}Start3`] as (keyof TimePeriod)[];
-            const endKeys = [`${day}End1`, `${day}End2`, `${day}End3`] as (keyof TimePeriod)[];
+            const startKeys = [`${day}Start1`] as (keyof TimePeriod)[];
+            const endKeys = [`${day}End1`] as (keyof TimePeriod)[];
 
             startKeys.forEach(startKey => {
                 if (!updatedData[startKey]) {
@@ -170,6 +156,23 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
             endKeys.forEach(endKey => {
                 if (!updatedData[endKey]) {
                     updatedData[endKey] = '23:59';
+                }
+            });
+        });
+
+        Object.keys(daysOfWeek).forEach(day => {
+            const startKeys = [`${day}Start2`, `${day}Start3`] as (keyof TimePeriod)[];
+            const endKeys = [`${day}End2`, `${day}End3`] as (keyof TimePeriod)[];
+
+            startKeys.forEach(startKey => {
+                if (!updatedData[startKey]) {
+                    updatedData[startKey] = '00:00';
+                }
+            });
+
+            endKeys.forEach(endKey => {
+                if (!updatedData[endKey]) {
+                    updatedData[endKey] = '00:00';
                 }
             });
         });

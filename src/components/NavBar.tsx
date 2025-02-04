@@ -306,7 +306,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 	const { devices, accessControl, period, mbCloseOpen } = useTerminals();
 	const { employees, departments, groups, registeredUsers, categories, dataEE, professions, zones } = usePersons();
 	const { payTerminal, payCoins, totalPayments, moveCard, moveKiosk, totalMovements, moveVP, manualOpenDoor, getCoins, cleaning, occurrences, counter, fetchAllPayTerminal, fetchAllPayCoins, fetchAllMoveCard, fetchAllMoveKiosk, fetchAndUnifyPaymentsForNavbar, fetchAndUnifyMovementsForNavbar } = useKiosk();
-	const { fetchAllAttendances } = useAttendance();
+	const { fetchAllAttendances, fetchAllAccessesbyDevice } = useAttendance();
 	const [user, setUser] = useState({ name: '', email: '' });
 	const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
 	const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
@@ -2705,7 +2705,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 									{(!isMobile || visibleGroup === 'movimentos naccess') && (
 										<div className="btn-group" role="group">
 											<div className='icon-text-pessoas'>
-												<Link to="/naccess/naccessaccesses" type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`}>
+												<Link to="/naccess/naccessaccesses" onClick={() => fetchAllAccessesbyDevice()} type="button" className={`btn btn-light ribbon-button ribbon-button-pessoas ${currentRoute === '#' ? 'current-active' : ''}`}>
 													<span className="icon">
 														<img src={movement} alt="botão acessos" />
 													</span>

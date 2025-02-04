@@ -984,43 +984,43 @@ export const Terminals = () => {
 
     // Função para enviar os utilizadores selecionados
     const handleSendSelectedUsers = async () => {
-        if (!selectedTerminal || selectedUserRows.length === 0) {
-            toast('Selecione um terminal e pelo menos um utilizador!');
-        } else {
+        if (selectedTerminal && selectedUserRows.length) {
             setLoadingSendSelectedUsers(true);
             const userIds = selectedUserRows.map(user => user.employeeID);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingSendSelectedUsers(false);
             setSelectedTerminal(null);
             setClearSelectionToggle((prev) => !prev);
+        } else {
+            toast.warn('Selecione um terminal e pelo menos um utilizador!');
         }
     }
 
     // Função para excluir os utilizadores selecionados
     const handleDeleteSelectedUsers = async () => {
-        if (!selectedTerminal || selectedUserRows.length === 0) {
-            toast('Selecione um terminal e pelo menos um utilizador!');
-        } else {
+        if (selectedTerminal && selectedUserRows.length) {
             setLoadingDeleteSelectedUsers(true);
             const userIds = selectedUserRows.map(user => user.employeeID);
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingDeleteSelectedUsers(false);
             setSelectedTerminal(null);
             setClearSelectionToggle((prev) => !prev);
+        } else {
+            toast.warn('Selecione um terminal e pelo menos um utilizador!');
         }
     }
 
     // Função para recolher os utilizadores selecionados
     const handleFetchSelectedUsers = async () => {
-        if (!selectedTerminal || selectedUserRows.length === 0) {
-            toast('Selecione um terminal e pelo menos um utilizador!');
-        } else {
+        if (selectedTerminal && selectedUserRows.length) {
             setLoadingFetchSelectedUsers(true);
             const userIds = selectedUserRows.map(user => user.employeeID);
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingFetchSelectedUsers(false);
             setSelectedTerminal(null);
             setClearSelectionToggle((prev) => !prev);
+        } else {
+            toast.warn('Selecione um terminal e pelo menos um utilizador!');
         }
     }
 

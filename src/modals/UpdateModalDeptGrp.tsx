@@ -52,14 +52,8 @@ interface UpdateModalProps<T extends Entity> {
 
 // Exporta o componente
 export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, entityType, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const {
-        fetchAllEmployees,
-        fetchAllDepartments,
-        fetchAllGroups,
-        handleUpdateEmployee,
-    } = usePersons();
+    const { employees, setEmployees, fetchAllDepartments, departments, groups, fetchAllGroups, handleUpdateEmployee } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
-    const [employees, setEmployees] = useState<Employee[]>([]);
     const [employeeData, setEmployeeData] = useState<Employee[]>([]);
     const [subdepartments, setSubDepartments] = useState<Department[]>([]);
     const [showEmployeeModal, setShowEmployeeModal] = useState(false);
@@ -146,13 +140,12 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
         } else {
             fetchAllGroups();
         }
-        const updatedEmployees = await fetchAllEmployees();
-        setEmployees(updatedEmployees);
+        setEmployees(employees);
 
         if (entityType === 'department') {
-            setEmployeeData(updatedEmployees.filter(emp => emp.departmentId === formData.departmentID));
+            setEmployeeData(employees.filter(emp => emp.departmentId === formData.departmentID));
         } else {
-            setEmployeeData(updatedEmployees.filter(emp => emp.groupId === formData.groupID));
+            setEmployeeData(employees.filter(emp => emp.groupId === formData.groupID));
         }
         setShowUpdateEmployeeModal(false);
         setClearSelectionToggle((prev) => !prev);
@@ -167,10 +160,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const departments = await fetchAllDepartments();
-            const groups = await fetchAllGroups();
-            const employee = await fetchAllEmployees();
-            const sortedEmployee = employee.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
+            const sortedEmployee = employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
             setEmployees(sortedEmployee);
             setDropdownData({
                 departments: departments,
@@ -354,7 +344,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                     {entityType === 'department' ? 'Atualizar Departamento' : 'Atualizar Grupo'}
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ marginBottom: 40 }}>
+            <Modal.Body>
                 <Form>
                     <Row>
                         <Col md={5}>

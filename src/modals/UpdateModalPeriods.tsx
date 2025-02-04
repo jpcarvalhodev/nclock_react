@@ -126,8 +126,8 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
         const updatedData = { ...data };
 
         Object.keys(daysOfWeek).forEach(day => {
-            const startKeys = [`${day}Start1`, `${day}Start2`, `${day}Start3`] as (keyof TimePeriod)[];
-            const endKeys = [`${day}End1`, `${day}End2`, `${day}End3`] as (keyof TimePeriod)[];
+            const startKeys = [`${day}Start1`] as (keyof TimePeriod)[];
+            const endKeys = [`${day}End1`] as (keyof TimePeriod)[];
 
             startKeys.forEach(startKey => {
                 if (!updatedData[startKey]) {
@@ -138,6 +138,23 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
             endKeys.forEach(endKey => {
                 if (!updatedData[endKey]) {
                     updatedData[endKey] = '23:59';
+                }
+            });
+        });
+
+        Object.keys(daysOfWeek).forEach(day => {
+            const startKeys = [`${day}Start2`, `${day}Start3`] as (keyof TimePeriod)[];
+            const endKeys = [`${day}End2`, `${day}End3`] as (keyof TimePeriod)[];
+
+            startKeys.forEach(startKey => {
+                if (!updatedData[startKey]) {
+                    updatedData[startKey] = '00:00';
+                }
+            });
+
+            endKeys.forEach(endKey => {
+                if (!updatedData[endKey]) {
+                    updatedData[endKey] = '00:00';
                 }
             });
         });

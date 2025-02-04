@@ -55,13 +55,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a página de pedidos
 export const NclockRequests = () => {
-    const {
-        fetchAllAttendances,
-        fetchAllAttendancesBetweenDates,
-        handleAddAttendance,
-        handleUpdateAttendance,
-        handleDeleteAttendance,
-    } = useAttendance();
+    const { fetchAllAttendances, fetchAllAttendancesBetweenDates, handleAddAttendance, handleUpdateAttendance, handleDeleteAttendance } = useAttendance();
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);

@@ -46,7 +46,7 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpdate, entity, fields, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const { fetchAllDevices, fetchTimePeriods } = useTerminals();
+    const { devices, period } = useTerminals();
     const [formData, setFormData] = useState<Partial<T>>({ ...entity });
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -110,11 +110,9 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const devices = await fetchAllDevices();
-            const timezones = await fetchTimePeriods();
             setDropdownData({
                 devId: devices,
-                timezoneId: timezones
+                timezoneId: period
             });
         } catch (error) {
             console.error('Erro ao buscar os dados de dispositivos e períodos', error);
@@ -171,10 +169,10 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
 
     // Define as seleções de modo de verificação
     const verifyModeOptions = [
-        { value: 3, label: 'Somente Senha' },
+        { value: 3, label: 'Somente Password' },
         { value: 4, label: 'Somente Cartão' },
-        { value: 7, label: 'Cartão/Senha' },
-        { value: 11, label: 'Cartão + Senha' },
+        { value: 7, label: 'Cartão/Password' },
+        { value: 11, label: 'Cartão + Password' },
     ];
 
     // Define as seleções de tipo de sensor

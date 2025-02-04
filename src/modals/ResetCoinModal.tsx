@@ -39,7 +39,7 @@ interface Field {
 
 // Define o componente
 export const ResetCoinModal = <T extends Entity>({ title, open, onClose, onSave, fields }: ModalProps<T>) => {
-    const { fetchAllDevices } = useTerminals();
+    const { devices } = useTerminals();
     const [formData, setFormData] = useState<Partial<ResetCoin>>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
     const [isFormValid, setIsFormValid] = useState(false);
@@ -102,9 +102,8 @@ export const ResetCoinModal = <T extends Entity>({ title, open, onClose, onSave,
     // Função para buscar os dados dos dropdowns
     const fetchDropdownOptions = async () => {
         try {
-            const device = await fetchAllDevices();
             setDropdownData({
-                deviceId: device
+                deviceId: devices
             });
         } catch (error) {
             console.error('Erro ao buscar os dados de portas', error);

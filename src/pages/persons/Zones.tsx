@@ -43,13 +43,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de Zonas
 export const Zones = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const {
-        zones,
-        fetchAllZones,
-        handleAddZone,
-        handleUpdateZone,
-        handleDeleteZone
-    } = usePersons();
+    const { zones, fetchAllZones, handleAddZone, handleUpdateZone, handleDeleteZone } = usePersons();
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);

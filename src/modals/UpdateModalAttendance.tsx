@@ -43,9 +43,7 @@ interface UpdateModalProps<T extends Entity> {
 
 // Define o componente
 export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdate, onDuplicate, entity, fields, title, entityType, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-    const {
-        fetchAllEmployees,
-    } = usePersons();
+    const { employees } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
     const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -107,11 +105,10 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
-            const employeeResponse = await fetchAllEmployees();
-            if (employeeResponse) {
+            if (employees) {
                 setDropdownData(prevState => ({
                     ...prevState,
-                    employeeId: employeeResponse
+                    employeeId: employees
                 }));
             } else {
                 console.error('Erro ao buscar os dados de funcionários.');
@@ -233,7 +230,7 @@ export const UpdateModalAttendance = <T extends Entity>({ open, onClose, onUpdat
                                             <option value="">Selecione...</option>
                                             {dropdownData.employeeId?.map((option) => (
                                                 <option key={option.employeeID} value={option.employeeID}>
-                                                    {option.name}
+                                                    {option.enrollNumber} - {option.name}
                                                 </option>
                                             ))}
                                         </Form.Control>

@@ -43,9 +43,9 @@ interface Props<T> {
 
 // Define o componente
 export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-  const { fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllCategories, fetchAllProfessions, fetchAllZones, fetchAllExternalEntitiesData, handleAddDepartment, handleAddGroup } = usePersons();
-  const { fetchAllEntity } = useEntity();
-  const { fetchAccessControl } = useTerminals();
+  const { employees, departments, groups, categories, professions, dataEE, zones, handleAddDepartment, handleAddGroup } = usePersons();
+  const { entities } = useEntity();
+  const { accessControl } = useTerminals();
   const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
@@ -120,7 +120,6 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   // Função para buscar os funcionários e definir o próximo número de matrícula
   const fetchEmployeesAndSetNextEnrollNumber = async () => {
     try {
-      const employees: Employee[] = await fetchAllEmployees();
       const maxEnrollNumber = employees.reduce(
         (max: number, employee: Employee) => {
           const currentEnrollNumber = parseInt(employee.enrollNumber);
@@ -140,24 +139,15 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   // Função para buscar as opções do dropdown
   const fetchDropdownOptions = async () => {
     try {
-      const departments = await fetchAllDepartments();
-      const groups = await fetchAllGroups();
-      const categories = await fetchAllCategories();
-      const professions = await fetchAllProfessions();
-      const zones = await fetchAllZones();
-      const externalEntities = await fetchAllExternalEntitiesData();
-      const entities = await fetchAllEntity();
-      const accessPlan = await fetchAccessControl();
-      const sortedAccessPlan = accessPlan.sort((a, b) => a.nome.localeCompare(b.nome));
       setDropdownData({
         departmentId: departments,
         groupId: groups,
         categoryId: categories,
         professionId: professions,
         zoneId: zones,
-        externalEntityId: externalEntities.ExternalEntities,
+        externalEntityId: dataEE.externalEntity,
         entidadeId: entities,
-        accPlanoAcessoId: sortedAccessPlan
+        accPlanoAcessoId: accessControl
       });
       if (entities.length === 1) {
         setFormData((prevState) => ({

@@ -45,15 +45,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de utentes
 export const User = () => {
-    const {
-        disabledEmployees,
-        data,
-        setDisabledEmployees,
-        fetchAllDisabledEmployees,
-        handleAddEmployee,
-        handleUpdateEmployee,
-        handleDeleteEmployee,
-    } = usePersons();
+    const { disabledEmployees, data, setDisabledEmployees, fetchAllDisabledEmployees, handleAddEmployee, handleUpdateEmployee, handleDeleteEmployee } = usePersons();
     const { navbarColor, footerColor } = useNavbar();
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');

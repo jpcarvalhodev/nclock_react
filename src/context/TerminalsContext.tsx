@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from "../api/apiService";
-import { AccessControl, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, TimePeriod, TimePlan } from '../types/Types';
+import { AccessControl, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, Readers, TimePeriod, TimePlan } from '../types/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -58,6 +58,8 @@ export interface DeviceContextType {
     handleUpdateTimePlan: (timePlan: TimePlan) => Promise<void>;
     handleDeleteTimePlan: (id: string[]) => Promise<void>;
     handleDeletePeriodTimePlan: (planoId: string, id: string[]) => Promise<void>;
+    fetchReaders: (deviceId: string) => Promise<Readers[]>;
+    handleUpdateReaders: (reader: Readers) => Promise<void>;
 }
 
 // Cria o contexto	
@@ -574,6 +576,27 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Função para buscar todos os leitores
+    const fetchReaders = async (deviceId: string): Promise<Readers[]> => {
+        try {
+            const data = await apiService.fetchAllReaders(deviceId);
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar os leitores:', error);
+        }
+        return [];
+    }
+
+    // Função para atualizar um leitor
+    const handleUpdateReaders = async (reader: Readers) => {
+        try {
+            const data = await apiService.updateReaders(reader);
+            toast.success(data.message || 'Leitor atualizado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar o leitor:', error);
+        }
+    }
+
     // Busca todos os dispositivos ao carregar a página
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -644,6 +667,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleUpdateTimePlan,
         handleDeleteTimePlan,
         handleDeletePeriodTimePlan,
+        fetchReaders,
+        handleUpdateReaders,
     };
 
     return (

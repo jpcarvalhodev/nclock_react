@@ -43,13 +43,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de grupos
 export const Groups = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const {
-        groups,
-        fetchAllGroups,
-        handleAddGroup,
-        handleUpdateGroup,
-        handleDeleteGroup,
-    } = usePersons();
+    const { groups, fetchAllGroups, handleAddGroup, handleUpdateGroup, handleDeleteGroup } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'description']);

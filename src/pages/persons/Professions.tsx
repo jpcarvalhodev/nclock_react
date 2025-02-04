@@ -43,13 +43,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de profissões
 export const Professions = () => {
     const { navbarColor, footerColor } = useNavbar();
-    const {
-        professions,
-        fetchAllProfessions,
-        handleAddProfession,
-        handleUpdateProfession,
-        handleDeleteProfessions,
-    } = usePersons();
+    const { professions, fetchAllProfessions, handleAddProfession, handleUpdateProfession, handleDeleteProfessions } = usePersons();
     const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
