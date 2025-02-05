@@ -1027,18 +1027,6 @@ export const Terminals = () => {
         }
     }
 
-    /* // Função para sincronizar todos os utilizadores
-    const handleSyncAllUsers = async () => {
-        if (selectedTerminal) {
-            setLoadingSyncAllUser(true);
-            await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
-            setLoadingSyncAllUser(false);
-            setClearSelectionToggle((prev) => !prev);
-        } else {
-            toast.warn('Selecione um terminal primeiro!');
-        }
-    } */
-
     // Função para manipular os movimentos
     const handleMovements = async () => {
         if (selectedTerminal) {
@@ -1427,14 +1415,6 @@ export const Terminals = () => {
                                     )}
                                     Enviar todos os utilizadores
                                 </Button>
-                                {/* <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleSyncAllUsers}>
-                                    {loadingSyncAllUser ? (
-                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                    ) : (
-                                        <i className="bi bi-arrow-repeat" style={{ marginRight: 5, fontSize: '1rem' }}></i>
-                                    )}
-                                    Sincronizar utilizadores
-                                </Button> */}
                                 <Button variant="outline-primary" size="sm" className="button-terminals-users" onClick={handleMovements}>
                                     {loadingMovements ? (
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />

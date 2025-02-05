@@ -211,7 +211,7 @@ export const NkioskMoveCard = () => {
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
-        window.location.reload();
+        refreshMoveCard();
     };
 
     // Função para atualizar as publicidades

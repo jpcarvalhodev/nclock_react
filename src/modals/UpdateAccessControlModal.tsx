@@ -13,6 +13,7 @@ import { Employee, PlanoAcessoDispositivos } from "../types/Types";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
 import { UpdateTerminalOnAccessControlModal } from "./UpdateTerminalOnAccessControlModal";
+import { UpdateModalEmployees } from "./UpdateModalEmployees";
 
 // Define as propriedades do componente
 interface Props<T> {
@@ -31,7 +32,7 @@ interface Props<T> {
 // Define o componente
 export const UpdateAccessControlModal = <T extends Record<string, any>>({ title, open, onClose, onDuplicate, onUpdate, entity, canMoveNext, canMovePrev, onNext, onPrev }: Props<T>) => {
     const { devices, door } = useTerminals();
-    const { employees } = usePersons();
+    const { employees, handleUpdateEmployee } = usePersons();
     const [formData, setFormData] = useState<T>({ ...entity });
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEmployeeAddModal, setShowEmployeeAddModal] = useState(false);
@@ -42,6 +43,8 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedTerminal, setSelectedTerminal] = useState<Partial<PlanoAcessoDispositivos>>({});
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+    const [showEditModal, setShowEditModal] = useState(false);
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
@@ -117,6 +120,11 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
         );
         setEmployeeTableData(remainingData);
         setClearSelectionToggle((prev) => !prev);
+    };
+
+    // Função para atualizar um funcionário
+    const updateEmployeeAndCard = async (employee: Employee) => {
+        await handleUpdateEmployee(employee);
     };
 
     // Função para atualizar os dados do terminal
@@ -211,6 +219,17 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
             };
         });
 
+    // Função para abrir o modal de edição
+    const handleOpenEditModal = (person: Employee) => {
+        const employeeDetails = employees.find(emp => emp.name === person.name);
+        if (employeeDetails) {
+            setSelectedEmployee(employeeDetails);
+            setShowEditModal(true);
+        } else {
+            console.error("Funcionário não encontrado:", person.name);
+        }
+    };
+
     // Define as colunas que serão exibidas
     const includedEmployeeColumns = ['enrollNumber', 'name', 'cardNumber', 'type'];
 
@@ -229,6 +248,17 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                         return row[field.key] || '';
                 }
             };
+            if (field.key === 'name') {
+                return {
+                    ...field,
+                    name: field.label,
+                    cell: (row: Employee) => (
+                        <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
+                            {row.name}
+                        </div>
+                    )
+                };
+            }
             return {
                 id: field.key,
                 name: (
@@ -457,6 +487,16 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                     onUpdate={handleUpdateTerminal}
                     title="Atualizar Equipamento no Plano"
                     entity={selectedTerminal}
+                />
+            )}
+            {selectedEmployee && (
+                <UpdateModalEmployees
+                    open={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdate={updateEmployeeAndCard}
+                    entity={selectedEmployee}
+                    fields={employeeFields}
+                    title="Atualizar Funcionário"
                 />
             )}
         </Modal>
