@@ -1225,6 +1225,7 @@ export const Terminals = () => {
                                 paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                                 paginationComponentOptions={paginationOptions}
                                 selectableRows
+                                selectableRowsSingle
                                 clearSelectedRows={clearSelectionToggle}
                                 onSelectedRowsChange={handleDeviceRowSelected}
                                 selectableRowsHighlight

@@ -12,6 +12,7 @@ import { employeeFields, planosAcessoDispositivosFields } from "../fields/Fields
 import { Employee, PlanoAcessoDispositivos } from "../types/Types";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
+import { UpdateTerminalOnAccessControlModal } from "./UpdateTerminalOnAccessControlModal";
 
 // Define as propriedades do componente
 interface Props<T> {
@@ -34,6 +35,8 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     const [employeeTableData, setEmployeeTableData] = useState<Employee[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
     const [showValidationErrors, setShowValidationErrors] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedTerminal, setSelectedTerminal] = useState<Partial<PlanoAcessoDispositivos>>({});
 
     // UseEffect para atualizar o estado do formulário
     useEffect(() => {
@@ -79,6 +82,25 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
         });
     };
 
+    // Função para atualizar o plano de horário de um terminal
+    const handleUpdateTerminal = (updatedPayload: Partial<PlanoAcessoDispositivos>) => {
+        const updatedDevice = updatedPayload?.planosAcessoDispositivos?.[0]?.dispositivos?.[0];
+        if (!updatedDevice) return;
+
+        setDevicesTableData((prevData) => {
+            return prevData.map((device) => {
+                if (device.idPorta === updatedDevice.portas[0].idPorta) {
+                    return {
+                        ...device,
+                        idPlanoHorario: updatedDevice.idPlanoHorario,
+                        nomePlanoHorario: updatedDevice.nomePlanoHorario,
+                    };
+                }
+                return device;
+            });
+        });
+    };
+
     // Função para remover terminais selecionados
     const removeSelectedDevices = () => {
         const remainingData = devicesTableData.filter(
@@ -101,6 +123,18 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
     const paginationOptions = {
         rowsPerPageText: 'Linhas por página',
         rangeSeparatorText: 'de',
+    };
+
+    // Função para editar um terminal
+    const handleEditTerminal = (terminal: Partial<PlanoAcessoDispositivos>) => {
+        if (!terminal) return;
+
+        const updatedTerminal = {
+            ...terminal,
+            nome: formData.nome,
+        };
+        setSelectedTerminal(updatedTerminal);
+        setShowUpdateModal(true);
     };
 
     // Função para atualizar os campos do formulário
@@ -270,6 +304,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         paginationPerPage={20}
                                                         paginationRowsPerPageOptions={[20, 30, 50]}
                                                         selectableRows
+                                                        onRowDoubleClicked={handleEditTerminal}
                                                         onSelectedRowsChange={({ selectedRows }) => setDeviceSelectedRows(selectedRows)}
                                                         noDataComponent="Não existem dados disponíveis para exibir."
                                                         customStyles={customStyles}
@@ -359,6 +394,15 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({ title,
                 onSave={addEmployeesToDatatable}
                 title="Adicionar Pessoa ao Plano"
             />
+            {selectedTerminal && (
+                <UpdateTerminalOnAccessControlModal
+                    open={showUpdateModal}
+                    onClose={() => setShowUpdateModal(false)}
+                    onUpdate={handleUpdateTerminal}
+                    title="Atualizar Equipamento no Plano"
+                    entity={selectedTerminal}
+                />
+            )}
         </Modal>
     );
 };

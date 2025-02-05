@@ -441,7 +441,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   // Opções do tipo
   const typeOptions = [
     { value: 'Funcionário', label: 'Funcionário' },
-    { value: 'Subcontratados', label: 'Subcontratados' },
+    { value: 'Subcontratado', label: 'Subcontratado' },
     { value: 'Utente', label: 'Utente' },
     { value: 'Visitante', label: 'Visitante' },
     { value: 'Contacto', label: 'Contacto' },

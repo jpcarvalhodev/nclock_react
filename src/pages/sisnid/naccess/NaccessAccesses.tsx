@@ -347,7 +347,7 @@ export const NaccessAccesses = () => {
                         <div className="datatable-title-text">
                             <span>Acessos</span>
                         </div>
-                        <div className="datatable-header">
+                        <div className="datatable-header" style={{ marginBottom: 0 }}>
                             <div>
                                 <CustomSearchBox
                                     label="Pesquisa"
@@ -424,30 +424,32 @@ export const NaccessAccesses = () => {
                             </div>
                         </div>
                         <Tab.Container defaultActiveKey="movimentos">
-                            <Nav variant="tabs" className="nav-modal">
+                            <Nav variant="tabs" className="nav-modal" style={{ marginTop: 0 }}>
                                 <Nav.Item>
-                                    <Nav.Link eventKey="movimentos">Movimentos</Nav.Link>
+                                    <Nav.Link eventKey="movimentos" style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}>Movimentos</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                             <Tab.Content>
                                 <Tab.Pane eventKey="movimentos">
-                                    <div style={{ marginTop: 10 }}>
-                                        <DataTable
-                                            columns={columns}
-                                            data={filteredDataTable}
-                                            pagination
-                                            paginationComponentOptions={paginationOptions}
-                                            selectableRows
-                                            paginationPerPage={20}
-                                            clearSelectedRows={clearSelectionToggle}
-                                            selectableRowsHighlight
-                                            onSelectedRowsChange={handleRowSelected}
-                                            noDataComponent="Não existem dados disponíveis para exibir."
-                                            customStyles={customStyles}
-                                            striped
-                                            defaultSortAsc={true}
-                                            defaultSortFieldId="eventTime"
-                                        />
+                                    <div className='content-wrapper'>
+                                        <div className='table-css'>
+                                            <DataTable
+                                                columns={columns}
+                                                data={filteredDataTable}
+                                                pagination
+                                                paginationComponentOptions={paginationOptions}
+                                                selectableRows
+                                                paginationPerPage={20}
+                                                clearSelectedRows={clearSelectionToggle}
+                                                selectableRowsHighlight
+                                                onSelectedRowsChange={handleRowSelected}
+                                                noDataComponent="Não existem dados disponíveis para exibir."
+                                                customStyles={customStyles}
+                                                striped
+                                                defaultSortAsc={true}
+                                                defaultSortFieldId="eventTime"
+                                            />
+                                        </div>
                                     </div>
                                 </Tab.Pane>
                             </Tab.Content>

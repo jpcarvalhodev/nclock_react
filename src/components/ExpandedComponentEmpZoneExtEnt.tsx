@@ -53,6 +53,26 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
         return photo ? `${photo}` : modalAvatar;
     }
 
+    // Função para formatar a data ou retornar vazio se for 01/01/1970 01:00:00
+    function formatDateOrEmpty(value: any) {
+        if (!value) return "";
+
+        const dateObj = new Date(value);
+
+        if (
+            dateObj.getFullYear() === 1970 &&
+            dateObj.getMonth() === 0 &&
+            dateObj.getDate() === 1 &&
+            dateObj.getHours() === 1 &&
+            dateObj.getMinutes() === 0 &&
+            dateObj.getSeconds() === 0
+        ) {
+            return "";
+        }
+
+        return dateObj.toLocaleString();
+    }
+
     return (
         <div className="expanded-details-container">
             <div className="entity-photo">
@@ -74,25 +94,25 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                     let displayValue = value;
                     switch (key) {
                         case 'birthday':
-                            displayValue = new Date(value).toLocaleString() || '';
+                            displayValue = formatDateOrEmpty(value);
                             break;
                         case 'admissionDate':
-                            displayValue = new Date(value).toLocaleString() || '';
+                            displayValue = formatDateOrEmpty(value);
                             break;
                         case 'bIissuance':
-                            displayValue = new Date(value).toLocaleString() || '';
+                            displayValue = formatDateOrEmpty(value);
                             break;
                         case 'biValidity':
-                            displayValue = new Date(value).toLocaleString() || '';
+                            displayValue = formatDateOrEmpty(value);
                             break;
                         case 'exitDate':
-                            displayValue = new Date(value).toLocaleString() || '';
+                            displayValue = formatDateOrEmpty(value);
                             break;
                         case 'dateInserted':
-                            displayValue = new Date(value).toLocaleString() || '';
+                            displayValue = formatDateOrEmpty(value);
                             break;
                         case 'dateUpdated':
-                            displayValue = new Date(value).toLocaleString() || '';
+                            displayValue = formatDateOrEmpty(value);
                             break;
                         case 'statusEmail':
                             displayValue = value ? 'Activo' : 'Inactivo';
@@ -128,10 +148,10 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                             displayValue = value ? value.join(', ') : 'Conta sem tipo especificado';
                             break;
                         case 'createdDate':
-                            displayValue = new Date(value).toLocaleString() || '';
+                            displayValue = formatDateOrEmpty(value);
                             break;
                         case 'updatedDate':
-                            displayValue = new Date(value).toLocaleString() || '';
+                            displayValue = formatDateOrEmpty(value);
                             break;
                         case 'enabled':
                             displayValue = value ? 'Activo' : 'Inactivo';

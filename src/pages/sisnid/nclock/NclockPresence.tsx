@@ -339,22 +339,26 @@ export const NclockPresence = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                         </div>
-                        <DataTable
-                            columns={columns}
-                            data={filteredDataTable}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            paginationPerPage={20}
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="attendanceTime"
-                        />
+                        <div className='content-wrapper'>
+                            <div className='table-css'>
+                                <DataTable
+                                    columns={columns}
+                                    data={filteredDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    selectableRows
+                                    paginationPerPage={20}
+                                    onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="attendanceTime"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </Split>
             </div>

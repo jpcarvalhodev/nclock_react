@@ -45,7 +45,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página funcionários
 export const Employees = () => {
-    const { disabledEmployees, data, setDisabledEmployees, fetchAllDisabledEmployees, handleAddEmployee, handleUpdateEmployee, handleDeleteEmployee } = usePersons();
+    const { disabledEmployees, data, fetchAllDisabledEmployees, handleAddEmployee, handleUpdateEmployee, handleDeleteEmployee } = usePersons();
     const { navbarColor, footerColor } = useNavbar();
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -68,7 +68,6 @@ export const Employees = () => {
         fetchAllDisabledEmployees({
             filterFunc: data => data.filter(emp => emp.type === 'Funcionário'),
             postFetch: filteredData => {
-                setDisabledEmployees(filteredData);
                 setFilteredEmployees(filteredData);
             }
         });
@@ -77,18 +76,21 @@ export const Employees = () => {
     // Função para adicionar um funcionário e um cartão
     const addEmployeeAndCard = async (employee: Partial<Employee>) => {
         await handleAddEmployee(employee as Employee);
+        refreshEmployees();
         setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para atualizar um funcionário e um cartão
     const updateEmployeeAndCard = async (employee: Employee) => {
         await handleUpdateEmployee(employee);
+        refreshEmployees();
         setClearSelectionToggle((prev) => !prev);
     };
 
     // Função para deletar funcionários sequencialmente
     const deleteSelectedEmployees = async (employeeIds: string[]) => {
         await handleDeleteEmployee(employeeIds);
+        refreshEmployees();
         setClearSelectionToggle((prev) => !prev);
     };
 
@@ -103,24 +105,25 @@ export const Employees = () => {
         setClearSelectionToggle((prev) => !prev);
     };
 
-    // Função para filtrar as presenças com base no texto de pesquisa
+    // Função para filtrar as presenças com base no texto de pesquisa e nos filtros
     useEffect(() => {
-        const lowercasedFilter = filterText.toLowerCase();
-        const filteredData = disabledEmployees.filter(emp => {
-            return emp.name ? emp.name.toLowerCase().includes(lowercasedFilter) : false;
-        });
-        setFilteredEmployees(filteredData);
-    }, [filterText, disabledEmployees]);
+        let filtered = disabledEmployees.filter(emp => emp.type === 'Funcionário');
 
-    // Atualiza os funcionários filtrados com base nos funcionários selecionados
-    useEffect(() => {
         if (selectedEmployeeIds.length > 0) {
-            const filtered = disabledEmployees.filter(employee => selectedEmployeeIds.includes(employee.employeeID));
-            setFilteredEmployees(filtered);
-        } else {
-            setFilteredEmployees(disabledEmployees);
+            filtered = filtered.filter(emp =>
+                selectedEmployeeIds.includes(emp.employeeID)
+            );
         }
-    }, [selectedEmployeeIds, disabledEmployees]);
+
+        if (filterText.trim() !== "") {
+            const lowerFilter = filterText.toLowerCase();
+            filtered = filtered.filter(emp =>
+                emp.name?.toLowerCase().includes(lowerFilter)
+            );
+        }
+
+        setFilteredEmployees(filtered);
+    }, [disabledEmployees, selectedEmployeeIds, filterText]);
 
     // Atualiza o índice do funcionário selecionado
     useEffect(() => {
@@ -135,11 +138,6 @@ export const Employees = () => {
     const handleSelectFromTreeView = (selectedIds: string[]) => {
         setSelectedEmployeeIds(selectedIds);
     };
-
-    // Atualiza os funcionários filtrados
-    useEffect(() => {
-        setFilteredEmployees(disabledEmployees);
-    }, [disabledEmployees]);
 
     // Define a abertura do modal de apagar funcionário
     const handleOpenDeleteModal = (employeeID: string) => {
@@ -413,26 +411,30 @@ export const Employees = () => {
                                 <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
                             </div>
                         </div>
-                        <DataTable
-                            columns={[...columns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={handleEditEmployee}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={20}
-                            paginationRowsPerPageOptions={[20, 50, 100]}
-                            expandableRows
-                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="enrollNumber"
-                        />
+                        <div className='content-wrapper'>
+                            <div className='table-css'>
+                                <DataTable
+                                    columns={[...columns, actionColumn]}
+                                    data={filteredDataTable}
+                                    onRowDoubleClicked={handleEditEmployee}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={20}
+                                    paginationRowsPerPageOptions={[20, 50, 100]}
+                                    expandableRows
+                                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="enrollNumber"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </Split>
             </div>

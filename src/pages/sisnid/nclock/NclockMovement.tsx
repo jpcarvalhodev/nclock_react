@@ -461,22 +461,26 @@ export const NclockMovement = () => {
                                 </OverlayTrigger>
                             </div>
                         </div>
-                        <DataTable
-                            columns={columns}
-                            data={filteredDataTable}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            paginationPerPage={20}
-                            clearSelectedRows={clearSelectionToggle}
-                            onSelectedRowsChange={handleRowSelected}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="attendanceTime"
-                        />
+                        <div className='content-wrapper'>
+                            <div className='table-css'>
+                                <DataTable
+                                    columns={columns}
+                                    data={filteredDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    selectableRows
+                                    paginationPerPage={20}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    onSelectedRowsChange={handleRowSelected}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="attendanceTime"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </Split>
             </div>

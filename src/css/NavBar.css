@@ -1,5 +1,5 @@
 body {
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .nav-container,
@@ -222,6 +222,7 @@ body {
     display: flex;
     border-bottom: 1px solid #ccc;
     background-color: white;
+    overflow-x: auto;
 }
 
 .group {
@@ -621,7 +622,7 @@ input::-ms-clear {
 @media (max-width: 500px) {
 
     body {
-        overflow: auto;
+        overflow-x: auto;
     }
 
     .nav-container {
@@ -814,7 +815,7 @@ input::-ms-clear {
 @media (min-width: 501px) and (max-width: 1200px) {
 
     body {
-        overflow: auto;
+        overflow-x: auto;
     }
 
     .pessoas-tab,

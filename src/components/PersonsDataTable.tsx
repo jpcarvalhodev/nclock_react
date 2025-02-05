@@ -295,27 +295,31 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     return (
         <div>
             <>
-                <DataTable
-                    columns={[...columns, actionColumn]}
-                    data={filteredData}
-                    highlightOnHover
-                    pagination
-                    paginationComponentOptions={paginationOptions}
-                    paginationPerPage={20}
-                    paginationRowsPerPageOptions={[20, 50, 100]}
-                    onRowDoubleClicked={handleRowDoubleClicked}
-                    expandableRows
-                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                    selectableRows
-                    onSelectedRowsChange={handleRowSelected}
-                    selectableRowsHighlight
-                    clearSelectedRows={clearSelectionToggle}
-                    noDataComponent="Não existem dados disponíveis para exibir."
-                    customStyles={customStyles}
-                    striped
-                    defaultSortAsc={true}
-                    defaultSortFieldId='enrollNumber'
-                />
+                <div className='content-wrapper'>
+                    <div className='table-css'>
+                        <DataTable
+                            columns={[...columns, actionColumn]}
+                            data={filteredData}
+                            highlightOnHover
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            paginationPerPage={20}
+                            paginationRowsPerPageOptions={[20, 50, 100]}
+                            onRowDoubleClicked={handleRowDoubleClicked}
+                            expandableRows
+                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            selectableRowsHighlight
+                            clearSelectedRows={clearSelectionToggle}
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId='enrollNumber'
+                        />
+                    </div>
+                </div>
                 {selectedEmployee && (
                     <UpdateModalEmployees
                         open={showUpdateModal}

@@ -459,7 +459,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   // Define as opções de tipo
   const typeOptions = [
     { value: 'Funcionário', label: 'Funcionário' },
-    { value: 'Subcontratados', label: 'Subcontratados' },
+    { value: 'Subcontratado', label: 'Subcontratado' },
     { value: 'Utente', label: 'Utente' },
     { value: 'Visitante', label: 'Visitante' },
     { value: 'Contacto', label: 'Contacto' },
