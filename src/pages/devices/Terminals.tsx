@@ -6,6 +6,7 @@ import card from "../../assets/img/terminais/card.png";
 import faceScan from "../../assets/img/terminais/faceScan.png";
 import fprintScan from "../../assets/img/terminais/fprintScan.png";
 import palmScan from "../../assets/img/terminais/palmScan.png";
+import key from "../../assets/img/terminais/key.png";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
@@ -27,7 +28,7 @@ import { CreateModalDevices } from "../../modals/CreateModalDevices";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { DoorModal } from "../../modals/DoorModal";
 import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
-import { Devices, DoorDevice, Employee, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../types/Types";
+import { Devices, DoorDevice, EmployeeAndCard, EmployeeCard, EmployeesOnDevice, KioskTransaction } from "../../types/Types";
 
 // Define a interface para os filtros
 interface Filters {
@@ -70,36 +71,9 @@ const combinedEmployeeFields = [
 
 // Define o componente de terminais
 export const Terminals = () => {
-    const {
-        devices,
-        employeeDevices,
-        fetchAllDevices,
-        fetchAllEmployeeDevices,
-        fetchAllKioskTransaction,
-        fetchAllKioskTransactionOnDevice,
-        sendAllEmployeesToDevice,
-        saveAllEmployeesOnDeviceToDB,
-        syncTimeManuallyToDevice,
-        deleteAllUsersOnDevice,
-        openDeviceDoor,
-        restartDevice,
-        sendClockToDevice,
-        handleAddDevice,
-        handleUpdateDevice,
-        handleDeleteDevice,
-        fetchAllAux,
-        fetchAllDoorData
-    } = useTerminals();
-    const {
-        handleAddImportedAttendance,
-    } = useAttendance();
-    const {
-        employees,
-        fetchAllCardData,
-        handleImportEmployeeCard,
-        handleImportEmployeeFP,
-        handleImportEmployeeFace
-    } = usePersons();
+    const { devices, employeeDevices, fetchAllDevices, fetchAllEmployeeDevices, fetchAllKioskTransaction, fetchAllKioskTransactionOnDevice, sendAllEmployeesToDevice, saveAllEmployeesOnDeviceToDB, syncTimeManuallyToDevice, deleteAllUsersOnDevice, openDeviceDoor, restartDevice, sendClockToDevice, handleAddDevice, handleUpdateDevice, handleDeleteDevice, fetchAllAux, fetchAllDoorData } = useTerminals();
+    const { handleAddImportedAttendance } = useAttendance();
+    const { employees, fetchAllCardData, handleImportEmployeeCard, handleImportEmployeeFP, handleImportEmployeeFace } = usePersons();
     const { navbarColor, footerColor } = useNavbar();
     const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -493,7 +467,10 @@ export const Terminals = () => {
     // Formata as colunas especiais na tabela de utilizadores, biometria e cartões
     const formatUserStatus = (row: EmployeeAndCard) => {
         const hasValidCardNumber = row.employeeCards?.some(
-            (card) => card.cardNumber && card.cardNumber !== "0"
+            (card) => card.cardNumber && card.cardNumber !== ""
+        );
+        const hasValidPassword = row.employeeCards?.some(
+            (card) => card.devicePassword && card.devicePassword !== ""
         );
         return (
             <>
@@ -501,6 +478,7 @@ export const Terminals = () => {
                 {row.statusFprint && <img src={fprintScan} alt="Fingerprint" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusFace && <img src={faceScan} alt="Face" style={{ width: 20, marginRight: 5 }} />}
                 {row.statusPalm && <img src={palmScan} alt="Palm" style={{ width: 20, marginRight: 5 }} />}
+                {hasValidPassword && <img src={key} alt="Key" style={{ width: 20, marginRight: 5 }} />}
             </>
         );
     };
@@ -515,11 +493,15 @@ export const Terminals = () => {
     };
     const formatCardStatus = (row: EmployeeAndCard) => {
         const hasCard = row.employeeCards?.some(
-            (card) => card.cardNumber && card.cardNumber !== "0"
+            (card) => card.cardNumber && card.cardNumber !== ""
+        );
+        const hasValidPassword = row.employeeCards?.some(
+            (card) => card.devicePassword && card.devicePassword !== ""
         );
         return (
             <>
                 {hasCard && <img src={card} alt="Card" style={{ width: 20, marginRight: 5 }} />}
+                {hasValidPassword && <img src={key} alt="Key" style={{ width: 20, marginRight: 5 }} />}
             </>
         );
     };
@@ -989,7 +971,6 @@ export const Terminals = () => {
             const userIds = selectedUserRows.map(user => user.employeeID);
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingSendSelectedUsers(false);
-            setSelectedTerminal(null);
             setClearSelectionToggle((prev) => !prev);
         } else {
             toast.warn('Selecione um terminal e pelo menos um utilizador!');
@@ -1003,7 +984,6 @@ export const Terminals = () => {
             const userIds = selectedUserRows.map(user => user.employeeID);
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingDeleteSelectedUsers(false);
-            setSelectedTerminal(null);
             setClearSelectionToggle((prev) => !prev);
         } else {
             toast.warn('Selecione um terminal e pelo menos um utilizador!');
@@ -1017,7 +997,6 @@ export const Terminals = () => {
             const userIds = selectedUserRows.map(user => user.employeeID);
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID, userIds);
             setLoadingFetchSelectedUsers(false);
-            setSelectedTerminal(null);
             setClearSelectionToggle((prev) => !prev);
         } else {
             toast.warn('Selecione um terminal e pelo menos um utilizador!');
@@ -1031,7 +1010,6 @@ export const Terminals = () => {
             await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID);
             setLoadingUser(false);
             setClearSelectionToggle((prev) => !prev);
-            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1044,7 +1022,6 @@ export const Terminals = () => {
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingAllUser(false);
             setClearSelectionToggle((prev) => !prev);
-            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1057,7 +1034,6 @@ export const Terminals = () => {
             await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingSyncAllUser(false);
             setClearSelectionToggle((prev) => !prev);
-            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1070,7 +1046,6 @@ export const Terminals = () => {
             await fetchAllKioskTransactionOnDevice(selectedTerminal.zktecoDeviceID);
             setLoadingMovements(false);
             setClearSelectionToggle((prev) => !prev);
-            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1083,7 +1058,6 @@ export const Terminals = () => {
             await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
             setLoadingDeleteAllUsers(false);
             setClearSelectionToggle((prev) => !prev);
-            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1096,7 +1070,6 @@ export const Terminals = () => {
             await restartDevice(selectedTerminal.zktecoDeviceID);
             setLoadingRestartDevice(false);
             setClearSelectionToggle((prev) => !prev);
-            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1109,7 +1082,6 @@ export const Terminals = () => {
             await sendClockToDevice(selectedTerminal.serialNumber);
             setLoadingSendClock(false);
             setClearSelectionToggle((prev) => !prev);
-            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1120,7 +1092,6 @@ export const Terminals = () => {
         await openDeviceDoor(sn, doorData);
         setLoadingOpenDoor(false);
         setClearSelectionToggle((prev) => !prev);
-        setSelectedTerminal(null);
     }
 
     // Função para sincronizar a hora
@@ -1130,7 +1101,6 @@ export const Terminals = () => {
             await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
             setLoadingSyncTime(false);
             setClearSelectionToggle((prev) => !prev);
-            setSelectedTerminal(null);
         } else {
             toast.warn('Selecione um terminal primeiro!');
         }
@@ -1320,7 +1290,7 @@ export const Terminals = () => {
                                                     defaultSortFieldId='enrollNumber'
                                                 />
                                             </div>
-                                            <div style={{ flex: 1, flexDirection: "column" }}>
+                                            <div style={{ flex: 1, flexDirection: "column", marginLeft: 10 }}>
                                                 <Button variant="outline-primary" size="sm" className="button-terminals-users-track" onClick={handleSendSelectedUsers}>
                                                     {loadingSendSelectedUsers ? (
                                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
