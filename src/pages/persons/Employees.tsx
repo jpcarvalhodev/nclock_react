@@ -25,7 +25,7 @@ import Split from 'react-split';
 import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
 import { customStyles } from '../../components/CustomStylesDataTable';
 
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { TextField, TextFieldProps } from '@mui/material';
 
 // Define a interface para os filtros
@@ -62,6 +62,7 @@ export const Employees = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -240,6 +241,13 @@ export const Employees = () => {
         })
     )
 
+    // Define o estado de loading
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
+
     // Define as colunas
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
@@ -413,26 +421,31 @@ export const Employees = () => {
                         </div>
                         <div className='content-wrapper'>
                             <div className='table-css'>
-                                <DataTable
-                                    columns={[...columns, actionColumn]}
-                                    data={filteredDataTable}
-                                    onRowDoubleClicked={handleEditEmployee}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    paginationRowsPerPageOptions={[20, 50, 100]}
-                                    expandableRows
-                                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="enrollNumber"
-                                />
+                                {loading ?
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                    </div> :
+                                    <DataTable
+                                        columns={[...columns, actionColumn]}
+                                        data={filteredDataTable}
+                                        onRowDoubleClicked={handleEditEmployee}
+                                        pagination
+                                        paginationComponentOptions={paginationOptions}
+                                        paginationPerPage={20}
+                                        paginationRowsPerPageOptions={[20, 50, 100]}
+                                        expandableRows
+                                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                                        selectableRows
+                                        onSelectedRowsChange={handleRowSelected}
+                                        clearSelectedRows={clearSelectionToggle}
+                                        selectableRowsHighlight
+                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                        customStyles={customStyles}
+                                        striped
+                                        defaultSortAsc={true}
+                                        defaultSortFieldId="enrollNumber"
+                                    />
+                                }
                             </div>
                         </div>
                     </div>

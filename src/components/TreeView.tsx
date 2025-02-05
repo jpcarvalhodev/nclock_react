@@ -3,7 +3,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { usePersons } from '../context/PersonsContext';
 import { Department, Employee, Group } from '../types/Types';
@@ -11,7 +11,6 @@ import { Department, Employee, Group } from '../types/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
-
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -72,6 +71,7 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
   const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
+  const [loading, setLoading] = useState(true);
 
   // Define e mapeia os dados para os itens da árvore
   useEffect(() => {
@@ -139,22 +139,22 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
     });
 
     const departmentItems = topDepartments
-    .sort((a, b) => Number(a.code) - Number(b.code))
-    .map(buildDepartmentTree);
+      .sort((a, b) => Number(a.code) - Number(b.code))
+      .map(buildDepartmentTree);
 
     const groupItems = groups
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((group: Group) => ({
-      id: `group-${group.groupID}`,
-      label: group.name || 'Sem Nome',
-      children: allEmployees
-        .filter(emp => emp.groupId === group.groupID)
-        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-        .map((emp: Employee) => ({
-          id: `group-${group.groupID}-emp-${emp.employeeID}`,
-          label: `${emp.enrollNumber} - ${emp.shortName}`
-        })),
-    }));
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((group: Group) => ({
+        id: `group-${group.groupID}`,
+        label: group.name || 'Sem Nome',
+        children: allEmployees
+          .filter(emp => emp.groupId === group.groupID)
+          .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+          .map((emp: Employee) => ({
+            id: `group-${group.groupID}-emp-${emp.employeeID}`,
+            label: `${emp.enrollNumber} - ${emp.shortName}`
+          })),
+      }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
       id: `empd-${emp.employeeID}`,
@@ -199,6 +199,7 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
     setFilteredItems(treeItems);
     const allExpandableIds = collectAllExpandableItemIds(treeItems);
     setExpandedIds(allExpandableIds);
+    setLoading(false);
   }, [data, employees]);
 
   // Filtra os itens ao mudar o termo de pesquisa
@@ -299,16 +300,21 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
         </OverlayTrigger>
       </div>
       <Box className="treeViewFlexItem">
-        <RichTreeView
-          multiSelect
-          checkboxSelection
-          items={filteredItems}
-          getItemId={(item: TreeViewBaseItem) => item.id}
-          onSelectedItemsChange={handleSelectedItemsChange}
-          selectedItems={selectedEmployeeIds}
-          expandedItems={expandedIds}
-          onExpandedItemsChange={handleToggle}
-        />
+        {loading ?
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+          </div> :
+          <RichTreeView
+            multiSelect
+            checkboxSelection
+            items={filteredItems}
+            getItemId={(item: TreeViewBaseItem) => item.id}
+            onSelectedItemsChange={handleSelectedItemsChange}
+            selectedItems={selectedEmployeeIds}
+            expandedItems={expandedIds}
+            onExpandedItemsChange={handleToggle}
+          />
+        }
       </Box>
     </Box>
   );

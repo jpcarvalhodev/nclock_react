@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
@@ -44,6 +44,7 @@ export const TimePlans = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedTimePlan, setSelectedTimePlan] = useState<TimePlan | null>(null);
     const [initialData, setInitialData] = useState<Partial<TimePlan> | null>(null);
+    const [loading, setLoading] = useState(true);
 
     // Função para adicionar o plano de horários
     const addTimePlan = async (newTimePlan: TimePlan) => {
@@ -194,6 +195,13 @@ export const TimePlans = () => {
         })
     ).sort((a, b) => a.nome.localeCompare(b.nome));
 
+    // Define o estado de carregamento
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
+
     // Define as colunas da tabela
     const columns: TableColumn<TimePlan>[] = timePlanFields
         .filter(field => selectedColumns.includes(field.key))
@@ -299,21 +307,26 @@ export const TimePlans = () => {
                     </div>
                 </div>
                 <div className='table-css'>
-                    <DataTable
-                        columns={[...columns, actionColumn]}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        onRowDoubleClicked={handleEditTimePlan}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                    />
+                    {loading ?
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                        </div> :
+                        <DataTable
+                            columns={[...columns, actionColumn]}
+                            data={filteredDataTable}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            paginationPerPage={20}
+                            onRowDoubleClicked={handleEditTimePlan}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            selectableRowsHighlight
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                        />
+                    }
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

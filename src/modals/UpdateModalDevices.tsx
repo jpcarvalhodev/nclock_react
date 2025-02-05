@@ -184,14 +184,13 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
     const updateDoor = async (door: Doors) => {
         await handleUpdateDoor(door);
         setLoadingDoorData(false);
-        refreshDoorsReadersAndAux();
     }
 
     // Função para lidar com a atualização dos leitores
     const updateReader = async (reader: Readers) => {
         await handleUpdateReaders(reader);
         setLoadingReaderData(false);
-        refreshDoorsReadersAndAux();
+        fetchAllReaders();
     }
 
     // Função para lidar com a atualização das auxiliares
@@ -199,15 +198,14 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         await handleUpdateAux(aux);
         setLoadingAuxInData(false);
         setLoadingAuxOutData(false);
-        refreshDoorsReadersAndAux();
     }
 
-    // Função para atualizar as portas e auxiliares
-    const refreshDoorsReadersAndAux = () => {
+    // Função para atualizar as portas, leitores e auxiliares
+    useEffect(() => {
         fetchDoors();
         fetchAllReaders();
         fetchAuxiliaries();
-    }
+    }, [door, aux]);
 
     // Função para manipular o clique no botão Duplicar
     const handleDuplicateClick = () => {

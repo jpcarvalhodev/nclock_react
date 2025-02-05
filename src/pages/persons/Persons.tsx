@@ -18,7 +18,7 @@ import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 import { DeleteModal } from '../../modals/DeleteModal';
 import { Employee } from '../../types/Types';
 
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { TextField, TextFieldProps } from '@mui/material';
 

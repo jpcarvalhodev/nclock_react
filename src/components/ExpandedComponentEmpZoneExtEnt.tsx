@@ -139,7 +139,10 @@ export const ExpandedComponentEmpZoneExtEnt = <T extends Employee | Zone | Exter
                             displayValue = (data as Employee)['zoneName'] || '';
                             break;
                         case 'externalEntityId':
-                            displayValue = (data as Employee)['externalEntityName'] || '';
+                            displayValue = (data as Employee)['externalEntityType'] || '';
+                            break;
+                        case 'externalEntityTypeId':
+                            displayValue = (data as Employee)['externalEntityTypeName'] || '';
                             break;
                         case 'accPlanoAcessoId':
                             displayValue = (data as Employee)['accPlanoAcessoName'] || '';

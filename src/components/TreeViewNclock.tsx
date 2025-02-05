@@ -3,7 +3,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { AttendanceProvider } from '../context/MovementContext';
 import { usePersons } from '../context/PersonsContext';
@@ -12,6 +12,7 @@ import { Department, Employee, Group } from '../types/Types';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
+import { set } from 'date-fns';
 
 
 // Define a interface para as propriedades do componente CustomSearchBox
@@ -79,6 +80,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
   const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
+  const [loading, setLoading] = useState(true);
 
   // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
   useEffect(() => {
@@ -132,12 +134,12 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
       children: [
         ...dept.children.map(buildDepartmentTree),
         ...allEmployees
-        .filter((emp: Employee) => emp.departmentId === dept.departmentID)
-        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-        .map((emp: Employee) => ({
-          id: `dept-${dept.departmentID}-emp-${emp.employeeID}` || 'Sem ID',
-          label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
-        })),
+          .filter((emp: Employee) => emp.departmentId === dept.departmentID)
+          .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+          .map((emp: Employee) => ({
+            id: `dept-${dept.departmentID}-emp-${emp.employeeID}` || 'Sem ID',
+            label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
+          })),
       ],
     });
 
@@ -147,12 +149,12 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
       id: `group-${group.groupID}` || 'Sem ID',
       label: group.name || 'Sem Nome',
       children: allEmployees
-      .filter((emp: Employee) => emp.groupId === group.groupID)
-      .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-      .map((emp: Employee) => ({
-        id: `group-${group.groupID}-emp-${emp.employeeID}` || 'Sem ID',
-        label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
-      })),
+        .filter((emp: Employee) => emp.groupId === group.groupID)
+        .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
+        .map((emp: Employee) => ({
+          id: `group-${group.groupID}-emp-${emp.employeeID}` || 'Sem ID',
+          label: `${emp.enrollNumber} - ${emp.shortName}` || 'Sem Nome',
+        })),
     }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
@@ -189,6 +191,7 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
     setFilteredItems(treeItems);
     const allExpandableIds = collectAllExpandableItemIds(treeItems);
     setExpandedIds(allExpandableIds);
+    setLoading(false);
   }, [data]);
 
   // Função para lidar com a expansão dos itens
@@ -289,16 +292,21 @@ export function TreeViewDataNclock({ onSelectEmployees }: TreeViewDataNclockProp
           </OverlayTrigger>
         </div>
         <Box className="treeViewFlexItem">
-          <RichTreeView
-            multiSelect={true}
-            checkboxSelection={true}
-            items={filteredItems}
-            getItemId={(item: TreeViewBaseItem) => item.id}
-            onSelectedItemsChange={handleSelectedItemsChange}
-            selectedItems={selectedEmployeeIds}
-            expandedItems={expandedIds}
-            onExpandedItemsChange={handleToggle}
-          />
+          {loading ?
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+              <Spinner style={{ width: 50, height: 50 }} animation="border" />
+            </div> :
+            <RichTreeView
+              multiSelect={true}
+              checkboxSelection={true}
+              items={filteredItems}
+              getItemId={(item: TreeViewBaseItem) => item.id}
+              onSelectedItemsChange={handleSelectedItemsChange}
+              selectedItems={selectedEmployeeIds}
+              expandedItems={expandedIds}
+              onExpandedItemsChange={handleToggle}
+            />
+          }
         </Box>
       </Box>
     </AttendanceProvider>

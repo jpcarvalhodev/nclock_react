@@ -21,7 +21,7 @@ import { ExportButton } from "../../components/ExportButton";
 import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
 import { customStyles } from "../../components/CustomStylesDataTable";
 
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { TextField, TextFieldProps } from "@mui/material";
 
 
@@ -57,6 +57,7 @@ export const Categories = () => {
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Category[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Função para adicionar uma categoria
     const addCategory = async (category: Category) => {
@@ -207,6 +208,13 @@ export const Categories = () => {
         })
     ).sort((a, b) => a.code - b.code);
 
+    // Define o estado de carregamento
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
+
     // Define os dados iniciais ao duplicar
     const handleDuplicate = (entity: Partial<Category>) => {
         setInitialData(entity);
@@ -344,24 +352,29 @@ export const Categories = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    <DataTable
-                        columns={[...tableColumns, actionColumn]}
-                        data={filteredDataTable}
-                        onRowDoubleClicked={handleEditCategory}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId="code"
-                    />
+                    {loading ?
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                        </div> :
+                        <DataTable
+                            columns={[...tableColumns, actionColumn]}
+                            data={filteredDataTable}
+                            onRowDoubleClicked={handleEditCategory}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            paginationPerPage={20}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            expandableRows
+                            expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId="code"
+                        />
+                    }
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

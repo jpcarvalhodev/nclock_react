@@ -21,7 +21,7 @@ import { ExportButton } from "../../components/ExportButton";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { customStyles } from "../../components/CustomStylesDataTable";
 
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { TextField, TextFieldProps } from "@mui/material";
 
 
@@ -57,6 +57,7 @@ export const Zones = () => {
     const [currentZoneIndex, setCurrentZoneIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Zone[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Função para adicionar uma zona
     const addZone = async (zone: Zone) => {
@@ -211,6 +212,13 @@ export const Zones = () => {
             return false;
         })
     );
+
+    // Define o estado de loading
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
 
     // Define as colunas da tabela
     const columns: TableColumn<Zone>[] = zoneFields
@@ -367,24 +375,29 @@ export const Zones = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    <DataTable
-                        columns={[...columns, actionColumn]}
-                        data={filteredDataTable}
-                        onRowDoubleClicked={handleEditZone}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        expandableRows
-                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId="name"
-                    />
+                    {loading ?
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                        </div> :
+                        <DataTable
+                            columns={[...columns, actionColumn]}
+                            data={filteredDataTable}
+                            onRowDoubleClicked={handleEditZone}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            paginationPerPage={20}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            expandableRows
+                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId="name"
+                        />
+                    }
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

@@ -59,6 +59,11 @@ export const ImportEmployeesModal = <T extends Record<string, any>>({ title, ope
                                 />
                             </Form.Group>
                         </Col>
+                        <Col md={6}>
+                            <div style={{ backgroundColor: '#d1d1d1', padding: '10px', borderRadius: '5px', textAlign: "center", fontSize: '14px' }}>
+                                <p style={{ margin: '0' }}>Observação: Os dados devem estar com as seguintes colunas e com esta ordem: Nº Funcionário, Nome, Nome Abreviado, Departamento e Grupo</p>
+                            </div>
+                        </Col>
                     </Row>
                 </Form>
             </Modal.Body>

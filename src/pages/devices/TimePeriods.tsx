@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
@@ -49,6 +49,7 @@ export const TimePeriods = () => {
     const [currentPeriodIndex, setCurrentPeriodIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Função para adicionar um período
     const addPeriod = async (newPeriod: Partial<TimePeriod>) => {
@@ -153,6 +154,13 @@ export const TimePeriods = () => {
             return false;
         })
     )
+
+    // Define o estado de carregamento
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
 
     // Define a função de seleção de linhas
     const handleRowSelected = (state: {
@@ -330,20 +338,25 @@ export const TimePeriods = () => {
                             </div>
                         </div>
                         <div className='table-css'>
-                            <DataTable
-                                columns={[...columns, actionColumn]}
-                                data={filteredDataTable}
-                                onRowDoubleClicked={handleEditPeriod}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={20}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRows
-                                onSelectedRowsChange={handleRowSelected}
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                            />
+                            {loading ?
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                </div> :
+                                <DataTable
+                                    columns={[...columns, actionColumn]}
+                                    data={filteredDataTable}
+                                    onRowDoubleClicked={handleEditPeriod}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={20}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                />
+                            }
                         </div>
                     </div>
                 </Split>

@@ -1,5 +1,5 @@
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Navbar } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -218,6 +218,7 @@ import { TerminalOptionsModal } from '../modals/TerminalOptions';
 import { EmailUser, KioskConfig } from '../types/Types';
 import { fetchWithAuth } from './FetchWithAuth';
 import { PrintButton } from './PrintButton';
+import { de } from "date-fns/locale";
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -297,7 +298,7 @@ interface TabsInfo {
 }
 
 // Define as propriedades do componente
-export const NavBar = ({ style }: NavBarProps) => {
+export const NavBar = React.memo(({ style }: NavBarProps) => {
 	const { navbarColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
 	const { setScrollPosition } = useCardScroll();
 	const { handleAddAds } = useAds();
@@ -560,6 +561,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 		await handleUpdateKioskConfig(kioskConfig);
 	}
 
+	// Use useMemo para valores derivados
+	const enabledSoftware = useMemo(() => getSoftwareEnabledStatus(license), [license]);
+
 	// Verificar se a tela é mobile
 	const checkIfMobile = () => {
 		setIsMobile(window.innerWidth <= 1200);
@@ -632,9 +636,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 		Nsound: { setShowRibbon: setShowNsoundRibbon, setShowTab: setShowNsoundTab },
 		Nhome: { setShowRibbon: setShowNhomeRibbon, setShowTab: setShowNhomeTab },
 	};
-
-	// Cria variáveis para verificar se o software está habilitado
-	const softwareEnabled = getSoftwareEnabledStatus(license);
 
 	// Função para atualizar o estado a partir do localStorage
 	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix = ''): void {
@@ -844,9 +845,9 @@ export const NavBar = ({ style }: NavBarProps) => {
 		} else if (tabData[tabName]) {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
 			const softwareName = tabName;
-			const isSoftwareEnabled = softwareEnabled[softwareName] ? true : false;
+			const isenabledSoftware = enabledSoftware[softwareName] ? true : false;
 			const isSoftwareCliente = menuStructureStart.cliente.submenu?.some(item => item.key === softwareName) ? true : false;
-			const finalRoute = (softwareName && isSoftwareEnabled && isSoftwareCliente) ? `${route}licensed` : route;
+			const finalRoute = (softwareName && isenabledSoftware && isSoftwareCliente) ? `${route}licensed` : route;
 
 			if (activeTab === tabName) {
 				setTab(false);
@@ -862,7 +863,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				setRibbon(isSoftwareCliente);
 				const capitalizedTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
 				setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
-				if (localStorageRibbonKey && tabName && softwareName && isSoftwareEnabled && isSoftwareCliente) {
+				if (localStorageRibbonKey && tabName && softwareName && isenabledSoftware && isSoftwareCliente) {
 					localStorage.setItem(localStorageRibbonKey, 'true')
 				}
 				setActiveTab(tabName);
@@ -972,8 +973,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Define a estrutura do menu de softwares
 	useEffect(() => {
-
-		const enabledSoftware = getSoftwareEnabledStatus(license);
 
 		const filterUnlicensedSoftware = (submenu: MenuItem[]): MenuItem[] => {
 			return submenu.filter(item => enabledSoftware[item.key] === false);
@@ -1221,7 +1220,6 @@ export const NavBar = ({ style }: NavBarProps) => {
 
 	// Define a estrutura do menu do nidgroup
 	useEffect(() => {
-		const enabledSoftware = getSoftwareEnabledStatus(license);
 
 		const filteredSubmenu = [
 			{ label: 'Nclock - Assiduidade', alt: 'nclock', key: 'nclock' },
@@ -1387,11 +1385,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 		const isWideSubmenuMain = menuKey === 'cliente' || menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace'
 
 		return (
-			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
-				/* style={{
-					width: isWideMenu ? '150px' : 'auto',
-				}} */
-			>
+			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}>
 				<MenuItem
 					key={menuKey as string}
 					active={activeMenu === menuKey}
@@ -1748,13 +1742,11 @@ export const NavBar = ({ style }: NavBarProps) => {
 				setShowNcomfortRibbon(false);
 				setShowNsoundRibbon(false);
 				setShowNhomeRibbon(false);
-				setActiveTab('ajuda');
 				break;
 			default:
 				setActiveTab('');
 				break;
 		}
-
 		setNavbarColor(colorConfig.navbarColor);
 		setFooterColor(colorConfig.footerColor);
 	}, [location.pathname, setNavbarColor, setFooterColor]);
@@ -2281,7 +2273,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 				</div>
 			</div>
 			<div className="navbar-ribbon-wrapper" onMouseEnter={handleRibbonMouseEnter} onMouseLeave={handleRibbonMouseLeave} onTouchStart={handleRibbonMouseEnter} onTouchEnd={handleRibbonMouseLeave}>
-				{showNclockRibbon && softwareEnabled['nclock'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclock')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNclockRibbon && enabledSoftware['nclock'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclock')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" role="tabpanel" aria-labelledby="nclock-tab">
 							<div className={`section ${showNclockRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -2680,7 +2672,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNaccessRibbon && softwareEnabled['naccess'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'naccess')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNaccessRibbon && enabledSoftware['naccess'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'naccess')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="naccess" role="tabpanel" aria-labelledby="naccess-tab">
 							<div className={`section ${showNaccessRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -2909,7 +2901,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNvisitorRibbon && softwareEnabled['nvisitor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nvisitor')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNvisitorRibbon && enabledSoftware['nvisitor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nvisitor')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nvisitor" role="tabpanel" aria-labelledby="nvisitor-tab">
 							<div className={`section ${showNvisitorRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -3116,7 +3108,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNparkRibbon && softwareEnabled['npark'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npark')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNparkRibbon && enabledSoftware['npark'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npark')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="npark" role="tabpanel" aria-labelledby="npark-tab">
 							<div className={`section ${showNparkRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -3342,7 +3334,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNdoorRibbon && softwareEnabled['ndoor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndoor')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNdoorRibbon && enabledSoftware['ndoor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndoor')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ndoor" role="tabpanel" aria-labelledby="ndoor-tab">
 							<div className={`section ${showNdoorRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -3512,7 +3504,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNpatrolRibbon && softwareEnabled['npatrol'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npatrol')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNpatrolRibbon && enabledSoftware['npatrol'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npatrol')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="npatrol" role="tabpanel" aria-labelledby="npatrol-tab">
 							<div className={`section ${showNpatrolRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -3676,7 +3668,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNcardRibbon && softwareEnabled['ncard'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncard')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNcardRibbon && enabledSoftware['ncard'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncard')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ncard" role="tabpanel" aria-labelledby="ncard-tab">
 							<div className={`section ${showNcardRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -3828,7 +3820,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNviewRibbon && softwareEnabled['nview'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nview')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNviewRibbon && enabledSoftware['nview'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nview')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nview" role="tabpanel" aria-labelledby="nview-tab">
 							<div className={`section ${showNviewRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -3967,7 +3959,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNsecurRibbon && softwareEnabled['nsecur'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsecur')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNsecurRibbon && enabledSoftware['nsecur'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsecur')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsecur" role="tabpanel" aria-labelledby="nsecur-tab">
 							<div className={`section ${showNsecurRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -4174,7 +4166,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNsoftwareRibbon && softwareEnabled['nsoftware'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsoftware')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNsoftwareRibbon && enabledSoftware['nsoftware'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsoftware')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsoftware" role="tabpanel" aria-labelledby="nsoftware-tab">
 							<div className={`section ${showNsoftwareRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -4321,7 +4313,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNsystemRibbon && softwareEnabled['nsystem'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsystem')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNsystemRibbon && enabledSoftware['nsystem'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsystem')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsystem" role="tabpanel" aria-labelledby="nsystem-tab">
 							<div className={`section ${showNsystemRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -4495,7 +4487,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNappRibbon && softwareEnabled['napp'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'napp')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNappRibbon && enabledSoftware['napp'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'napp')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="napp" role="tabpanel" aria-labelledby="napp-tab">
 							<div className={`section ${showNappRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -4642,7 +4634,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNcyberRibbon && softwareEnabled['ncyber'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncyber')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNcyberRibbon && enabledSoftware['ncyber'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncyber')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ncyber" role="tabpanel" aria-labelledby="ncyber-tab">
 							<div className={`section ${showNcyberRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -4797,7 +4789,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNdigitalRibbon && softwareEnabled['ndigital'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndigital')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNdigitalRibbon && enabledSoftware['ndigital'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndigital')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ndigital" role="tabpanel" aria-labelledby="ndigital-tab">
 							<div className={`section ${showNdigitalRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -4952,7 +4944,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNserverRibbon && softwareEnabled['nserver'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nserver')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNserverRibbon && enabledSoftware['nserver'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nserver')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nserver" role="tabpanel" aria-labelledby="nserver-tab">
 							<div className={`section ${showNserverRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -5099,7 +5091,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNautRibbon && softwareEnabled['naut'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'naut')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNautRibbon && enabledSoftware['naut'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'naut')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="naut" role="tabpanel" aria-labelledby="naut-tab">
 							<div className={`section ${showNautRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -5246,7 +5238,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNequipRibbon && softwareEnabled['nequip'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nequip')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNequipRibbon && enabledSoftware['nequip'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nequip')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nequip" role="tabpanel" aria-labelledby="nequip-tab">
 							<div className={`section ${showNequipRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -5467,7 +5459,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNprojectRibbon && softwareEnabled['nproject'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nproject')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNprojectRibbon && enabledSoftware['nproject'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nproject')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nproject" role="tabpanel" aria-labelledby="nproject-tab">
 							<div className={`section ${showNprojectRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -5622,7 +5614,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNcountRibbon && softwareEnabled['ncount'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncount')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNcountRibbon && enabledSoftware['ncount'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncount')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ncount" role="tabpanel" aria-labelledby="ncount-tab">
 							<div className={`section ${showNcountRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -5819,7 +5811,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNbuildRibbon && softwareEnabled['nbuild'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nbuild')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNbuildRibbon && enabledSoftware['nbuild'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nbuild')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nbuild" role="tabpanel" aria-labelledby="nbuild-tab">
 							<div className={`section ${showNbuildRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -5974,7 +5966,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNcaravanRibbon && softwareEnabled['ncaravan'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncaravan')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNcaravanRibbon && enabledSoftware['ncaravan'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncaravan')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ncaravan" role="tabpanel" aria-labelledby="ncaravan-tab">
 							<div className={`section ${showNcaravanRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -6113,7 +6105,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNmechanicRibbon && softwareEnabled['nmechanic'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nmechanic')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNmechanicRibbon && enabledSoftware['nmechanic'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nmechanic')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nmechanic" role="tabpanel" aria-labelledby="nmechanic-tab">
 							<div className={`section ${showNmechanicRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -6252,7 +6244,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNeventsRibbon && softwareEnabled['nevents'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nevents')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNeventsRibbon && enabledSoftware['nevents'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nevents')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nevents" role="tabpanel" aria-labelledby="nevents-tab">
 							<div className={`section ${showNeventsRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -6391,7 +6383,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNserviceRibbon && softwareEnabled['nservice'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nservice')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNserviceRibbon && enabledSoftware['nservice'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nservice')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nservice" role="tabpanel" aria-labelledby="nservice-tab">
 							<div className={`section ${showNserviceRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -6530,7 +6522,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNtaskRibbon && softwareEnabled['ntask'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ntask')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNtaskRibbon && enabledSoftware['ntask'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ntask')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ntask" role="tabpanel" aria-labelledby="ntask-tab">
 							<div className={`section ${showNtaskRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -6682,7 +6674,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNproductionRibbon && softwareEnabled['nproduction'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nproduction')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNproductionRibbon && enabledSoftware['nproduction'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nproduction')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nproduction" role="tabpanel" aria-labelledby="nproduction-tab">
 							<div className={`section ${showNproductionRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -6821,7 +6813,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNticketRibbon && softwareEnabled['nticket'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nticket')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNticketRibbon && enabledSoftware['nticket'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nticket')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nticket" role="tabpanel" aria-labelledby="nticket-tab">
 							<div className={`section ${showNticketRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -6968,7 +6960,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNsalesRibbon && softwareEnabled['nsales'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsales')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNsalesRibbon && enabledSoftware['nsales'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsales')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsales" role="tabpanel" aria-labelledby="nsales-tab">
 							<div className={`section ${showNsalesRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -7107,7 +7099,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNinvoiceRibbon && softwareEnabled['ninvoice'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ninvoice')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNinvoiceRibbon && enabledSoftware['ninvoice'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ninvoice')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ninvoice" role="tabpanel" aria-labelledby="ninvoice-tab">
 							<div className={`section ${showNinvoiceRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -7426,7 +7418,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNdocRibbon && softwareEnabled['ndoc'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndoc')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNdocRibbon && enabledSoftware['ndoc'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndoc')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ndoc" role="tabpanel" aria-labelledby="ndoc-tab">
 							<div className={`section ${showNdocRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -7647,7 +7639,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNsportsRibbon && softwareEnabled['nsports'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsports')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNsportsRibbon && enabledSoftware['nsports'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsports')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsports" role="tabpanel" aria-labelledby="nsports-tab">
 							<div className={`section ${showNsportsRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -7786,7 +7778,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNgymRibbon && softwareEnabled['ngym'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ngym')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNgymRibbon && enabledSoftware['ngym'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ngym')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ngym" role="tabpanel" aria-labelledby="ngym-tab">
 							<div className={`section ${showNgymRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -7925,7 +7917,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNschoolRibbon && softwareEnabled['nschool'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nschool')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNschoolRibbon && enabledSoftware['nschool'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nschool')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nschool" role="tabpanel" aria-labelledby="nschool-tab">
 							<div className={`section ${showNschoolRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -8064,7 +8056,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNclinicRibbon && softwareEnabled['nclinic'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclinic')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNclinicRibbon && enabledSoftware['nclinic'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nclinic')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nclinic" role="tabpanel" aria-labelledby="nclinic-tab">
 							<div className={`section ${showNclinicRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -8203,7 +8195,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNopticsRibbon && softwareEnabled['noptics'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'noptics')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNopticsRibbon && enabledSoftware['noptics'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'noptics')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="noptics" role="tabpanel" aria-labelledby="noptics-tab">
 							<div className={`section ${showNopticsRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -8342,7 +8334,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNgoldRibbon && softwareEnabled['ngold'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ngold')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNgoldRibbon && enabledSoftware['ngold'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ngold')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ngold" role="tabpanel" aria-labelledby="ngold-tab">
 							<div className={`section ${showNgoldRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -8481,7 +8473,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNsmartRibbon && softwareEnabled['nsmart'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsmart')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNsmartRibbon && enabledSoftware['nsmart'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsmart')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsmart" role="tabpanel" aria-labelledby="nsmart-tab">
 							<div className={`section ${showNsmartRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -8636,7 +8628,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNrealityRibbon && softwareEnabled['nreality'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nreality')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNrealityRibbon && enabledSoftware['nreality'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nreality')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nreality" role="tabpanel" aria-labelledby="nreality-tab">
 							<div className={`section ${showNrealityRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -8775,7 +8767,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNhologramRibbon && softwareEnabled['nhologram'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nhologram')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNhologramRibbon && enabledSoftware['nhologram'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nhologram')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nhologram" role="tabpanel" aria-labelledby="nhologram-tab">
 							<div className={`section ${showNhologramRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -8914,7 +8906,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNpowerRibbon && softwareEnabled['npower'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npower')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNpowerRibbon && enabledSoftware['npower'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npower')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="npower" role="tabpanel" aria-labelledby="npower-tab">
 							<div className={`section ${showNpowerRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -9187,7 +9179,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNchargeRibbon && softwareEnabled['ncharge'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncharge')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNchargeRibbon && enabledSoftware['ncharge'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncharge')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ncharge" role="tabpanel" aria-labelledby="ncharge-tab">
 							<div className={`section ${showNchargeRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -9351,7 +9343,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNcityRibbon && softwareEnabled['ncity'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncity')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNcityRibbon && enabledSoftware['ncity'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncity')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ncity" role="tabpanel" aria-labelledby="ncity-tab">
 							<div className={`section ${showNcityRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -9632,7 +9624,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNkioskRibbon && softwareEnabled['nkiosk'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nkiosk')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNkioskRibbon && enabledSoftware['nkiosk'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nkiosk')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nkiosk" role="tabpanel" aria-labelledby="nkiosk-tab">
 							<div className={`section ${showNkioskRibbon ? 'visible' : 'hidden'}`} id="section-group" >
@@ -9902,7 +9894,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNledRibbon && softwareEnabled['nled'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nled')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNledRibbon && enabledSoftware['nled'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nled')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nled" role="tabpanel" aria-labelledby="nled-tab">
 							<div className={`section ${showNledRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -10080,7 +10072,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNfireRibbon && softwareEnabled['nfire'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nfire')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNfireRibbon && enabledSoftware['nfire'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nfire')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nfire" role="tabpanel" aria-labelledby="nfire-tab">
 							<div className={`section ${showNfireRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -10219,7 +10211,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNfurnitureRibbon && softwareEnabled['nfurniture'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nfurniture')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNfurnitureRibbon && enabledSoftware['nfurniture'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nfurniture')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nfurniture" role="tabpanel" aria-labelledby="nfurniture-tab">
 							<div className={`section ${showNfurnitureRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -10366,7 +10358,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNpartitionRibbon && softwareEnabled['npartition'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npartition')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNpartitionRibbon && enabledSoftware['npartition'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'npartition')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="npartition" role="tabpanel" aria-labelledby="npartition-tab">
 							<div className={`section ${showNpartitionRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -10546,7 +10538,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNdecorRibbon && softwareEnabled['ndecor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndecor')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNdecorRibbon && enabledSoftware['ndecor'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ndecor')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ndecor" role="tabpanel" aria-labelledby="ndecor-tab">
 							<div className={`section ${showNdecorRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -10693,7 +10685,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNpingRibbon && softwareEnabled['nping'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nping')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNpingRibbon && enabledSoftware['nping'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nping')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nping" role="tabpanel" aria-labelledby="nping-tab">
 							<div className={`section ${showNpingRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -10848,7 +10840,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNconnectRibbon && softwareEnabled['nconnect'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nconnect')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNconnectRibbon && enabledSoftware['nconnect'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nconnect')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nconnect" role="tabpanel" aria-labelledby="nconnect-tab">
 							<div className={`section ${showNconnectRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -10995,7 +10987,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNlightRibbon && softwareEnabled['nlight'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nlight')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNlightRibbon && enabledSoftware['nlight'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nlight')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nlight" role="tabpanel" aria-labelledby="nlight-tab">
 							<div className={`section ${showNlightRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -11134,7 +11126,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNcomfortRibbon && softwareEnabled['ncomfort'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncomfort')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNcomfortRibbon && enabledSoftware['ncomfort'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'ncomfort')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="ncomfort" role="tabpanel" aria-labelledby="ncomfort-tab">
 							<div className={`section ${showNcomfortRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -11273,7 +11265,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNsoundRibbon && softwareEnabled['nsound'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsound')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNsoundRibbon && enabledSoftware['nsound'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nsound')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nsound" role="tabpanel" aria-labelledby="nsound-tab">
 							<div className={`section ${showNsoundRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -11412,7 +11404,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 						</div>
 					</div>
 				)}
-				{showNhomeRibbon && softwareEnabled['nhome'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nhome')?.label && !currentRoute.endsWith('dashboard') && (
+				{showNhomeRibbon && enabledSoftware['nhome'] && menuStructureStart.cliente.submenu?.find(sub => sub.key === 'nhome')?.label && !currentRoute.endsWith('dashboard') && (
 					<div className="tab-content-navbar" id="myTabContent">
 						<div className="tab-pane fade show active" id="nhome" role="tabpanel" aria-labelledby="nhome-tab">
 							<div className={`section ${showNhomeRibbon ? 'visible' : 'hidden'}`} id="section-group">
@@ -12182,4 +12174,4 @@ export const NavBar = ({ style }: NavBarProps) => {
 			/>
 		</nav>
 	);
-};
+});

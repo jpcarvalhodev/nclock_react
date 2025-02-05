@@ -4,7 +4,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { useTerminals } from '../context/TerminalsContext';
 
@@ -12,12 +12,12 @@ import { CustomOutlineButton } from './CustomOutlineButton';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a interface para as propriedades do componente TreeViewData
@@ -61,23 +61,24 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 
 // Define o componente
 export function TreeViewDataNled({ onSelectDevices }: TreeViewDataNledProps) {
-    const { devices, fetchAllDevices } = useTerminals();  
+    const { devices, fetchAllDevices } = useTerminals();
     const [items, setItems] = useState<TreeViewBaseItem[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
+    const [loading, setLoading] = useState(true);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildDeviceTree = devices
-        .sort((a, b) => a.deviceNumber - b.deviceNumber)
-        .map(device => ({
-            id: device.serialNumber || 'Sem SN',
-            label: device.deviceName || 'Sem Nome',
-            children: []
-        }));
+            .sort((a, b) => a.deviceNumber - b.deviceNumber)
+            .map(device => ({
+                id: device.serialNumber || 'Sem SN',
+                label: device.deviceName || 'Sem Nome',
+                children: []
+            }));
 
         const treeItems = [
             {
@@ -96,6 +97,7 @@ export function TreeViewDataNled({ onSelectDevices }: TreeViewDataNledProps) {
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
+        setLoading(false);
     }, [devices]);
 
     // Função para lidar com a expansão dos itens
@@ -176,16 +178,21 @@ export function TreeViewDataNled({ onSelectDevices }: TreeViewDataNledProps) {
                 </OverlayTrigger>
             </div>
             <Box className="treeViewFlexItem">
-                <RichTreeView
-                    multiSelect={true}
-                    checkboxSelection={true}
-                    items={filteredItems}
-                    getItemId={(item: TreeViewBaseItem) => item.id}
-                    onSelectedItemsChange={handleSelectedItemsChange}
-                    selectedItems={selectedDevicesIds}
-                    expandedItems={expandedIds}
-                    onExpandedItemsChange={handleToggle}
-                />
+                {loading ?
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                    </div> :
+                    <RichTreeView
+                        multiSelect={true}
+                        checkboxSelection={true}
+                        items={filteredItems}
+                        getItemId={(item: TreeViewBaseItem) => item.id}
+                        onSelectedItemsChange={handleSelectedItemsChange}
+                        selectedItems={selectedDevicesIds}
+                        expandedItems={expandedIds}
+                        onExpandedItemsChange={handleToggle}
+                    />
+                }
             </Box>
         </Box>
     );

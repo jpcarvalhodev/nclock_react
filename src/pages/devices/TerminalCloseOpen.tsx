@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
@@ -61,6 +61,7 @@ export const TerminalCloseOpen = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<MBDeviceCloseOpen[]>([]);
     const [filterText, setFilterText] = useState('');
+    const [loading, setLoading] = useState(true);
 
     // Função para buscar todos os dispositivos multibanco entre datas
     const fetchAllDevicesBetweenDates = async () => {
@@ -209,6 +210,13 @@ export const TerminalCloseOpen = () => {
         })
     );
 
+    // Define o estado de carregamento
+    useEffect(() => {
+        if (filteredDeviceDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDeviceDataTable]);
+
     // Define as colunas de dispositivos
     const columns: TableColumn<MBDeviceCloseOpen>[] = mbDeviceCloseOpenFields
         .filter(field => selectedColumns.includes(field.key))
@@ -355,22 +363,27 @@ export const TerminalCloseOpen = () => {
                                 </OverlayTrigger>
                             </div>
                         </div>
-                        <div className="deviceMobile">
-                            <DataTable
-                                columns={columns}
-                                data={filteredDeviceDataTable}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={20}
-                                selectableRows
-                                onSelectedRowsChange={handleDeviceRowSelected}
-                                selectableRowsHighlight
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                                defaultSortAsc={true}
-                                defaultSortFieldId="timestamp"
-                            />
+                        <div className="table-css">
+                            {loading ?
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                </div> :
+                                <DataTable
+                                    columns={columns}
+                                    data={filteredDeviceDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={20}
+                                    selectableRows
+                                    onSelectedRowsChange={handleDeviceRowSelected}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="timestamp"
+                                />
+                            }
                         </div>
                     </div>
                 </Split>

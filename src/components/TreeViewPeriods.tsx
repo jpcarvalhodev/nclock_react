@@ -4,7 +4,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { useTerminals } from '../context/TerminalsContext';
 
@@ -12,12 +12,12 @@ import { CustomOutlineButton } from './CustomOutlineButton';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a interface para as propriedades do componente TreeViewData
@@ -68,16 +68,17 @@ export function TreeViewDataPeriods({ onSelectDevices }: TreeViewDataPeriodsProp
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
+    const [loading, setLoading] = useState(false);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildDeviceTree = period
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map(time => ({
-            id: time.id || 'Sem ID',
-            label: time.name || 'Sem Nome',
-            children: []
-        }));
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map(time => ({
+                id: time.id || 'Sem ID',
+                label: time.name || 'Sem Nome',
+                children: []
+            }));
 
         const treeItems = [
             {
@@ -96,6 +97,7 @@ export function TreeViewDataPeriods({ onSelectDevices }: TreeViewDataPeriodsProp
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
+        setLoading(false);
     }, [period]);
 
     // Função para lidar com a expansão dos itens
@@ -176,16 +178,21 @@ export function TreeViewDataPeriods({ onSelectDevices }: TreeViewDataPeriodsProp
                 </OverlayTrigger>
             </div>
             <Box className="treeViewFlexItem">
-                <RichTreeView
-                    multiSelect={true}
-                    checkboxSelection={true}
-                    items={filteredItems}
-                    getItemId={(item: TreeViewBaseItem) => item.id}
-                    onSelectedItemsChange={handleSelectedItemsChange}
-                    selectedItems={selectedDevicesIds}
-                    expandedItems={expandedIds}
-                    onExpandedItemsChange={handleToggle}
-                />
+                {loading ?
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                    </div> :
+                    <RichTreeView
+                        multiSelect={true}
+                        checkboxSelection={true}
+                        items={filteredItems}
+                        getItemId={(item: TreeViewBaseItem) => item.id}
+                        onSelectedItemsChange={handleSelectedItemsChange}
+                        selectedItems={selectedDevicesIds}
+                        expandedItems={expandedIds}
+                        onExpandedItemsChange={handleToggle}
+                    />
+                }
             </Box>
         </Box>
     );

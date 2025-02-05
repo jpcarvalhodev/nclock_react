@@ -87,6 +87,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
       if (field.type === "number" && fieldValue != null && fieldValue < 0) {
         valid = false;
       }
+      if (field.key === 'nif' && fieldValue != null && fieldValue.toString().length < 9) {
+        valid = false;
+      }
 
       return valid;
     });

@@ -4,20 +4,21 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { useTerminals } from '../context/TerminalsContext';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
+import { set } from 'date-fns';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a interface para as propriedades do componente TreeViewData
@@ -68,16 +69,17 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
+    const [loading, setLoading] = useState(true);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildTerminalTree = mbDevices
-        .sort((a, b) => a.nomeQuiosque.localeCompare(b.nomeQuiosque))
-        .map(device => ({
-            id: device.id || 'Sem ID',
-            label: device.nomeQuiosque || 'Sem Nome',
-            children: []
-        }));
+            .sort((a, b) => a.nomeQuiosque.localeCompare(b.nomeQuiosque))
+            .map(device => ({
+                id: device.id || 'Sem ID',
+                label: device.nomeQuiosque || 'Sem Nome',
+                children: []
+            }));
 
         const treeItems = [
             {
@@ -96,6 +98,7 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
+        setLoading(false);
     }, [mbDevices]);
 
     // Função para lidar com a expansão dos itens
@@ -176,16 +179,21 @@ export function TreeViewDataMBTerminals({ onSelectDevices }: TreeViewDataMBTermi
                 </OverlayTrigger>
             </div>
             <Box className="treeViewFlexItem">
-                <RichTreeView
-                    multiSelect={true}
-                    checkboxSelection={true}
-                    items={filteredItems}
-                    getItemId={(item: TreeViewBaseItem) => item.id}
-                    onSelectedItemsChange={handleSelectedItemsChange}
-                    selectedItems={selectedDevicesIds}
-                    expandedItems={expandedIds}
-                    onExpandedItemsChange={handleToggle}
-                />
+                {loading ?
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                    </div> :
+                    <RichTreeView
+                        multiSelect={true}
+                        checkboxSelection={true}
+                        items={filteredItems}
+                        getItemId={(item: TreeViewBaseItem) => item.id}
+                        onSelectedItemsChange={handleSelectedItemsChange}
+                        selectedItems={selectedDevicesIds}
+                        expandedItems={expandedIds}
+                        onExpandedItemsChange={handleToggle}
+                    />
+                }
             </Box>
         </Box>
     );

@@ -21,7 +21,12 @@ export const fetchAllAttendances = async () => {
     const response = await fetchWithAuth(`Attendances/GetAllAttendances`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -31,7 +36,12 @@ export const fetchAllAttendancesBetweenDates = async (startDate: string, endDate
     const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -47,7 +57,12 @@ export const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -63,7 +78,12 @@ export const addImportedAttendance = async (attendance: Partial<EmployeeAttendan
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -79,7 +99,12 @@ export const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -91,7 +116,12 @@ export const deleteAttendance = async (attendanceTimeId: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -125,7 +155,12 @@ export const fetchAllEmployees = async () => {
     const response = await fetchWithAuth(`Employees/GetAllEmployees`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -135,7 +170,12 @@ export const fetchAllEmployeesWithDisabled = async () => {
     const response = await fetchWithAuth(`Employees/GetDisabledEmployees`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -167,7 +207,12 @@ export const updateEmployee = async (employee: Employee) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -183,7 +228,12 @@ export const deleteEmployee = async (employeeID: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -199,7 +249,12 @@ export const employeeImportFP = async (employeeFP: Partial<EmployeeFP>[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -215,7 +270,12 @@ export const employeeImportFace = async (employeeFace: Partial<EmployeeFace>[]) 
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -231,7 +291,12 @@ export const employeeImportCard = async (employeeCard: Partial<EmployeeCard>[]) 
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -245,7 +310,12 @@ export const fetchAllDevices = async () => {
     const response = await fetchWithAuth(`Zkteco/GetAllDevices`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -255,7 +325,12 @@ export const fetchAllEmployeeDevices = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/GetAllUserInfoOnDevice?deviceId=${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -265,7 +340,12 @@ export const fetchAllMBDevices = async () => {
     const response = await fetchWithAuth(`TerminalPagamento/GetAllTerminalPagamentoAsync`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -279,7 +359,12 @@ export const fetchAllTPCloseOpen = async (startDate?: string, endDate?: string) 
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -293,7 +378,12 @@ export const fetchAllManualDoorOpen = async (startDate?: string, endDate?: strin
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -313,7 +403,12 @@ export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employee
 
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -333,7 +428,12 @@ export const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, empl
 
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -343,7 +443,12 @@ export const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Device
     const response = await fetchWithAuth(`Zkteco/SaveAllAttendancesEmployeesOnDeviceToDB/${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -353,7 +458,12 @@ export const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice?deviceId=${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -369,7 +479,12 @@ export const openDeviceDoor = async (deviceSN: string, doorData: DoorDevice) => 
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -379,7 +494,12 @@ export const restartDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/RestartDevice/${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -395,7 +515,12 @@ export const sendClockToDevice = async (serialNumber: string, timeZoneId?: strin
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -447,7 +572,12 @@ export const updateDevice = async (device: Devices) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -459,7 +589,12 @@ export const deleteDevice = async (zktecoDeviceID: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -475,7 +610,12 @@ export const addMBDevice = async (mbDevice: MBDevice) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -491,7 +631,12 @@ export const updateMBDevice = async (mbDevice: MBDevice) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -503,7 +648,12 @@ export const deleteMBDevice = async (mbDeviceID: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -519,7 +669,12 @@ export const restartMBDevice = async (mbDevice: Partial<MBDevice>) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -535,7 +690,12 @@ export const addManualOpenDoor = async (door: Partial<ManualOpenDoor>) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -549,7 +709,12 @@ export const fetchAllCategories = async () => {
     const response = await fetchWithAuth(`Categories`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -565,7 +730,12 @@ export const addCategory = async (category: Category) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -581,7 +751,12 @@ export const updateCategory = async (category: Category) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -597,7 +772,12 @@ export const deleteCategory = async (categoryID: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -611,7 +791,12 @@ export const fetchAllDepartments = async () => {
     const response = await fetchWithAuth(`Departaments`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -629,7 +814,12 @@ export const fetchAllDepartmentsEmployees = async () => {
     const response = await fetchWithAuth(`Departaments/Employees`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -645,7 +835,12 @@ export const addDepartment = async (department: Department) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -661,7 +856,12 @@ export const updateDepartment = async (department: Department) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -677,7 +877,12 @@ export const deleteDepartment = async (departmentID: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -691,7 +896,12 @@ export const fetchAllExternalEntities = async () => {
     const response = await fetchWithAuth(`ExternalEntities`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -725,7 +935,12 @@ export const addExternalEntity = async (entity: ExternalEntity) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -741,7 +956,12 @@ export const updateExternalEntity = async (entity: ExternalEntity) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -757,7 +977,12 @@ export const deleteExternalEntity = async (externalEntityID: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -771,7 +996,12 @@ export const fetchAllGroups = async () => {
     const response = await fetchWithAuth(`Groups`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -781,7 +1011,12 @@ export const fetchAllGroupsEmployees = async () => {
     const response = await fetchWithAuth(`Groups/Employees`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -797,7 +1032,12 @@ export const addGroup = async (group: Group) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -813,7 +1053,12 @@ export const updateGroup = async (group: Group) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -829,7 +1074,12 @@ export const deleteGroup = async (groupID: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -843,7 +1093,12 @@ export const fetchAllProfessions = async () => {
     const response = await fetchWithAuth(`Professions`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -859,7 +1114,12 @@ export const addProfession = async (profession: Profession) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -875,7 +1135,12 @@ export const updateProfession = async (profession: Profession) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -891,7 +1156,12 @@ export const deleteProfession = async (profession: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -905,7 +1175,12 @@ export const fetchAllExternalEntityTypes = async () => {
     const response = await fetchWithAuth(`ExternalEntityTypes`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -921,7 +1196,12 @@ export const addExternalEntityTypes = async (externalEntityType: ExternalEntityT
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -937,7 +1217,12 @@ export const updateExternalEntityTypes = async (externalEntityType: ExternalEnti
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -953,7 +1238,12 @@ export const deleteExternalEntityTypes = async (externalEntityID: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -967,7 +1257,12 @@ export const fetchAllZones = async () => {
     const response = await fetchWithAuth(`Zones`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -983,7 +1278,12 @@ export const addZone = async (zone: Zone) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -999,7 +1299,12 @@ export const updateZone = async (zone: Zone) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1015,7 +1320,12 @@ export const deleteZone = async (zoneID: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1029,7 +1339,12 @@ export const fetchAllEmployeeCards = async () => {
     const response = await fetchWithAuth(`Employees/GetAllCardsEmployees`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1039,7 +1354,12 @@ export const fetchEmployeeCardDataByEmployeeID = async (employeeID: string) => {
     const response = await fetchWithAuth(`Employees/GetEmployeeByIdCard/${employeeID}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1055,7 +1375,12 @@ export const addEmployeeCard = async (employeeCard: EmployeeCard) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1072,7 +1397,12 @@ export const updateEmployeeCard = async (employeeCard: EmployeeCard) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1084,7 +1414,12 @@ export const deleteEmployeeCard = async (cardId: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1102,7 +1437,12 @@ export const fetchAllAds = async (startDate?: string, endDate?: string) => {
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1112,7 +1452,12 @@ export const fetchAllAdsByType = async (tipoArquivo: number) => {
     const response = await fetchWithAuth(`Publicidade/tipo/${tipoArquivo}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1122,7 +1467,12 @@ export const fetchAdByid = async (id: string) => {
     const response = await fetchWithAuth(`Publicidade/${id}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1148,7 +1498,12 @@ export const updateAd = async (ads: Ads, ad: FormData) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1160,7 +1515,12 @@ export const deleteAd = async (id: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1174,7 +1534,12 @@ export const fetchAllKioskTransactions = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`KioskTransaction/GetAllTransactions?deviceID=${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1184,7 +1549,12 @@ export const fetchAllKioskTransactionsOnDevice = async (zktecoDeviceID: Devices)
     const response = await fetchWithAuth(`KioskTransaction/GetAllTransactionsOnDevice?deviceID=${zktecoDeviceID}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1194,7 +1564,12 @@ export const fetchKioskTransactionDoorAsync = async () => {
     const response = await fetchWithAuth(`KioskTransaction/GetAllTransactionDoorAsync`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1208,7 +1583,12 @@ export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (eventD
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1222,7 +1602,12 @@ export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: strin
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1236,7 +1621,12 @@ export const fetchKioskTransactionsByMBAndDeviceSN = async (startDate?: string, 
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1250,7 +1640,12 @@ export const fetchKioskTransactionsByPayCoins = async (eventDoorId: string, devi
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1264,7 +1659,12 @@ export const fetchKioskTransactionsVideoPorteiro = async (eventDoorId: string, d
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1274,7 +1674,12 @@ export const fetchDataFimRecolha = async (deviceSN: string) => {
     const response = await fetchWithAuth(`KioskTransaction/GetLastDataFimRecolha?sn=${deviceSN}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1290,7 +1695,12 @@ export const addKioskTransaction = async (kioskTransaction: NewTransactionCard) 
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1304,7 +1714,12 @@ export const fetchAllRegisteredUsers = async () => {
     const response = await fetchWithAuth(`Authentication/GetAllUsersWithRoles`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1314,7 +1729,12 @@ export const fetchAllCompanyConfig = async () => {
     const response = await fetchWithAuth(`Configuration/GetAllCompany`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1324,7 +1744,12 @@ export const fetchAllEmailConfig = async () => {
     const response = await fetchWithAuth(`Configuration/GetEmailSMTPConfigurations`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1347,7 +1772,12 @@ export const addNewRegisteredUser = async (registeredUser: FormData) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1360,7 +1790,12 @@ export const updateRegisteredUser = async (registeredUser: FormData) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1372,7 +1807,12 @@ export const deleteRegisteredUser = async (id: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1388,7 +1828,12 @@ export const addUserEmailConfig = async (email: Partial<EmailUser>) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1404,7 +1849,12 @@ export const updateUserEmailConfig = async (email: Partial<EmailUser>) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1417,7 +1867,12 @@ export const addCompanyConfig = async (companyEmail: FormData) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1431,7 +1886,12 @@ export const updateCompanyConfig = async (companyData: FormData) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1443,7 +1903,12 @@ export const deleteCompanyConfig = async (id: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1459,7 +1924,12 @@ export const testEmail = async (email: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1473,7 +1943,12 @@ export const fetchAllTimePeriods = async () => {
     const response = await fetchWithAuth(`AccTimeSeg/GetAllTimezone`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1489,7 +1964,12 @@ export const addTimePeriod = async (timePeriod: Partial<TimePeriod>) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1505,7 +1985,12 @@ export const updateTimePeriod = async (timePeriod: TimePeriod) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1517,7 +2002,12 @@ export const deleteTimePeriod = async (id: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1531,7 +2021,12 @@ export const fetchAllTimePlans = async () => {
     const response = await fetchWithAuth(`AccPlanoHorario/GetAllAccPlanoHorario`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1547,7 +2042,12 @@ export const createTimePlan = async (timePlan: TimePlan) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1563,7 +2063,12 @@ export const updateTimePlan = async (timePlan: TimePlan) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1579,7 +2084,12 @@ export const deleteTimePlan = async (id: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1595,7 +2105,12 @@ export const deletePeriodoTimePlan = async (planoId: string, id: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1609,7 +2124,12 @@ export const fetchAllAccessControl = async () => {
     const response = await fetchWithAuth(`AccPlanoAcesso/GetAllAccPlanoAcesso`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1625,7 +2145,12 @@ export const addAccessControl = async (accessControl: Partial<AccessControl>) =>
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1641,7 +2166,12 @@ export const updateAccessControl = async (accessControl: Partial<AccessControl>)
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1653,7 +2183,12 @@ export const deleteAccessControl = async (id: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1667,7 +2202,12 @@ export const fetchAllDoors = async () => {
     const response = await fetchWithAuth(`AccDoor`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1683,7 +2223,12 @@ export const updateDoor = async (door: Doors) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     if (response.status === 204) {
@@ -1710,7 +2255,12 @@ export const fetchLicensesWithoutKey = async () => {
     const response = await fetchWithAuth(`Configuration/GetValidLisence`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1757,7 +2307,12 @@ export const fetchAllReaders = async (deviceId: string) => {
     const response = await fetchWithAuth(`AccDoor/GetReadersByDeviceId?deviceId=${deviceId}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1791,7 +2346,12 @@ export const fetchRecolhasMoedeiro = async (startDate?: string, endDate?: string
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1801,7 +2361,12 @@ export const fetchContagemSNTransacoes = async () => {
     const response = await fetchWithAuth(`KioskTransaction/ObterContagemSNTransacoes`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1817,7 +2382,12 @@ export const addRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContad
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1833,7 +2403,12 @@ export const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroECon
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1849,7 +2424,12 @@ export const deleteRecolhaMoedeiro = async (id: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1865,7 +2445,12 @@ export const resetRecolhaMoedeiro = async (resetCoin: ResetCoin) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1883,7 +2468,12 @@ export const fetchAllCleaningsAndOccurrences = async (tipo: number, startDate?: 
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1899,7 +2489,12 @@ export const addCleaning = async (cleaning: LimpezasEOcorrencias) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1915,7 +2510,12 @@ export const addOccurrence = async (occurrence: LimpezasEOcorrencias) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1931,7 +2531,12 @@ export const updateCleaning = async (cleaning: LimpezasEOcorrencias) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1947,7 +2552,12 @@ export const updateOccurrence = async (occurrence: LimpezasEOcorrencias) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1963,7 +2573,12 @@ export const deleteCleaning = async (id: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1979,7 +2594,12 @@ export const deleteOccurrence = async (id: string[]) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -1997,7 +2617,12 @@ export const fetchAllContador = async (startDate?: string, endDate?: string) => 
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2015,7 +2640,12 @@ export const fetchAllAlerts = async (startDate?: string, endDate?: string) => {
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2033,7 +2663,12 @@ export const fetchAllHistoryLogs = async (startDate?: string, endDate?: string) 
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2047,7 +2682,12 @@ export const fetchAllLoginLogs = async (startDate?: string, endDate?: string) =>
     const response = await fetchWithAuth(url);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2061,7 +2701,12 @@ export const fetchAllCameras = async () => {
     const response = await fetchWithAuth(`ViewCamera/GetAllViewCameras`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2077,7 +2722,12 @@ export const addCamera = async (camera: Cameras) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2093,7 +2743,12 @@ export const updateCamera = async (camera: Cameras) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2105,7 +2760,12 @@ export const deleteCamera = async (id: string) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2119,7 +2779,12 @@ export const fetchKioskConfig = async () => {
     const response = await fetchWithAuth(`Configuration/GetKioskConfigurations`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2135,7 +2800,12 @@ export const addKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2151,7 +2821,12 @@ export const updateKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2175,7 +2850,12 @@ export const openAuxDoor = async (data: { deviceSN: string, auxData: FormData })
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2189,7 +2869,12 @@ export const fetchAllAux = async () => {
     const response = await fetchWithAuth(`AccAux/GetAllAux`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2199,7 +2884,12 @@ export const fetchInAux = async () => {
     const response = await fetchWithAuth(`AccAux/GetAllInAux`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2209,7 +2899,12 @@ export const fetchOutAux = async () => {
     const response = await fetchWithAuth(`AccAux/GetAllOutAux`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2219,7 +2914,12 @@ export const fetchOutAuxEnabled = async () => {
     const response = await fetchWithAuth(`AccAux/GetAllOutAuxEnabeld`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2235,7 +2935,12 @@ export const updateAllAux = async (aux: Auxiliaries) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();
@@ -2357,7 +3062,12 @@ export const addAccessTransaction = async (access: Partial<Accesses>) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
         throw new Error();
     }
     return response.json();

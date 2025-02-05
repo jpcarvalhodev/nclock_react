@@ -75,6 +75,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       setFormData({ ...entity });
       if (entity.employeeCards && entity.employeeCards.length > 0) {
         setCardFormData(entity.employeeCards[0]);
+      } else {
+        setCardFormData({});
       }
     } else {
       setFormData({} as T);
@@ -100,6 +102,9 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         valid = false;
       }
       if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+        valid = false;
+      }
+      if (field.key === 'nif' && fieldValue != null && fieldValue.toString().length < 9) {
         valid = false;
       }
 

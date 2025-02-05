@@ -383,7 +383,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <T extends Record<string, any
                             </Form.Group>
                         </Col>
                         <Col md={2}>
-                            <div style={{ backgroundColor: '#d1d1d1', padding: '10px', borderRadius: '5px', textAlign: "center" }}>
+                            <div style={{ backgroundColor: '#d1d1d1', padding: '10px', borderRadius: '5px', textAlign: "center", fontSize: '14px' }}>
                                 <p style={{ margin: '0' }}>Observação: Insira primeiro a quantidade de moedas e depois selecione o local.</p>
                             </div>
                         </Col>

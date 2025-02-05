@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
@@ -25,12 +25,12 @@ import { Register } from "../../types/Types";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 export const NewUsers = () => {
@@ -51,6 +51,7 @@ export const NewUsers = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredData, setFilteredData] = useState<Register[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Busca os utilizadores ao carregar a página
     useEffect(() => {
@@ -177,6 +178,14 @@ export const NewUsers = () => {
         })
     )
 
+    // Define o estado de carregamento
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
+
+    // Define a colunas excluídas
     const excludedColumns = ['id', 'password', 'confirmPassword'];
 
     // Define as colunas da tabela
@@ -289,24 +298,29 @@ export const NewUsers = () => {
                         </div>
                         <div className='content-wrapper'>
                             <div className='table-css'>
-                                <DataTable
-                                    columns={[...columns, actionColumn]}
-                                    data={filteredDataTable}
-                                    onRowDoubleClicked={handleEditUsers}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    expandableRows
-                                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId='name'
-                                />
+                                {loading ?
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                    </div> :
+                                    <DataTable
+                                        columns={[...columns, actionColumn]}
+                                        data={filteredDataTable}
+                                        onRowDoubleClicked={handleEditUsers}
+                                        pagination
+                                        paginationComponentOptions={paginationOptions}
+                                        paginationPerPage={20}
+                                        selectableRows
+                                        onSelectedRowsChange={handleRowSelected}
+                                        clearSelectedRows={clearSelectionToggle}
+                                        expandableRows
+                                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                                        noDataComponent="Não existem dados disponíveis para exibir."
+                                        customStyles={customStyles}
+                                        striped
+                                        defaultSortAsc={true}
+                                        defaultSortFieldId='name'
+                                    />
+                                }
                             </div>
                         </div>
                     </div>

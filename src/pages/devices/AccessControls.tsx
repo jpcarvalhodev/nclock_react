@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
@@ -44,6 +44,7 @@ export const AccessControls = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
     const [initialData, setInitialData] = useState<Partial<AccessControl> | null>(null);
+    const [loading, setLoading] = useState(true);
 
     // Função para adicionar o controle de acesso
     const addAccessControl = async (newAccessControl: Partial<AccessControl>) => {
@@ -172,6 +173,13 @@ export const AccessControls = () => {
         })
     );
 
+    // Define o estado de carregamento
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
+
     // Define a coluna de ações
     const actionColumn: TableColumn<AccessControl> = {
         name: 'Ações',
@@ -273,21 +281,26 @@ export const AccessControls = () => {
                     </div>
                 </div>
                 <div className='table-css'>
-                    <DataTable
-                        columns={[...columns, actionColumn]}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        onRowDoubleClicked={handleEditAccessControl}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                    />
+                    {loading ?
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                        </div> :
+                        <DataTable
+                            columns={[...columns, actionColumn]}
+                            data={filteredDataTable}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            paginationPerPage={20}
+                            onRowDoubleClicked={handleEditAccessControl}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            selectableRowsHighlight
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                        />
+                    }
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

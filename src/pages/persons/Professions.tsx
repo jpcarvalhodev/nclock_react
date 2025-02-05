@@ -21,7 +21,7 @@ import { ExportButton } from "../../components/ExportButton";
 import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
 import { customStyles } from "../../components/CustomStylesDataTable";
 
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { TextField, TextFieldProps } from "@mui/material";
 
 
@@ -32,12 +32,12 @@ interface Filters {
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+    return (
+        <TextField
+            {...props}
+            className="SearchBox"
+        />
+    );
 }
 
 // Define a página de profissões
@@ -57,6 +57,7 @@ export const Professions = () => {
     const [initialData, setInitialData] = useState<Partial<Profession> | null>(null);
     const [currentProfessionIndex, setCurrentProfessionIndex] = useState(0);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Função para adicionar uma nova profissão
     const addProfession = async (profession: Profession) => {
@@ -188,6 +189,13 @@ export const Professions = () => {
             return false;
         })
     ).sort((a, b) => a.code - b.code);
+
+    // Define o estado de loading
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
 
     // Seleciona a entidade anterior
     const handleNextProfession = () => {
@@ -344,24 +352,29 @@ export const Professions = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    <DataTable
-                        columns={[...tableColumns, actionColumn]}
-                        data={filteredDataTable}
-                        onRowDoubleClicked={handleEditProfession}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        expandableRows
-                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId="code"
-                    />
+                    {loading ?
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                        </div> :
+                        <DataTable
+                            columns={[...tableColumns, actionColumn]}
+                            data={filteredDataTable}
+                            onRowDoubleClicked={handleEditProfession}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            paginationPerPage={20}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            expandableRows
+                            expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId="code"
+                        />
+                    }
                 </div>
             </div>
             <Footer style={{ backgroundColor: footerColor }} />

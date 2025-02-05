@@ -4,13 +4,14 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 
 import { usePersons } from '../context/PersonsContext';
 import { useTerminals } from '../context/TerminalsContext';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
+import { set } from 'date-fns';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -71,16 +72,17 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskPr
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
+    const [loading, setLoading] = useState(true);
 
     // Busca os dados dos dispositivos e mapeia para os itens da árvore
     useEffect(() => {
         const buildDeviceTree = devices
-        .sort((a, b) => a.deviceNumber - b.deviceNumber)
-        .map(device => ({
-            id: device.serialNumber || 'Sem SN',
-            label: device.deviceName || 'Sem Nome',
-            children: []
-        }));
+            .sort((a, b) => a.deviceNumber - b.deviceNumber)
+            .map(device => ({
+                id: device.serialNumber || 'Sem SN',
+                label: device.deviceName || 'Sem Nome',
+                children: []
+            }));
 
         const buildUserTree = employees
             .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
@@ -112,6 +114,7 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskPr
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
+        setLoading(false);
     }, [devices, employees]);
 
     // Função para lidar com a expansão dos itens
@@ -192,16 +195,21 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskPr
                 </OverlayTrigger>
             </div>
             <Box className="treeViewFlexItem">
-                <RichTreeView
-                    multiSelect={true}
-                    checkboxSelection={true}
-                    items={filteredItems}
-                    getItemId={(item: TreeViewBaseItem) => item.id}
-                    onSelectedItemsChange={handleSelectedItemsChange}
-                    selectedItems={selectedDevicesIds}
-                    expandedItems={expandedIds}
-                    onExpandedItemsChange={handleToggle}
-                />
+                {loading ?
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                    </div> :
+                    <RichTreeView
+                        multiSelect={true}
+                        checkboxSelection={true}
+                        items={filteredItems}
+                        getItemId={(item: TreeViewBaseItem) => item.id}
+                        onSelectedItemsChange={handleSelectedItemsChange}
+                        selectedItems={selectedDevicesIds}
+                        expandedItems={expandedIds}
+                        onExpandedItemsChange={handleToggle}
+                    />
+                }
             </Box>
         </Box>
     );

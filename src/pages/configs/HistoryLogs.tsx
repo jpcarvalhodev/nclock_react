@@ -1,6 +1,6 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
@@ -55,6 +55,7 @@ export const HistoryLogs = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
+    const [loading, setLoading] = useState(true);
 
     // Função para buscar os logs entre datas
     const fetchLogsBetweenDates = async () => {
@@ -213,6 +214,13 @@ export const HistoryLogs = () => {
         })
     ).sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
 
+    // Define o estado de carregamento
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
+
     // Define as colunas da tabela
     const columns: TableColumn<Logs>[] = logsFields
         .filter(field => selectedColumns.includes(field.key))
@@ -325,22 +333,27 @@ export const HistoryLogs = () => {
                             </div>
                         </div>
                         <div className='table-css'>
-                            <DataTable
-                                columns={columns}
-                                data={filteredDataTable}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={20}
-                                selectableRows
-                                onSelectedRowsChange={handleRowSelected}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRowsHighlight
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                                defaultSortAsc={true}
-                                defaultSortFieldId="createdDate"
-                            />
+                            {loading ?
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                </div> :
+                                <DataTable
+                                    columns={columns}
+                                    data={filteredDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={20}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="createdDate"
+                                />
+                            }
                         </div>
                     </div>
                 </Split>

@@ -60,6 +60,7 @@ export const TerminalsMB = () => {
     const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<MBDevice[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Função para atualizar todos os dispositivos
     const refreshMBDevices = () => {
@@ -203,6 +204,13 @@ export const TerminalsMB = () => {
             return false;
         })
     );
+
+    // Define o estado de carregamento
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
 
     // Define as colunas de dispositivos
     const columns: TableColumn<MBDevice>[] = mbDeviceFields
@@ -355,22 +363,27 @@ export const TerminalsMB = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="deviceMobile">
-                            <DataTable
-                                columns={[...columns, devicesActionColumn]}
-                                data={filteredDataTable}
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={20}
-                                selectableRows
-                                onSelectedRowsChange={handleDeviceRowSelected}
-                                clearSelectedRows={clearSelectionToggle}
-                                selectableRowsHighlight
-                                onRowDoubleClicked={handleEditDevices}
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                            />
+                        <div className="table-css">
+                            {loading ?
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                </div> :
+                                <DataTable
+                                    columns={[...columns, devicesActionColumn]}
+                                    data={filteredDataTable}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={20}
+                                    selectableRows
+                                    onSelectedRowsChange={handleDeviceRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    selectableRowsHighlight
+                                    onRowDoubleClicked={handleEditDevices}
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                />
+                            }
                         </div>
                         <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
                             <div>

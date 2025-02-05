@@ -171,7 +171,7 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
             <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="modal-body-scrollable" style={{ marginBottom: 365 }}>
+            <Modal.Body className="modal-body-scrollable" >
                 <div className="container-fluid">
                     <Row>
                         <Col md={3}>

@@ -21,7 +21,7 @@ import { Department } from '../../types/Types';
 import '../../css/PagesStyles.css';
 import { useNavbar } from "../../context/NavbarContext";
 
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { TextField, TextFieldProps } from '@mui/material';
 
 import { usePersons } from '../../context/PersonsContext';
@@ -58,6 +58,7 @@ export const Departments = () => {
     const [currentDepartmentIndex, setCurrentDepartmentIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Department[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Busca os departamentos
     const fetchDepartments = async () => {
@@ -180,6 +181,13 @@ export const Departments = () => {
             return false;
         })
     );
+
+    // Define o estado de loading
+    useEffect(() => {
+        if (filteredDataTable.length > 0) {
+            setLoading(false);
+        }
+    }, [filteredDataTable]);
 
     // Define as colunas da tabela
     const tableColumns = selectedColumns
@@ -392,26 +400,31 @@ export const Departments = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    <DataTable
-                        columns={[...tableColumns, actionColumn]}
-                        data={filteredDataTable}
-                        onRowDoubleClicked={handleEditDepartment}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        paginationPerPage={20}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
-                        clearSelectedRows={clearSelectionToggle}
-                        expandableRows
-                        expandableRowsComponent={(props) => (
-                            <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />
-                        )}
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        defaultSortAsc={true}
-                        defaultSortFieldId="code"
-                    />
+                    {loading ?
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                        </div> :
+                        <DataTable
+                            columns={[...tableColumns, actionColumn]}
+                            data={filteredDataTable}
+                            onRowDoubleClicked={handleEditDepartment}
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            paginationPerPage={20}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            clearSelectedRows={clearSelectionToggle}
+                            expandableRows
+                            expandableRowsComponent={(props) => (
+                                <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />
+                            )}
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId="code"
+                        />
+                    }
                 </div>
             </div>
             {openColumnSelector && (
