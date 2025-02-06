@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { Bar , PolarArea } from "react-chartjs-2";
 
 import * as apiService from "../../../api/apiService";
-
-
+import { Footer } from '../../../components/Footer';
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
@@ -157,7 +156,7 @@ export const NparkGraph = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

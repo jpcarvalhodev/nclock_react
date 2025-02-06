@@ -7,6 +7,7 @@ import { customStyles } from '../../components/CustomStylesDataTable';
 import { ExpandedComponentDept } from '../../components/ExpandedComponentDept';
 import { ExportButton } from '../../components/ExportButton';
 
+import { Footer } from '../../components/Footer';
 import { PrintButton } from '../../components/PrintButton';
 import { SelectFilter } from '../../components/SelectFilter';
 import { departmentFields } from '../../fields/Fields';
@@ -16,11 +17,9 @@ import { DeleteModal } from '../../modals/DeleteModal';
 import { UpdateModalDeptGrp } from '../../modals/UpdateModalDeptGrp';
 import { Department } from '../../types/Types';
 
-
 import '../../css/PagesStyles.css';
 
-
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { TextField, TextFieldProps } from '@mui/material';
 
 import { usePersons } from '../../context/PersonsContext';
@@ -412,6 +411,7 @@ export const Departments = () => {
                     />
                 </div>
             </div>
+            <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={departmentFields}
@@ -422,7 +422,6 @@ export const Departments = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-
         </div>
     );
 }

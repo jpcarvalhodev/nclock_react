@@ -4,8 +4,8 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 
-import { Devices, DevicesDoors, Doors } from '../types/Types';
 import { Spinner } from 'react-bootstrap';
+import { Devices, DevicesDoors, Doors } from '../types/Types';
 
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewACProps {

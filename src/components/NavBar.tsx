@@ -297,7 +297,7 @@ interface TabsInfo {
 }
 
 // Define as propriedades do componente
-export const NavBar = React.memo(({ style }: NavBarProps) => {
+export const NavBar = (({ style }: NavBarProps) => {
 	const { navbarColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
 	const { setScrollPosition } = useCardScroll();
 	const { handleAddAds } = useAds();
@@ -424,7 +424,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 	const [showNhomeTab, setShowNhomeTab] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
-	const [submenuTimeout, setSubmenuTimeout] = useState<NodeJS.Timeout | null>(null);
+	const [submenuTimeout, setSubmenuTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
 	const location = useLocation();
 	const [showPhotoAdsModal, setShowPhotoAdsModal] = useState(false);
 	const [showVideoAdsModal, setShowVideoAdsModal] = useState(false);
@@ -491,13 +491,6 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 		loadInitialToken();
 		loadState();
 
-		Object.entries(ribbonSetters).forEach(([key, setter]) => {
-			const storedValue = localStorage.getItem(`show${key}Ribbon`);
-			if (storedValue !== null) {
-				setter(storedValue === 'true');
-			}
-		});
-
 		const storedLockRibbon = localStorage.getItem('lockRibbon');
 		if (storedLockRibbon !== null) {
 			setLockRibbon(storedLockRibbon === 'true');
@@ -514,8 +507,13 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 			const { setTab, setRibbon } = tabData[savedActiveTab];
 			setTab(true);
 			setRibbon(true);
+
+			if (activeTab in ribbons) {
+				const [setRibbon] = ribbons[activeTab as RibbonName];
+				setRibbon(true);
+			}
 		}
-	}, []);
+	}, [localStorage.getItem('activeTab')]);
 
 	// Função para carregar o token inicial
 	const loadInitialToken = () => {
@@ -638,33 +636,19 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 		Nhome: { setShowRibbon: setShowNhomeRibbon, setShowTab: setShowNhomeTab },
 	};
 
-	// Carrega os estados das ribbons
-	function loadRibbonState(): void {
-		Object.entries(settersMap).forEach(([key, { setShowRibbon }]) => {
-			const value = localStorage.getItem(`show${key}Ribbon`) === 'true';
-			setShowRibbon(value);
-		});
+	// Função para atualizar o estado a partir do localStorage
+	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix = ''): void {
+		const stateValue = localStorage.getItem(`${prefix}${key}`) === 'true';
+		setterFunction(stateValue);
 	}
 
-	// Carrega o estado das tabs
-	function loadTabState(): void {
-		Object.entries(settersMap).forEach(([key, { setShowTab }]) => {
-			const value = localStorage.getItem(`show${key}Tab`) === 'true';
-			setShowTab(value);
-		});
-	}
-
-	// Função de carregamento dos estados
+	// Função para carregar o estado das ribbons e tabs
 	function loadState(): void {
-		loadRibbonState();
-		loadTabState();
+		Object.entries(settersMap).forEach(([key, { setShowRibbon, setShowTab }]) => {
+			setItemState(key as RibbonKey, setShowRibbon);
+			setItemState(key as RibbonKey, setShowTab);
+		});
 	}
-
-	// Roda o loadState novamente quando o activeTab muda
-	useEffect(() => {
-		clearAllRibbons();
-		loadState();
-	}, [localStorage.getItem('activeTab')]);
 
 	// Define os itens do menu
 	const ribbons: Record<RibbonName, [React.Dispatch<React.SetStateAction<boolean>>, string]> = {
@@ -831,8 +815,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 
 	// Função para limpar todas as ribbons
 	const clearAllRibbons = () => {
-		Object.keys(ribbons).forEach((key) => {
-			const [setRibbon] = ribbons[key as RibbonName];
+		Object.values(ribbons).forEach(([setRibbon]) => {
 			setRibbon(false);
 		});
 	};
@@ -858,46 +841,34 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 
 	// Função para lidar com a aba
 	const handleTab = (tabName: string) => {
-		clearAllTabs();
-		clearAllRibbons();
 
 		if (tabName === 'dashboard') {
+			clearAllTabs();
+			clearAllRibbons();
 			setActiveTab('');
 			localStorage.removeItem('activeTab');
 			navigate('/dashboard');
 			setScrollPosition(0);
-			return;
 		} else if (tabData[tabName]) {
-			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
+			const { setTab, setRibbon, localStorageRibbonKey, route } = tabData[tabName];
 			const softwareName = tabName;
-			const isenabledSoftware = enabledSoftware[softwareName] ? true : false;
+			const isSoftwareEnabled = enabledSoftware[softwareName] ? true : false;
 			const isSoftwareCliente = menuStructureStart.cliente.submenu?.some(item => item.key === softwareName) ? true : false;
-			const finalRoute = (softwareName && isenabledSoftware && isSoftwareCliente) ? `${route}licensed` : route;
+			const finalRoute = (softwareName && isSoftwareEnabled && isSoftwareCliente) ? `${route}licensed` : route;
 
-			if (activeTab === tabName) {
-				setTab(false);
-				localStorage.removeItem(localStorageTabKey);
-				if (localStorageRibbonKey) {
-					localStorage.removeItem(localStorageRibbonKey);
-				}
-				setActiveTab('');
-				localStorage.removeItem('activeTab');
-				setScrollPosition(0);
-			} else {
-				setTab(true);
-				setRibbon(isSoftwareCliente);
-				const capitalizedTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
-				setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
-				if (localStorageRibbonKey && tabName && softwareName && isenabledSoftware && isSoftwareCliente) {
-					localStorage.setItem(localStorageRibbonKey, 'true')
-				}
-				setActiveTab(tabName);
-				localStorage.setItem('activeTab', tabName);
-				const index = findTabIndex(tabName);
-				const newScrollPosition = index * 130;
-				setScrollPosition(newScrollPosition);
-				navigate(finalRoute);
+			setTab(true);
+			setRibbon(isSoftwareCliente);
+			const capitalizedTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+			setCurrentOpenRibbon(capitalizedTab as RibbonToggler);
+			if (localStorageRibbonKey && tabName && softwareName && isSoftwareEnabled && isSoftwareCliente) {
+				localStorage.setItem(localStorageRibbonKey, 'true')
 			}
+			setActiveTab(tabName);
+			localStorage.setItem('activeTab', tabName);
+			const index = findTabIndex(tabName);
+			const newScrollPosition = index * 130;
+			setScrollPosition(newScrollPosition);
+			navigate(finalRoute);
 		}
 	};
 
@@ -1409,7 +1380,11 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 		const isWideSubmenuMain = menuKey === 'cliente' || menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace'
 
 		return (
-			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}>
+			<div key={menuKey as string} className='menu' onMouseEnter={() => menu.submenu && handleMouseEnter(menuKey as string)} onMouseLeave={handleMouseLeave}
+			/* style={{
+				width: isWideMenu ? '150px' : 'auto',
+			}} */
+			>
 				<MenuItem
 					key={menuKey as string}
 					active={activeMenu === menuKey}
@@ -1456,12 +1431,265 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 	renderMenu('nidtec', menuStructureNG);
 	renderMenu('nidplace', menuStructureNG);
 
+	// useEffect para atualizar as cores da navbar e do footer e manter a ribbon da tab ativa
+	useEffect(() => {
+		const pathSegments = location.pathname.split('/');
+
+		const path = pathSegments[1];
+		switch (path) {
+			case 'persons':
+				setShowPessoasRibbon(true);
+				setShowDispositivosRibbon(false);
+				setShowConfiguracaoRibbon(false);
+				setShowAjudaRibbon(false);
+				setShowNclockRibbon(false);
+				setShowNaccessRibbon(false);
+				setShowNvisitorRibbon(false);
+				setShowNparkRibbon(false);
+				setShowNdoorRibbon(false);
+				setShowNpatrolRibbon(false);
+				setShowNcardRibbon(false);
+				setShowNviewRibbon(false);
+				setShowNsecurRibbon(false);
+				setShowNsoftwareRibbon(false);
+				setShowNsystemRibbon(false);
+				setShowNappRibbon(false);
+				setShowNcyberRibbon(false);
+				setShowNdigitalRibbon(false);
+				setShowNserverRibbon(false);
+				setShowNautRibbon(false);
+				setShowNequipRibbon(false);
+				setShowNprojectRibbon(false);
+				setShowNcountRibbon(false);
+				setShowNbuildRibbon(false);
+				setShowNcaravanRibbon(false);
+				setShowNmechanicRibbon(false);
+				setShowNeventsRibbon(false);
+				setShowNserviceRibbon(false);
+				setShowNtaskRibbon(false);
+				setShowNproductionRibbon(false);
+				setShowNticketRibbon(false);
+				setShowNsalesRibbon(false);
+				setShowNinvoiceRibbon(false);
+				setShowNdocRibbon(false);
+				setShowNsportsRibbon(false);
+				setShowNgymRibbon(false);
+				setShowNschoolRibbon(false);
+				setShowNclinicRibbon(false);
+				setShowNopticsRibbon(false);
+				setShowNgoldRibbon(false);
+				setShowNsmartRibbon(false);
+				setShowNrealityRibbon(false);
+				setShowNhologramRibbon(false);
+				setShowNpowerRibbon(false);
+				setShowNchargeRibbon(false);
+				setShowNcityRibbon(false);
+				setShowNkioskRibbon(false);
+				setShowNledRibbon(false);
+				setShowNfireRibbon(false);
+				setShowNfurnitureRibbon(false);
+				setShowNpartitionRibbon(false);
+				setShowNdecorRibbon(false);
+				setShowNpingRibbon(false);
+				setShowNconnectRibbon(false);
+				setShowNlightRibbon(false);
+				setShowNcomfortRibbon(false);
+				setShowNsoundRibbon(false);
+				setShowNhomeRibbon(false);
+				setActiveTab('pessoas');
+				break;
+			case 'devices':
+				setShowPessoasRibbon(false);
+				setShowDispositivosRibbon(true);
+				setShowConfiguracaoRibbon(false);
+				setShowAjudaRibbon(false);
+				setShowNclockRibbon(false);
+				setShowNaccessRibbon(false);
+				setShowNvisitorRibbon(false);
+				setShowNparkRibbon(false);
+				setShowNdoorRibbon(false);
+				setShowNpatrolRibbon(false);
+				setShowNcardRibbon(false);
+				setShowNviewRibbon(false);
+				setShowNsecurRibbon(false);
+				setShowNsoftwareRibbon(false);
+				setShowNsystemRibbon(false);
+				setShowNappRibbon(false);
+				setShowNcyberRibbon(false);
+				setShowNdigitalRibbon(false);
+				setShowNserverRibbon(false);
+				setShowNautRibbon(false);
+				setShowNequipRibbon(false);
+				setShowNprojectRibbon(false);
+				setShowNcountRibbon(false);
+				setShowNbuildRibbon(false);
+				setShowNcaravanRibbon(false);
+				setShowNmechanicRibbon(false);
+				setShowNeventsRibbon(false);
+				setShowNserviceRibbon(false);
+				setShowNtaskRibbon(false);
+				setShowNproductionRibbon(false);
+				setShowNticketRibbon(false);
+				setShowNsalesRibbon(false);
+				setShowNinvoiceRibbon(false);
+				setShowNdocRibbon(false);
+				setShowNsportsRibbon(false);
+				setShowNgymRibbon(false);
+				setShowNschoolRibbon(false);
+				setShowNclinicRibbon(false);
+				setShowNopticsRibbon(false);
+				setShowNgoldRibbon(false);
+				setShowNsmartRibbon(false);
+				setShowNrealityRibbon(false);
+				setShowNhologramRibbon(false);
+				setShowNpowerRibbon(false);
+				setShowNchargeRibbon(false);
+				setShowNcityRibbon(false);
+				setShowNkioskRibbon(false);
+				setShowNledRibbon(false);
+				setShowNfireRibbon(false);
+				setShowNfurnitureRibbon(false);
+				setShowNpartitionRibbon(false);
+				setShowNdecorRibbon(false);
+				setShowNpingRibbon(false);
+				setShowNconnectRibbon(false);
+				setShowNlightRibbon(false);
+				setShowNcomfortRibbon(false);
+				setShowNsoundRibbon(false);
+				setShowNhomeRibbon(false);
+				setActiveTab('dispositivos');
+				break;
+			case 'configs':
+				setShowPessoasRibbon(false);
+				setShowDispositivosRibbon(false);
+				setShowConfiguracaoRibbon(true);
+				setShowAjudaRibbon(false);
+				setShowNclockRibbon(false);
+				setShowNaccessRibbon(false);
+				setShowNvisitorRibbon(false);
+				setShowNparkRibbon(false);
+				setShowNdoorRibbon(false);
+				setShowNpatrolRibbon(false);
+				setShowNcardRibbon(false);
+				setShowNviewRibbon(false);
+				setShowNsecurRibbon(false);
+				setShowNsoftwareRibbon(false);
+				setShowNsystemRibbon(false);
+				setShowNappRibbon(false);
+				setShowNcyberRibbon(false);
+				setShowNdigitalRibbon(false);
+				setShowNserverRibbon(false);
+				setShowNautRibbon(false);
+				setShowNequipRibbon(false);
+				setShowNprojectRibbon(false);
+				setShowNcountRibbon(false);
+				setShowNbuildRibbon(false);
+				setShowNcaravanRibbon(false);
+				setShowNmechanicRibbon(false);
+				setShowNeventsRibbon(false);
+				setShowNserviceRibbon(false);
+				setShowNtaskRibbon(false);
+				setShowNproductionRibbon(false);
+				setShowNticketRibbon(false);
+				setShowNsalesRibbon(false);
+				setShowNinvoiceRibbon(false);
+				setShowNdocRibbon(false);
+				setShowNsportsRibbon(false);
+				setShowNgymRibbon(false);
+				setShowNschoolRibbon(false);
+				setShowNclinicRibbon(false);
+				setShowNopticsRibbon(false);
+				setShowNgoldRibbon(false);
+				setShowNsmartRibbon(false);
+				setShowNrealityRibbon(false);
+				setShowNhologramRibbon(false);
+				setShowNpowerRibbon(false);
+				setShowNchargeRibbon(false);
+				setShowNcityRibbon(false);
+				setShowNkioskRibbon(false);
+				setShowNledRibbon(false);
+				setShowNfireRibbon(false);
+				setShowNfurnitureRibbon(false);
+				setShowNpartitionRibbon(false);
+				setShowNdecorRibbon(false);
+				setShowNpingRibbon(false);
+				setShowNconnectRibbon(false);
+				setShowNlightRibbon(false);
+				setShowNcomfortRibbon(false);
+				setShowNsoundRibbon(false);
+				setShowNhomeRibbon(false);
+				setActiveTab('configuracao');
+				break;
+			case 'help':
+				setShowPessoasRibbon(false);
+				setShowDispositivosRibbon(false);
+				setShowConfiguracaoRibbon(false);
+				setShowAjudaRibbon(true);
+				setShowNclockRibbon(false);
+				setShowNaccessRibbon(false);
+				setShowNvisitorRibbon(false);
+				setShowNparkRibbon(false);
+				setShowNdoorRibbon(false);
+				setShowNpatrolRibbon(false);
+				setShowNcardRibbon(false);
+				setShowNviewRibbon(false);
+				setShowNsecurRibbon(false);
+				setShowNsoftwareRibbon(false);
+				setShowNsystemRibbon(false);
+				setShowNappRibbon(false);
+				setShowNcyberRibbon(false);
+				setShowNdigitalRibbon(false);
+				setShowNserverRibbon(false);
+				setShowNautRibbon(false);
+				setShowNequipRibbon(false);
+				setShowNprojectRibbon(false);
+				setShowNcountRibbon(false);
+				setShowNbuildRibbon(false);
+				setShowNcaravanRibbon(false);
+				setShowNmechanicRibbon(false);
+				setShowNeventsRibbon(false);
+				setShowNserviceRibbon(false);
+				setShowNtaskRibbon(false);
+				setShowNproductionRibbon(false);
+				setShowNticketRibbon(false);
+				setShowNsalesRibbon(false);
+				setShowNinvoiceRibbon(false);
+				setShowNdocRibbon(false);
+				setShowNsportsRibbon(false);
+				setShowNgymRibbon(false);
+				setShowNschoolRibbon(false);
+				setShowNclinicRibbon(false);
+				setShowNopticsRibbon(false);
+				setShowNgoldRibbon(false);
+				setShowNsmartRibbon(false);
+				setShowNrealityRibbon(false);
+				setShowNhologramRibbon(false);
+				setShowNpowerRibbon(false);
+				setShowNchargeRibbon(false);
+				setShowNcityRibbon(false);
+				setShowNkioskRibbon(false);
+				setShowNledRibbon(false);
+				setShowNfireRibbon(false);
+				setShowNfurnitureRibbon(false);
+				setShowNpartitionRibbon(false);
+				setShowNdecorRibbon(false);
+				setShowNpingRibbon(false);
+				setShowNconnectRibbon(false);
+				setShowNlightRibbon(false);
+				setShowNcomfortRibbon(false);
+				setShowNsoundRibbon(false);
+				setShowNhomeRibbon(false);
+				setActiveTab('ajuda');
+				break;
+			default:
+				setActiveTab('');
+				break;
+		}
+	}, [location.pathname]);
+
 	// Função para geranciar o clique na aba
 	const handleTabClick = (tabName: string) => {
-		if (activeTab === tabName) {
-			setActiveTab('');
-			localStorage.removeItem('activeTab');
-		} else {
+		if (activeTab !== tabName) {
 			Object.values(ribbons).forEach(([setRibbon]) => setRibbon(false));
 			const [setRibbon] = ribbons[tabName as RibbonName];
 			setRibbon(true);
@@ -1766,6 +1994,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 		};
 
 		let timeoutId: ReturnType<typeof setTimeout>;
+
 		if (lockRibbon && checkAnyRibbonOpenUpdated() && !isMouseOver && !isMobile) {
 			timeoutId = setTimeout(() => {
 				Object.keys(ribbonSetters).forEach((ribbonKey) => {

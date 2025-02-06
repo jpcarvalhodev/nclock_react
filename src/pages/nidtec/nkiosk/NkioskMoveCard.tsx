@@ -24,7 +24,6 @@ import { CreateModalNewCard } from "../../../modals/CreateModalNewCard";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { Employee, KioskTransactionCard, NewTransactionCard } from "../../../types/Types";
 
-
 // Define a interface SaveData
 interface SaveData {
     deviceSN: string;

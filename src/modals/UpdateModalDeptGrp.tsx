@@ -11,9 +11,8 @@ import { usePersons } from '../context/PersonsContext';
 import { employeeFields } from '../fields/Fields';
 import { Department, Employee, Group } from '../types/Types';
 
-import { UpdateModalEmployees } from './UpdateModalEmployees';
 import { AddEmployeeToDeptGrpModal } from './AddEmployeeToDeptGrpModal';
-
+import { UpdateModalEmployees } from './UpdateModalEmployees';
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

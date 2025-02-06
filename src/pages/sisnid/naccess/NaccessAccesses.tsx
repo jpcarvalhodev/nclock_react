@@ -3,29 +3,28 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 import Split from 'react-split';
 import { toast } from "react-toastify";
 
+import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from '../../../components/CustomStylesDataTable';
 import { ExportButton } from "../../../components/ExportButton";
 import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar"
 import { PrintButton } from '../../../components/PrintButton';
 import { SelectFilter } from '../../../components/SelectFilter';
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 
-import * as apiService from "../../../api/apiService";
 import "../../../css/PagesStyles.css";
 import { Nav, OverlayTrigger, Tab, Tooltip } from 'react-bootstrap';
 
 import { useAttendance } from '../../../context/MovementContext';
 
 import { usePersons } from '../../../context/PersonsContext';
+import { CreateModalAccess } from "../../../modals/CreateModalAccess";
 import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
 
 import { TextField, TextFieldProps } from '@mui/material';
 import { Accesses, Employee } from "../../../types/Types";
 import { accessesFields, employeeFields } from "../../../fields/Fields";
 import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
-import { CreateModalAccess } from "../../../modals/CreateModalAccess";
 
 // Define a interface para os filtros
 interface Filters {
@@ -457,7 +456,7 @@ export const NaccessAccesses = () => {
                     </div>
                 </Split>
             </div>
-            
+            <Footer />
             {showAddAccessModal && (
                 <CreateModalAccess
                     open={showAddAccessModal}

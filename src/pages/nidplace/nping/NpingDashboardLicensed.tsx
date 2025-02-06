@@ -7,9 +7,7 @@ import { Bar , Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
 import banner_nping from "../../../assets/img/carousel/banner_nping.jpg";
-
-
-
+import { Footer } from '../../../components/Footer';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -162,7 +160,7 @@ export const NpingDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

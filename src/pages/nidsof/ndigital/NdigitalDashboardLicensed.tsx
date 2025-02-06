@@ -8,8 +8,7 @@ import { Carousel } from "react-responsive-carousel";
 
 import banner_ndigital from "../../../assets/img/carousel/banner_ndigital.webp";
 
-
-
+import { Footer } from '../../../components/Footer';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -162,7 +161,7 @@ export const NdigitalDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

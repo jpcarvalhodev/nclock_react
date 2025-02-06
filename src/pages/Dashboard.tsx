@@ -101,6 +101,7 @@ import nticket from '../assets/img/navbar/navbar/nticket.png';
 import nview from '../assets/img/navbar/navbar/nview.webp';
 import nvisitor from '../assets/img/navbar/navbar/nvisitor.webp';
 
+import { Footer } from '../components/Footer';
 import { useLicense } from "../context/LicenseContext";
 
 // Define o tipo TabName
@@ -541,7 +542,7 @@ export const Dashboard = () => {
                     )}
                 </motion.div>
             </div>
-            
+            <Footer />
         </div>
     );
 };

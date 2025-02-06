@@ -23,7 +23,6 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { Employee, KioskTransactionCard } from "../../../types/Types";
 
-
 // Define a interface SaveData
 interface SaveData {
     deviceSN: string;

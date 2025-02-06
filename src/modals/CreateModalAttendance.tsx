@@ -158,7 +158,6 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
         }
     }, [open, entityType]);
 
-
     // Função para lidar com a mudança do dropdown
     const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
         const { value } = e.target;

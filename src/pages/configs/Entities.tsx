@@ -8,6 +8,7 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { ExportButton } from "../../components/ExportButton";
 
+import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useEntity } from "../../context/EntityContext";
@@ -312,7 +313,7 @@ export const Entities = () => {
                     />
                 </div>
             </div>
-
+            <Footer />
             {selectedEntity && (
                 <UpdateEntityModal
                     open={showUpdateModal}

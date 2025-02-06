@@ -10,7 +10,6 @@ export function LayoutWithNavBar() {
       <main className="dashboard-container">
         <Outlet />
       </main>
-      <Footer />
     </div>
   );
 }

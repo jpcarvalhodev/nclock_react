@@ -19,7 +19,6 @@ import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
 import { Cameras } from "../../../types/Types";
 
-
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
   return (

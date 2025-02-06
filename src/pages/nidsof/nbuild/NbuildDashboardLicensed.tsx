@@ -7,9 +7,7 @@ import { Bar , Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
 import banner_nsoftware from "../../../assets/img/carousel/banner_nsoftware.webp";
-
-
-
+import { Footer } from '../../../components/Footer';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -162,7 +160,7 @@ export const NbuildDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

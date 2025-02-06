@@ -8,7 +8,7 @@ import { Carousel } from "react-responsive-carousel";
 
 import * as apiService from "../../../api/apiService";
 import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
-
+import { Footer } from '../../../components/Footer';
 
 import { Employee } from "../../../types/Types";
 
@@ -191,7 +191,7 @@ export const NclockDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 };

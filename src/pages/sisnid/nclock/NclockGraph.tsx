@@ -2,8 +2,7 @@ import { ArcElement, BarElement, CategoryScale, ChartData, Chart as ChartJS, Leg
 import { useEffect, useState } from 'react';
 import { Bar, Pie } from "react-chartjs-2";
 
-
-
+import { Footer } from '../../../components/Footer';
 import { usePersons } from '../../../context/PersonsContext';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
@@ -62,7 +61,7 @@ export const NclockGraph = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

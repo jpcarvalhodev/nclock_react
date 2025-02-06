@@ -21,7 +21,6 @@ import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 import "../../../css/PagesStyles.css";
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-
 import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
 
 import { TextField, TextFieldProps } from '@mui/material';

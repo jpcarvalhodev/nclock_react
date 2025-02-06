@@ -6,15 +6,14 @@ import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { Bar , Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
+import { useNavigate } from 'react-router-dom';
 import * as apiService from "../../../api/apiService";
 import banner_nvisitor from "../../../assets/img/carousel/banner_nvisitor.jpg";
 
+import { Footer } from '../../../components/Footer';
 import { useKiosk } from '../../../context/KioskContext';
-
 import { useTerminals } from '../../../context/TerminalsContext';
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
-import { useNavigate } from 'react-router-dom';
-
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -317,7 +316,7 @@ export const NvisitorDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

@@ -63,8 +63,7 @@ import nview from '../../../assets/img/navbar/navbar/nview.webp';
 import nvisitor from '../../../assets/img/navbar/navbar/nvisitor.webp';
 import sisnidlogo from '../../../assets/img/navbar/navbar/sisnidlogo.webp';
 import { CardContainer } from "../../../components/CardContainer";
-
-
+import { Footer } from '../../../components/Footer';
 
 // Define o tipo TabName
 type TabName = 'SISNID - Segurança' | 'NIDSOF - Gestão' | 'NIDTEC - Tecnologia' | 'NIDPLACE - Conforto';
@@ -283,7 +282,7 @@ export const NledDashboard = () => {
                     <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

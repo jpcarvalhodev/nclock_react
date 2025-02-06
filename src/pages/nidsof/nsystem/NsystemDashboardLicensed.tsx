@@ -8,8 +8,7 @@ import { Carousel } from "react-responsive-carousel";
 
 import banner_nsystem from "../../../assets/img/carousel/banner_nsystem.webp";
 
-
-
+import { Footer } from '../../../components/Footer';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -162,7 +161,7 @@ export const NsystemDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

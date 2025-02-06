@@ -13,7 +13,6 @@ import { AccessControl, Devices, MBDevice } from '../types/Types';
 import { CustomOutlineButton } from './CustomOutlineButton';
 import { PDFDocument } from './PDFDocument';
 
-
 // Define a interface para os itens de dados
 interface DataItem {
     [key: string]: any;

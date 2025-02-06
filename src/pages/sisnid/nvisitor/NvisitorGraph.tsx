@@ -1,9 +1,8 @@
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
 import { Bar , PolarArea } from "react-chartjs-2";
 
-
+import { Footer } from '../../../components/Footer';
 import { useKiosk } from '../../../context/KioskContext';
-
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
@@ -118,7 +117,7 @@ export const NvisitorGraph = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

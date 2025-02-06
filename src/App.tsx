@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
+import { LayoutWithNavBar } from './components/LayoutWithNavbar';
 import { PageProtection } from './components/PageProtection';
 import { AdsProvider } from './context/AdsContext';
 import { CardScrollProvider } from './context/CardScrollContext';
@@ -234,7 +235,6 @@ import { NvisitorGraph } from './pages/sisnid/nvisitor/NvisitorGraph';
 import { NvisitorListMovements } from './pages/sisnid/nvisitor/NvisitorListMovements';
 import { NvisitorMoveCard } from './pages/sisnid/nvisitor/NvisitorMoveCard';
 import { NvisitorMoveKiosk } from './pages/sisnid/nvisitor/NvisitorMoveKiosk';
-import { LayoutWithNavBar } from './components/LayoutWithNavbar';
 
 // Define a função de rotas com animação
 function AnimatedRoutes() {

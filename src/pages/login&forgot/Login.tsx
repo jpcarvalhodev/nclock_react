@@ -17,11 +17,11 @@ import { useKiosk } from "../../context/KioskContext";
 import { useLicense } from "../../context/LicenseContext";
 import { useAttendance } from "../../context/MovementContext";
 
+import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from "../../context/PersonsContext";
 import { useTerminals } from "../../context/TerminalsContext";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { License, LicenseKey } from "../../types/Types";
-import { useNavbar } from "../../context/NavbarContext";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

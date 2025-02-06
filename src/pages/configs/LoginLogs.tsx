@@ -9,6 +9,7 @@ import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
 
+import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataLogin } from "../../components/TreeViewLogin";
@@ -344,7 +345,7 @@ export const LoginLogs = () => {
                     </div>
                 </Split>
             </div>
-
+            <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={logsFields}

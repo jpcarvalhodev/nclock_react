@@ -1,20 +1,16 @@
 import { useEffect, useState } from "react";
 
-
 import { EmployeeAttendanceTimes } from "../../../types/Types";
 import '../../../css/PagesStyles.css';
-import * as apiService from "../../../api/apiService";
 
-import { Carousel } from "react-responsive-carousel";
-
-import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
-
-
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { format, getDay, parse, setYear, startOfWeek } from 'date-fns';
+import { format, getDay, parse, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { Bar , Line } from "react-chartjs-2";
-
+import { Carousel } from "react-responsive-carousel";
+import * as apiService from "../../../api/apiService";
+import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
+import { Footer } from "../../../components/Footer";
 
 // Define a linguagem do calendário
 const locales = {
@@ -202,7 +198,7 @@ export const NaccessDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

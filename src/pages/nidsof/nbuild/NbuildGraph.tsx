@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Bar , PolarArea } from "react-chartjs-2";
 
 import * as apiService from "../../../api/apiService";
-
+import { Footer } from '../../../components/Footer';
 
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 
@@ -157,7 +157,7 @@ export const NbuildGraph = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

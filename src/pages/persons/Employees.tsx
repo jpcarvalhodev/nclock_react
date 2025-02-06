@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
 
-
-
 import '../../css/PagesStyles.css';
+import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import DataTable, { TableColumn } from 'react-data-table-component';
 
+import Split from 'react-split';
+import { CustomOutlineButton } from '../../components/CustomOutlineButton';
+import { customStyles } from '../../components/CustomStylesDataTable';
+import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
+import { ExportButton } from '../../components/ExportButton';
+import { Footer } from '../../components/Footer';
 import { PrintButton } from '../../components/PrintButton';
 import { SelectFilter } from '../../components/SelectFilter';
 import { TreeViewData } from '../../components/TreeView';
@@ -16,15 +21,7 @@ import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 import { DeleteModal } from '../../modals/DeleteModal';
 import { UpdateModalEmployees } from '../../modals/UpdateModalEmployees';
 import { Employee } from '../../types/Types';
-import { CustomOutlineButton } from '../../components/CustomOutlineButton';
-import { ExportButton } from '../../components/ExportButton';
 
-import Split from 'react-split';
-
-import { ExpandedComponentEmpZoneExtEnt } from '../../components/ExpandedComponentEmpZoneExtEnt';
-import { customStyles } from '../../components/CustomStylesDataTable';
-
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { TextField, TextFieldProps } from '@mui/material';
 
 // Define a interface para os filtros
@@ -436,7 +433,7 @@ export const Employees = () => {
                     </div>
                 </Split>
             </div>
-
+            <Footer />
             <CreateModalEmployees
                 title="Adicionar Funcionário"
                 open={showAddModal}

@@ -1,12 +1,13 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
-import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
 
+import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 
@@ -324,7 +325,7 @@ export const Types = () => {
                     />
                 </div>
             </div>
-
+            <Footer />
             <CreateModalCatProfTypes
                 title="Adicionar Tipo"
                 open={showAddModal}

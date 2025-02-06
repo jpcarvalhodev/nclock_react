@@ -7,14 +7,14 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
+import { usePersons } from "../context/PersonsContext";
 import { useTerminals } from "../context/TerminalsContext";
 import { employeeFields, planosAcessoDispositivosFields } from "../fields/Fields";
 import { Employee, PlanoAcessoDispositivos } from "../types/Types";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
-import { UpdateTerminalOnAccessControlModal } from "./UpdateTerminalOnAccessControlModal";
 import { UpdateModalEmployees } from "./UpdateModalEmployees";
-import { usePersons } from "../context/PersonsContext";
+import { UpdateTerminalOnAccessControlModal } from "./UpdateTerminalOnAccessControlModal";
 
 // Define as propriedades do componente
 interface Props<T> {

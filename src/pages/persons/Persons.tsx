@@ -4,6 +4,7 @@ import Split from 'react-split';
 import { CustomOutlineButton } from '../../components/CustomOutlineButton';
 import { ExportButton } from '../../components/ExportButton';
 
+import { Footer } from '../../components/Footer';
 import { PersonsDataTable } from "../../components/PersonsDataTable";
 import { PrintButton } from '../../components/PrintButton';
 import { TreeViewData } from "../../components/TreeView";
@@ -200,7 +201,7 @@ export const Persons = () => {
                     </div>
                 </Split>
             </div>
-            
+            <Footer />
             {showAddModal && (
                 <CreateModalEmployees
                     title="Adicionar Pessoa"

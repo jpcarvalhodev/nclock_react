@@ -10,7 +10,6 @@ import { CustomOutlineButton } from './CustomOutlineButton';
 import { CustomSpinner } from './CustomSpinner';
 import { PDFDocument } from './PDFDocument';
 
-
 // Interfaces para os itens de dados e campos
 interface DataItem {
     [key: string]: any;

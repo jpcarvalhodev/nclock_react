@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 
-
 import '../../css/PagesStyles.css';
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from 'react-data-table-component';
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
+import { ExportButton } from "../../components/ExportButton";
+import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 
@@ -13,16 +19,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalExtEnt } from "../../modals/UpdateModalExtEnt";
 import { ExternalEntity } from "../../types/Types";
 
-import DataTable, { TableColumn } from 'react-data-table-component';
-
-import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { ExportButton } from "../../components/ExportButton";
-import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
-import { customStyles } from "../../components/CustomStylesDataTable";
-
-import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { TextField, TextFieldProps } from "@mui/material";
-
 
 // Define a interface para os filtros
 interface Filters {
@@ -389,7 +386,7 @@ export const ExternalEntities = () => {
                     />
                 </div>
             </div>
-
+            <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={externalEntityFields}

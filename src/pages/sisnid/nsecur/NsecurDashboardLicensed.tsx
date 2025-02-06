@@ -8,8 +8,7 @@ import { Carousel } from "react-responsive-carousel";
 
 import banner_nsecur from "../../../assets/img/carousel/banner_nsecur.jpg";
 
-
-
+import { Footer } from '../../../components/Footer';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -162,7 +161,7 @@ export const NsecurDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

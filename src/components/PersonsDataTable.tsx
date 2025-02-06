@@ -13,7 +13,6 @@ import { customStyles } from './CustomStylesDataTable';
 import { ExpandedComponentEmpZoneExtEnt } from './ExpandedComponentEmpZoneExtEnt';
 import { SelectFilter } from './SelectFilter';
 
-
 // Define a interface para o estado de dados
 interface DataState {
     departments: Department[];

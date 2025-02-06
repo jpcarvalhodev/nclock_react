@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 
-
 import '../../css/PagesStyles.css';
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import DataTable, { TableColumn } from 'react-data-table-component';
+import { CustomOutlineButton } from "../../components/CustomOutlineButton";
+import { customStyles } from "../../components/CustomStylesDataTable";
+import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
+import { ExportButton } from "../../components/ExportButton";
+import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 
@@ -13,16 +19,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalDeptGrp } from "../../modals/UpdateModalDeptGrp";
 import { Group } from "../../types/Types";
 
-import DataTable, { TableColumn } from 'react-data-table-component';
-
-import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { ExportButton } from "../../components/ExportButton";
-import { ExpandedComponentGeneric } from "../../components/ExpandedComponentGeneric";
-import { customStyles } from "../../components/CustomStylesDataTable";
-
-import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import { TextField, TextFieldProps } from "@mui/material";
-
 
 // Define a interface para os filtros
 interface Filters {
@@ -377,7 +374,7 @@ export const Groups = () => {
                     />
                 </div>
             </div>
-
+            <Footer />
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={groupFields}

@@ -9,6 +9,7 @@ import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
 
+import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
@@ -404,7 +405,7 @@ export const TerminalsMB = () => {
                     </div>
                 </Split>
             </div>
-
+            <Footer />
             {showColumnSelector && (
                 <ColumnSelectorModal
                     columns={mbDeviceFields}

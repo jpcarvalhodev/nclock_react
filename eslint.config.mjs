@@ -41,9 +41,18 @@ export default [
       ...tsPlugin.configs.recommended.rules,
       ...reactConfigs.recommended.rules,
       "react/react-in-jsx-scope": "off",
+      "no-explicit-any": "off",
       "import/no-unresolved": "warn",
       "import/named": "warn",
       "import/no-duplicates": "warn",
+      "no-multiple-empty-lines": [
+        "warn",
+        {
+          "max": 1,
+          "maxEOF": 1,
+          "maxBOF": 0
+        }
+      ],
       "import/order": [
         "warn",
         {

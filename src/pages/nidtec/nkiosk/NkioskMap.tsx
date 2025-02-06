@@ -7,7 +7,6 @@ import { Footer } from "../../../components/Footer";
 import { MapCenterButton } from '../../../components/MapCenterButton';
 import { NavBar } from "../../../components/NavBar";
 
-
 import { useEffect } from 'react';
 import '../../../css/PagesStyles.css';
 

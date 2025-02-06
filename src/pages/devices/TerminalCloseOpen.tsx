@@ -9,6 +9,7 @@ import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
 
+import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../components/TreeViewDevice";
@@ -374,7 +375,7 @@ export const TerminalCloseOpen = () => {
                     </div>
                 </Split>
             </div>
-
+            <Footer />
             {showColumnSelector && (
                 <ColumnSelectorModal
                     columns={mbDeviceCloseOpenFields}

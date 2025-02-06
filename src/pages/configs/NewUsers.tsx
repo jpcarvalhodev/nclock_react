@@ -9,6 +9,7 @@ import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { ExportButton } from "../../components/ExportButton";
 
+import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataUsers } from "../../components/TreeViewRegisteredUsers";
@@ -20,7 +21,6 @@ import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers"
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
 import { Register } from "../../types/Types";
-
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
@@ -311,7 +311,7 @@ export const NewUsers = () => {
                     </div>
                 </Split>
             </div>
-
+            <Footer />
             <CreateModalRegisterUsers
                 title="Adicionar Registo de Utilizador"
                 open={showAddModal}

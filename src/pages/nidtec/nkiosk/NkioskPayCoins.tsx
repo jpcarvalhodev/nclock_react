@@ -15,11 +15,11 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { useKiosk } from "../../../context/KioskContext";
 
+import { useNavbar } from "../../../context/NavbarContext";
 import { TerminalsProvider, useTerminals } from "../../../context/TerminalsContext";
 import { transactionMBFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { KioskTransactionMB } from "../../../types/Types";
-import { useNavbar } from "../../../context/NavbarContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {

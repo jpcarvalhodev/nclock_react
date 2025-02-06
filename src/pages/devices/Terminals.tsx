@@ -5,16 +5,16 @@ import { toast } from "react-toastify";
 import card from "../../assets/img/terminais/card.png";
 import faceScan from "../../assets/img/terminais/faceScan.png";
 import fprintScan from "../../assets/img/terminais/fprintScan.png";
-import palmScan from "../../assets/img/terminais/palmScan.png";
 import key from "../../assets/img/terminais/key.png";
+import palmScan from "../../assets/img/terminais/palmScan.png";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
 
-
 import "../../css/Terminals.css";
 import { Button, Form, OverlayTrigger, Spinner, Tab, Tabs, Tooltip } from "react-bootstrap";
 
+import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useAttendance } from "../../context/MovementContext";
@@ -1565,7 +1565,7 @@ export const Terminals = () => {
                         </Tab>
                     </Tabs>
                 </div>
-
+                <Footer />
                 {
                     showColumnSelector && (
                         <ColumnSelectorModal

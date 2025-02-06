@@ -7,6 +7,7 @@ import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 
+import { Footer } from '../../../components/Footer';
 import { SelectFilter } from "../../../components/SelectFilter";
 
 import { adsFields } from "../../../fields/Fields";
@@ -140,7 +141,7 @@ export const NledAdsLogs = () => {
                     />
                 </div>
             </div>
-            
+            <Footer />
         </div>
     );
 }

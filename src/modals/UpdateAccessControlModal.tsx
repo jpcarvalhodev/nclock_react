@@ -12,8 +12,8 @@ import { employeeFields, planosAcessoDispositivosFields } from "../fields/Fields
 import { Employee, PlanoAcessoDispositivos } from "../types/Types";
 import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
-import { UpdateTerminalOnAccessControlModal } from "./UpdateTerminalOnAccessControlModal";
 import { UpdateModalEmployees } from "./UpdateModalEmployees";
+import { UpdateTerminalOnAccessControlModal } from "./UpdateTerminalOnAccessControlModal";
 
 // Define as propriedades do componente
 interface Props<T> {

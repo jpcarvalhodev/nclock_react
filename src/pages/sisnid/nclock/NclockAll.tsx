@@ -22,7 +22,6 @@ import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 import Split from 'react-split';
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-
 import { TextField, TextFieldProps } from "@mui/material";
 
 // Define a interface para os filtros
