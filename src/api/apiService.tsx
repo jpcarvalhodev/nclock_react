@@ -2245,8 +2245,13 @@ export const fetchLicenses = async (key: string) => {
     const response = await fetchWithAuth(`Configuration/GetLisence?key=${key}`);
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        return errorData;
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
+        throw new Error();
     }
     return response.json();
 }
@@ -2276,8 +2281,13 @@ export const importLicense = async (licenseKey: Partial<LicenseKey>) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        return errorData;
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
+        throw new Error();
     }
     return response.json();
 }
@@ -2293,8 +2303,13 @@ export const updateLicenses = async (key: string, licences: License[]) => {
 
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        return errorData;
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
+        throw new Error();
     }
     return response.json();
 }
@@ -2328,8 +2343,13 @@ export const updateReaders = async (reader: Readers) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        return errorData;
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
+        throw new Error();
     }
     return response.json();
 }
@@ -2960,8 +2980,13 @@ export const backupDatabase = async (backup: BackupDB) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        return errorData;
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
+        throw new Error();
     }
     return response.json();
 }
@@ -2973,8 +2998,13 @@ export const importBackupDatabase = async (backup: FormData) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        return errorData;
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
+        throw new Error();
     }
     return response.json();
 }
@@ -2986,8 +3016,13 @@ export const importEmployees = async (employees: FormData) => {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message || errorData.error);
-        return errorData;
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
+        throw new Error();
     }
     return response.json();
 }

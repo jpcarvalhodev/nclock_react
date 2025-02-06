@@ -17,7 +17,7 @@ import "../../../css/PagesStyles.css";
 import { Nav, OverlayTrigger, Tab, Tooltip } from 'react-bootstrap';
 
 import { useAttendance } from '../../../context/MovementContext';
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { usePersons } from '../../../context/PersonsContext';
 import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
 
@@ -58,7 +58,7 @@ export const NaccessAccesses = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { navbarColor, footerColor } = useNavbar();
+    
     const { employees, handleUpdateEmployee } = usePersons();
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -337,7 +337,7 @@ export const NaccessAccesses = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="content-container">
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -457,7 +457,7 @@ export const NaccessAccesses = () => {
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
             {showAddAccessModal && (
                 <CreateModalAccess
                     open={showAddAccessModal}

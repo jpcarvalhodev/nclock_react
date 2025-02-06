@@ -63,9 +63,8 @@ import nview from '../../../assets/img/navbar/navbar/nview.webp';
 import nvisitor from '../../../assets/img/navbar/navbar/nvisitor.webp';
 import sisnidlogo from '../../../assets/img/navbar/navbar/sisnidlogo.webp';
 import { CardContainer } from "../../../components/CardContainer";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
-import { useNavbar } from "../../../context/NavbarContext";
+
+
 
 // Define o tipo TabName
 type TabName = 'SISNID - Segurança' | 'NIDSOF - Gestão' | 'NIDTEC - Tecnologia' | 'NIDPLACE - Conforto';
@@ -147,7 +146,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 };
 
 export const NfurnitureDashboard = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('NIDPLACE - Conforto');
 
@@ -238,7 +237,7 @@ export const NfurnitureDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div style={{ marginBottom: 10 }}></div>
             <div className="dashboard-tabs-container">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
@@ -285,7 +284,7 @@ export const NfurnitureDashboard = () => {
                     <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
         </div>
     );
 }

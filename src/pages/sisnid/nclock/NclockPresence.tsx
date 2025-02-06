@@ -2,8 +2,7 @@ import DataTable, { TableColumn } from "react-data-table-component";
 
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import "../../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 
@@ -13,7 +12,7 @@ import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { useAttendance } from "../../../context/MovementContext";
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { usePersons } from "../../../context/PersonsContext";
 import { employeeAttendanceTimesFields, employeeFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
@@ -53,7 +52,7 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de presença
 export const NclockPresence = () => {
     const { fetchAllAttendances } = useAttendance();
-    const { navbarColor, footerColor } = useNavbar();
+    
     const { employees, handleUpdateEmployee } = usePersons();
     const [attendancePresence, setAttendancePresence] = useState<EmployeeAttendanceWithPresence[]>([]);
     const [filterText, setFilterText] = useState('');
@@ -299,7 +298,7 @@ export const NclockPresence = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="content-container">
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -362,7 +361,7 @@ export const NclockPresence = () => {
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
             {showColumnSelector && (
                 <ColumnSelectorModal
                     columns={filteredColumns}

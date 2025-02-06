@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 
 import '../../css/PagesStyles.css';
 import DataTable, { TableColumn } from 'react-data-table-component';
@@ -9,7 +8,7 @@ import DataTable, { TableColumn } from 'react-data-table-component';
 import { PrintButton } from '../../components/PrintButton';
 import { SelectFilter } from '../../components/SelectFilter';
 import { TreeViewData } from '../../components/TreeView';
-import { useNavbar } from "../../context/NavbarContext";
+
 import { usePersons } from '../../context/PersonsContext';
 import { employeeFields } from '../../fields/Fields';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
@@ -46,7 +45,6 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de visitantes
 export const Visitors = () => {
     const { disabledEmployees, data, fetchAllDisabledEmployees, handleAddEmployee, handleUpdateEmployee, handleDeleteEmployee } = usePersons();
-    const { navbarColor, footerColor } = useNavbar();
     const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -62,7 +60,6 @@ export const Visitors = () => {
     const [filters, setFilters] = useState<Filters>({});
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
-    const [loading, setLoading] = useState(true);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -224,13 +221,6 @@ export const Visitors = () => {
         })
     )
 
-    // Define o estado de loading
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define as colunas da tabela
     const columns: TableColumn<Employee>[] = employeeFields
         .filter(field => selectedColumns.includes(field.key))
@@ -371,7 +361,7 @@ export const Visitors = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className="content-container">
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -423,37 +413,32 @@ export const Visitors = () => {
                         </div>
                         <div className='content-wrapper'>
                             <div className='table-css'>
-                                {loading ?
-                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                    </div> :
-                                    <DataTable
-                                        columns={[...columns, actionColumn]}
-                                        data={filteredDataTable}
-                                        onRowDoubleClicked={handleEditEmployee}
-                                        pagination
-                                        paginationComponentOptions={paginationOptions}
-                                        paginationPerPage={20}
-                                        paginationRowsPerPageOptions={[20, 50, 100]}
-                                        expandableRows
-                                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                                        selectableRows
-                                        onSelectedRowsChange={handleRowSelected}
-                                        clearSelectedRows={clearSelectionToggle}
-                                        selectableRowsHighlight
-                                        noDataComponent="Não existem dados disponíveis para exibir."
-                                        customStyles={customStyles}
-                                        striped
-                                        defaultSortAsc={true}
-                                        defaultSortFieldId="enrollNumber"
-                                    />
-                                }
+                                <DataTable
+                                    columns={[...columns, actionColumn]}
+                                    data={filteredDataTable}
+                                    onRowDoubleClicked={handleEditEmployee}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={20}
+                                    paginationRowsPerPageOptions={[20, 50, 100]}
+                                    expandableRows
+                                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    selectableRowsHighlight
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="enrollNumber"
+                                />
                             </div>
                         </div>
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             <CreateModalEmployees
                 title="Adicionar Visitante"
                 open={showAddModal}

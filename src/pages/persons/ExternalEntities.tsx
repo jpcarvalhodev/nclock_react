@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { usePersons } from "../../context/PersonsContext";
 import { externalEntityFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -42,7 +41,6 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de Entidades Externas
 export const ExternalEntities = () => {
-    const { navbarColor, footerColor } = useNavbar();
     const { dataEE, fetchAllExternalEntitiesData, handleAddExternalEntity, handleUpdateExternalEntity, handleDeleteExternalEntity } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -57,7 +55,6 @@ export const ExternalEntities = () => {
     const [currentExtEntIndex, setCurrentExtEntIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<ExternalEntity[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Função para adicionar uma nova entidade externa
     const addExternalEntity = async (externalEntity: ExternalEntity) => {
@@ -188,13 +185,6 @@ export const ExternalEntities = () => {
         })
     );
 
-    // Define o estado de loading
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define os dados iniciais ao duplicar uma entidade externa
     const handleDuplicate = (entity: Partial<ExternalEntity>) => {
         setInitialData(entity);
@@ -302,7 +292,7 @@ export const ExternalEntities = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Entidades Externas</span>
@@ -379,32 +369,27 @@ export const ExternalEntities = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    {loading ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={[...columns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={handleEditExternalEntity}
-                            paginationPerPage={20}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            expandableRows
-                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="name"
-                        />
-                    }
+                    <DataTable
+                        columns={[...columns, actionColumn]}
+                        data={filteredDataTable}
+                        onRowDoubleClicked={handleEditExternalEntity}
+                        paginationPerPage={20}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        expandableRows
+                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                        defaultSortAsc={true}
+                        defaultSortFieldId="name"
+                    />
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={externalEntityFields}

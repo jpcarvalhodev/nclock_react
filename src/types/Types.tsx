@@ -792,6 +792,8 @@ export type Readers = {
     deviceId: string;
     deviceName: string;
     nameReader: string;
+    readerInOut: number;
     doorId: string;
     doorName: string;
+    doorNo: number;
 }

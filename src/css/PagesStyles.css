@@ -508,7 +508,7 @@ body {
 .treeview-container {
     overflow: auto;
     min-width: 250px;
-    max-height: calc(100vh - 21vh);
+    max-height: 99vh;
 }
 
 .datatable-title-text {
@@ -691,7 +691,7 @@ body {
     box-shadow: 0 4px 8px rgba(0.1, 0.1, 0.1, 0.1);
     border-radius: 5px;
     background: white;
-    max-height: 28rem;
+    max-height: 29rem;
     max-width: 50%;
     margin-top: 5px;
 }
@@ -728,7 +728,6 @@ body {
 
 .dashboard-tabs-container {
     display: flex;
-    flex: 1;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -736,6 +735,7 @@ body {
     border-radius: 5px;
     background: white;
     margin: 5px;
+    margin-top: 40px;
 }
 
 .nav.nav-pills {

@@ -21,7 +21,7 @@ import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 import "../../../css/PagesStyles.css";
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { UpdateModalEmployees } from '../../../modals/UpdateModalEmployees';
 
 import { TextField, TextFieldProps } from '@mui/material';
@@ -59,7 +59,7 @@ export const NclockRequests = () => {
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
-    const { navbarColor, footerColor } = useNavbar();
+    
     const { employees, handleUpdateEmployee } = usePersons();
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -462,7 +462,7 @@ export const NclockRequests = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="content-container">
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -575,7 +575,7 @@ export const NclockRequests = () => {
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
             {showAddAttendanceModal && (
                 <CreateModalAttendance
                     open={showAddAttendanceModal}

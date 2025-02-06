@@ -7,12 +7,11 @@ import Split from "react-split";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { useTerminals } from "../../context/TerminalsContext";
 import { timePeriodFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -32,7 +31,6 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const TimePeriods = () => {
-    const { navbarColor, footerColor } = useNavbar();
     const { period, fetchTimePeriods, handleAddPeriod, handleUpdatePeriod, handleDeletePeriod } = useTerminals();
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Feriado']);
@@ -49,7 +47,6 @@ export const TimePeriods = () => {
     const [currentPeriodIndex, setCurrentPeriodIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Função para adicionar um período
     const addPeriod = async (newPeriod: Partial<TimePeriod>) => {
@@ -154,13 +151,6 @@ export const TimePeriods = () => {
             return false;
         })
     )
-
-    // Define o estado de carregamento
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
 
     // Define a função de seleção de linhas
     const handleRowSelected = (state: {
@@ -293,7 +283,7 @@ export const TimePeriods = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -338,30 +328,25 @@ export const TimePeriods = () => {
                             </div>
                         </div>
                         <div className='table-css'>
-                            {loading ?
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                </div> :
-                                <DataTable
-                                    columns={[...columns, actionColumn]}
-                                    data={filteredDataTable}
-                                    onRowDoubleClicked={handleEditPeriod}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                />
-                            }
+                            <DataTable
+                                columns={[...columns, actionColumn]}
+                                data={filteredDataTable}
+                                onRowDoubleClicked={handleEditPeriod}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                            />
                         </div>
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             <CreateModalPeriods
                 title="Adicionar Período"
                 open={showAddModal}

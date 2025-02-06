@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable, { TableColumn } from 'react-data-table-component';
 
 import { usePersons } from '../context/PersonsContext';
@@ -53,7 +53,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
     const [filters, setFilters] = useState<Filters>({});
     const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Define a função de busca dos funcionários
     const fetchEmployees = () => {
@@ -106,7 +105,6 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
         const sortedFilteredData = filteredByColumnFilters.sort((a, b) => parseInt(a.enrollNumber) - parseInt(b.enrollNumber));
 
         filteredEmployees(sortedFilteredData);
-        setLoading(false);
     }, [selectedEmployeeIds, filterText, filters, data.employees, selectedColumns]);
 
     // Atualiza o índice do funcionário selecionado
@@ -299,32 +297,27 @@ export const PersonsDataTable = ({ selectedEmployeeIds, selectedColumns, filterT
             <>
                 <div className='content-wrapper'>
                     <div className='table-css'>
-                        {loading ?
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                                <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                            </div> :
-                            <DataTable
-                                columns={[...columns, actionColumn]}
-                                data={filteredData}
-                                highlightOnHover
-                                pagination
-                                paginationComponentOptions={paginationOptions}
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[20, 50, 100]}
-                                onRowDoubleClicked={handleRowDoubleClicked}
-                                expandableRows
-                                expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                                selectableRows
-                                onSelectedRowsChange={handleRowSelected}
-                                selectableRowsHighlight
-                                clearSelectedRows={clearSelectionToggle}
-                                noDataComponent="Não existem dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                                defaultSortAsc={true}
-                                defaultSortFieldId='enrollNumber'
-                            />
-                        }
+                        <DataTable
+                            columns={[...columns, actionColumn]}
+                            data={filteredData}
+                            highlightOnHover
+                            pagination
+                            paginationComponentOptions={paginationOptions}
+                            paginationPerPage={20}
+                            paginationRowsPerPageOptions={[20, 50, 100]}
+                            onRowDoubleClicked={handleRowDoubleClicked}
+                            expandableRows
+                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                            selectableRows
+                            onSelectedRowsChange={handleRowSelected}
+                            selectableRowsHighlight
+                            clearSelectedRows={clearSelectionToggle}
+                            noDataComponent="Não existem dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId='enrollNumber'
+                        />
                     </div>
                 </div>
                 {selectedEmployee && (

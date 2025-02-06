@@ -166,7 +166,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                     setDeviceImage(dataUrl);
                     setFormData(prevFormData => ({
                         ...prevFormData,
-                        sPhoto: dataUrl
+                        photo: dataUrl
                     }));
                 };
                 image.src = readerEvent.target?.result as string;
@@ -266,7 +266,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
 
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
-        setFormData({ ...initialValues });
+        setFormData({});
         setSelectedDevice('');
         setDeviceImage(null);
         setShowIpValidationErrors(false);
@@ -417,6 +417,9 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                 </Nav.Item>
                                 <Nav.Item>
                                     <Nav.Link eventKey="portas">Portas</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item>
+                                    <Nav.Link eventKey="leitores">Leitores</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
                                     <Nav.Link eventKey="auxiliares">Auxiliares</Nav.Link>
@@ -586,6 +589,21 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                                 pagination
                                                 paginationComponentOptions={paginationOptions}
                                                 noDataComponent="Os dados de portas só serão exibidos após adicionar e ativar o dispositivo."
+                                                customStyles={customStyles}
+                                                striped
+                                            />
+                                        </Row>
+                                    </Form>
+                                </Tab.Pane>
+                                <Tab.Pane eventKey="leitores">
+                                    <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                                        <Row>
+                                            <DataTable
+                                                columns={columns}
+                                                data={filteredDataTable}
+                                                pagination
+                                                paginationComponentOptions={paginationOptions}
+                                                noDataComponent="Os dados de leitores só serão exibidos após adicionar e ativar o dispositivo."
                                                 customStyles={customStyles}
                                                 striped
                                             />

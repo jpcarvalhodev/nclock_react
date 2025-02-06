@@ -9,17 +9,17 @@ import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskPay } from "../../../components/TreeViewNkioskPay";
 import { useKiosk } from "../../../context/KioskContext";
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { TerminalsProvider, useTerminals } from "../../../context/TerminalsContext";
 import { transactionMBFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { KioskTransactionMB } from "../../../types/Types";
+import { useNavbar } from "../../../context/NavbarContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -42,7 +42,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskPayCoins = () => {
-    const { navbarColor, footerColor, kioskConfig } = useNavbar();
+    const { kioskConfig } = useNavbar();
     const { devices, mbDevices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
@@ -359,7 +359,7 @@ export const NkioskPayCoins = () => {
     return (
         <TerminalsProvider>
             <div className="main-container">
-                <NavBar style={{ backgroundColor: navbarColor }} />
+                
                 <div className='content-container'>
                     <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                         <div className="treeview-container">
@@ -466,7 +466,7 @@ export const NkioskPayCoins = () => {
                         </div>
                     </Split>
                 </div>
-                <Footer style={{ backgroundColor: footerColor }} />
+                
                 {openColumnSelector && (
                     <ColumnSelectorModal
                         columns={transactionMBFields.filter(field => field.key !== 'clientTicket' && field.key !== 'merchantTicket' && field.key !== 'tpId' && field.key !== 'email')}

@@ -8,12 +8,11 @@ import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { ExportButton } from "../../components/ExportButton";
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataUsers } from "../../components/TreeViewRegisteredUsers";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { usePersons } from "../../context/PersonsContext";
 import { registerFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -34,7 +33,6 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NewUsers = () => {
-    const { navbarColor, footerColor } = useNavbar();
     const { registeredUsers, fetchAllRegisteredUsers, handleAddUsers, handleUpdateUser, handleDeleteUser } = usePersons();
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['name', 'userName', 'emailAddress', 'roles']);
@@ -51,7 +49,6 @@ export const NewUsers = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredData, setFilteredData] = useState<Register[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Busca os utilizadores ao carregar a página
     useEffect(() => {
@@ -178,13 +175,6 @@ export const NewUsers = () => {
         })
     )
 
-    // Define o estado de carregamento
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define a colunas excluídas
     const excludedColumns = ['id', 'password', 'confirmPassword'];
 
@@ -252,7 +242,7 @@ export const NewUsers = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -298,35 +288,30 @@ export const NewUsers = () => {
                         </div>
                         <div className='content-wrapper'>
                             <div className='table-css'>
-                                {loading ?
-                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                    </div> :
-                                    <DataTable
-                                        columns={[...columns, actionColumn]}
-                                        data={filteredDataTable}
-                                        onRowDoubleClicked={handleEditUsers}
-                                        pagination
-                                        paginationComponentOptions={paginationOptions}
-                                        paginationPerPage={20}
-                                        selectableRows
-                                        onSelectedRowsChange={handleRowSelected}
-                                        clearSelectedRows={clearSelectionToggle}
-                                        expandableRows
-                                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                                        noDataComponent="Não existem dados disponíveis para exibir."
-                                        customStyles={customStyles}
-                                        striped
-                                        defaultSortAsc={true}
-                                        defaultSortFieldId='name'
-                                    />
-                                }
+                                <DataTable
+                                    columns={[...columns, actionColumn]}
+                                    data={filteredDataTable}
+                                    onRowDoubleClicked={handleEditUsers}
+                                    pagination
+                                    paginationComponentOptions={paginationOptions}
+                                    paginationPerPage={20}
+                                    selectableRows
+                                    onSelectedRowsChange={handleRowSelected}
+                                    clearSelectedRows={clearSelectionToggle}
+                                    expandableRows
+                                    expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                                    noDataComponent="Não existem dados disponíveis para exibir."
+                                    customStyles={customStyles}
+                                    striped
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId='name'
+                                />
                             </div>
                         </div>
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             <CreateModalRegisterUsers
                 title="Adicionar Registo de Utilizador"
                 open={showAddModal}

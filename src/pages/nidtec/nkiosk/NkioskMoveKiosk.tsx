@@ -9,13 +9,12 @@ import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { usePersons } from "../../../context/PersonsContext";
 import { useTerminals } from "../../../context/TerminalsContext";
 import { employeeFields, transactionCardFields } from "../../../fields/Fields";
@@ -44,7 +43,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskMoveKiosk = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    
     const { employees, handleUpdateEmployee } = usePersons();
     const { devices } = useTerminals();
     const currentDate = new Date();
@@ -358,7 +357,7 @@ export const NkioskMoveKiosk = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -459,7 +458,7 @@ export const NkioskMoveKiosk = () => {
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={transactionCardFields}

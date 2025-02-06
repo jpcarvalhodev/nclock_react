@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { usePersons } from "../../context/PersonsContext";
 import { categoryFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -42,7 +41,7 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de categorias
 export const Categories = () => {
-    const { navbarColor, footerColor } = useNavbar();
+
     const { categories, fetchAllCategories, handleAddCategory, handleUpdateCategory, handleDeleteCategory } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -57,7 +56,6 @@ export const Categories = () => {
     const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Category[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Função para adicionar uma categoria
     const addCategory = async (category: Category) => {
@@ -208,13 +206,6 @@ export const Categories = () => {
         })
     ).sort((a, b) => a.code - b.code);
 
-    // Define o estado de carregamento
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define os dados iniciais ao duplicar
     const handleDuplicate = (entity: Partial<Category>) => {
         setInitialData(entity);
@@ -273,7 +264,7 @@ export const Categories = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Categorias</span>
@@ -352,32 +343,27 @@ export const Categories = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    {loading ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={[...tableColumns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={handleEditCategory}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={20}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            expandableRows
-                            expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="code"
-                        />
-                    }
+                    <DataTable
+                        columns={[...tableColumns, actionColumn]}
+                        data={filteredDataTable}
+                        onRowDoubleClicked={handleEditCategory}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        paginationPerPage={20}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        expandableRows
+                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={categoryFields} />}
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                        defaultSortAsc={true}
+                        defaultSortFieldId="code"
+                    />
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={categoryFields}

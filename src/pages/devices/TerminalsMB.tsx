@@ -8,12 +8,11 @@ import { toast } from "react-toastify";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataMBTerminals } from "../../components/TreeViewMBTerminals";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { useTerminals } from "../../context/TerminalsContext";
 import { mbDeviceFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -40,7 +39,6 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define o componente de terminais
 export const TerminalsMB = () => {
     const { mbDevices, fetchAllMBDevices, restartMBDevice, handleAddMBDevice, handleUpdateMBDevice, handleDeleteMBDevice } = useTerminals();
-    const { navbarColor, footerColor } = useNavbar();
     const [showAddModal, setShowAddModal] = useState(false);
     const [userTabKey, setUserTabKey] = useState('onOff');
     const [filters, setFilters] = useState<Filters>({});
@@ -60,7 +58,6 @@ export const TerminalsMB = () => {
     const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<MBDevice[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Função para atualizar todos os dispositivos
     const refreshMBDevices = () => {
@@ -205,13 +202,6 @@ export const TerminalsMB = () => {
         })
     );
 
-    // Define o estado de carregamento
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define as colunas de dispositivos
     const columns: TableColumn<MBDevice>[] = mbDeviceFields
         .filter(field => selectedColumns.includes(field.key))
@@ -319,7 +309,7 @@ export const TerminalsMB = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -364,26 +354,21 @@ export const TerminalsMB = () => {
                             </div>
                         </div>
                         <div className="table-css">
-                            {loading ?
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                </div> :
-                                <DataTable
-                                    columns={[...columns, devicesActionColumn]}
-                                    data={filteredDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleDeviceRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    onRowDoubleClicked={handleEditDevices}
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                />
-                            }
+                            <DataTable
+                                columns={[...columns, devicesActionColumn]}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleDeviceRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                onRowDoubleClicked={handleEditDevices}
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                            />
                         </div>
                         <div className="content-section deviceTabsMobile" style={{ marginTop: 'auto' }}>
                             <div>
@@ -419,7 +404,7 @@ export const TerminalsMB = () => {
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             {showColumnSelector && (
                 <ColumnSelectorModal
                     columns={mbDeviceFields}

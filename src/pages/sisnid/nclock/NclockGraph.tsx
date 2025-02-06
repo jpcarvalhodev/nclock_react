@@ -2,15 +2,14 @@ import { ArcElement, BarElement, CategoryScale, ChartData, Chart as ChartJS, Leg
 import { useEffect, useState } from 'react';
 import { Bar, Pie } from "react-chartjs-2";
 
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
-import { useNavbar } from "../../../context/NavbarContext";
+
+
 import { usePersons } from '../../../context/PersonsContext';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 export const NclockGraph = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    
     const { employees, departments, groups } = usePersons();
     const [chartDataEmployees, setChartDataEmployees] = useState<ChartData>({ labels: [], datasets: [] });
     const [chartDataDepartmentsGroups, setChartDataDepartmentsGroups] = useState<ChartData>({ labels: [], datasets: [] });
@@ -45,7 +44,7 @@ export const NclockGraph = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
                 <span>Gráficos de Assiduidade</span>
             </div>
@@ -63,7 +62,7 @@ export const NclockGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
         </div>
     );
 }

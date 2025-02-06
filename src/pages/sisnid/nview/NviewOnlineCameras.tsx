@@ -8,11 +8,10 @@ import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { cameraFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { CreateOnlineCameraModal } from "../../../modals/CreateOnlineCameraModal";
@@ -32,7 +31,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NviewOnlineCameras = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    
     const [cameras, setCameras] = useState<Cameras[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -283,7 +282,7 @@ export const NviewOnlineCameras = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="datatable-container" style={{ flex: 1 }}>
                 <div className="datatable-title-text">
                     <span>Câmeras Online</span>
@@ -374,7 +373,7 @@ export const NviewOnlineCameras = () => {
                 onDelete={handleDeleteCamera}
                 entityId={selectedCamerasToDelete}
             />
-            <Footer style={{ backgroundColor: footerColor }} />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={cameraFields.filter(field => field.key !== 'passwordCamera')}

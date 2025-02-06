@@ -1,7 +1,7 @@
 //*** campos de todos os modelos para usar no programa todo ***
 
 export const employeeFields = [
-    { label: 'Número', key: 'enrollNumber', type: 'string', required: true },
+    { label: 'Nº', key: 'enrollNumber', type: 'string', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
     { label: 'Nome Abreviado', key: 'shortName', type: 'string', required: true },
     { label: 'Iniciais do Nome', key: 'nameAcronym', type: 'string' },
@@ -18,7 +18,7 @@ export const employeeFields = [
     { label: 'Data de Nascimento', key: 'birthday', type: 'datetime-local' },
     { label: 'Nacionalidade', key: 'nationality', type: 'string' },
     { label: 'Gênero', key: 'gender', type: 'boolean' },
-    { label: 'Número de BI', key: 'bInumber', type: 'string' },
+    { label: 'Nº de BI', key: 'bInumber', type: 'string' },
     { label: 'Emissão de BI', key: 'bIissuance', type: 'datetime-local' },
     { label: 'Validade de BI', key: 'biValidity', type: 'datetime-local' },
     { label: 'NIF', key: 'nif', type: 'number' },
@@ -113,9 +113,9 @@ export const zoneFields = [
 export const employeeAttendanceTimesFields = [
     { key: 'attendanceTime', label: 'Data e Hora de Presença', type: 'datetime-local', required: true },
     { key: 'deviceId', label: 'Equipamento', type: 'dropdown' },
-    { key: 'deviceNumber', label: 'Número do Equipamento', type: 'number' },
+    { key: 'deviceNumber', label: 'Nº do Equipamento', type: 'number' },
     { key: 'employeeId', label: 'Nome do Funcionário', type: 'dropdown', required: true },
-    { key: 'enrollNumber', label: 'Número', type: 'string' },
+    { key: 'enrollNumber', label: 'Nº', type: 'string' },
     { key: 'employeeName', label: 'Nome do Funcionário', type: 'string' },
     { key: 'inOutMode', label: 'Tipo', type: 'number' },
     { key: 'observation', label: 'Observação', type: 'string' },
@@ -125,7 +125,7 @@ export const employeeAttendanceTimesFields = [
 ];
 
 export const deviceFields = [
-    { key: "deviceNumber", label: "Número", type: "number", required: true },
+    { key: "deviceNumber", label: "Nº", type: "number", required: true },
     { key: "deviceName", label: "Nome", type: "string", required: true },
     { key: "status", label: "Estado", type: "boolean" },
     { key: "model", label: "Modelo", type: "string" },
@@ -136,7 +136,7 @@ export const deviceFields = [
     { key: "platform", label: "Platforma", type: "string" },
     { key: "firmware", label: "Firmware", type: "string" },
     { key: "macAddress", label: "Endereço MAC", type: "string" },
-    { key: "serialNumber", label: "Número Serial", type: "string" },
+    { key: "serialNumber", label: "Nº Serial", type: "string" },
     { key: "readerCount", label: "Contagem no Leitor", type: "number" },
     { key: "auxInCount", label: "Contagem de Entrada", type: "number" },
     { key: "auxOutCount", label: "Contagem de Saída", type: "number" },
@@ -154,17 +154,17 @@ export const deviceFields = [
 ];
 
 export const employeeDeviceFields = [
-    { key: 'deviceNumber', label: 'Número do Dispositivo', type: 'number' },
+    { key: 'deviceNumber', label: 'Nº do Dispositivo', type: 'number' },
     { key: 'deviceSn', label: 'Serial do Equipamento', type: 'string' },
     { key: 'deviceName', label: 'Nome do Equipamento', type: 'string' },
-    { key: 'enrollNumber', label: 'Número', type: 'string' },
+    { key: 'enrollNumber', label: 'Nº', type: 'string' },
     { key: 'employeeName', label: 'Nome', type: 'string' },
     { key: 'startTime', label: 'Hora de Início', type: 'Date' },
     { key: 'endTime', label: 'Hora de Término', type: 'Date' },
 ];
 
 export const employeeCardFields = [
-    { key: 'cardNumber', label: 'Número do Cartão', type: 'string' },
+    { key: 'cardNumber', label: 'Nº do Cartão', type: 'string' },
     { key: 'devicePassword', label: 'Password do Equipamento', type: 'number' },
     { key: 'devicePrivelage', label: 'Privilégio do Equipamento', type: 'number' },
 ];
@@ -197,7 +197,7 @@ export const adsFields = [
 
 export const transactionFields = [
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
-    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'cardNo', label: 'Nº do Cartão', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventId', label: 'Evento', type: 'number' },
     { key: 'eventDoorId', label: 'Nome', type: 'number' },
@@ -220,8 +220,8 @@ export const transactionMBFields = [
 
 export const transactionCardFields = [
     { key: 'eventDoorId', label: 'Tipo de Transação', type: 'number' },
-    { key: 'pin', label: 'Número do Utilizador', type: 'number' },
-    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'pin', label: 'Nº do Utilizador', type: 'number' },
+    { key: 'cardNo', label: 'Nº do Cartão', type: 'number' },
     { key: 'nameUser', label: 'Nome do Utilizador', type: 'string' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
@@ -326,7 +326,7 @@ export const timePeriodFields = [
 ];
 
 export const doorFields = [
-    { key: 'nrDoor', label: 'Número da Porta', type: 'number', required: true },
+    { key: 'nrDoor', label: 'Nº da Porta', type: 'number', required: true },
     { key: 'time', label: 'Tempo Aberta', type: 'number', required: true }
 ];
 
@@ -368,14 +368,14 @@ export const doorsFields = [
     { key: 'backLock', label: 'Estado da Fechadura', type: 'boolean' },
     { key: 'combopenInterval', label: 'Intervalo entre Identificações', type: 'number' },
     { key: 'delayOpenTime', label: 'Atraso de Tempo de Abertura', type: 'number' },
-    { key: 'doorNo', label: 'Número de Porta', type: 'number', readonly: true, required: true },
+    { key: 'doorNo', label: 'Nº Porta', type: 'number', readonly: true, required: true },
     { key: 'doorSensorStatus', label: 'Tipo de Sensor de Porta', type: 'number' },
     { key: 'enabled', label: 'Activo', type: 'boolean' },
     { key: 'extDevId', label: 'Dispositivo Externo', type: 'string' },
     { key: 'forcePwd', label: 'Password de Coação', type: 'string' },
     { key: 'inApbDuration', label: 'Duração do Antirretorno da Fechadura', type: 'number' },
     { key: 'lockDelay', label: 'Duração da Abertura da Fechadura', type: 'number' },
-    { key: 'name', label: 'Nome', type: 'string', required: true },
+    { key: 'name', label: 'Nome Porta', type: 'string', required: true },
     { key: 'passmodeTimesegId', label: 'Faixa Horária do Modo de Passagem', type: 'string' },
     { key: 'sensorDelay', label: 'Atraso do Sensor de Porta', type: 'number' },
     { key: 'supperPwd', label: 'Password de Emergência', type: 'string' },
@@ -422,7 +422,7 @@ const createLicenseFields = (products: string[]) => {
         { key: 'nif', label: 'NIF', type: 'number' },
         { key: 'users', label: 'Utilizadores', type: 'number' },
         { key: 'devices', label: 'Dispositivos', type: 'number' },
-        { key: 'sn', label: 'Número de Série', type: 'string' },
+        { key: 'sn', label: 'Nº de Série', type: 'string' },
     ];
     products.forEach(product => {
         fields.push(
@@ -493,7 +493,7 @@ export const logsFields = [
 
 export const cameraFields = [
     { key: 'createdDate', label: 'Data de Criação', type: 'date' },
-    { key: 'numeroCamera', label: 'Número', type: 'number', required: true },
+    { key: 'numeroCamera', label: 'Nº', type: 'number', required: true },
     { key: 'nomeCamera', label: 'Nome', type: 'string', required: true },
     { key: 'ip', label: 'IP', type: 'string' },
     { key: 'url', label: 'URL', type: 'string', required: true },
@@ -503,9 +503,9 @@ export const cameraFields = [
 ];
 
 export const employeesOnDeviceFields = [
-    { key: 'pin', label: 'Número', type: 'string' },
+    { key: 'pin', label: 'Nº', type: 'string' },
     { key: 'name', label: 'Nome', type: 'string' },
-    { key: 'cardno', label: 'Número do Cartão', type: 'string' },
+    { key: 'cardno', label: 'Nº do Cartão', type: 'string' },
 ];
 
 export const kioskConfigFields = [
@@ -515,12 +515,12 @@ export const kioskConfigFields = [
 ];
 
 export const auxOutFields = [
-    { key: 'nrAuxOut', label: 'Número da Auxiliar', type: 'number', required: true },
+    { key: 'nrAuxOut', label: 'Nº da Auxiliar', type: 'number', required: true },
     { key: 'time', label: 'Tempo para Abrir', type: 'number', required: true }
 ];
 
 export const auxiliariesFields = [
-    { key: 'nome', label: 'Nome', type: 'string', required: true },
+    { key: 'nome', label: 'Nome Auxiliar', type: 'string', required: true },
     { key: 'auxNo', label: 'Nº Auxiliar', type: 'number' },
     { key: 'auxType', label: 'Contacto', type: 'number' },
     { key: 'deviceId', label: 'Dispositivo', type: 'string' },
@@ -535,11 +535,11 @@ export const resetFields = [
 
 export const counterFields = [
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
-    { key: 'pin', label: 'Número do Utilizador', type: 'number' },
+    { key: 'pin', label: 'Nº do Utilizador', type: 'number' },
     { key: 'nameUser', label: 'Nome do Utilizador', type: 'string' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
     { key: 'eventType', label: 'Tipo do Evento', type: 'string' },
-    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'cardNo', label: 'Nº do Cartão', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
 ];
 
@@ -549,8 +549,8 @@ export const licenseKey = [
 
 export const newTransactionCardFields = [
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
-    { key: 'pin', label: 'Número do Utilizador', type: 'number' },
-    { key: 'cardNo', label: 'Número do Cartão', type: 'number' },
+    { key: 'pin', label: 'Nº do Utilizador', type: 'number' },
+    { key: 'cardNo', label: 'Nº do Cartão', type: 'number' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
     { key: 'eventDoorId', label: 'Torniquete', type: 'number' },
 ];
@@ -569,7 +569,7 @@ export const accessesFields = [
     { key: 'eventTime', label: 'Horário', type: 'string' },
     { key: 'cardNo', label: 'Cartão', type: 'string' },
     { key: 'nameUser', label: 'Nome', type: 'string' },
-    { key: 'pin', label: 'Número', type: 'string' },
+    { key: 'pin', label: 'Nº', type: 'string' },
     { key: 'deviceName', label: 'Local', type: 'string' },
     { key: 'deviceSN', label: 'Serial do Equipamento', type: 'string', required: true },
     { key: 'eventDoorId', label: 'Porta', type: 'number', required: true },
@@ -579,6 +579,8 @@ export const accessesFields = [
 ];
 
 export const readersFields = [
-    { key: 'nameReader', label: 'Nome', type: 'string' },
-    { key: 'doorName', label: 'Porta', type: 'string' },
+    { key: 'nameReader', label: 'Nome Leitor', type: 'string' },
+    { key: 'readerInOut', label: 'Sentido', type: 'number' },
+    { key: 'doorNo', label: 'Nº Porta', type: 'number' },
+    { key: 'doorName', label: 'Nome Porta', type: 'string' },
 ];

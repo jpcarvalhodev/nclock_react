@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { usePersons } from "../../context/PersonsContext";
 import { professionFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -42,7 +41,6 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de profissões
 export const Professions = () => {
-    const { navbarColor, footerColor } = useNavbar();
     const { professions, fetchAllProfessions, handleAddProfession, handleUpdateProfession, handleDeleteProfessions } = usePersons();
     const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
     const [filterText, setFilterText] = useState('');
@@ -57,7 +55,6 @@ export const Professions = () => {
     const [initialData, setInitialData] = useState<Partial<Profession> | null>(null);
     const [currentProfessionIndex, setCurrentProfessionIndex] = useState(0);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Função para adicionar uma nova profissão
     const addProfession = async (profession: Profession) => {
@@ -190,13 +187,6 @@ export const Professions = () => {
         })
     ).sort((a, b) => a.code - b.code);
 
-    // Define o estado de loading
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Seleciona a entidade anterior
     const handleNextProfession = () => {
         const sortedProfession = professions.sort((a, b) => a.code - b.code);
@@ -273,7 +263,7 @@ export const Professions = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Profissões</span>
@@ -352,32 +342,27 @@ export const Professions = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    {loading ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={[...tableColumns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={handleEditProfession}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={20}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            expandableRows
-                            expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="code"
-                        />
-                    }
+                    <DataTable
+                        columns={[...tableColumns, actionColumn]}
+                        data={filteredDataTable}
+                        onRowDoubleClicked={handleEditProfession}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        paginationPerPage={20}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        expandableRows
+                        expandableRowsComponent={(props) => <ExpandedComponentGeneric data={props.data} fields={professionFields} />}
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                        defaultSortAsc={true}
+                        defaultSortFieldId="code"
+                    />
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={professionFields}

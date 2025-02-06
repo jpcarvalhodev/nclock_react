@@ -6,7 +6,7 @@ import marker from '../../../assets/img/map/marker.png';
 import { Footer } from "../../../components/Footer";
 import { MapCenterButton } from '../../../components/MapCenterButton';
 import { NavBar } from "../../../components/NavBar";
-import { useNavbar } from "../../../context/NavbarContext";
+
 
 import { useEffect } from 'react';
 import '../../../css/PagesStyles.css';
@@ -31,12 +31,12 @@ const MapInitialization = ({ position }: { position: [number, number] }) => {
   };
 
 export const NkioskMap = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    
     const position: [number, number] = [41.145882, -8.614464];
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className='map-container'>
                 <div className="datatable-title-text">
                     <span >Mapa do Quiosque</span>
@@ -57,7 +57,7 @@ export const NkioskMap = () => {
                     <MapCenterButton position={position} />
                 </MapContainer>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
         </div >
     );
 };

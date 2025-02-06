@@ -1,8 +1,7 @@
 import DataTable, { TableColumn } from "react-data-table-component";
 
 import { customStyles } from "../../../components/CustomStylesDataTable";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import "../../../css/PagesStyles.css";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { ExportButton } from "../../../components/ExportButton";
@@ -13,7 +12,7 @@ import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { useAttendance } from "../../../context/MovementContext";
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { usePersons } from "../../../context/PersonsContext";
 import { employeeAttendanceTimesFields, employeeFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
@@ -58,7 +57,7 @@ export const NclockAll = () => {
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
     const { employees, handleUpdateEmployee } = usePersons();
-    const { navbarColor, footerColor } = useNavbar();
+    
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [attendanceAll, setAttendanceAll] = useState<EmployeeAttendanceTimes[]>([]);
@@ -341,7 +340,7 @@ export const NclockAll = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="content-container">
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -443,7 +442,7 @@ export const NclockAll = () => {
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
             {showColumnSelector && (
                 <ColumnSelectorModal
                     columns={filteredColumns}

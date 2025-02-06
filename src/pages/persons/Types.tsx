@@ -6,11 +6,10 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { usePersons } from "../../context/PersonsContext";
 import { categoryFields, externalEntityTypeFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -36,7 +35,6 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de tipos de entidades externas
 export const Types = () => {
-    const { navbarColor, footerColor } = useNavbar();
     const { dataEE, fetchAllExternalEntitiesData, handleAddExternalEntityTypes, handleUpdateExternalEntityTypes, handleDeleteExternalEntityTypes } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -51,7 +49,6 @@ export const Types = () => {
     const [currentExternalEntityTypeIndex, setCurrentExternalEntityTypeIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<ExternalEntityTypes[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Função para adicionar um tipo de uma entidade externa
     const addExternalEntityTypes = async (externalEntityType: ExternalEntityTypes) => {
@@ -185,13 +182,6 @@ export const Types = () => {
         })
     ).sort((a, b) => a.order - b.order);
 
-    // Define o estado de loading
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define os dados iniciais ao duplicar
     const handleDuplicate = (entity: Partial<ExternalEntityTypes>) => {
         setInitialData(entity);
@@ -268,7 +258,7 @@ export const Types = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Tipos</span>
@@ -316,30 +306,25 @@ export const Types = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    {loading ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={[...tableColumns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={handleEditExternalEntity}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={20}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="order"
-                        />
-                    }
+                    <DataTable
+                        columns={[...tableColumns, actionColumn]}
+                        data={filteredDataTable}
+                        onRowDoubleClicked={handleEditExternalEntity}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        paginationPerPage={20}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                        defaultSortAsc={true}
+                        defaultSortFieldId="order"
+                    />
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             <CreateModalCatProfTypes
                 title="Adicionar Tipo"
                 open={showAddModal}

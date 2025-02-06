@@ -8,12 +8,11 @@ import * as apiService from "../../api/apiService";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../components/TreeViewDevice";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { useTerminals } from "../../context/TerminalsContext";
 import { mbDeviceCloseOpenFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -47,7 +46,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 // Define o componente de terminais
 export const TerminalCloseOpen = () => {
     const { mbDevices, mbCloseOpen, setMbCloseOpen, fetchAllMBCloseOpen } = useTerminals();
-    const { navbarColor, footerColor } = useNavbar();
+
     const [filters, setFilters] = useState<Filters>({});
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['timestamp', 'tpId', 'fechoImage', 'aberturaImage']);
     const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -61,7 +60,6 @@ export const TerminalCloseOpen = () => {
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<MBDeviceCloseOpen[]>([]);
     const [filterText, setFilterText] = useState('');
-    const [loading, setLoading] = useState(true);
 
     // Função para buscar todos os dispositivos multibanco entre datas
     const fetchAllDevicesBetweenDates = async () => {
@@ -210,13 +208,6 @@ export const TerminalCloseOpen = () => {
         })
     );
 
-    // Define o estado de carregamento
-    useEffect(() => {
-        if (filteredDeviceDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDeviceDataTable]);
-
     // Define as colunas de dispositivos
     const columns: TableColumn<MBDeviceCloseOpen>[] = mbDeviceCloseOpenFields
         .filter(field => selectedColumns.includes(field.key))
@@ -286,7 +277,7 @@ export const TerminalCloseOpen = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -364,31 +355,26 @@ export const TerminalCloseOpen = () => {
                             </div>
                         </div>
                         <div className="table-css">
-                            {loading ?
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                </div> :
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredDeviceDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleDeviceRowSelected}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="timestamp"
-                                />
-                            }
+                            <DataTable
+                                columns={columns}
+                                data={filteredDeviceDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleDeviceRowSelected}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                                defaultSortAsc={true}
+                                defaultSortFieldId="timestamp"
+                            />
                         </div>
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             {showColumnSelector && (
                 <ColumnSelectorModal
                     columns={mbDeviceCloseOpenFields}

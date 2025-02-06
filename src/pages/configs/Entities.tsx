@@ -7,12 +7,11 @@ import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
 import { ExportButton } from "../../components/ExportButton";
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useEntity } from "../../context/EntityContext";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { entityFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
@@ -29,7 +28,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const Entities = () => {
-    const { navbarColor, footerColor } = useNavbar();
+
     const { entities, fetchAllEntity, updateEntity } = useEntity();
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['createdDate', 'nome', 'nif', 'email', 'enabled']);
@@ -40,7 +39,6 @@ export const Entities = () => {
     const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Entity[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Função para atualizar os dados da entidade
     const handleUpdateCompanyData = async (entityData: FormData) => {
@@ -194,13 +192,6 @@ export const Entities = () => {
         })
     ) : [];
 
-    // Define o estado de carregamento
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define as colunas excluídas
     const excludedColumns = ['logotipo'];
 
@@ -265,7 +256,7 @@ export const Entities = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Entidades</span>
@@ -301,32 +292,27 @@ export const Entities = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    {loading ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={[...columns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={handleEditEntity}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={20}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            expandableRows
-                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId='createdDate'
-                        />
-                    }
+                    <DataTable
+                        columns={[...columns, actionColumn]}
+                        data={filteredDataTable}
+                        onRowDoubleClicked={handleEditEntity}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        paginationPerPage={20}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        expandableRows
+                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                        defaultSortAsc={true}
+                        defaultSortFieldId='createdDate'
+                    />
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             {selectedEntity && (
                 <UpdateEntityModal
                     open={showUpdateModal}

@@ -9,13 +9,12 @@ import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { useTerminals } from "../../../context/TerminalsContext";
 import { recolhaMoedeiroEContadorFields, resetFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
@@ -46,7 +45,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskGetCoins = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    
     const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
@@ -445,7 +444,7 @@ export const NkioskGetCoins = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -570,7 +569,7 @@ export const NkioskGetCoins = () => {
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={recolhaMoedeiroEContadorFields}

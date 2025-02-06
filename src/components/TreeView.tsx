@@ -71,7 +71,6 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
   const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
-  const [loading, setLoading] = useState(true);
 
   // Define e mapeia os dados para os itens da árvore
   useEffect(() => {
@@ -199,7 +198,6 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
     setFilteredItems(treeItems);
     const allExpandableIds = collectAllExpandableItemIds(treeItems);
     setExpandedIds(allExpandableIds);
-    setLoading(false);
   }, [data, employees]);
 
   // Filtra os itens ao mudar o termo de pesquisa
@@ -300,10 +298,6 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
         </OverlayTrigger>
       </div>
       <Box className="treeViewFlexItem">
-        {loading ?
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-          </div> :
           <RichTreeView
             multiSelect
             checkboxSelection
@@ -314,7 +308,6 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
             expandedItems={expandedIds}
             onExpandedItemsChange={handleToggle}
           />
-        }
       </Box>
     </Box>
   );

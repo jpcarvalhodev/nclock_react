@@ -100,10 +100,8 @@ import ntask from '../assets/img/navbar/navbar/ntask.png';
 import nticket from '../assets/img/navbar/navbar/nticket.png';
 import nview from '../assets/img/navbar/navbar/nview.webp';
 import nvisitor from '../assets/img/navbar/navbar/nvisitor.webp';
-import { Footer } from "../components/Footer";
-import { NavBar } from "../components/NavBar";
+
 import { useLicense } from "../context/LicenseContext";
-import { useNavbar } from "../context/NavbarContext";
 
 // Define o tipo TabName
 type TabName = 'SOFTWARES LICENCIADOS';
@@ -192,7 +190,6 @@ const extractSoftwareNameFromTabKey = (tabKey: string) => {
 
 // Define a página principal
 export const Dashboard = () => {
-    const { navbarColor, footerColor } = useNavbar();
     const { license, getSoftwareEnabledStatus } = useLicense();
     const navigate = useNavigate();
     const [activeKey, setActiveKey] = useState<TabName>('SOFTWARES LICENCIADOS');
@@ -369,7 +366,7 @@ export const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="dashboard-tabs-container">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
                     <Nav variant="pills" className="nav-pills justify-content-center align-items-center">
@@ -544,7 +541,7 @@ export const Dashboard = () => {
                     )}
                 </motion.div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
         </div>
     );
 };

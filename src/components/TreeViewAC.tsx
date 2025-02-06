@@ -34,7 +34,6 @@ export function TreeViewAC({ onSelectDevices, devices, doors }: TreeViewACProps)
     const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const selectionChangedRef = { current: false };
-    const [loading, setLoading] = useState(true);
 
     // Atualiza a árvore de itens ao receber os dados dos dispositivos
     useEffect(() => {
@@ -71,7 +70,6 @@ export function TreeViewAC({ onSelectDevices, devices, doors }: TreeViewACProps)
         setFilteredItems(treeItems);
         const allExpandableIds = collectAllExpandableItemIds(treeItems);
         setExpandedIds(allExpandableIds);
-        setLoading(false);
     }, [devices, doors]);
 
     // Função para lidar com a expansão dos itens
@@ -143,21 +141,16 @@ export function TreeViewAC({ onSelectDevices, devices, doors }: TreeViewACProps)
     return (
         <Box className="TreeViewContainer">
             <Box className="treeViewFlexItem">
-                {loading ?
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                        <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                    </div> :
-                    <RichTreeView
-                        multiSelect={true}
-                        checkboxSelection={true}
-                        items={filteredItems}
-                        getItemId={(item: TreeViewBaseItem) => item.id}
-                        onSelectedItemsChange={handleSelectedItemsChange}
-                        selectedItems={selectedDevicesIds}
-                        expandedItems={expandedIds}
-                        onExpandedItemsChange={handleToggle}
-                    />
-                }
+                <RichTreeView
+                    multiSelect={true}
+                    checkboxSelection={true}
+                    items={filteredItems}
+                    getItemId={(item: TreeViewBaseItem) => item.id}
+                    onSelectedItemsChange={handleSelectedItemsChange}
+                    selectedItems={selectedDevicesIds}
+                    expandedItems={expandedIds}
+                    onExpandedItemsChange={handleToggle}
+                />
             </Box>
         </Box>
     );

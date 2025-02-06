@@ -3,14 +3,12 @@ import Split from 'react-split';
 
 import { CustomOutlineButton } from '../../components/CustomOutlineButton';
 import { ExportButton } from '../../components/ExportButton';
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PersonsDataTable } from "../../components/PersonsDataTable";
 import { PrintButton } from '../../components/PrintButton';
 import { TreeViewData } from "../../components/TreeView";
 
 import '../../css/PagesStyles.css';
-import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from '../../context/PersonsContext';
 import { employeeFields } from '../../fields/Fields';
 import { ColumnSelectorModal } from '../../modals/ColumnSelectorModal';
@@ -18,7 +16,7 @@ import { CreateModalEmployees } from '../../modals/CreateModalEmployees';
 import { DeleteModal } from '../../modals/DeleteModal';
 import { Employee } from '../../types/Types';
 
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { TextField, TextFieldProps } from '@mui/material';
 
@@ -35,7 +33,6 @@ function CustomSearchBox(props: TextFieldProps) {
 // Define a página de pessoas
 export const Persons = () => {
     const { data, setData, fetchAllDisabledEmployees, handleAddEmployee, handleDeleteEmployee } = usePersons();
-    const { navbarColor, footerColor } = useNavbar();
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedColumns, setSelectedColumns] = useState(['enrollNumber', 'name', 'shortName', 'status']);
@@ -136,7 +133,7 @@ export const Persons = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="content-container">
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -203,7 +200,7 @@ export const Persons = () => {
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
             {showAddModal && (
                 <CreateModalEmployees
                     title="Adicionar Pessoa"

@@ -10,8 +10,7 @@ import key from "../../assets/img/terminais/key.png";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 
 import "../../css/Terminals.css";
 import { Button, Form, OverlayTrigger, Spinner, Tab, Tabs, Tooltip } from "react-bootstrap";
@@ -19,7 +18,7 @@ import { Button, Form, OverlayTrigger, Spinner, Tab, Tabs, Tooltip } from "react
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useAttendance } from "../../context/MovementContext";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { usePersons } from "../../context/PersonsContext";
 import { TerminalsProvider, useTerminals } from "../../context/TerminalsContext";
 import { deviceFields, doorFields, employeeCardFields, employeeFields, employeesOnDeviceFields, transactionFields } from "../../fields/Fields";
@@ -74,7 +73,6 @@ export const Terminals = () => {
     const { devices, employeeDevices, fetchAllDevices, fetchAllEmployeeDevices, fetchAllKioskTransaction, fetchAllKioskTransactionOnDevice, sendAllEmployeesToDevice, saveAllEmployeesOnDeviceToDB, syncTimeManuallyToDevice, deleteAllUsersOnDevice, openDeviceDoor, restartDevice, sendClockToDevice, handleAddDevice, handleUpdateDevice, handleDeleteDevice, fetchAllAux, fetchAllDoorData } = useTerminals();
     const { handleAddImportedAttendance } = useAttendance();
     const { employees, fetchAllCardData, handleImportEmployeeCard, handleImportEmployeeFP, handleImportEmployeeFace } = usePersons();
-    const { navbarColor, footerColor } = useNavbar();
     const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -123,9 +121,9 @@ export const Terminals = () => {
     const [loadingSendClock, setLoadingSendClock] = useState(false);
     const [showDoorModal, setShowDoorModal] = useState(false);
     const [loadingUsersInTerminalData, setLoadingUsersInTerminalData] = useState(false);
-    const [loadingTerminals, setLoadingTerminals] = useState(false);
     const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+    const [loadingMovementData, setLoadingMovementData] = useState(false);
 
     // Função para buscar todos os utilizadores e cartões
     const fetchEmployeesAndCards = async () => {
@@ -180,9 +178,7 @@ export const Terminals = () => {
 
     // Função para adicionar um dispositivo
     const addDevice = async (device: Devices) => {
-        setLoadingTerminals(true);
         await handleAddDevice(device);
-        setLoadingTerminals(false);
         refreshAll();
         setClearSelectionToggle((prev) => !prev);
     }
@@ -374,6 +370,17 @@ export const Terminals = () => {
                         );
                     case 'enabled':
                         return row.enabled ? 'Activo' : 'Inactivo';
+                    case 'deviceName':
+                        return (
+                            <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip>{row[field.key]}</Tooltip>}
+                            >
+                                <span style={{ cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {row[field.key]}
+                                </span>
+                            </OverlayTrigger>
+                        );
                     default:
                         return row[field.key];
                 }
@@ -672,7 +679,7 @@ export const Terminals = () => {
 
     // Função que manipula a duplicação
     const handleDuplicate = (devices: Partial<Devices>) => {
-        setInitialData(devices);
+        setInitialData({ ...devices, deviceNumber: devices.deviceNumber ? devices.deviceNumber + 1 : 1, ipAddress: '', macAddress: '', firmware: '', serialNumber: '', port: 0 });
         setShowAddModal(true);
         setShowUpdateModal(false);
         setSelectedTerminal(null);
@@ -1137,8 +1144,8 @@ export const Terminals = () => {
 
     return (
         <TerminalsProvider>
-            <div className="main-container" style={{ overflow: 'auto' }}>
-                <NavBar style={{ backgroundColor: navbarColor }} />
+            <div className="dashboard-container">
+
                 <div className='filter-refresh-add-edit-upper-class'>
                     <div className="datatable-title-text" style={{ color: '#000000' }}>
                         <span>Equipamentos</span>
@@ -1169,31 +1176,26 @@ export const Terminals = () => {
                     </div>
                 </div>
                 <div className="content-section deviceTabsMobile" style={{ display: 'flex', flex: 1 }}>
-                    <div style={{ flex: 1.5, overflow: "auto" }} className="deviceMobile">
-                        {loadingTerminals ?
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                                <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                            </div> :
-                            <DataTable
-                                columns={[...deviceColumns, devicesActionColumn]}
-                                data={filteredDeviceDataTable}
-                                onRowDoubleClicked={handleEditDevices}
-                                pagination
-                                paginationPerPage={20}
-                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                paginationComponentOptions={paginationOptions}
-                                selectableRows
-                                selectableRowsSingle
-                                clearSelectedRows={clearSelectionToggle}
-                                onSelectedRowsChange={handleDeviceRowSelected}
-                                selectableRowsHighlight
-                                noDataComponent="Não há dados disponíveis para exibir."
-                                customStyles={customStyles}
-                                striped
-                                defaultSortAsc={true}
-                                defaultSortFieldId="deviceNumber"
-                            />
-                        }
+                    <div style={{ flex: 1.5 }} className="deviceMobile">
+                        <DataTable
+                            columns={[...deviceColumns, devicesActionColumn]}
+                            data={filteredDeviceDataTable}
+                            onRowDoubleClicked={handleEditDevices}
+                            pagination
+                            paginationPerPage={20}
+                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                            paginationComponentOptions={paginationOptions}
+                            selectableRows
+                            selectableRowsSingle
+                            clearSelectedRows={clearSelectionToggle}
+                            onSelectedRowsChange={handleDeviceRowSelected}
+                            selectableRowsHighlight
+                            noDataComponent="Não há dados disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            defaultSortAsc={true}
+                            defaultSortFieldId="deviceNumber"
+                        />
                     </div>
                     <div style={{ flex: 2, overflow: "auto" }}>
                         <Tabs
@@ -1233,17 +1235,21 @@ export const Terminals = () => {
                                     <p className="activityTabContent">Movimentos do Terminal</p>
                                     {
                                         selectedTerminal && selectedDeviceRows.length > 0 ? (
-                                            <DataTable
-                                                columns={movementColumns}
-                                                data={movements}
-                                                pagination
-                                                paginationPerPage={5}
-                                                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                                                paginationComponentOptions={paginationOptions}
-                                                noDataComponent="Não há movimentos disponíveis para exibir."
-                                                customStyles={customStyles}
-                                                striped
-                                            />
+                                            loadingMovementData ?
+                                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+                                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
+                                                </div> :
+                                                <DataTable
+                                                    columns={movementColumns}
+                                                    data={movements}
+                                                    pagination
+                                                    paginationPerPage={5}
+                                                    paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                                                    paginationComponentOptions={paginationOptions}
+                                                    noDataComponent="Não há movimentos disponíveis para exibir."
+                                                    customStyles={customStyles}
+                                                    striped
+                                                />
                                         ) : (
                                             <p style={{ textAlign: "center" }}>Selecione um terminal para ver os movimentos.</p>
                                         )
@@ -1260,7 +1266,7 @@ export const Terminals = () => {
                                 >
                                     <Tab eventKey="users-software" title="Utilizadores no software">
                                         <div style={{ display: "flex" }}>
-                                            <div style={{ overflowX: "auto", flex: 5 }}>
+                                            <div style={{ flex: 5 }}>
                                                 <DataTable
                                                     columns={userColumns}
                                                     data={filteredUsersInSoftware}
@@ -1559,7 +1565,7 @@ export const Terminals = () => {
                         </Tab>
                     </Tabs>
                 </div>
-                <Footer style={{ backgroundColor: footerColor }} />
+
                 {
                     showColumnSelector && (
                         <ColumnSelectorModal

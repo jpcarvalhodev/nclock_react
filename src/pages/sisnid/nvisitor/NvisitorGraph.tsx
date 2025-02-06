@@ -1,17 +1,16 @@
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
 import { Bar , PolarArea } from "react-chartjs-2";
 
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import { useKiosk } from '../../../context/KioskContext';
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 export const NvisitorGraph = () => {
     const currentYear = new Date().getFullYear();
-    const { navbarColor, footerColor } = useNavbar();
+    
     const { moveCard, moveKiosk, totalMovements } = useKiosk();
 
     // Função para agrupar os dados por mês com base no campo correto
@@ -101,7 +100,7 @@ export const NvisitorGraph = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
                 <span>Gráficos de Movimentos</span>
             </div>
@@ -119,7 +118,7 @@ export const NvisitorGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
         </div>
     );
 }

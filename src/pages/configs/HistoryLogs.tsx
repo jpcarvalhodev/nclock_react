@@ -8,13 +8,12 @@ import * as apiService from "../../api/apiService";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { TreeViewDataHistory } from "../../components/TreeViewHistory";
 import { useEntity } from "../../context/EntityContext";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { logsFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { Logs } from "../../types/Types";
@@ -40,7 +39,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const HistoryLogs = () => {
-    const { navbarColor, footerColor } = useNavbar();
+
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -55,7 +54,6 @@ export const HistoryLogs = () => {
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
     const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
     const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
-    const [loading, setLoading] = useState(true);
 
     // Função para buscar os logs entre datas
     const fetchLogsBetweenDates = async () => {
@@ -214,13 +212,6 @@ export const HistoryLogs = () => {
         })
     ).sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
 
-    // Define o estado de carregamento
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define as colunas da tabela
     const columns: TableColumn<Logs>[] = logsFields
         .filter(field => selectedColumns.includes(field.key))
@@ -255,7 +246,7 @@ export const HistoryLogs = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -333,32 +324,27 @@ export const HistoryLogs = () => {
                             </div>
                         </div>
                         <div className='table-css'>
-                            {loading ?
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                                    <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                                </div> :
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="createdDate"
-                                />
-                            }
+                            <DataTable
+                                columns={columns}
+                                data={filteredDataTable}
+                                pagination
+                                paginationComponentOptions={paginationOptions}
+                                paginationPerPage={20}
+                                selectableRows
+                                onSelectedRowsChange={handleRowSelected}
+                                clearSelectedRows={clearSelectionToggle}
+                                selectableRowsHighlight
+                                noDataComponent="Não existem dados disponíveis para exibir."
+                                customStyles={customStyles}
+                                striped
+                                defaultSortAsc={true}
+                                defaultSortFieldId="createdDate"
+                            />
                         </div>
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={logsFields}

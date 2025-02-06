@@ -6,8 +6,7 @@ import { CustomOutlineButton } from '../../components/CustomOutlineButton';
 import { customStyles } from '../../components/CustomStylesDataTable';
 import { ExpandedComponentDept } from '../../components/ExpandedComponentDept';
 import { ExportButton } from '../../components/ExportButton';
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PrintButton } from '../../components/PrintButton';
 import { SelectFilter } from '../../components/SelectFilter';
 import { departmentFields } from '../../fields/Fields';
@@ -19,7 +18,7 @@ import { Department } from '../../types/Types';
 
 
 import '../../css/PagesStyles.css';
-import { useNavbar } from "../../context/NavbarContext";
+
 
 import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { TextField, TextFieldProps } from '@mui/material';
@@ -43,7 +42,6 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de departamentos
 export const Departments = () => {
-    const { navbarColor, footerColor } = useNavbar();
     const { departments, setDepartments, fetchAllDepartments, fetchAllSubDepartments, handleAddDepartment, handleUpdateDepartment, handleDeleteDepartment } = usePersons();
     const [filterText, setFilterText] = useState('');
     const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -58,7 +56,6 @@ export const Departments = () => {
     const [currentDepartmentIndex, setCurrentDepartmentIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Department[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Busca os departamentos
     const fetchDepartments = async () => {
@@ -181,13 +178,6 @@ export const Departments = () => {
             return false;
         })
     );
-
-    // Define o estado de loading
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
 
     // Define as colunas da tabela
     const tableColumns = selectedColumns
@@ -321,7 +311,7 @@ export const Departments = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Departamentos</span>
@@ -400,31 +390,26 @@ export const Departments = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    {loading ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={[...tableColumns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={handleEditDepartment}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={20}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            expandableRows
-                            expandableRowsComponent={(props) => (
-                                <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />
-                            )}
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="code"
-                        />
-                    }
+                    <DataTable
+                        columns={[...tableColumns, actionColumn]}
+                        data={filteredDataTable}
+                        onRowDoubleClicked={handleEditDepartment}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        paginationPerPage={20}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        expandableRows
+                        expandableRowsComponent={(props) => (
+                            <ExpandedComponentDept data={props.data} fetchSubdepartments={fetchAllSubDepartments} isRoot={true} />
+                        )}
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                        defaultSortAsc={true}
+                        defaultSortFieldId="code"
+                    />
                 </div>
             </div>
             {openColumnSelector && (
@@ -437,7 +422,7 @@ export const Departments = () => {
                     onSelectAllColumns={onSelectAllColumns}
                 />
             )}
-            <Footer style={{ backgroundColor: footerColor }} />
+
         </div>
     );
 }

@@ -8,13 +8,12 @@ import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataMBTerminals } from "../../../components/TreeViewMBTerminals";
 import { useKiosk } from "../../../context/KioskContext";
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { useTerminals } from "../../../context/TerminalsContext";
 import { mbDeviceStatusFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
@@ -41,7 +40,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskAlerts = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    
     const { mbDevices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
@@ -252,7 +251,7 @@ export const NkioskAlerts = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -350,7 +349,7 @@ export const NkioskAlerts = () => {
                     </div>
                 </Split>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')}

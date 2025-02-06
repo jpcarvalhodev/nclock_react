@@ -6,11 +6,10 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { useTerminals } from "../../context/TerminalsContext";
 import { accessControlFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -30,7 +29,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const AccessControls = () => {
-    const { navbarColor, footerColor } = useNavbar();
+
     const { accessControl, fetchAccessControl, handleAddAccessControl, handleUpdateAccessControl, handleDeleteAccessControl } = useTerminals();
     const [selectedColumns, setSelectedColumns] = useState<string[]>(['nome', 'activo']);
     const [selectedRows, setSelectedRows] = useState<AccessControl[]>([]);
@@ -44,7 +43,6 @@ export const AccessControls = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedAccessControl, setSelectedAccessControl] = useState<AccessControl | null>(null);
     const [initialData, setInitialData] = useState<Partial<AccessControl> | null>(null);
-    const [loading, setLoading] = useState(true);
 
     // Função para adicionar o controle de acesso
     const addAccessControl = async (newAccessControl: Partial<AccessControl>) => {
@@ -173,13 +171,6 @@ export const AccessControls = () => {
         })
     );
 
-    // Define o estado de carregamento
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define a coluna de ações
     const actionColumn: TableColumn<AccessControl> = {
         name: 'Ações',
@@ -241,7 +232,7 @@ export const AccessControls = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className="datatable-container" style={{ flex: 1 }}>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Planos de Acessos</span>
@@ -281,29 +272,24 @@ export const AccessControls = () => {
                     </div>
                 </div>
                 <div className='table-css'>
-                    {loading ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={[...columns, actionColumn]}
-                            data={filteredDataTable}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={20}
-                            onRowDoubleClicked={handleEditAccessControl}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            selectableRowsHighlight
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                        />
-                    }
+                    <DataTable
+                        columns={[...columns, actionColumn]}
+                        data={filteredDataTable}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        paginationPerPage={20}
+                        onRowDoubleClicked={handleEditAccessControl}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        selectableRowsHighlight
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                    />
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={accessControlFields.filter(field => field.key === 'nome' || field.key === 'activo')}

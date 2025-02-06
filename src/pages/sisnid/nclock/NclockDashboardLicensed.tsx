@@ -8,9 +8,8 @@ import { Carousel } from "react-responsive-carousel";
 
 import * as apiService from "../../../api/apiService";
 import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
-import { useNavbar } from "../../../context/NavbarContext";
+
+
 import { Employee } from "../../../types/Types";
 
 // Registra os elementos do ChartJS
@@ -64,7 +63,7 @@ const messages = {
 // Define a página principal
 export const NclockDashboardLicensed = () => {
     const currentYear = new Date().getFullYear();
-    const { navbarColor, footerColor } = useNavbar();
+    
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [lineChartData, setLineChartData] = useState({
         labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho'],
@@ -130,7 +129,7 @@ export const NclockDashboardLicensed = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
@@ -192,7 +191,7 @@ export const NclockDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
         </div>
     );
 };

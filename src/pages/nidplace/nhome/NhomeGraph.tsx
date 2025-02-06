@@ -3,15 +3,14 @@ import { useEffect, useState } from "react";
 import { Bar , PolarArea } from "react-chartjs-2";
 
 import * as apiService from "../../../api/apiService";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
-import { useNavbar } from "../../../context/NavbarContext";
+
+
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 export const NhomeGraph = () => {
-    const { navbarColor, footerColor } = useNavbar();
+    
     const [payTerminal, setPayTerminal] = useState<KioskTransactionMB[]>([]);
     const [payCoins, setPayCoins] = useState<KioskTransactionMB[]>([]);
     const [moveCard, setMoveCard] = useState<KioskTransactionCard[]>([]);
@@ -140,7 +139,7 @@ export const NhomeGraph = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
                 <span>Gráficos de Domótica</span>
             </div>
@@ -158,7 +157,7 @@ export const NhomeGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
         </div>
     );
 }

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
+
 import '../../css/PagesStyles.css';
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useNavbar } from "../../context/NavbarContext";
+
 import { usePersons } from "../../context/PersonsContext";
 import { zoneFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -42,7 +41,6 @@ function CustomSearchBox(props: TextFieldProps) {
 
 // Define a página de Zonas
 export const Zones = () => {
-    const { navbarColor, footerColor } = useNavbar();
     const { zones, fetchAllZones, handleAddZone, handleUpdateZone, handleDeleteZone } = usePersons();
     const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
     const [filterText, setFilterText] = useState('');
@@ -57,7 +55,6 @@ export const Zones = () => {
     const [currentZoneIndex, setCurrentZoneIndex] = useState(0);
     const [selectedRows, setSelectedRows] = useState<Zone[]>([]);
     const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     // Função para adicionar uma zona
     const addZone = async (zone: Zone) => {
@@ -213,13 +210,6 @@ export const Zones = () => {
         })
     );
 
-    // Define o estado de loading
-    useEffect(() => {
-        if (filteredDataTable.length > 0) {
-            setLoading(false);
-        }
-    }, [filteredDataTable]);
-
     // Define as colunas da tabela
     const columns: TableColumn<Zone>[] = zoneFields
         .filter(field => selectedColumns.includes(field.key))
@@ -298,7 +288,7 @@ export const Zones = () => {
 
     return (
         <div className="main-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span style={{ color: '#000000' }}>Zonas</span>
@@ -375,32 +365,27 @@ export const Zones = () => {
             </div>
             <div className='content-wrapper'>
                 <div className='table-css'>
-                    {loading ?
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                            <Spinner style={{ width: 50, height: 50 }} animation="border" />
-                        </div> :
-                        <DataTable
-                            columns={[...columns, actionColumn]}
-                            data={filteredDataTable}
-                            onRowDoubleClicked={handleEditZone}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={20}
-                            selectableRows
-                            onSelectedRowsChange={handleRowSelected}
-                            clearSelectedRows={clearSelectionToggle}
-                            expandableRows
-                            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-                            noDataComponent="Não existem dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            defaultSortAsc={true}
-                            defaultSortFieldId="name"
-                        />
-                    }
+                    <DataTable
+                        columns={[...columns, actionColumn]}
+                        data={filteredDataTable}
+                        onRowDoubleClicked={handleEditZone}
+                        pagination
+                        paginationComponentOptions={paginationOptions}
+                        paginationPerPage={20}
+                        selectableRows
+                        onSelectedRowsChange={handleRowSelected}
+                        clearSelectedRows={clearSelectionToggle}
+                        expandableRows
+                        expandableRowsComponent={({ data }) => expandableRowComponent(data)}
+                        noDataComponent="Não existem dados disponíveis para exibir."
+                        customStyles={customStyles}
+                        striped
+                        defaultSortAsc={true}
+                        defaultSortFieldId="name"
+                    />
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={zoneFields}

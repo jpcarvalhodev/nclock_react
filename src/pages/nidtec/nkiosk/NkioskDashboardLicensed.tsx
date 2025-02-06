@@ -8,10 +8,9 @@ import { Carousel } from "react-responsive-carousel";
 
 import * as apiService from "../../../api/apiService";
 import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import { useKiosk } from '../../../context/KioskContext';
-import { useNavbar } from "../../../context/NavbarContext";
+
 import { useTerminals } from "../../../context/TerminalsContext";
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 import { useNavigate } from 'react-router-dom';
@@ -79,7 +78,7 @@ export const NkioskDashboardLicensed = () => {
     const currentYear = new Date().getFullYear();
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-    const { navbarColor, footerColor } = useNavbar();
+    
     const { devices } = useTerminals();
     const { totalPayments, setTotalPayments, totalMovements, setTotalMovements } = useKiosk();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -341,7 +340,7 @@ export const NkioskDashboardLicensed = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 5 }}>
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
@@ -403,7 +402,7 @@ export const NkioskDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
         </div>
     );
 }

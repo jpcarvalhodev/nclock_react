@@ -218,7 +218,6 @@ import { TerminalOptionsModal } from '../modals/TerminalOptions';
 import { EmailUser, KioskConfig } from '../types/Types';
 import { fetchWithAuth } from './FetchWithAuth';
 import { PrintButton } from './PrintButton';
-import { de } from "date-fns/locale";
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -299,7 +298,7 @@ interface TabsInfo {
 
 // Define as propriedades do componente
 export const NavBar = React.memo(({ style }: NavBarProps) => {
-	const { navbarColor, setNavbarColor, setFooterColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
+	const { navbarColor, lockRibbon, setLockRibbon, currentOpenRibbon, setCurrentOpenRibbon, lastClosedRibbon, setLastClosedRibbon, emailCompanyConfig, handleAddEmailConfig, handleAddKioskConfig, handleUpdateEmailConfig, handleUpdateKioskConfig, kioskConfig } = useNavbar();
 	const { setScrollPosition } = useCardScroll();
 	const { handleAddAds } = useAds();
 	const { loginLogs, historyLogs, exportBackupDB, importBackupDB, importEmployees } = useEntity();
@@ -492,6 +491,13 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 		loadInitialToken();
 		loadState();
 
+		Object.entries(ribbonSetters).forEach(([key, setter]) => {
+			const storedValue = localStorage.getItem(`show${key}Ribbon`);
+			if (storedValue !== null) {
+				setter(storedValue === 'true');
+			}
+		});
+
 		const storedLockRibbon = localStorage.getItem('lockRibbon');
 		if (storedLockRibbon !== null) {
 			setLockRibbon(storedLockRibbon === 'true');
@@ -508,11 +514,6 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 			const { setTab, setRibbon } = tabData[savedActiveTab];
 			setTab(true);
 			setRibbon(true);
-
-			if (activeTab in ribbons) {
-				const [setRibbon] = ribbons[activeTab as RibbonName];
-				setRibbon(true);
-			}
 		}
 	}, []);
 
@@ -637,19 +638,33 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 		Nhome: { setShowRibbon: setShowNhomeRibbon, setShowTab: setShowNhomeTab },
 	};
 
-	// Função para atualizar o estado a partir do localStorage
-	function setItemState(key: RibbonKey, setterFunction: React.Dispatch<React.SetStateAction<boolean>>, prefix = ''): void {
-		const stateValue = localStorage.getItem(`${prefix}${key}`) === 'true';
-		setterFunction(stateValue);
-	}
-
-	// Função para carregar o estado das ribbons e tabs
-	function loadState(): void {
-		Object.entries(settersMap).forEach(([key, { setShowRibbon, setShowTab }]) => {
-			setItemState(key as RibbonKey, setShowRibbon);
-			setItemState(key as RibbonKey, setShowTab);
+	// Carrega os estados das ribbons
+	function loadRibbonState(): void {
+		Object.entries(settersMap).forEach(([key, { setShowRibbon }]) => {
+			const value = localStorage.getItem(`show${key}Ribbon`) === 'true';
+			setShowRibbon(value);
 		});
 	}
+
+	// Carrega o estado das tabs
+	function loadTabState(): void {
+		Object.entries(settersMap).forEach(([key, { setShowTab }]) => {
+			const value = localStorage.getItem(`show${key}Tab`) === 'true';
+			setShowTab(value);
+		});
+	}
+
+	// Função de carregamento dos estados
+	function loadState(): void {
+		loadRibbonState();
+		loadTabState();
+	}
+
+	// Roda o loadState novamente quando o activeTab muda
+	useEffect(() => {
+		clearAllRibbons();
+		loadState();
+	}, [localStorage.getItem('activeTab')]);
 
 	// Define os itens do menu
 	const ribbons: Record<RibbonName, [React.Dispatch<React.SetStateAction<boolean>>, string]> = {
@@ -814,6 +829,14 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 		localStorage.removeItem('activeTab');
 	};
 
+	// Função para limpar todas as ribbons
+	const clearAllRibbons = () => {
+		Object.keys(ribbons).forEach((key) => {
+			const [setRibbon] = ribbons[key as RibbonName];
+			setRibbon(false);
+		});
+	};
+
 	// Função para separar os softwares em grupos
 	const softwareGroups = {
 		group1: ['nclock', 'naccess', 'nvisitor', 'npark', 'ndoor', 'npatrol', 'ncard', 'nview', 'nsecur'],
@@ -836,12 +859,14 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 	// Função para lidar com a aba
 	const handleTab = (tabName: string) => {
 		clearAllTabs();
+		clearAllRibbons();
 
 		if (tabName === 'dashboard') {
 			setActiveTab('');
 			localStorage.removeItem('activeTab');
 			navigate('/dashboard');
 			setScrollPosition(0);
+			return;
 		} else if (tabData[tabName]) {
 			const { setTab, setRibbon, localStorageTabKey, localStorageRibbonKey, route } = tabData[tabName];
 			const softwareName = tabName;
@@ -1380,7 +1405,6 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 
 		const isPageNotRequired = pathsNotRequired.some(path => location.pathname.includes(path));
 
-		const isWideMenu = menuKey === 'cliente' || menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace' || menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk' || menuKey === 'contador' || menuKey === 'sensor' || menuKey === 'fotocelula' || menuKey === 'painel' || menuKey === 'revista';
 		const isWideSubmenu = menuKey === 'pessoas' || menuKey === 'dispositivos' || menuKey === 'configuracao' || menuKey === 'nkiosk';
 		const isWideSubmenuMain = menuKey === 'cliente' || menuKey === 'sisnid' || menuKey === 'nidsof' || menuKey === 'nidtec' || menuKey === 'nidplace'
 
@@ -1431,325 +1455,6 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 	renderMenu('nidsof', menuStructureNG);
 	renderMenu('nidtec', menuStructureNG);
 	renderMenu('nidplace', menuStructureNG);
-
-	// Defina o mapeamento das cores para cada aba
-	const tabColors: Record<string, { navbarColor: string; footerColor: string }> = {
-		default: { navbarColor: '#333333', footerColor: '#333333' },
-		dashboard: { navbarColor: '#333333', footerColor: '#333333' },
-		nclock: { navbarColor: '#333333', footerColor: '#333333' },
-		naccess: { navbarColor: '#333333', footerColor: '#333333' },
-		nvisitor: { navbarColor: '#333333', footerColor: '#333333' },
-		npark: { navbarColor: '#333333', footerColor: '#333333' },
-		ndoor: { navbarColor: '#333333', footerColor: '#333333' },
-		npatrol: { navbarColor: '#333333', footerColor: '#333333' },
-		ncard: { navbarColor: '#333333', footerColor: '#333333' },
-		nview: { navbarColor: '#333333', footerColor: '#333333' },
-		nsecur: { navbarColor: '#333333', footerColor: '#333333' },
-		nsoftware: { navbarColor: '#333333', footerColor: '#333333' },
-		nsystem: { navbarColor: '#333333', footerColor: '#333333' },
-		napp: { navbarColor: '#333333', footerColor: '#333333' },
-		ncyber: { navbarColor: '#333333', footerColor: '#333333' },
-		ndigital: { navbarColor: '#333333', footerColor: '#333333' },
-		nserver: { navbarColor: '#333333', footerColor: '#333333' },
-		naut: { navbarColor: '#333333', footerColor: '#333333' },
-		nequip: { navbarColor: '#333333', footerColor: '#333333' },
-		nproject: { navbarColor: '#333333', footerColor: '#333333' },
-		ncount: { navbarColor: '#333333', footerColor: '#333333' },
-		nbuild: { navbarColor: '#333333', footerColor: '#333333' },
-		ncaravan: { navbarColor: '#333333', footerColor: '#333333' },
-		nmechanic: { navbarColor: '#333333', footerColor: '#333333' },
-		nevents: { navbarColor: '#333333', footerColor: '#333333' },
-		nservice: { navbarColor: '#333333', footerColor: '#333333' },
-		ntask: { navbarColor: '#333333', footerColor: '#333333' },
-		nproduction: { navbarColor: '#333333', footerColor: '#333333' },
-		nticket: { navbarColor: '#333333', footerColor: '#333333' },
-		nsales: { navbarColor: '#333333', footerColor: '#333333' },
-		ninvoice: { navbarColor: '#333333', footerColor: '#333333' },
-		ndoc: { navbarColor: '#333333', footerColor: '#333333' },
-		nsports: { navbarColor: '#333333', footerColor: '#333333' },
-		ngym: { navbarColor: '#333333', footerColor: '#333333' },
-		nschool: { navbarColor: '#333333', footerColor: '#333333' },
-		nclinic: { navbarColor: '#333333', footerColor: '#333333' },
-		noptics: { navbarColor: '#333333', footerColor: '#333333' },
-		ngold: { navbarColor: '#333333', footerColor: '#333333' },
-		nsmart: { navbarColor: '#333333', footerColor: '#333333' },
-		nreality: { navbarColor: '#333333', footerColor: '#333333' },
-		nhologram: { navbarColor: '#333333', footerColor: '#333333' },
-		npower: { navbarColor: '#333333', footerColor: '#333333' },
-		ncharge: { navbarColor: '#333333', footerColor: '#333333' },
-		ncity: { navbarColor: '#333333', footerColor: '#333333' },
-		nkiosk: { navbarColor: '#333333', footerColor: '#333333' },
-		nled: { navbarColor: '#333333', footerColor: '#333333' },
-		nfire: { navbarColor: '#333333', footerColor: '#333333' },
-		nfurniture: { navbarColor: '#333333', footerColor: '#333333' },
-		npartition: { navbarColor: '#333333', footerColor: '#333333' },
-		ndecor: { navbarColor: '#333333', footerColor: '#333333' },
-		nping: { navbarColor: '#333333', footerColor: '#333333' },
-		nconnect: { navbarColor: '#333333', footerColor: '#333333' },
-		nlight: { navbarColor: '#333333', footerColor: '#333333' },
-		ncomfort: { navbarColor: '#333333', footerColor: '#333333' },
-		nsound: { navbarColor: '#333333', footerColor: '#333333' },
-		nhome: { navbarColor: '#333333', footerColor: '#333333' },
-	};
-
-	// useEffect para atualizar as cores da navbar e do footer e manter a ribbon da tab ativa
-	useEffect(() => {
-		const pathSegments = location.pathname.split('/');
-		const mainSegment = pathSegments[1];
-		const colorConfig = tabColors[mainSegment] || tabColors.default;
-
-		const path = pathSegments[1];
-		switch (path) {
-			case 'persons':
-				setShowPessoasRibbon(true);
-				setShowDispositivosRibbon(false);
-				setShowConfiguracaoRibbon(false);
-				setShowAjudaRibbon(false);
-				setShowNclockRibbon(false);
-				setShowNaccessRibbon(false);
-				setShowNvisitorRibbon(false);
-				setShowNparkRibbon(false);
-				setShowNdoorRibbon(false);
-				setShowNpatrolRibbon(false);
-				setShowNcardRibbon(false);
-				setShowNviewRibbon(false);
-				setShowNsecurRibbon(false);
-				setShowNsoftwareRibbon(false);
-				setShowNsystemRibbon(false);
-				setShowNappRibbon(false);
-				setShowNcyberRibbon(false);
-				setShowNdigitalRibbon(false);
-				setShowNserverRibbon(false);
-				setShowNautRibbon(false);
-				setShowNequipRibbon(false);
-				setShowNprojectRibbon(false);
-				setShowNcountRibbon(false);
-				setShowNbuildRibbon(false);
-				setShowNcaravanRibbon(false);
-				setShowNmechanicRibbon(false);
-				setShowNeventsRibbon(false);
-				setShowNserviceRibbon(false);
-				setShowNtaskRibbon(false);
-				setShowNproductionRibbon(false);
-				setShowNticketRibbon(false);
-				setShowNsalesRibbon(false);
-				setShowNinvoiceRibbon(false);
-				setShowNdocRibbon(false);
-				setShowNsportsRibbon(false);
-				setShowNgymRibbon(false);
-				setShowNschoolRibbon(false);
-				setShowNclinicRibbon(false);
-				setShowNopticsRibbon(false);
-				setShowNgoldRibbon(false);
-				setShowNsmartRibbon(false);
-				setShowNrealityRibbon(false);
-				setShowNhologramRibbon(false);
-				setShowNpowerRibbon(false);
-				setShowNchargeRibbon(false);
-				setShowNcityRibbon(false);
-				setShowNkioskRibbon(false);
-				setShowNledRibbon(false);
-				setShowNfireRibbon(false);
-				setShowNfurnitureRibbon(false);
-				setShowNpartitionRibbon(false);
-				setShowNdecorRibbon(false);
-				setShowNpingRibbon(false);
-				setShowNconnectRibbon(false);
-				setShowNlightRibbon(false);
-				setShowNcomfortRibbon(false);
-				setShowNsoundRibbon(false);
-				setShowNhomeRibbon(false);
-				setActiveTab('pessoas');
-				break;
-			case 'devices':
-				setShowPessoasRibbon(false);
-				setShowDispositivosRibbon(true);
-				setShowConfiguracaoRibbon(false);
-				setShowAjudaRibbon(false);
-				setShowNclockRibbon(false);
-				setShowNaccessRibbon(false);
-				setShowNvisitorRibbon(false);
-				setShowNparkRibbon(false);
-				setShowNdoorRibbon(false);
-				setShowNpatrolRibbon(false);
-				setShowNcardRibbon(false);
-				setShowNviewRibbon(false);
-				setShowNsecurRibbon(false);
-				setShowNsoftwareRibbon(false);
-				setShowNsystemRibbon(false);
-				setShowNappRibbon(false);
-				setShowNcyberRibbon(false);
-				setShowNdigitalRibbon(false);
-				setShowNserverRibbon(false);
-				setShowNautRibbon(false);
-				setShowNequipRibbon(false);
-				setShowNprojectRibbon(false);
-				setShowNcountRibbon(false);
-				setShowNbuildRibbon(false);
-				setShowNcaravanRibbon(false);
-				setShowNmechanicRibbon(false);
-				setShowNeventsRibbon(false);
-				setShowNserviceRibbon(false);
-				setShowNtaskRibbon(false);
-				setShowNproductionRibbon(false);
-				setShowNticketRibbon(false);
-				setShowNsalesRibbon(false);
-				setShowNinvoiceRibbon(false);
-				setShowNdocRibbon(false);
-				setShowNsportsRibbon(false);
-				setShowNgymRibbon(false);
-				setShowNschoolRibbon(false);
-				setShowNclinicRibbon(false);
-				setShowNopticsRibbon(false);
-				setShowNgoldRibbon(false);
-				setShowNsmartRibbon(false);
-				setShowNrealityRibbon(false);
-				setShowNhologramRibbon(false);
-				setShowNpowerRibbon(false);
-				setShowNchargeRibbon(false);
-				setShowNcityRibbon(false);
-				setShowNkioskRibbon(false);
-				setShowNledRibbon(false);
-				setShowNfireRibbon(false);
-				setShowNfurnitureRibbon(false);
-				setShowNpartitionRibbon(false);
-				setShowNdecorRibbon(false);
-				setShowNpingRibbon(false);
-				setShowNconnectRibbon(false);
-				setShowNlightRibbon(false);
-				setShowNcomfortRibbon(false);
-				setShowNsoundRibbon(false);
-				setShowNhomeRibbon(false);
-				setActiveTab('dispositivos');
-				break;
-			case 'configs':
-				setShowPessoasRibbon(false);
-				setShowDispositivosRibbon(false);
-				setShowConfiguracaoRibbon(true);
-				setShowAjudaRibbon(false);
-				setShowNclockRibbon(false);
-				setShowNaccessRibbon(false);
-				setShowNvisitorRibbon(false);
-				setShowNparkRibbon(false);
-				setShowNdoorRibbon(false);
-				setShowNpatrolRibbon(false);
-				setShowNcardRibbon(false);
-				setShowNviewRibbon(false);
-				setShowNsecurRibbon(false);
-				setShowNsoftwareRibbon(false);
-				setShowNsystemRibbon(false);
-				setShowNappRibbon(false);
-				setShowNcyberRibbon(false);
-				setShowNdigitalRibbon(false);
-				setShowNserverRibbon(false);
-				setShowNautRibbon(false);
-				setShowNequipRibbon(false);
-				setShowNprojectRibbon(false);
-				setShowNcountRibbon(false);
-				setShowNbuildRibbon(false);
-				setShowNcaravanRibbon(false);
-				setShowNmechanicRibbon(false);
-				setShowNeventsRibbon(false);
-				setShowNserviceRibbon(false);
-				setShowNtaskRibbon(false);
-				setShowNproductionRibbon(false);
-				setShowNticketRibbon(false);
-				setShowNsalesRibbon(false);
-				setShowNinvoiceRibbon(false);
-				setShowNdocRibbon(false);
-				setShowNsportsRibbon(false);
-				setShowNgymRibbon(false);
-				setShowNschoolRibbon(false);
-				setShowNclinicRibbon(false);
-				setShowNopticsRibbon(false);
-				setShowNgoldRibbon(false);
-				setShowNsmartRibbon(false);
-				setShowNrealityRibbon(false);
-				setShowNhologramRibbon(false);
-				setShowNpowerRibbon(false);
-				setShowNchargeRibbon(false);
-				setShowNcityRibbon(false);
-				setShowNkioskRibbon(false);
-				setShowNledRibbon(false);
-				setShowNfireRibbon(false);
-				setShowNfurnitureRibbon(false);
-				setShowNpartitionRibbon(false);
-				setShowNdecorRibbon(false);
-				setShowNpingRibbon(false);
-				setShowNconnectRibbon(false);
-				setShowNlightRibbon(false);
-				setShowNcomfortRibbon(false);
-				setShowNsoundRibbon(false);
-				setShowNhomeRibbon(false);
-				setActiveTab('configuracao');
-				break;
-			case 'help':
-				setShowPessoasRibbon(false);
-				setShowDispositivosRibbon(false);
-				setShowConfiguracaoRibbon(false);
-				setShowAjudaRibbon(true);
-				setShowNclockRibbon(false);
-				setShowNaccessRibbon(false);
-				setShowNvisitorRibbon(false);
-				setShowNparkRibbon(false);
-				setShowNdoorRibbon(false);
-				setShowNpatrolRibbon(false);
-				setShowNcardRibbon(false);
-				setShowNviewRibbon(false);
-				setShowNsecurRibbon(false);
-				setShowNsoftwareRibbon(false);
-				setShowNsystemRibbon(false);
-				setShowNappRibbon(false);
-				setShowNcyberRibbon(false);
-				setShowNdigitalRibbon(false);
-				setShowNserverRibbon(false);
-				setShowNautRibbon(false);
-				setShowNequipRibbon(false);
-				setShowNprojectRibbon(false);
-				setShowNcountRibbon(false);
-				setShowNbuildRibbon(false);
-				setShowNcaravanRibbon(false);
-				setShowNmechanicRibbon(false);
-				setShowNeventsRibbon(false);
-				setShowNserviceRibbon(false);
-				setShowNtaskRibbon(false);
-				setShowNproductionRibbon(false);
-				setShowNticketRibbon(false);
-				setShowNsalesRibbon(false);
-				setShowNinvoiceRibbon(false);
-				setShowNdocRibbon(false);
-				setShowNsportsRibbon(false);
-				setShowNgymRibbon(false);
-				setShowNschoolRibbon(false);
-				setShowNclinicRibbon(false);
-				setShowNopticsRibbon(false);
-				setShowNgoldRibbon(false);
-				setShowNsmartRibbon(false);
-				setShowNrealityRibbon(false);
-				setShowNhologramRibbon(false);
-				setShowNpowerRibbon(false);
-				setShowNchargeRibbon(false);
-				setShowNcityRibbon(false);
-				setShowNkioskRibbon(false);
-				setShowNledRibbon(false);
-				setShowNfireRibbon(false);
-				setShowNfurnitureRibbon(false);
-				setShowNpartitionRibbon(false);
-				setShowNdecorRibbon(false);
-				setShowNpingRibbon(false);
-				setShowNconnectRibbon(false);
-				setShowNlightRibbon(false);
-				setShowNcomfortRibbon(false);
-				setShowNsoundRibbon(false);
-				setShowNhomeRibbon(false);
-				break;
-			default:
-				setActiveTab('');
-				break;
-		}
-		setNavbarColor(colorConfig.navbarColor);
-		setFooterColor(colorConfig.footerColor);
-	}, [location.pathname, setNavbarColor, setFooterColor]);
 
 	// Função para geranciar o clique na aba
 	const handleTabClick = (tabName: string) => {
@@ -2061,7 +1766,6 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 		};
 
 		let timeoutId: ReturnType<typeof setTimeout>;
-
 		if (lockRibbon && checkAnyRibbonOpenUpdated() && !isMouseOver && !isMobile) {
 			timeoutId = setTimeout(() => {
 				Object.keys(ribbonSetters).forEach((ribbonKey) => {
@@ -2602,7 +2306,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-informacoes'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4" style={{ position: 'relative' }}>
@@ -2831,7 +2535,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3038,7 +2742,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas mt-2" id="dropdown-basic-4">
@@ -3264,7 +2968,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3434,7 +3138,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3598,7 +3302,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3737,7 +3441,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3775,7 +3479,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowCardDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowCardDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowCardDropdown(false); }, 100)}
 													show={showCardDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -3889,7 +3593,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4096,7 +3800,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4243,7 +3947,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4417,7 +4121,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4564,7 +4268,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4719,7 +4423,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -4874,7 +4578,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5021,7 +4725,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5168,7 +4872,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5389,7 +5093,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5544,7 +5248,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5741,7 +5445,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -5896,7 +5600,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6035,7 +5739,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6174,7 +5878,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6313,7 +6017,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6452,7 +6156,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6591,7 +6295,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6629,7 +6333,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowTaskDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowTaskDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowTaskDropdown(false); }, 100)}
 													show={showTaskDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6743,7 +6447,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -6890,7 +6594,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7029,7 +6733,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7348,7 +7052,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas mt-2" id="dropdown-basic-4">
@@ -7569,7 +7273,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7708,7 +7412,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7847,7 +7551,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -7986,7 +7690,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8125,7 +7829,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8264,7 +7968,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8403,7 +8107,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8558,7 +8262,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8697,7 +8401,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -8836,7 +8540,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9109,7 +8813,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9273,7 +8977,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9554,7 +9258,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9811,7 +9515,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -9849,7 +9553,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowKioskDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowKioskDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowKioskDropdown(false); }, 100)}
 													show={showKioskDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10002,7 +9706,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10141,7 +9845,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10288,7 +9992,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10468,7 +10172,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10615,7 +10319,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10770,7 +10474,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -10917,7 +10621,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11056,7 +10760,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="light" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11195,7 +10899,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="comfort" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11334,7 +11038,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="sound" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11473,7 +11177,7 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 											<div className='icon-text-pessoas'>
 												<Dropdown
 													onMouseOver={() => setShowListDropdown(true)}
-													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 200)}
+													onMouseLeave={() => setTimeout(() => { setShowListDropdown(false); }, 100)}
 													show={showListDropdown}
 												>
 													<Dropdown.Toggle as={Button} variant="home" className="ribbon-button ribbon-button-pessoas" id="dropdown-basic-4">
@@ -11709,6 +11413,23 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 										<span className="title">Informações</span>
 									</div>
 								</div>
+								<div className="group">
+									{(!isMobile || visibleGroup === 'configuracoes pessoas') && (
+										<div className="btn-group" role="group">
+											<div className="grid-container-entidades">
+												<Button onClick={toggleImportEmployees} type="button" className={`btn btn-light ribbon-button ${currentRoute === '#' ? 'current-active' : ''}`}>
+													<span className="icon">
+														<img src={imports} alt="botão importar pessoas" />
+													</span>
+													<span className="text">Importar Pessoas</span>
+												</Button>
+											</div>
+										</div>
+									)}
+									<div className="title-container" onClick={() => toggleGroupVisibility('configuracoes pessoas')}>
+										<span className="title">Configurações</span>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -11882,14 +11603,6 @@ export const NavBar = React.memo(({ style }: NavBarProps) => {
 														<img src={nacionalities} alt="botão nacionalidades" />
 													</span>
 													<span className="text">Nacionalidades</span>
-												</Button>
-											</div>
-											<div className='icon-text-pessoas'>
-												<Button onClick={toggleImportEmployees} type="button" className="btn btn-light ribbon-button ribbon-button-pessoas">
-													<span className="icon">
-														<img src={imports} alt="botão importar pessoas" />
-													</span>
-													<span className="text">Importar Pessoas</span>
 												</Button>
 											</div>
 											<div className='icon-text-pessoas'>

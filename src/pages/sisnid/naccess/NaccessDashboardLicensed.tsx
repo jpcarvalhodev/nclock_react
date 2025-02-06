@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Footer } from "../../../components/Footer";
-import { NavBar } from "../../../components/NavBar";
+
 import { EmployeeAttendanceTimes } from "../../../types/Types";
 import '../../../css/PagesStyles.css';
 import * as apiService from "../../../api/apiService";
@@ -9,7 +8,7 @@ import * as apiService from "../../../api/apiService";
 import { Carousel } from "react-responsive-carousel";
 
 import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
-import { useNavbar } from "../../../context/NavbarContext";
+
 
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, getDay, parse, setYear, startOfWeek } from 'date-fns';
@@ -65,7 +64,7 @@ const messages = {
 // Define a página principal
 export const NaccessDashboardLicensed = () => {
     const currentYear = new Date().getFullYear();
-    const { navbarColor, footerColor } = useNavbar();
+    
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [lineChartData, setLineChartData] = useState({
@@ -141,7 +140,7 @@ export const NaccessDashboardLicensed = () => {
 
     return (
         <div className="dashboard-container">
-            <NavBar style={{ backgroundColor: navbarColor }} />
+            
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
@@ -203,7 +202,7 @@ export const NaccessDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer style={{ backgroundColor: footerColor }} />
+            
         </div>
     );
 }

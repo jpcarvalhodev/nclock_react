@@ -100,9 +100,17 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
             if (matchedDevice) {
                 setSelectedDevice(matchedDevice.value);
                 setDeviceImage(matchedDevice.img);
+                setFormData(prevFormData => ({
+                    ...prevFormData,
+                    photo: matchedDevice.img
+                }));
             } else {
                 setSelectedDevice('');
                 setDeviceImage(no_image);
+                setFormData(prevFormData => ({
+                    ...prevFormData,
+                    photo: no_image
+                }));
             }
         }
     }, [open, entity]);
@@ -249,7 +257,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     setDeviceImage(dataUrl);
                     setFormData(prevFormData => ({
                         ...prevFormData,
-                        sPhoto: dataUrl
+                        photo: dataUrl
                     }));
                 };
                 image.src = readerEvent.target?.result as string;
@@ -278,7 +286,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         setFormData(prevFormData => ({
             ...prevFormData,
             model: deviceOption ? deviceOption.label : '',
-            sPhoto: deviceOption?.img || no_image
+            photo: deviceOption?.img || ''
         }));
     };
 
@@ -377,7 +385,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         });
 
     // Define as colunas que serão exibidas
-    const includedReaderColumns = ['nameReader', 'doorName'];
+    const includedReaderColumns = ['nameReader', 'readerInOut', 'doorNo', 'doorName'];
 
     // Filtra os dados da tabela
     const filteredReaderDataTable = filteredReaders.filter(aux =>
@@ -392,6 +400,34 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
         .map(field => {
             const formatField = (row: Readers) => {
                 switch (field.key) {
+                    case 'readerInOut':
+                        return row[field.key] === 0 ? 'Entrada' : 'Saída';
+                    case 'nameReader': {
+                        const maxLength = 20;
+                        const displayText = row[field.key].length > maxLength
+                            ? row[field.key].slice(0, maxLength) + "..."
+                            : row[field.key];
+
+                        return (
+                            <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip>{row[field.key]}</Tooltip>}
+                            >
+                                <span
+                                    style={{
+                                        cursor: 'pointer',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        maxWidth: '150px',
+                                        display: 'inline-block'
+                                    }}
+                                >
+                                    {displayText}
+                                </span>
+                            </OverlayTrigger>
+                        );
+                    }
                     default:
                         return row[field.key] || '';
                 }
@@ -405,14 +441,14 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                     </>
                 ),
                 selector: (row: Readers) => {
-                    if (field.key === 'readerName') {
+                    if (field.key === 'doorNo') {
                         return row[field.key];
                     }
                     return formatField(row);
                 },
                 sortable: true,
                 cell: (row: Readers) => {
-                    if (field.key === 'readerName') {
+                    if (field.key === 'doorNo') {
                         return row[field.key];
                     }
                     return formatField(row);
@@ -908,7 +944,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     data={filteredReaderDataTable}
                                                     pagination
                                                     paginationComponentOptions={paginationOptions}
-                                                    paginationPerPage={5}
+                                                    paginationPerPage={10}
                                                     paginationRowsPerPageOptions={[5, 10]}
                                                     selectableRows
                                                     onRowDoubleClicked={handleEditReaders}
@@ -916,7 +952,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     customStyles={customStyles}
                                                     striped
                                                     defaultSortAsc={true}
-                                                    defaultSortFieldId="readerName"
+                                                    defaultSortFieldId="doorNo"
                                                 />
                                             }
                                         </Row>
