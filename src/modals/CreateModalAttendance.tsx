@@ -120,7 +120,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({ title, op
             }
             setDropdownData(prevState => ({
                 ...prevState,
-                employeeId: selectedEmployee ? [selectedEmployee] : undefined,
+                employeeId: selectedEmployee ? [selectedEmployee] : employees,
                 deviceId: sortedDevices
             }));
         } catch (error) {

@@ -43,7 +43,7 @@ export interface DeviceContextType {
     fetchAccessControl: () => Promise<AccessControl[]>;
     handleAddAccessControl: (newAccessControl: Partial<AccessControl>) => Promise<void>;
     handleUpdateAccessControl: (newAccessControl: Partial<AccessControl>) => Promise<void>;
-    handleDeleteAccessControl: (id: string) => Promise<void>;
+    handleDeleteAccessControl: (id: string[]) => Promise<void>;
     period: TimePeriod[];
     fetchTimePeriods: () => Promise<TimePeriod[]>;
     handleAddPeriod: (newPeriod: Partial<TimePeriod>) => Promise<void>;
@@ -404,7 +404,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Função para deletar o controle de acesso
-    const handleDeleteAccessControl = async (id: string) => {
+    const handleDeleteAccessControl = async (id: string[]) => {
         try {
             const data = await apiService.deleteAccessControl(id);
             setAccessControl(prevAccessControl => [...prevAccessControl, data]);

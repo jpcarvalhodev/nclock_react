@@ -143,7 +143,7 @@ export const TimePlans = () => {
 
     // Define a função de duplicar funcionários
     const handleDuplicate = (data: TimePlan) => {
-        setInitialData(data);
+        setInitialData({ ...data, nome: '' });
         setShowAddModal(true);
         setSelectedTimePlan(null);
         setShowUpdateModal(false);

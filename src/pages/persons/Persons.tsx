@@ -89,7 +89,7 @@ export const Persons = () => {
 
     // Define a função de duplicar funcionários
     const handleDuplicate = (data: Employee) => {
-        setInitialData(data);
+        setInitialData({ ...data, enrollNumber: '', name: '', shortName: '' });
         setShowAddModal(true);
     }
 

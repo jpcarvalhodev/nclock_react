@@ -103,6 +103,7 @@ import nvisitor from '../assets/img/navbar/navbar/nvisitor.webp';
 
 import { Footer } from '../components/Footer';
 import { useLicense } from "../context/LicenseContext";
+import { useNavbar } from '../context/NavbarContext';
 
 // Define o tipo TabName
 type TabName = 'SOFTWARES LICENCIADOS';
@@ -213,7 +214,7 @@ export const Dashboard = () => {
             if (activeKey === 'SOFTWARES LICENCIADOS' && softwareName && transformedSoftwareEnabled[softwareName]) {
                 route = route.replace('dashboard', 'dashboardlicensed');
             }
-
+            
             localStorage.setItem(tab.tabKey, 'true');
             localStorage.setItem(tab.ribbonKey, 'true');
             const str = tab.tabKey;
@@ -367,7 +368,7 @@ export const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            
+
             <div className="dashboard-tabs-container">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
                     <Nav variant="pills" className="nav-pills justify-content-center align-items-center">

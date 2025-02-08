@@ -326,6 +326,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                                 name="nome"
                                 value={formData.nome || ''}
                                 onChange={handleChange}
+                                maxLength={50}
                             />
                         </Form.Group>
                     </Col>

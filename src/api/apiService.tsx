@@ -2143,9 +2143,13 @@ export const updateAccessControl = async (accessControl: Partial<AccessControl>)
     return response.json();
 }
 
-export const deleteAccessControl = async (id: string) => {
-    const response = await fetchWithAuth(`AccPlanoAcesso/DeleteAccPlanoAcesso?id=${id}`, {
-        method: 'DELETE'
+export const deleteAccessControl = async (id: string[]) => {
+    const response = await fetchWithAuth(`AccPlanoAcesso/DeleteAccPlanoAcesso`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(id)
     });
     if (!response.ok) {
         const errorData = await response.json();
