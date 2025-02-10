@@ -161,7 +161,7 @@ export const NsecurDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

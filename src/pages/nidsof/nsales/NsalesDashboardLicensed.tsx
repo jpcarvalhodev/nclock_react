@@ -160,7 +160,7 @@ export const NsalesDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -156,7 +156,7 @@ export const NcountGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -160,7 +160,7 @@ export const NpingDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

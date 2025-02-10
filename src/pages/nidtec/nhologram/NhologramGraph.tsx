@@ -156,7 +156,7 @@ export const NhologramGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

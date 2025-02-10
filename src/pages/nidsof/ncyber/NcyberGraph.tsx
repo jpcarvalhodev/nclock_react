@@ -156,7 +156,7 @@ export const NcyberGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

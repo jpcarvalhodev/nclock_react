@@ -156,7 +156,7 @@ export const NsportsGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

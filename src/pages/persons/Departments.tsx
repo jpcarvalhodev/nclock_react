@@ -411,7 +411,7 @@ export const Departments = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={departmentFields}

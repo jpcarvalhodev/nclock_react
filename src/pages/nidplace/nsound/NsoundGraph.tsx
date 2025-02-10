@@ -157,7 +157,7 @@ export const NsoundGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -161,7 +161,7 @@ export const NsystemDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

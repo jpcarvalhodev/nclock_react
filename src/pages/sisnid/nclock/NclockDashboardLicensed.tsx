@@ -191,7 +191,7 @@ export const NclockDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 };

@@ -156,7 +156,7 @@ export const NsoftwareGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

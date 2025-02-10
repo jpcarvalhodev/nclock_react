@@ -156,7 +156,7 @@ export const NmechanicGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

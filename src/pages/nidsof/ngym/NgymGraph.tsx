@@ -156,7 +156,7 @@ export const NgymGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

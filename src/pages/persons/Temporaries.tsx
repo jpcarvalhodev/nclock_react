@@ -434,7 +434,7 @@ export const Temporaries = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             <CreateModalEmployees
                 title="Adicionar Provisório"
                 open={showAddModal}

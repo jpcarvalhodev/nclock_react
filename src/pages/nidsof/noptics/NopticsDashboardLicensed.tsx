@@ -160,7 +160,7 @@ export const NopticsDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

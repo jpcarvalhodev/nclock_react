@@ -160,7 +160,7 @@ export const NdoorDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -160,7 +160,7 @@ export const NsoundDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

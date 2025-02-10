@@ -156,7 +156,7 @@ export const NclinicGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

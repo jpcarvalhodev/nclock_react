@@ -375,7 +375,7 @@ export const TerminalCloseOpen = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             {showColumnSelector && (
                 <ColumnSelectorModal
                     columns={mbDeviceCloseOpenFields}

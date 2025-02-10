@@ -160,7 +160,7 @@ export const NmechanicDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

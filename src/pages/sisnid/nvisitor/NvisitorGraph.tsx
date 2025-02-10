@@ -117,7 +117,7 @@ export const NvisitorGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

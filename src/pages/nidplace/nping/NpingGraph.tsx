@@ -157,7 +157,7 @@ export const NpingGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

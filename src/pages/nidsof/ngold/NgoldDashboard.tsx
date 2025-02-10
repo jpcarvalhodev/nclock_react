@@ -281,7 +281,7 @@ export const NgoldDashboard = () => {
                     <p style={{ marginTop: 30 }}>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

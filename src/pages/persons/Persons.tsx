@@ -201,7 +201,7 @@ export const Persons = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             {showAddModal && (
                 <CreateModalEmployees
                     title="Adicionar Pessoa"

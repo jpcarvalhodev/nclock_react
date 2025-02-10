@@ -156,7 +156,7 @@ export const NparkGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

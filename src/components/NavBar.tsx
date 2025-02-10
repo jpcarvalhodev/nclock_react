@@ -1455,14 +1455,8 @@ export const NavBar = ({ style }: NavBarProps) => {
   useEffect(() => {
     const handleStateChange = () => {
       localStorage.setItem("showPessoasRibbon", String(showPessoasRibbon));
-      localStorage.setItem(
-        "showDispositivosRibbon",
-        String(showDispositivosRibbon)
-      );
-      localStorage.setItem(
-        "showConfiguracaoRibbon",
-        String(showConfiguracaoRibbon)
-      );
+      localStorage.setItem("showDispositivosRibbon", String(showDispositivosRibbon));
+      localStorage.setItem("showConfiguracaoRibbon", String(showConfiguracaoRibbon));
       localStorage.setItem("showAjudaRibbon", String(showAjudaRibbon));
       localStorage.setItem("showNclockRibbon", String(showNclockRibbon));
       localStorage.setItem("showNaccessRibbon", String(showNaccessRibbon));
@@ -1489,10 +1483,7 @@ export const NavBar = ({ style }: NavBarProps) => {
       localStorage.setItem("showNeventsRibbon", String(showNeventsRibbon));
       localStorage.setItem("showNserviceRibbon", String(showNserviceRibbon));
       localStorage.setItem("showNtaskRibbon", String(showNtaskRibbon));
-      localStorage.setItem(
-        "showNproductionRibbon",
-        String(showNproductionRibbon)
-      );
+      localStorage.setItem("showNproductionRibbon", String(showNproductionRibbon));
       localStorage.setItem("showNticketRibbon", String(showNticketRibbon));
       localStorage.setItem("showNsalesRibbon", String(showNsalesRibbon));
       localStorage.setItem("showNinvoiceRibbon", String(showNinvoiceRibbon));
@@ -1512,14 +1503,8 @@ export const NavBar = ({ style }: NavBarProps) => {
       localStorage.setItem("showNkioskRibbon", String(showNkioskRibbon));
       localStorage.setItem("showNledRibbon", String(showNledRibbon));
       localStorage.setItem("showNfireRibbon", String(showNfireRibbon));
-      localStorage.setItem(
-        "showNfurnitureRibbon",
-        String(showNfurnitureRibbon)
-      );
-      localStorage.setItem(
-        "showNpartitionRibbon",
-        String(showNpartitionRibbon)
-      );
+      localStorage.setItem("showNfurnitureRibbon", String(showNfurnitureRibbon));
+      localStorage.setItem("showNpartitionRibbon", String(showNpartitionRibbon));
       localStorage.setItem("showNdecorRibbon", String(showNdecorRibbon));
       localStorage.setItem("showNpingRibbon", String(showNpingRibbon));
       localStorage.setItem("showNconnectRibbon", String(showNconnectRibbon));
@@ -2339,18 +2324,22 @@ export const NavBar = ({ style }: NavBarProps) => {
 
     switch (path) {
       case "persons":
+        clearAllRibbons();
         setShowPessoasRibbon(true);
         setActiveTab("pessoas");
         break;
       case "devices":
+        clearAllRibbons();
         setShowDispositivosRibbon(true);
         setActiveTab("dispositivos");
         break;
       case "configs":
+        clearAllRibbons();
         setShowConfiguracaoRibbon(true);
         setActiveTab("configuracao");
         break;
       case "help":
+        clearAllRibbons();
         setShowAjudaRibbon(true);
         setActiveTab("ajuda");
         break;

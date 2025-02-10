@@ -156,7 +156,7 @@ export const NdoorGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -156,7 +156,7 @@ export const NaccessGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

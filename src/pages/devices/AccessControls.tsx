@@ -391,7 +391,7 @@ export const AccessControls = () => {
           />
         </div>
       </div>
-      <Footer />
+      
       {openColumnSelector && (
         <ColumnSelectorModal
           columns={accessControlFields.filter(

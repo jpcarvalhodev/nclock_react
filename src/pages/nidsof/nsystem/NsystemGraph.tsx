@@ -156,7 +156,7 @@ export const NsystemGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

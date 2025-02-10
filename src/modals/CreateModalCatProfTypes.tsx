@@ -139,7 +139,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({ title, 
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        setFormData(initialValues);
+        setFormData({});
         setShowValidationErrors(false);
         onClose();
     }

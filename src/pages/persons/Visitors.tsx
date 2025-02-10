@@ -435,7 +435,7 @@ export const Visitors = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             <CreateModalEmployees
                 title="Adicionar Visitante"
                 open={showAddModal}

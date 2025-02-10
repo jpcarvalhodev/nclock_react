@@ -160,7 +160,7 @@ export const NproductionDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -311,7 +311,7 @@ export const NewUsers = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             <CreateModalRegisterUsers
                 title="Adicionar Registo de Utilizador"
                 open={showAddModal}

@@ -143,7 +143,7 @@ export const CreateModalAds = <T extends Record<string, any>>({ title, open, onC
 
     // Função para fechar o modal
     const handleClose = () => {
-        setFormData(initialValues);
+        setFormData({});
         onClose();
     };
 

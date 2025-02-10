@@ -156,7 +156,7 @@ export const NdocGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

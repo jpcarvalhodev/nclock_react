@@ -157,7 +157,7 @@ export const NautGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

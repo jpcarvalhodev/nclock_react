@@ -160,7 +160,7 @@ export const NtaskDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

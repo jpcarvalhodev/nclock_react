@@ -207,7 +207,7 @@ export const CreateModalAccess = <T extends Record<string, any>>({ title, open, 
 
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
-        setFormData({ ...initialValues });
+        setFormData({});
         setShowValidationErrors(false);
         onClose();
     }

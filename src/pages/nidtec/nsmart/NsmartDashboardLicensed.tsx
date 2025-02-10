@@ -160,7 +160,7 @@ export const NsmartDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

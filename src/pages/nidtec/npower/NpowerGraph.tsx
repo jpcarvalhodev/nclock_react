@@ -156,7 +156,7 @@ export const NpowerGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

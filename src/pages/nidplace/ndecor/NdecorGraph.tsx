@@ -156,7 +156,7 @@ export const NdecorGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

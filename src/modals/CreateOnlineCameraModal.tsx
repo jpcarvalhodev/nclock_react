@@ -152,7 +152,7 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({ title, 
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        setFormData(initialValues);
+        setFormData({});
         setShowIpValidationErrors(false);
         setShowValidationErrors(false);
         onClose();

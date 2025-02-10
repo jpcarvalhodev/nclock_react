@@ -386,7 +386,7 @@ export const ExternalEntities = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={externalEntityFields}

@@ -120,7 +120,7 @@ export const NkioskGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

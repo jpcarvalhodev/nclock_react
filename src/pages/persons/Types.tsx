@@ -325,7 +325,7 @@ export const Types = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            
             <CreateModalCatProfTypes
                 title="Adicionar Tipo"
                 open={showAddModal}

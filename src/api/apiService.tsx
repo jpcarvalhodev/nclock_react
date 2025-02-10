@@ -1966,9 +1966,13 @@ export const updateTimePeriod = async (timePeriod: TimePeriod) => {
     return response.json();
 }
 
-export const deleteTimePeriod = async (id: string) => {
-    const response = await fetchWithAuth(`AccTimeSeg/DeleteTimezone?id=${id}`, {
-        method: 'DELETE'
+export const deleteTimePeriod = async (id: string[]) => {
+    const response = await fetchWithAuth(`AccTimeSeg/DeleteTimezone`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(id)
     });
     if (!response.ok) {
         const errorData = await response.json();

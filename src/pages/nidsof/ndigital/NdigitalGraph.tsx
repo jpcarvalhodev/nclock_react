@@ -156,7 +156,7 @@ export const NdigitalGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -157,7 +157,7 @@ export const NbuildGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

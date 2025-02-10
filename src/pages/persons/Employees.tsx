@@ -433,7 +433,7 @@ export const Employees = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             <CreateModalEmployees
                 title="Adicionar Funcionário"
                 open={showAddModal}

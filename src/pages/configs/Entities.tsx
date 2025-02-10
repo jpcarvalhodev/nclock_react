@@ -313,7 +313,7 @@ export const Entities = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            
             {selectedEntity && (
                 <UpdateEntityModal
                     open={showUpdateModal}

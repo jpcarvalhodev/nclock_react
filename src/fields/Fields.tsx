@@ -1,7 +1,7 @@
 //*** campos de todos os modelos para usar no programa todo ***
 
 export const employeeFields = [
-    { label: 'Nº', key: 'enrollNumber', type: 'string', required: true },
+    { label: 'Número', key: 'enrollNumber', type: 'string', required: true },
     { label: 'Nome', key: 'name', type: 'string', required: true },
     { label: 'Nome Abreviado', key: 'shortName', type: 'string', required: true },
     { label: 'Iniciais do Nome', key: 'nameAcronym', type: 'string' },
@@ -567,9 +567,9 @@ export const timePlanFields = [
 
 export const accessesFields = [
     { key: 'eventTime', label: 'Horário', type: 'string' },
+    { key: 'pin', label: 'Número', type: 'string' },
     { key: 'cardNo', label: 'Cartão', type: 'string' },
     { key: 'nameUser', label: 'Nome', type: 'string' },
-    { key: 'pin', label: 'Nº', type: 'string' },
     { key: 'deviceName', label: 'Local', type: 'string' },
     { key: 'deviceSN', label: 'Serial do Equipamento', type: 'string', required: true },
     { key: 'eventDoorId', label: 'Porta', type: 'number', required: true },

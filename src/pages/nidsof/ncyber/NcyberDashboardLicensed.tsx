@@ -161,7 +161,7 @@ export const NcyberDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

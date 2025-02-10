@@ -159,7 +159,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({ ti
 
     // Função para limpar e fechar o modal
     const handleClose = () => {
-        setFormData({ ...initialValuesData, ...initialValues });
+        setFormData({});
         setShowValidationErrors(false);
         onClose();
     }

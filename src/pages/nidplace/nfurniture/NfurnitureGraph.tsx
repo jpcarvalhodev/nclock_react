@@ -156,7 +156,7 @@ export const NfurnitureGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

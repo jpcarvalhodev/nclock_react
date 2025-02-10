@@ -156,7 +156,7 @@ export const NledGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -156,7 +156,7 @@ export const NserviceGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -156,7 +156,7 @@ export const NcomfortGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

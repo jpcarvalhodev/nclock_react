@@ -434,7 +434,7 @@ export const User = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             <CreateModalEmployees
                 title="Adicionar Utente"
                 open={showAddModal}

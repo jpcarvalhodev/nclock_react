@@ -160,7 +160,7 @@ export const NconnectDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

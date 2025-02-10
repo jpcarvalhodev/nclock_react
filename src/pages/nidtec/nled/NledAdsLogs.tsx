@@ -141,7 +141,7 @@ export const NledAdsLogs = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -316,7 +316,7 @@ export const NvisitorDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -543,7 +543,7 @@ export const Dashboard = () => {
                     )}
                 </motion.div>
             </div>
-            <Footer />
+            
         </div>
     );
 };

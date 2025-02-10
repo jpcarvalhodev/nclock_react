@@ -198,7 +198,7 @@ export const NaccessDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

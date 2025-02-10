@@ -113,7 +113,7 @@ export const CreateEntityModal = <T extends Record<string, any>>({ title, open, 
 
     // Função para lidar com o fechamento do modal
     const handleClose = () => {
-        setFormData(initialValues);
+        setFormData({});
         setProfileImageFile(null);
         setDeviceImage(null);
         setShowValidationErrors(false);

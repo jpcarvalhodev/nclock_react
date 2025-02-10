@@ -405,7 +405,7 @@ export const TerminalsMB = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             {showColumnSelector && (
                 <ColumnSelectorModal
                     columns={mbDeviceFields}

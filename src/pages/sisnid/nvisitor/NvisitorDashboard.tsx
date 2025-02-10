@@ -280,7 +280,7 @@ export const NvisitorDashboard = () => {
                     <p>Em caso de dúvidas, contacte-nos no e-mail info@nidgroup.pt</p>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

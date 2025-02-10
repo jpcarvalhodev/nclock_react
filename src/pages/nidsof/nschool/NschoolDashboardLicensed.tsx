@@ -160,7 +160,7 @@ export const NschoolDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

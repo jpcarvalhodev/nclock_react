@@ -156,7 +156,7 @@ export const NtaskGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

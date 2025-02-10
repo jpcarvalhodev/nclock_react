@@ -156,7 +156,7 @@ export const NinvoiceGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

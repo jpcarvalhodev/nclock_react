@@ -156,7 +156,7 @@ export const NsmartGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -160,7 +160,7 @@ export const NrealityDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

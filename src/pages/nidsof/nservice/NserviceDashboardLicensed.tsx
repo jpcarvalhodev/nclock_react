@@ -160,7 +160,7 @@ export const NserviceDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

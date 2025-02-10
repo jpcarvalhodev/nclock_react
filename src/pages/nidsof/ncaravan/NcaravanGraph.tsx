@@ -156,7 +156,7 @@ export const NcaravanGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

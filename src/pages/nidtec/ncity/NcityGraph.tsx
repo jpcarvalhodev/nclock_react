@@ -156,7 +156,7 @@ export const NcityGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -160,7 +160,7 @@ export const NeventsDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

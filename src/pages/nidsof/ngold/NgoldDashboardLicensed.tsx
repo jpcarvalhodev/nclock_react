@@ -160,7 +160,7 @@ export const NgoldDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

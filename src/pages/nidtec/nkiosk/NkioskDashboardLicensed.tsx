@@ -403,7 +403,7 @@ export const NkioskDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

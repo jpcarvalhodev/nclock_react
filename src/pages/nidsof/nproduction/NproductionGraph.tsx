@@ -156,7 +156,7 @@ export const NproductionGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -160,7 +160,7 @@ export const NfurnitureDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

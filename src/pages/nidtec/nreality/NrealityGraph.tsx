@@ -156,7 +156,7 @@ export const NrealityGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

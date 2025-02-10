@@ -160,7 +160,7 @@ export const NclinicDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

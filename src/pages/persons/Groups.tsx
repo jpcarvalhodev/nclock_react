@@ -374,7 +374,7 @@ export const Groups = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={groupFields}

@@ -156,7 +156,7 @@ export const NcardGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

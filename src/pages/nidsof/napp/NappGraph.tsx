@@ -157,7 +157,7 @@ export const NappGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

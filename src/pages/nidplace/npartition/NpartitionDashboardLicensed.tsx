@@ -160,7 +160,7 @@ export const NpartitionDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

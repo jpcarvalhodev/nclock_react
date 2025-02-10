@@ -160,7 +160,7 @@ export const NinvoiceDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

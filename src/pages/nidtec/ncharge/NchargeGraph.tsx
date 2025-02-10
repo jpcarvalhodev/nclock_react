@@ -156,7 +156,7 @@ export const NchargeGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

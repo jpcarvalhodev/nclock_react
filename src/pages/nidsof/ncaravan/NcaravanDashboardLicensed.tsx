@@ -160,7 +160,7 @@ export const NcaravanDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

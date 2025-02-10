@@ -160,7 +160,7 @@ export const NsportsDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

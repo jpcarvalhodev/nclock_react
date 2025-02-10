@@ -161,7 +161,7 @@ export const NdigitalDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

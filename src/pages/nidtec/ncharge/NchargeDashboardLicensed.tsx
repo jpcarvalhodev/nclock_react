@@ -160,7 +160,7 @@ export const NchargeDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

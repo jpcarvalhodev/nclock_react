@@ -156,7 +156,7 @@ export const NviewGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

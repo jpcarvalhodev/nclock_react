@@ -61,7 +61,7 @@ export const NclockGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

@@ -345,7 +345,7 @@ export const LoginLogs = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={logsFields}

@@ -156,7 +156,7 @@ export const NhomeGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

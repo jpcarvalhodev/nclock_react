@@ -167,7 +167,7 @@ export const AuxOutModal = <T extends Entity>({ title, open, onClose, onSave, fi
 
     // Função para limpar e fechar o modal
     const handleClose = () => {
-        setFormData({ ...initialValues });
+        setFormData({});
         setShowValidationErrors(false);
         onClose();
     }

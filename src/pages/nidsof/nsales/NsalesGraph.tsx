@@ -156,7 +156,7 @@ export const NsalesGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

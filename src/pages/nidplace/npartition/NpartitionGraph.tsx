@@ -156,7 +156,7 @@ export const NpartitionGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

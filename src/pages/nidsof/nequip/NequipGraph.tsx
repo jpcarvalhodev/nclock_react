@@ -156,7 +156,7 @@ export const NequipGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

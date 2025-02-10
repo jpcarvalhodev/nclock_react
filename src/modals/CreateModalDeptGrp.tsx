@@ -194,7 +194,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        setFormData(initialValues);
+        setFormData({});
         setShowValidationErrors(false);
         onClose();
     }

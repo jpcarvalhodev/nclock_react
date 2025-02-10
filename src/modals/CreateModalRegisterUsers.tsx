@@ -172,7 +172,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({ title,
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        setFormData(initialValues);
+        setFormData({});
         setProfileImage(null);
         setProfileImageFile(null);
         setShowValidationErrors(false);

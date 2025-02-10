@@ -156,7 +156,7 @@ export const NprojectGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

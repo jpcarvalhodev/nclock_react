@@ -156,7 +156,7 @@ export const NopticsGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

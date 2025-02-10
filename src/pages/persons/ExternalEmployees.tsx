@@ -434,7 +434,7 @@ export const ExternalEmployees = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             <CreateModalEmployees
                 title="Adicionar Funcionário Externo"
                 open={showAddModal}

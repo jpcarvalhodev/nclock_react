@@ -160,7 +160,7 @@ export const NcomfortDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

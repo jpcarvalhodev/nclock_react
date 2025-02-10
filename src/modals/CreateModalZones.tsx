@@ -149,7 +149,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        setFormData(initialValues);
+        setFormData({});
         setProfileImage(null);
         setShowValidationErrors(false);
         onClose();

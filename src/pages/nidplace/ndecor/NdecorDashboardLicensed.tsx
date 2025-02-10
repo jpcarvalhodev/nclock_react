@@ -160,7 +160,7 @@ export const NdecorDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

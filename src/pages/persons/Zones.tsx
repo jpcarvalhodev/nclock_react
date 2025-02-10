@@ -382,7 +382,7 @@ export const Zones = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={zoneFields}

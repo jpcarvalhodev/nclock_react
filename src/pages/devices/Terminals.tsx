@@ -2243,7 +2243,7 @@ export const Terminals = () => {
             </Tab>
           </Tabs>
         </div>
-        <Footer />
+        
         {showColumnSelector && (
           <ColumnSelectorModal
             columns={deviceFields}

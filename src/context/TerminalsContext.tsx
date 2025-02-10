@@ -48,7 +48,7 @@ export interface DeviceContextType {
     fetchTimePeriods: () => Promise<TimePeriod[]>;
     handleAddPeriod: (newPeriod: Partial<TimePeriod>) => Promise<void>;
     handleUpdatePeriod: (updatedPeriod: TimePeriod) => Promise<void>;
-    handleDeletePeriod: (id: string) => Promise<void>;
+    handleDeletePeriod: (id: string[]) => Promise<void>;
     handleUpdateDoor: (door: Doors) => Promise<void>;
     handleUpdateAux: (aux: Auxiliaries) => Promise<void>;
     fetchCameras: () => Promise<Cameras[]>;
@@ -456,7 +456,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para eliminar um período
-    const handleDeletePeriod = async (id: string) => {
+    const handleDeletePeriod = async (id: string[]) => {
         try {
             await apiService.deleteTimePeriod(id);
             toast.success('Período eliminado com sucesso!');

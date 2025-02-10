@@ -156,7 +156,7 @@ export const NpatrolGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

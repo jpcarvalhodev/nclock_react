@@ -360,7 +360,7 @@ export const Categories = () => {
                     />
                 </div>
             </div>
-            <Footer />
+            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={categoryFields}

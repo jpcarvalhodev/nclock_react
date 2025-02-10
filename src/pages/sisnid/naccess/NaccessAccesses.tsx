@@ -64,6 +64,9 @@ export const NaccessAccesses = () => {
     "nameUser",
     "pin",
     "deviceName",
+    "eventDoorName",
+    "readerName",
+    "eventName",
   ]);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [resetSelection, setResetSelection] = useState(false);
@@ -253,6 +256,9 @@ export const NaccessAccesses = () => {
       "nameUser",
       "pin",
       "deviceName",
+      "eventDoorName",
+      "readerName",
+      "eventName",
     ]);
   };
 
@@ -557,12 +563,7 @@ export const NaccessAccesses = () => {
                 style={{ marginTop: 0 }}
               >
                 <Nav.Item>
-                  <Nav.Link
-                    eventKey="movimentos"
-                    style={{ padding: "0.25rem 0.5rem", fontSize: "0.85rem" }}
-                  >
-                    Movimentos
-                  </Nav.Link>
+                  <Nav.Link eventKey="movimentos">Movimentos</Nav.Link>
                 </Nav.Item>
               </Nav>
               <Tab.Content>
@@ -593,7 +594,7 @@ export const NaccessAccesses = () => {
           </div>
         </Split>
       </div>
-      <Footer />
+
       {showAddAccessModal && (
         <CreateModalAccess
           open={showAddAccessModal}

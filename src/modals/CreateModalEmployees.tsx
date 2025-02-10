@@ -288,7 +288,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
   // Função para lidar com o fechamento do modal
   const handleClose = () => {
-    setFormData({ ...initialValues, status: true });
+    setFormData({});
     setCardFormData({});
     setProfileImage(null);
     setShowValidationErrors(false);

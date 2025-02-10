@@ -156,7 +156,7 @@ export const NticketGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

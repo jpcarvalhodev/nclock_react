@@ -160,7 +160,7 @@ export const NpatrolDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

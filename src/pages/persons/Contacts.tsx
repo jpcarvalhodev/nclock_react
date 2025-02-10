@@ -434,7 +434,7 @@ export const Contacts = () => {
                     </div>
                 </Split>
             </div>
-            <Footer />
+            
             <CreateModalEmployees
                 title="Adicionar Contacto"
                 open={showAddModal}

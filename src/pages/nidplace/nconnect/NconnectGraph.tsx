@@ -156,7 +156,7 @@ export const NconnectGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

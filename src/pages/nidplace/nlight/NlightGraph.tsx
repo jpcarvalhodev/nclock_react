@@ -156,7 +156,7 @@ export const NlightGraph = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

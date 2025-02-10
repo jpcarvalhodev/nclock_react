@@ -134,7 +134,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
 
     // Função para lidar com o fecho
     const handleClose = () => {
-        setFormData({ ...initialValues, ...initialValuesData });
+        setFormData({});
         setShowValidationErrors(false);
         onClose();
     }
