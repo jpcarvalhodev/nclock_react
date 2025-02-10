@@ -620,7 +620,6 @@ export const NkioskMoveKiosk = () => {
           </div>
         </Split>
       </div>
-
       {openColumnSelector && (
         <ColumnSelectorModal
           columns={transactionCardFields}

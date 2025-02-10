@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import * as apiService from "../../../api/apiService";
 import banner_nkiosk from "../../../assets/img/carousel/banner_nkiosk.jpg";
 
-import { Footer } from '../../../components/Footer';
 import { useKiosk } from '../../../context/KioskContext';
 
 import { useTerminals } from "../../../context/TerminalsContext";
@@ -79,7 +78,6 @@ export const NkioskDashboardLicensed = () => {
     const currentYear = new Date().getFullYear();
     const [startDate, setStartDate] = useState(formatDateToStartOfDay(currentDate));
     const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-    
     const { devices } = useTerminals();
     const { totalPayments, setTotalPayments, totalMovements, setTotalMovements } = useKiosk();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -341,7 +339,6 @@ export const NkioskDashboardLicensed = () => {
 
     return (
         <div className="dashboard-container">
-            
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container-pages-no-title" style={{ marginTop: 5 }}>
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
@@ -403,7 +400,6 @@ export const NkioskDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
         </div>
     );
 }

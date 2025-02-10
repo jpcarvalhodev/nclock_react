@@ -22,7 +22,7 @@ import { CreateRecolhaMoedeiroEContadorModal } from "../../../modals/CreateRecol
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { ResetCoinModal } from "../../../modals/ResetCoinModal";
 import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
-import { KioskTransactionMB, RecolhaMoedeiroEContador, ResetCoin } from "../../../types/Types";
+import { RecolhaMoedeiroEContador, ResetCoin } from "../../../types/Types";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -45,7 +45,6 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskGetCoins = () => {
-    
     const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
@@ -444,7 +443,6 @@ export const NkioskGetCoins = () => {
 
     return (
         <div className="main-container">
-            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -569,7 +567,6 @@ export const NkioskGetCoins = () => {
                     </div>
                 </Split>
             </div>
-            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={recolhaMoedeiroEContadorFields}

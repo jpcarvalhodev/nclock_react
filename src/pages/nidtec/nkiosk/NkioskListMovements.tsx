@@ -1,5 +1,4 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { set } from "date-fns";
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -43,7 +42,6 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskListMovements = () => {
-    
     const { employees, handleUpdateEmployee } = usePersons();
     const { devices } = useTerminals();
     const currentDate = new Date();
@@ -412,7 +410,6 @@ export const NkioskListMovements = () => {
 
     return (
         <div className="main-container">
-            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -513,7 +510,6 @@ export const NkioskListMovements = () => {
                     </div>
                 </Split>
             </div>
-            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={combinedMovements}

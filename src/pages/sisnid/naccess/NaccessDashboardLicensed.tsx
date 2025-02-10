@@ -10,7 +10,6 @@ import { Bar , Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 import * as apiService from "../../../api/apiService";
 import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
-import { Footer } from "../../../components/Footer";
 
 // Define a linguagem do calendário
 const locales = {
@@ -60,7 +59,6 @@ const messages = {
 // Define a página principal
 export const NaccessDashboardLicensed = () => {
     const currentYear = new Date().getFullYear();
-    
     const [totalEmployees, setTotalEmployees] = useState<number>(0);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [lineChartData, setLineChartData] = useState({
@@ -136,7 +134,6 @@ export const NaccessDashboardLicensed = () => {
 
     return (
         <div className="dashboard-container">
-            
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
@@ -198,7 +195,6 @@ export const NaccessDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
         </div>
     );
 }

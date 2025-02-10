@@ -7,7 +7,6 @@ import { Bar , Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
 import banner_nconnect from "../../../assets/img/carousel/banner_nconnect.jpg";
-import { Footer } from '../../../components/Footer';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -98,7 +97,6 @@ export const NconnectDashboardLicensed = () => {
 
     return (
         <div className="dashboard-container">
-            
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
@@ -160,7 +158,6 @@ export const NconnectDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
         </div>
     );
 }

@@ -7,7 +7,6 @@ import { Line , Bar } from 'react-chartjs-2';
 import { Carousel } from "react-responsive-carousel";
 
 import banner_nsoftware from "../../../assets/img/carousel/banner_nsoftware.webp";
-import { Footer } from '../../../components/Footer';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
@@ -59,7 +58,6 @@ const messages = {
 
 export const NeventsDashboardLicensed = () => {
     const currentYear = new Date().getFullYear();
-    
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [lineChartData, setLineChartData] = useState({
         labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho'],
@@ -98,7 +96,6 @@ export const NeventsDashboardLicensed = () => {
 
     return (
         <div className="dashboard-container">
-            
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
@@ -160,7 +157,6 @@ export const NeventsDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
         </div>
     );
 }

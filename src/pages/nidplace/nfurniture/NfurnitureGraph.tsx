@@ -1,9 +1,7 @@
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Bar , PolarArea } from "react-chartjs-2";
 
-import * as apiService from "../../../api/apiService";
-import { Footer } from '../../../components/Footer';
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
@@ -16,37 +14,6 @@ export const NfurnitureGraph = () => {
     const [moveKiosk, setMoveKiosk] = useState<KioskTransactionCard[]>([]);
     const [moveVP, setMoveVP] = useState<KioskTransactionCard[]>([]);
     const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
-    const deviceSN = 'AGB7234900595';
-    const eventDoorId2 = '2';
-    const eventDoorId3 = '3';
-    const eventDoorId4 = '4';
-
-    /* // Função para buscar os dados para os gráficos
-    const fetchAllData = async () => {
-        try {
-            const mbData = await apiService.fetchKioskTransactionsByMBAndDeviceSN();
-            const coinData = await apiService.fetchKioskTransactionsByPayCoins(eventDoorId2, deviceSN);
-            const cardData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId3, deviceSN);
-            const kioskData = await apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId4, deviceSN);
-            const vpData = await apiService.fetchKioskTransactionsVideoPorteiro(eventDoorId3, deviceSN);
-            setPayTerminal(mbData);
-            setPayCoins(coinData);
-            setMoveCard(cardData);
-            setMoveKiosk(kioskData);
-            setMoveVP(vpData);
-
-            const totalMove = cardData.concat(kioskData);
-
-            setTotalMovements(totalMove);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    // UseEffect para buscar os dados
-    useEffect(() => {
-        fetchAllData();
-    }, []); */
 
     // Função para agrupar os dados por mês com base no campo correto
     const groupByMonth = <T extends KioskTransactionMB | KioskTransactionCard>(
@@ -138,7 +105,6 @@ export const NfurnitureGraph = () => {
 
     return (
         <div className="dashboard-container">
-            
             <div className="dashboard-title-text" style={{ color: '#0050a0' }}>
                 <span>Gráficos de Mobiliário</span>
             </div>
@@ -156,7 +122,6 @@ export const NfurnitureGraph = () => {
                     </div>
                 </div>
             </div>
-            
         </div>
     );
 }

@@ -40,7 +40,6 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskAlerts = () => {
-    
     const { mbDevices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
@@ -251,7 +250,6 @@ export const NkioskAlerts = () => {
 
     return (
         <div className="main-container">
-            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -349,7 +347,6 @@ export const NkioskAlerts = () => {
                     </div>
                 </Split>
             </div>
-            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={mbDeviceStatusFields.filter(field => field.key !== 'tipoStatus')}

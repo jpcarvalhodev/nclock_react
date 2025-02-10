@@ -8,8 +8,6 @@ import { Carousel } from "react-responsive-carousel";
 
 import banner_nsystem from "../../../assets/img/carousel/banner_nsystem.webp";
 
-import { Footer } from '../../../components/Footer';
-
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadialLinearScale, ArcElement, Tooltip, Legend);
 
 // Define a linguagem do calendário
@@ -60,7 +58,6 @@ const messages = {
 
 export const NsystemDashboardLicensed = () => {
     const currentYear = new Date().getFullYear();
-    
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [lineChartData, setLineChartData] = useState({
         labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho'],
@@ -99,7 +96,6 @@ export const NsystemDashboardLicensed = () => {
 
     return (
         <div className="dashboard-container">
-            
             <div className="dashboard-content">
                 <div className="dashboard-carousel-container-pages-no-title">
                     <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false} showArrows={false} emulateTouch={true}>
@@ -161,7 +157,6 @@ export const NsystemDashboardLicensed = () => {
                     </div>
                 </div>
             </div>
-            
         </div>
     );
 }

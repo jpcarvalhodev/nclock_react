@@ -7,7 +7,6 @@ import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 
-import { Footer } from '../../../components/Footer';
 import { SelectFilter } from "../../../components/SelectFilter";
 
 import { adsFields } from "../../../fields/Fields";
@@ -24,7 +23,6 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NledAdsLogs = () => {
-    
     const [logs, setlogs] = useState<Ads[]>([]);
     const [filterText, setFilterText] = useState<string>('');
     const [filters, setFilters] = useState<Record<string, string>>({});
@@ -99,7 +97,6 @@ export const NledAdsLogs = () => {
 
     return (
         <div className="dashboard-container">
-            
             <div className='filter-refresh-add-edit-upper-class'>
                 <div className="datatable-title-text">
                     <span >Logs de Publicidades</span>
@@ -141,7 +138,6 @@ export const NledAdsLogs = () => {
                     />
                 </div>
             </div>
-            
         </div>
     );
 }

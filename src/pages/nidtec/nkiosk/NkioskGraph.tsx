@@ -1,7 +1,6 @@
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, RadialLinearScale, Tooltip } from 'chart.js';
 import { Bar , PolarArea } from "react-chartjs-2";
 
-import { Footer } from '../../../components/Footer';
 import { useKiosk } from '../../../context/KioskContext';
 import { KioskTransactionCard, KioskTransactionMB } from "../../../types/Types";
 
@@ -9,7 +8,6 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarEleme
 
 export const NkioskGraph = () => {
     const currentYear = new Date().getFullYear();
-    
     const { payTerminal, payCoins, moveCard, moveKiosk, moveVP, totalMovements } = useKiosk();
 
     // Função para agrupar os dados por mês com base no campo correto
@@ -102,7 +100,6 @@ export const NkioskGraph = () => {
 
     return (
         <div className="dashboard-container">
-            
             <div className="dashboard-title-text" >
                 <span>Gráficos de Pagamentos e Movimentos</span>
             </div>
@@ -120,7 +117,6 @@ export const NkioskGraph = () => {
                     </div>
                 </div>
             </div>
-            
         </div>
     );
 }

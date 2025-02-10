@@ -43,7 +43,6 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskCleaning = () => {
-    
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -366,7 +365,6 @@ export const NkioskCleaning = () => {
 
     return (
         <div className="main-container">
-            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -477,7 +475,6 @@ export const NkioskCleaning = () => {
                     </div>
                 </Split>
             </div>
-            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={limpezasEOcorrenciasFields.filter(field => field.key !== 'deviceId')}

@@ -15,7 +15,10 @@ import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 
 import { usePersons } from "../../../context/PersonsContext";
-import { TerminalsProvider, useTerminals } from "../../../context/TerminalsContext";
+import {
+  TerminalsProvider,
+  useTerminals,
+} from "../../../context/TerminalsContext";
 import { employeeFields, transactionCardFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
@@ -23,521 +26,717 @@ import { Employee, KioskTransactionCard } from "../../../types/Types";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T00:00`;
-}
+  return `${date.toISOString().substring(0, 10)}T00:00`;
+};
 
 // Formata a data para o final do dia às 23:59
 const formatDateToEndOfDay = (date: Date): string => {
-    return `${date.toISOString().substring(0, 10)}T23:59`;
-}
+  return `${date.toISOString().substring(0, 10)}T23:59`;
+};
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-    return (
-        <TextField
-            {...props}
-            className="SearchBox"
-        />
-    );
+  return <TextField {...props} className="SearchBox" />;
 }
 
 export const NvisitorListMovements = () => {
-    
-    const { employees, handleUpdateEmployee } = usePersons();
-    const { devices } = useTerminals();
-    const currentDate = new Date();
-    const pastDate = new Date();
-    pastDate.setDate(currentDate.getDate() - 30);
-    const { moveCard, fetchAllMoveCard, moveKiosk, fetchAllMoveKiosk, totalMovements, setTotalMovements } = useKiosk();
-    const [listMovementCard, setListMovementCard] = useState<KioskTransactionCard[]>([]);
-    const [listMovementKiosk, setListMovementKiosk] = useState<KioskTransactionCard[]>([]);
-    const [filterText, setFilterText] = useState<string>('');
-    const [openColumnSelector, setOpenColumnSelector] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'eventName', 'deviceSN']);
-    const [filters, setFilters] = useState<Record<string, string>>({});
-    const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
-    const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-    const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
-    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-    const [filteredDevices, setFilteredDevices] = useState<KioskTransactionCard[]>([]);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
-    const eventDoorId = '3';
-    const eventDoorId2 = '4';
+  const { employees, handleUpdateEmployee } = usePersons();
+  const { devices } = useTerminals();
+  const currentDate = new Date();
+  const pastDate = new Date();
+  pastDate.setDate(currentDate.getDate() - 30);
+  const {
+    moveCard,
+    fetchAllMoveCard,
+    moveKiosk,
+    fetchAllMoveKiosk,
+    totalMovements,
+    setTotalMovements,
+  } = useKiosk();
+  const [listMovementCard, setListMovementCard] = useState<
+    KioskTransactionCard[]
+  >([]);
+  const [listMovementKiosk, setListMovementKiosk] = useState<
+    KioskTransactionCard[]
+  >([]);
+  const [filterText, setFilterText] = useState<string>("");
+  const [openColumnSelector, setOpenColumnSelector] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([
+    "eventTime",
+    "nameUser",
+    "pin",
+    "eventDoorId",
+    "eventName",
+    "deviceSN",
+  ]);
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+  const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
+  const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
+  const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
+  const [filteredDevices, setFilteredDevices] = useState<
+    KioskTransactionCard[]
+  >([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+  const eventDoorId = "3";
+  const eventDoorId2 = "4";
 
-    // Função para buscar os pagamentos dos terminais
-    const settingVariables = () => {
-        setListMovementCard(moveCard);
-        setListMovementKiosk(moveKiosk);
+  // Função para buscar os pagamentos dos terminais
+  const settingVariables = () => {
+    setListMovementCard(moveCard);
+    setListMovementKiosk(moveKiosk);
+  };
+
+  // Função para buscar os movimentos entre datas
+  const fetchMovementCardBetweenDates = async () => {
+    try {
+      if (devices.length === 0) {
+        setListMovementCard([]);
+        setListMovementKiosk([]);
+        return;
+      }
+
+      const promisesMovementCard = devices.map((device) =>
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          eventDoorId,
+          device.deviceSN,
+          startDate,
+          endDate
+        )
+      );
+
+      const promisesMovementKiosk = devices.map((device) =>
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          eventDoorId2,
+          device.deviceSN,
+          startDate,
+          endDate
+        )
+      );
+
+      const resultsMovementCard = await Promise.all(promisesMovementCard);
+      const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+
+      const validDataCard = resultsMovementCard
+        .filter((data) => Array.isArray(data) && data.length > 0)
+        .flat();
+      const validDataKiosk = resultsMovementKiosk
+        .filter((data) => Array.isArray(data) && data.length > 0)
+        .flat();
+
+      setListMovementCard(validDataCard);
+      setListMovementKiosk(validDataKiosk);
+    } catch (error) {
+      console.error("Erro ao buscar os dados de listagem de movimentos", error);
+      setListMovementCard([]);
+      setListMovementKiosk([]);
+    }
+  };
+
+  // Função para buscar os movimentos entre datas
+  const fetchTotalMovementsToday = async () => {
+    try {
+      if (devices.length === 0) {
+        setListMovementCard([]);
+        setListMovementKiosk([]);
+        return;
+      }
+
+      const promisesMovementCard = devices.map((device) =>
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          eventDoorId,
+          device.serialNumber,
+          formatDateToStartOfDay(currentDate),
+          formatDateToEndOfDay(currentDate)
+        )
+      );
+
+      const promisesMovementKiosk = devices.map((device) =>
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          eventDoorId2,
+          device.serialNumber,
+          formatDateToStartOfDay(currentDate),
+          formatDateToEndOfDay(currentDate)
+        )
+      );
+
+      const resultsMovementCard = await Promise.all(promisesMovementCard);
+      const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+
+      const validDataCard = resultsMovementCard
+        .filter((data) => Array.isArray(data) && data.length > 0)
+        .flat();
+      const validDataKiosk = resultsMovementKiosk
+        .filter((data) => Array.isArray(data) && data.length > 0)
+        .flat();
+
+      setTotalMovements([...validDataCard, ...validDataKiosk]);
+      setStartDate(formatDateToStartOfDay(currentDate));
+      setEndDate(formatDateToEndOfDay(currentDate));
+    } catch (error) {
+      console.error(
+        "Erro ao buscar os dados de listagem de movimentos hoje",
+        error
+      );
+      setListMovementCard([]);
+      setListMovementKiosk([]);
+    }
+  };
+
+  // Função para buscar os pagamentos dos terminais de ontem
+  const fetchTotalMovementsForPreviousDay = async () => {
+    const prevDate = new Date(startDate);
+    prevDate.setDate(prevDate.getDate() - 1);
+
+    const start = formatDateToStartOfDay(prevDate);
+    const end = formatDateToEndOfDay(prevDate);
+
+    try {
+      if (devices.length === 0) {
+        setListMovementCard([]);
+        setListMovementKiosk([]);
+        return;
+      }
+
+      const promisesMovementCard = devices.map((device) =>
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          eventDoorId,
+          device.serialNumber,
+          start,
+          end
+        )
+      );
+
+      const promisesMovementKiosk = devices.map((device) =>
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          eventDoorId2,
+          device.serialNumber,
+          start,
+          end
+        )
+      );
+
+      const resultsMovementCard = await Promise.all(promisesMovementCard);
+      const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
+
+      const validDataCard = resultsMovementCard
+        .filter((data) => Array.isArray(data) && data.length > 0)
+        .flat();
+      const validDataKiosk = resultsMovementKiosk
+        .filter((data) => Array.isArray(data) && data.length > 0)
+        .flat();
+
+      setTotalMovements([...validDataCard, ...validDataKiosk]);
+      setStartDate(start);
+      setEndDate(end);
+    } catch (error) {
+      console.error(
+        "Erro ao buscar os dados de listagem de movimentos hoje",
+        error
+      );
+      setListMovementCard([]);
+      setListMovementKiosk([]);
+    }
+  };
+
+  // Função para buscar os pagamentos dos terminais de amanhã
+  const fetchTotalMovementsForNextDay = async () => {
+    const newDate = new Date(endDate);
+    newDate.setDate(newDate.getDate() + 1);
+
+    if (newDate > new Date()) {
+      console.error(
+        "Não é possível buscar movimentos para uma data no futuro."
+      );
+      return;
     }
 
-    // Função para buscar os movimentos entre datas
-    const fetchMovementCardBetweenDates = async () => {
-        try {
-            if (devices.length === 0) {
-                setListMovementCard([]);
-                setListMovementKiosk([]);
-                return;
-            }
+    const start = formatDateToStartOfDay(newDate);
+    const end = formatDateToEndOfDay(newDate);
 
-            const promisesMovementCard = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.deviceSN, startDate, endDate)
-            );
+    try {
+      if (devices.length === 0) {
+        setListMovementCard([]);
+        setListMovementKiosk([]);
+        return;
+      }
 
-            const promisesMovementKiosk = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.deviceSN, startDate, endDate)
-            );
-
-            const resultsMovementCard = await Promise.all(promisesMovementCard);
-            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
-
-            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
-            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
-
-            setListMovementCard(validDataCard);
-            setListMovementKiosk(validDataKiosk);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de movimentos', error);
-            setListMovementCard([]);
-            setListMovementKiosk([]);
-        }
-    };
-
-    // Função para buscar os movimentos entre datas
-    const fetchTotalMovementsToday = async () => {
-        try {
-            if (devices.length === 0) {
-                setListMovementCard([]);
-                setListMovementKiosk([]);
-                return;
-            }
-
-            const promisesMovementCard = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate))
-            );
-
-            const promisesMovementKiosk = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, formatDateToStartOfDay(currentDate), formatDateToEndOfDay(currentDate))
-            );
-
-            const resultsMovementCard = await Promise.all(promisesMovementCard);
-            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
-
-            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
-            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
-
-            setTotalMovements([...validDataCard, ...validDataKiosk]);
-            setStartDate(formatDateToStartOfDay(currentDate));
-            setEndDate(formatDateToEndOfDay(currentDate));
-        } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
-            setListMovementCard([]);
-            setListMovementKiosk([]);
-        }
-    };
-
-    // Função para buscar os pagamentos dos terminais de ontem
-    const fetchTotalMovementsForPreviousDay = async () => {
-        const prevDate = new Date(startDate);
-        prevDate.setDate(prevDate.getDate() - 1);
-
-        const start = formatDateToStartOfDay(prevDate);
-        const end = formatDateToEndOfDay(prevDate);
-
-        try {
-            if (devices.length === 0) {
-                setListMovementCard([]);
-                setListMovementKiosk([]);
-                return;
-            }
-
-            const promisesMovementCard = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end)
-            );
-
-            const promisesMovementKiosk = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, start, end)
-            );
-
-            const resultsMovementCard = await Promise.all(promisesMovementCard);
-            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
-
-            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
-            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
-
-            setTotalMovements([...validDataCard, ...validDataKiosk]);
-            setStartDate(start);
-            setEndDate(end);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
-            setListMovementCard([]);
-            setListMovementKiosk([]);
-        }
-    };
-
-    // Função para buscar os pagamentos dos terminais de amanhã
-    const fetchTotalMovementsForNextDay = async () => {
-        const newDate = new Date(endDate);
-        newDate.setDate(newDate.getDate() + 1);
-
-        if (newDate > new Date()) {
-            console.error("Não é possível buscar movimentos para uma data no futuro.");
-            return;
-        }
-
-        const start = formatDateToStartOfDay(newDate);
-        const end = formatDateToEndOfDay(newDate);
-
-        try {
-            if (devices.length === 0) {
-                setListMovementCard([]);
-                setListMovementKiosk([]);
-                return;
-            }
-
-            const promisesMovementCard = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId, device.serialNumber, start, end)
-            );
-
-            const promisesMovementKiosk = devices.map(device =>
-                apiService.fetchKioskTransactionsByCardAndDeviceSN(eventDoorId2, device.serialNumber, start, end)
-            );
-
-            const resultsMovementCard = await Promise.all(promisesMovementCard);
-            const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
-
-            const validDataCard = resultsMovementCard.filter(data => Array.isArray(data) && data.length > 0).flat();
-            const validDataKiosk = resultsMovementKiosk.filter(data => Array.isArray(data) && data.length > 0).flat();
-
-            setTotalMovements([...validDataCard, ...validDataKiosk]);
-            setStartDate(start);
-            setEndDate(end);
-        } catch (error) {
-            console.error('Erro ao buscar os dados de listagem de movimentos hoje', error);
-            setListMovementCard([]);
-            setListMovementKiosk([]);
-        }
-    };
-
-    // Função para atualizar um funcionário e um cartão
-    const updateEmployeeAndCard = async (employee: Employee) => {
-        await handleUpdateEmployee(employee);
-        window.location.reload();
-    };
-
-    // Unifica os dados de movimentos de cartão e porteiro
-    const mergeMovementData = () => {
-        const unifiedData = [...listMovementCard, ...listMovementKiosk];
-        setTotalMovements(unifiedData);
-    };
-
-    // Atualiza a lista de movimentos ao montar o componente
-    useEffect(() => {
-        fetchAllMoveCard();
-        fetchAllMoveKiosk();
-        settingVariables();
-        mergeMovementData();
-    }, []);
-
-    // Função para atualizar as listagens de movimentos
-    const refreshListMovements = () => {
-        fetchAllMoveCard();
-        fetchAllMoveKiosk();
-        setStartDate(formatDateToStartOfDay(pastDate));
-        setEndDate(formatDateToEndOfDay(currentDate));
-        setClearSelectionToggle((prev) => !prev);
-    };
-
-    // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-    useEffect(() => {
-        if (selectedDevicesIds.length > 0) {
-            const employeeShortNames = selectedDevicesIds.map(employeeId => {
-                const employee = employees.find(emp => emp.employeeID === employeeId);
-                return employee ? employee.shortName : null;
-            }).filter(name => name !== null);
-
-            const filtered = totalMovements.filter(listMovement =>
-                employeeShortNames.includes(listMovement.nameUser)
-            );
-            setFilteredDevices(filtered);
-        } else {
-            setFilteredDevices(totalMovements);
-        }
-    }, [selectedDevicesIds, totalMovements]);
-
-    // Função para selecionar as colunas
-    const toggleColumn = (columnName: string) => {
-        if (selectedColumns.includes(columnName)) {
-            setSelectedColumns(selectedColumns.filter(col => col !== columnName));
-        } else {
-            setSelectedColumns([...selectedColumns, columnName]);
-        }
-    };
-
-    // Função para resetar as colunas
-    const resetColumns = () => {
-        setSelectedColumns(['eventTime', 'nameUser', 'pin', 'eventDoorId', 'eventName', 'deviceSN']);
-    };
-
-    // Função para selecionar todas as colunas
-    const onSelectAllColumns = (allColumnKeys: string[]) => {
-        setSelectedColumns(allColumnKeys);
-    };
-
-    // Define a seleção da árvore
-    const handleSelectFromTreeView = (selectedIds: string[]) => {
-        setSelectedDevicesIds(selectedIds);
-    };
-
-    // Define a função de seleção de linhas
-    const handleRowSelected = (state: {
-        allSelected: boolean;
-        selectedCount: number;
-        selectedRows: KioskTransactionCard[];
-    }) => {
-        const sortedSelectedRows = state.selectedRows.sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime());
-        setSelectedRows(sortedSelectedRows);
-    };
-
-    // Opções de paginação da tabela com troca de EN para PT
-    const paginationOptions = {
-        rowsPerPageText: 'Linhas por página',
-        rangeSeparatorText: 'de',
-    };
-
-    // Filtra os dados da tabela com base no filtro de 'eventName'
-    const filteredDataTable = filteredDevices
-        .filter(listMovement =>
-            Object.keys(filters).every(key =>
-                filters[key] === "" || (listMovement[key] != null && String(listMovement[key]).toLowerCase().includes(filters[key].toLowerCase()))
-            ) &&
-            Object.values(listMovement).some(value => {
-                if (value == null) {
-                    return false;
-                } else if (value instanceof Date) {
-                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-                } else {
-                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
-                }
-            })
+      const promisesMovementCard = devices.map((device) =>
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          eventDoorId,
+          device.serialNumber,
+          start,
+          end
         )
-        .sort((a, b) => new Date(b.eventTime).getTime() - new Date(a.dataRecolha).getTime());
+      );
 
-    // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
-    const combinedMovements = [...transactionCardFields, ...transactionCardFields].reduce((acc, current) => {
-        if (!acc.some(field => field.key === current.key)) {
-            acc.push(current);
-        }
-        return acc;
-    }, [] as typeof transactionCardFields);
+      const promisesMovementKiosk = devices.map((device) =>
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          eventDoorId2,
+          device.serialNumber,
+          start,
+          end
+        )
+      );
 
-    // Função para abrir o modal de edição
-    const handleOpenEditModal = (person: KioskTransactionCard) => {
-        const employeeDetails = employees.find(emp => emp.name === person.nameUser);
-        if (employeeDetails) {
-            setSelectedEmployee(employeeDetails);
-            setShowEditModal(true);
-        } else {
-            console.error("Funcionário não encontrado:", person.nameUser);
-        }
-    };
+      const resultsMovementCard = await Promise.all(promisesMovementCard);
+      const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
 
-    const columns: TableColumn<KioskTransactionCard>[] = combinedMovements
-        .filter(field => selectedColumns.includes(field.key))
-        .sort((a, b) => (a.key === 'eventTime' ? -1 : b.key === 'eventTime' ? 1 : 0))
-        .map(field => {
-            if (field.key === 'nameUser') {
-                return {
-                    ...field,
-                    name: field.label,
-                    cell: (row: KioskTransactionCard) => (
-                        <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
-                            {row.nameUser}
-                        </div>
-                    )
-                };
-            }
-            const formatField = (row: KioskTransactionCard) => {
-                const value = row[field.key as keyof KioskTransactionCard];
-                switch (field.key) {
-                    case 'deviceSN':
-                        return devices[0].deviceName || 'Sem Dados';
-                    case 'eventDoorId':
-                        return row.eventDoorId === 4 ? 'Quiosque' : 'Torniquete';
-                    case 'eventTime':
-                        return new Date(row.eventTime).toLocaleString() || '';
-                    default:
-                        return value ?? '';
-                }
-            };
+      const validDataCard = resultsMovementCard
+        .filter((data) => Array.isArray(data) && data.length > 0)
+        .flat();
+      const validDataKiosk = resultsMovementKiosk
+        .filter((data) => Array.isArray(data) && data.length > 0)
+        .flat();
 
-            return {
-                id: field.key,
-                name: (
-                    <>
-                        {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
-                    </>
-                ),
-                selector: row => formatField(row),
-                sortable: true,
-                sortFunction: (rowA, rowB) => new Date(rowB.eventTime).getTime() - new Date(rowA.eventTime).getTime()
-            };
-        });
+      setTotalMovements([...validDataCard, ...validDataKiosk]);
+      setStartDate(start);
+      setEndDate(end);
+    } catch (error) {
+      console.error(
+        "Erro ao buscar os dados de listagem de movimentos hoje",
+        error
+      );
+      setListMovementCard([]);
+      setListMovementKiosk([]);
+    }
+  };
 
-    // Calcula o valor total dos movimentos
-    const totalAmount = filteredDataTable.length;
+  // Função para atualizar um funcionário e um cartão
+  const updateEmployeeAndCard = async (employee: Employee) => {
+    await handleUpdateEmployee(employee);
+    window.location.reload();
+  };
 
-    // Função para gerar os dados com nomes substituídos para o export/print
-    const transformTransactionWithNames = (transaction: { deviceSN: string; }) => {
+  // Unifica os dados de movimentos de cartão e porteiro
+  const mergeMovementData = () => {
+    const unifiedData = [...listMovementCard, ...listMovementKiosk];
+    setTotalMovements(unifiedData);
+  };
 
-        const deviceMatch = devices.find(device => device.serialNumber === transaction.deviceSN);
-        const deviceName = deviceMatch?.deviceName || 'Sem Dados';
+  // Atualiza a lista de movimentos ao montar o componente
+  useEffect(() => {
+    fetchAllMoveCard();
+    fetchAllMoveKiosk();
+    settingVariables();
+    mergeMovementData();
+  }, []);
 
-        return {
-            ...transaction,
-            deviceSN: deviceName,
-        };
-    };
+  // Função para atualizar as listagens de movimentos
+  const refreshListMovements = () => {
+    fetchAllMoveCard();
+    fetchAllMoveKiosk();
+    setStartDate(formatDateToStartOfDay(pastDate));
+    setEndDate(formatDateToEndOfDay(currentDate));
+    setClearSelectionToggle((prev) => !prev);
+  };
 
-    // Dados com nomes substituídos para o export/print
-    const listMoveWithNames = totalMovements.map(transformTransactionWithNames);
+  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
+  useEffect(() => {
+    if (selectedDevicesIds.length > 0) {
+      const employeeShortNames = selectedDevicesIds
+        .map((employeeId) => {
+          const employee = employees.find(
+            (emp) => emp.employeeID === employeeId
+          );
+          return employee ? employee.shortName : null;
+        })
+        .filter((name) => name !== null);
 
-    // Transforma as linhas selecionadas com nomes substituídos
-    const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
+      const filtered = totalMovements.filter((listMovement) =>
+        employeeShortNames.includes(listMovement.nameUser)
+      );
+      setFilteredDevices(filtered);
+    } else {
+      setFilteredDevices(totalMovements);
+    }
+  }, [selectedDevicesIds, totalMovements]);
 
-    // Função para obter os campos selecionados baseado em selectedColumns
-    const getSelectedFields = () => {
-        return combinedMovements.filter(field => selectedColumns.includes(field.key));
-    };
+  // Função para selecionar as colunas
+  const toggleColumn = (columnName: string) => {
+    if (selectedColumns.includes(columnName)) {
+      setSelectedColumns(selectedColumns.filter((col) => col !== columnName));
+    } else {
+      setSelectedColumns([...selectedColumns, columnName]);
+    }
+  };
 
-    return (
-        <TerminalsProvider>
-            <div className="main-container">
-                
-                <div className='content-container'>
-                    <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                        <div className="treeview-container">
-                            <TreeViewDataNkioskMove onSelectDevices={handleSelectFromTreeView} />
-                        </div>
-                        <div className="datatable-container">
-                            <div className="datatable-title-text">
-                                <span>Listagem de Movimentos</span>
-                            </div>
-                            <div className="datatable-header">
-                                <div>
-                                    <CustomSearchBox
-                                        label="Pesquisa"
-                                        variant="outlined"
-                                        size='small'
-                                        value={filterText}
-                                        onChange={e => setFilterText(e.target.value)}
-                                        style={{ marginTop: -5 }}
-                                    />
-                                </div>
-                                <div className="buttons-container-others">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshListMovements} />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-eye" onClick={() => setOpenColumnSelector(true)} />
-                                    </OverlayTrigger>
-                                    <ExportButton allData={listMoveWithNames} selectedData={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
-                                    <PrintButton data={selectedRows.length > 0 ? selectedRowsWithNames : listMoveWithNames} fields={getSelectedFields()} />
-                                </div>
-                                <div className="date-range-search">
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Total Hoje</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-calendar-event" onClick={fetchTotalMovementsToday} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Total Dia Anterior</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-arrow-left-circle" onClick={fetchTotalMovementsForPreviousDay} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Total Dia Seguinte</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi bi-arrow-right-circle" onClick={fetchTotalMovementsForNextDay} iconSize='1.1em' disabled={new Date(endDate) >= new Date(new Date().toISOString().substring(0, 10))} />
-                                    </OverlayTrigger>
-                                    <input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={e => setStartDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <span> até </span>
-                                    <input
-                                        type="datetime-local"
-                                        value={endDate}
-                                        onChange={e => setEndDate(e.target.value)}
-                                        className='search-input'
-                                    />
-                                    <OverlayTrigger
-                                        placement="top"
-                                        overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
-                                    >
-                                        <CustomOutlineButton icon="bi-search" onClick={fetchMovementCardBetweenDates} iconSize='1.1em' />
-                                    </OverlayTrigger>
-                                </div>
-                            </div>
-                            <div className='table-css'>
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    paginationPerPage={20}
-                                    selectableRows
-                                    onSelectedRowsChange={handleRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="eventTime"
-                                />
-                                <div style={{ marginLeft: 10, marginTop: -5 }}>
-                                    <strong>Movimentos Totais: </strong>{totalAmount}
-                                </div>
-                            </div>
-                        </div>
-                    </Split>
-                </div>
-                
-                {openColumnSelector && (
-                    <ColumnSelectorModal
-                        columns={combinedMovements}
-                        selectedColumns={selectedColumns}
-                        onClose={() => setOpenColumnSelector(false)}
-                        onColumnToggle={toggleColumn}
-                        onResetColumns={resetColumns}
-                        onSelectAllColumns={onSelectAllColumns}
-                    />
-                )}
-                {selectedEmployee && (
-                    <UpdateModalEmployees
-                        open={showEditModal}
-                        onClose={() => setShowEditModal(false)}
-                        onUpdate={updateEmployeeAndCard}
-                        entity={selectedEmployee}
-                        fields={employeeFields}
-                        title="Atualizar Funcionário"
-                    />
-                )}
-            </div>
-        </TerminalsProvider>
+  // Função para resetar as colunas
+  const resetColumns = () => {
+    setSelectedColumns([
+      "eventTime",
+      "nameUser",
+      "pin",
+      "eventDoorId",
+      "eventName",
+      "deviceSN",
+    ]);
+  };
+
+  // Função para selecionar todas as colunas
+  const onSelectAllColumns = (allColumnKeys: string[]) => {
+    setSelectedColumns(allColumnKeys);
+  };
+
+  // Define a seleção da árvore
+  const handleSelectFromTreeView = (selectedIds: string[]) => {
+    setSelectedDevicesIds(selectedIds);
+  };
+
+  // Define a função de seleção de linhas
+  const handleRowSelected = (state: {
+    allSelected: boolean;
+    selectedCount: number;
+    selectedRows: KioskTransactionCard[];
+  }) => {
+    const sortedSelectedRows = state.selectedRows.sort(
+      (a, b) =>
+        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
     );
-}
+    setSelectedRows(sortedSelectedRows);
+  };
+
+  // Opções de paginação da tabela com troca de EN para PT
+  const paginationOptions = {
+    rowsPerPageText: "Linhas por página",
+    rangeSeparatorText: "de",
+  };
+
+  // Filtra os dados da tabela com base no filtro de 'eventName'
+  const filteredDataTable = filteredDevices
+    .filter(
+      (listMovement) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (listMovement[key] != null &&
+              String(listMovement[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(listMovement).some((value) => {
+          if (value == null) {
+            return false;
+          } else if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          }
+        })
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.eventTime).getTime() - new Date(a.dataRecolha).getTime()
+    );
+
+  // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
+  const combinedMovements = [
+    ...transactionCardFields,
+    ...transactionCardFields,
+  ].reduce((acc, current) => {
+    if (!acc.some((field) => field.key === current.key)) {
+      acc.push(current);
+    }
+    return acc;
+  }, [] as typeof transactionCardFields);
+
+  // Função para abrir o modal de edição
+  const handleOpenEditModal = (person: KioskTransactionCard) => {
+    const employeeDetails = employees.find(
+      (emp) => emp.name === person.nameUser
+    );
+    if (employeeDetails) {
+      setSelectedEmployee(employeeDetails);
+      setShowEditModal(true);
+    } else {
+      console.error("Funcionário não encontrado:", person.nameUser);
+    }
+  };
+
+  const columns: TableColumn<KioskTransactionCard>[] = combinedMovements
+    .filter((field) => selectedColumns.includes(field.key))
+    .sort((a, b) =>
+      a.key === "eventTime" ? -1 : b.key === "eventTime" ? 1 : 0
+    )
+    .map((field) => {
+      if (field.key === "nameUser") {
+        return {
+          ...field,
+          name: field.label,
+          cell: (row: KioskTransactionCard) => (
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => handleOpenEditModal(row)}
+            >
+              {row.nameUser}
+            </div>
+          ),
+        };
+      }
+      const formatField = (row: KioskTransactionCard) => {
+        const value = row[field.key as keyof KioskTransactionCard];
+        switch (field.key) {
+          case "deviceSN":
+            return devices[0].deviceName || "Sem Dados";
+          case "eventDoorId":
+            return row.eventDoorId === 4 ? "Quiosque" : "Torniquete";
+          case "eventTime":
+            return new Date(row.eventTime).toLocaleString() || "";
+          default:
+            return value ?? "";
+        }
+      };
+
+      return {
+        id: field.key,
+        name: (
+          <>
+            {field.label}
+            <SelectFilter
+              column={field.key}
+              setFilters={setFilters}
+              data={filteredDataTable}
+            />
+          </>
+        ),
+        selector: (row) => formatField(row),
+        sortable: true,
+        sortFunction: (rowA, rowB) =>
+          new Date(rowB.eventTime).getTime() -
+          new Date(rowA.eventTime).getTime(),
+      };
+    });
+
+  // Calcula o valor total dos movimentos
+  const totalAmount = filteredDataTable.length;
+
+  // Função para gerar os dados com nomes substituídos para o export/print
+  const transformTransactionWithNames = (transaction: { deviceSN: string }) => {
+    const deviceMatch = devices.find(
+      (device) => device.serialNumber === transaction.deviceSN
+    );
+    const deviceName = deviceMatch?.deviceName || "Sem Dados";
+
+    return {
+      ...transaction,
+      deviceSN: deviceName,
+    };
+  };
+
+  // Dados com nomes substituídos para o export/print
+  const listMoveWithNames = totalMovements.map(transformTransactionWithNames);
+
+  // Transforma as linhas selecionadas com nomes substituídos
+  const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
+
+  // Função para obter os campos selecionados baseado em selectedColumns
+  const getSelectedFields = () => {
+    return combinedMovements.filter((field) =>
+      selectedColumns.includes(field.key)
+    );
+  };
+
+  return (
+    <TerminalsProvider>
+      <div className="main-container">
+        <div className="content-container">
+          <Split
+            className="split"
+            sizes={[15, 85]}
+            minSize={100}
+            expandToMin={true}
+            gutterSize={15}
+            gutterAlign="center"
+            snapOffset={0}
+            dragInterval={1}
+          >
+            <div className="treeview-container">
+              <TreeViewDataNkioskMove
+                onSelectDevices={handleSelectFromTreeView}
+              />
+            </div>
+            <div className="datatable-container">
+              <div className="datatable-title-text">
+                <span>Listagem de Movimentos</span>
+              </div>
+              <div className="datatable-header">
+                <div>
+                  <CustomSearchBox
+                    label="Pesquisa"
+                    variant="outlined"
+                    size="small"
+                    value={filterText}
+                    onChange={(e) => setFilterText(e.target.value)}
+                    style={{ marginTop: -5 }}
+                  />
+                </div>
+                <div className="buttons-container-others">
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi-arrow-clockwise"
+                      onClick={refreshListMovements}
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi-eye"
+                      onClick={() => setOpenColumnSelector(true)}
+                    />
+                  </OverlayTrigger>
+                  <ExportButton
+                    allData={listMoveWithNames}
+                    selectedData={
+                      selectedRows.length > 0
+                        ? selectedRowsWithNames
+                        : listMoveWithNames
+                    }
+                    fields={getSelectedFields()}
+                  />
+                  <PrintButton
+                    data={
+                      selectedRows.length > 0
+                        ? selectedRowsWithNames
+                        : listMoveWithNames
+                    }
+                    fields={getSelectedFields()}
+                  />
+                </div>
+                <div className="date-range-search">
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip className="custom-tooltip">Total Hoje</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi bi-calendar-event"
+                      onClick={fetchTotalMovementsToday}
+                      iconSize="1.1em"
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip className="custom-tooltip">
+                        Total Dia Anterior
+                      </Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi bi-arrow-left-circle"
+                      onClick={fetchTotalMovementsForPreviousDay}
+                      iconSize="1.1em"
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip className="custom-tooltip">
+                        Total Dia Seguinte
+                      </Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi bi-arrow-right-circle"
+                      onClick={fetchTotalMovementsForNextDay}
+                      iconSize="1.1em"
+                      disabled={
+                        new Date(endDate) >=
+                        new Date(new Date().toISOString().substring(0, 10))
+                      }
+                    />
+                  </OverlayTrigger>
+                  <input
+                    type="datetime-local"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="search-input"
+                  />
+                  <span> até </span>
+                  <input
+                    type="datetime-local"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="search-input"
+                  />
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip className="custom-tooltip">Buscar</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi-search"
+                      onClick={fetchMovementCardBetweenDates}
+                      iconSize="1.1em"
+                    />
+                  </OverlayTrigger>
+                </div>
+              </div>
+              <div className="table-css">
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  defaultSortAsc={true}
+                  defaultSortFieldId="eventTime"
+                />
+                <div style={{ marginLeft: 10, marginTop: -5 }}>
+                  <strong>Movimentos Totais: </strong>
+                  {totalAmount}
+                </div>
+              </div>
+            </div>
+          </Split>
+        </div>
+        {openColumnSelector && (
+          <ColumnSelectorModal
+            columns={combinedMovements}
+            selectedColumns={selectedColumns}
+            onClose={() => setOpenColumnSelector(false)}
+            onColumnToggle={toggleColumn}
+            onResetColumns={resetColumns}
+            onSelectAllColumns={onSelectAllColumns}
+          />
+        )}
+        {selectedEmployee && (
+          <UpdateModalEmployees
+            open={showEditModal}
+            onClose={() => setShowEditModal(false)}
+            onUpdate={updateEmployeeAndCard}
+            entity={selectedEmployee}
+            fields={employeeFields}
+            title="Atualizar Funcionário"
+          />
+        )}
+      </div>
+    </TerminalsProvider>
+  );
+};

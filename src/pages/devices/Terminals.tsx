@@ -22,7 +22,6 @@ import {
   Tooltip,
 } from "react-bootstrap";
 
-import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useAttendance } from "../../context/MovementContext";
@@ -515,7 +514,7 @@ export const Terminals = () => {
             return (
               <OverlayTrigger
                 placement="top"
-                overlay={<Tooltip>{row[field.key]}</Tooltip>}
+                overlay={<Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>}
               >
                 <span
                   style={{
@@ -586,7 +585,7 @@ export const Terminals = () => {
             return (
               <OverlayTrigger
                 placement="top"
-                overlay={<Tooltip>{row[field.key]}</Tooltip>}
+                overlay={<Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>}
               >
                 <span
                   style={{
@@ -2243,7 +2242,6 @@ export const Terminals = () => {
             </Tab>
           </Tabs>
         </div>
-        
         {showColumnSelector && (
           <ColumnSelectorModal
             columns={deviceFields}

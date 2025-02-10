@@ -60,7 +60,6 @@ export const NclockRequests = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-
   const { employees, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -731,7 +730,6 @@ export const NclockRequests = () => {
           </div>
         </Split>
       </div>
-
       {showAddAttendanceModal && (
         <CreateModalAttendance
           open={showAddAttendanceModal}

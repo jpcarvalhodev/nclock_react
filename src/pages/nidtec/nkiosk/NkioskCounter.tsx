@@ -14,7 +14,7 @@ import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataDevice } from "../../../components/TreeViewDevice";
 import { useKiosk } from "../../../context/KioskContext";
 
-import { DeviceContextType, TerminalsContext, useTerminals } from "../../../context/TerminalsContext";
+import { useTerminals } from "../../../context/TerminalsContext";
 import { counterFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { Counter } from "../../../types/Types";
@@ -59,7 +59,6 @@ const convertStringToDate = (dateStr: string) => {
 };
 
 export const NkioskCounter = () => {
-    
     const currentDate = new Date();
     const pastDate = new Date();
     pastDate.setDate(currentDate.getDate() - 30);
@@ -310,7 +309,6 @@ export const NkioskCounter = () => {
 
     return (
         <div className="main-container">
-            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -413,7 +411,6 @@ export const NkioskCounter = () => {
                     </div>
                 </Split>
             </div>
-            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={counterFields}

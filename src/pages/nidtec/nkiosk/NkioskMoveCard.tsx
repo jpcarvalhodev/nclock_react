@@ -51,7 +51,6 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskMoveCard = () => {
-    
     const { employees, handleUpdateEmployee } = usePersons();
     const { devices } = useTerminals();
     const currentDate = new Date();
@@ -396,7 +395,6 @@ export const NkioskMoveCard = () => {
 
     return (
         <div className="main-container">
-            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -509,7 +507,6 @@ export const NkioskMoveCard = () => {
                     </div>
                 </Split>
             </div>
-            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={transactionCardFields}

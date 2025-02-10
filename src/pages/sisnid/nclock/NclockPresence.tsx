@@ -14,374 +14,476 @@ import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { useAttendance } from "../../../context/MovementContext";
 
 import { usePersons } from "../../../context/PersonsContext";
-import { employeeAttendanceTimesFields, employeeFields } from "../../../fields/Fields";
+import {
+  employeeAttendanceTimesFields,
+  employeeFields,
+} from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 
-import Split from 'react-split';
+import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { TextField, TextFieldProps } from "@mui/material";
 
 // Define a interface para os filtros
 interface Filters {
-    [key: string]: string;
+  [key: string]: string;
 }
 
 // Define a interface para os dados de presença de funcionários
 interface EmployeeAttendanceWithPresence extends EmployeeAttendanceTimes {
-    isPresent: boolean;
+  isPresent: boolean;
 }
 
 // Este objeto mapeará IDs de funcionários para seus respectivos status de presença
 interface EmployeeStatus {
-    [key: string]: EmployeeAttendanceTimes & { isPresent: boolean };
+  [key: string]: EmployeeAttendanceTimes & { isPresent: boolean };
 }
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-    return (
-        <TextField
-            {...props}
-            className="SearchBox"
-        />
-    );
+  return <TextField {...props} className="SearchBox" />;
 }
 
 // Define a página de presença
 export const NclockPresence = () => {
-    const { fetchAllAttendances } = useAttendance();
-    
-    const { employees, handleUpdateEmployee } = usePersons();
-    const [attendancePresence, setAttendancePresence] = useState<EmployeeAttendanceWithPresence[]>([]);
-    const [filterText, setFilterText] = useState('');
-    const [showColumnSelector, setShowColumnSelector] = useState(false);
-    const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(['employeeName', 'inOutMode', 'attendanceTime']);
-    const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>([]);
-    const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('');
-    const [filteredAttendances, setFilteredAttendances] = useState<EmployeeAttendanceTimes[]>([]);
-    const [filters, setFilters] = useState<Filters>({});
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+  const { fetchAllAttendances } = useAttendance();
+  const { employees, handleUpdateEmployee } = usePersons();
+  const [attendancePresence, setAttendancePresence] = useState<
+    EmployeeAttendanceWithPresence[]
+  >([]);
+  const [filterText, setFilterText] = useState("");
+  const [showColumnSelector, setShowColumnSelector] = useState(false);
+  const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([
+    "employeeName",
+    "inOutMode",
+    "attendanceTime",
+  ]);
+  const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>(
+    []
+  );
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
+  const [filteredAttendances, setFilteredAttendances] = useState<
+    EmployeeAttendanceTimes[]
+  >([]);
+  const [filters, setFilters] = useState<Filters>({});
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
 
-    // Função para buscar todos as assiduidades
-    const fetchPresence = () => {
-        const currentDate = new Date().toLocaleDateString('pt-PT');
+  // Função para buscar todos as assiduidades
+  const fetchPresence = () => {
+    const currentDate = new Date().toLocaleDateString("pt-PT");
 
-        fetchAllAttendances({
-            filterFunc: data => data.filter(att => att.type !== 3)
-        }).then(allAttendanceData => {
-            const employeeStatusMap: EmployeeStatus = {};
+    fetchAllAttendances({
+      filterFunc: (data) => data.filter((att) => att.type !== 3),
+    })
+      .then((allAttendanceData) => {
+        const employeeStatusMap: EmployeeStatus = {};
 
-            allAttendanceData.forEach((emp: EmployeeAttendanceTimes) => {
-                employeeStatusMap[emp.employeeId] = {
-                    ...emp,
-                    isPresent: false
-                };
-            });
-
-            allAttendanceData.forEach((att: EmployeeAttendanceTimes) => {
-                const attendanceDate = new Date(att.attendanceTime).toLocaleDateString('pt-PT');
-                if (attendanceDate === currentDate && [0, 2, 4].includes(att.inOutMode)) {
-                    employeeStatusMap[att.employeeId] = {
-                        ...att,
-                        isPresent: true
-                    };
-                }
-            });
-
-            const attendances = Object.values(employeeStatusMap);
-            setAttendancePresence(attendances);
-            setFilteredAttendances(attendances);
-        }).catch(error => {
-            console.error("Erro ao tentar buscar os dados:", error);
+        allAttendanceData.forEach((emp: EmployeeAttendanceTimes) => {
+          employeeStatusMap[emp.employeeId] = {
+            ...emp,
+            isPresent: false,
+          };
         });
-    };
 
-    // Função para atualizar um funcionário e um cartão
-    const updateEmployeeAndCard = async (employee: Employee) => {
-        await handleUpdateEmployee(employee);
-        refreshAttendance();
-        setClearSelectionToggle((prev) => !prev);
-    };
-
-    // Atualiza a lista de funcionários ao carregar a página
-    useEffect(() => {
-        fetchPresence();
-    }, []);
-
-    // Função para atualizar os dados da tabela
-    const refreshAttendance = () => {
-        fetchPresence();
-        setClearSelectionToggle((prev) => !prev);
-    };
-
-    // Função para filtrar as presenças com base no texto de pesquisa
-    useEffect(() => {
-        const lowercasedFilter = filterText.toLowerCase();
-        const filteredData = attendancePresence.filter(att => {
-            return Object.entries(att).some(([key, value]) => {
-                if (selectedColumns.includes(key)) {
-                    if (key === 'attendanceTime') {
-                        const formattedDate = new Date(value).toLocaleString('pt');
-                        return formattedDate.toLowerCase().includes(lowercasedFilter);
-                    } else if (typeof value === 'string') {
-                        return value.toLowerCase().includes(lowercasedFilter);
-                    } else if (value != null) {
-                        return value.toString().toLowerCase().includes(lowercasedFilter);
-                    }
-                }
-                return false;
-            });
+        allAttendanceData.forEach((att: EmployeeAttendanceTimes) => {
+          const attendanceDate = new Date(
+            att.attendanceTime
+          ).toLocaleDateString("pt-PT");
+          if (
+            attendanceDate === currentDate &&
+            [0, 2, 4].includes(att.inOutMode)
+          ) {
+            employeeStatusMap[att.employeeId] = {
+              ...att,
+              isPresent: true,
+            };
+          }
         });
-        setFilteredAttendances(filteredData);
-    }, [filterText, attendancePresence]);
 
-    // Atualiza a seleção ao mudar o filtro
-    useEffect(() => {
-        if (selectedEmployeeIds.length > 0) {
-            const newFilteredAttendances = attendancePresence.filter(att => selectedEmployeeIds.includes(att.employeeId));
-            setFilteredAttendances(newFilteredAttendances);
-        } else if (attendancePresence.length > 0) {
-            setFilteredAttendances(attendancePresence);
+        const attendances = Object.values(employeeStatusMap);
+        setAttendancePresence(attendances);
+        setFilteredAttendances(attendances);
+      })
+      .catch((error) => {
+        console.error("Erro ao tentar buscar os dados:", error);
+      });
+  };
+
+  // Função para atualizar um funcionário e um cartão
+  const updateEmployeeAndCard = async (employee: Employee) => {
+    await handleUpdateEmployee(employee);
+    refreshAttendance();
+    setClearSelectionToggle((prev) => !prev);
+  };
+
+  // Atualiza a lista de funcionários ao carregar a página
+  useEffect(() => {
+    fetchPresence();
+  }, []);
+
+  // Função para atualizar os dados da tabela
+  const refreshAttendance = () => {
+    fetchPresence();
+    setClearSelectionToggle((prev) => !prev);
+  };
+
+  // Função para filtrar as presenças com base no texto de pesquisa
+  useEffect(() => {
+    const lowercasedFilter = filterText.toLowerCase();
+    const filteredData = attendancePresence.filter((att) => {
+      return Object.entries(att).some(([key, value]) => {
+        if (selectedColumns.includes(key)) {
+          if (key === "attendanceTime") {
+            const formattedDate = new Date(value).toLocaleString("pt");
+            return formattedDate.toLowerCase().includes(lowercasedFilter);
+          } else if (typeof value === "string") {
+            return value.toLowerCase().includes(lowercasedFilter);
+          } else if (value != null) {
+            return value.toString().toLowerCase().includes(lowercasedFilter);
+          }
         }
-    }, [selectedEmployeeId, selectedEmployeeIds]);
+        return false;
+      });
+    });
+    setFilteredAttendances(filteredData);
+  }, [filterText, attendancePresence]);
 
-    // Define a seleção de funcionários
-    const handleSelectFromTreeView = (selectedIds: string[]) => {
-        setSelectedEmployeeIds(selectedIds);
-        setSelectedEmployeeId(selectedIds[0]);
-    };
+  // Atualiza a seleção ao mudar o filtro
+  useEffect(() => {
+    if (selectedEmployeeIds.length > 0) {
+      const newFilteredAttendances = attendancePresence.filter((att) =>
+        selectedEmployeeIds.includes(att.employeeId)
+      );
+      setFilteredAttendances(newFilteredAttendances);
+    } else if (attendancePresence.length > 0) {
+      setFilteredAttendances(attendancePresence);
+    }
+  }, [selectedEmployeeId, selectedEmployeeIds]);
 
-    // Função para alternar a visibilidade das colunas
-    const handleColumnToggle = (columnKey: string) => {
-        if (selectedColumns.includes(columnKey)) {
-            setSelectedColumns(selectedColumns.filter(key => key !== columnKey));
-        } else {
-            setSelectedColumns([...selectedColumns, columnKey]);
-        }
-    };
+  // Define a seleção de funcionários
+  const handleSelectFromTreeView = (selectedIds: string[]) => {
+    setSelectedEmployeeIds(selectedIds);
+    setSelectedEmployeeId(selectedIds[0]);
+  };
 
-    // Função para selecionar todas as colunas
-    const handleSelectAllColumns = () => {
-        const allColumnKeys = employeeAttendanceTimesFields.map(field => field.key);
-        setSelectedColumns(allColumnKeys);
-    };
+  // Função para alternar a visibilidade das colunas
+  const handleColumnToggle = (columnKey: string) => {
+    if (selectedColumns.includes(columnKey)) {
+      setSelectedColumns(selectedColumns.filter((key) => key !== columnKey));
+    } else {
+      setSelectedColumns([...selectedColumns, columnKey]);
+    }
+  };
 
-    // Função para resetar as colunas
-    const handleResetColumns = () => {
-        setSelectedColumns(['employeeName', 'inOutMode', 'attendanceTime']);
-    };
+  // Função para selecionar todas as colunas
+  const handleSelectAllColumns = () => {
+    const allColumnKeys = employeeAttendanceTimesFields.map(
+      (field) => field.key
+    );
+    setSelectedColumns(allColumnKeys);
+  };
 
-    // Remove o campo de observação, número, nome do funcionário e o tipo
-    const filteredColumns = employeeAttendanceTimesFields.filter(field => field.key !== 'observation' && field.key !== 'enrollNumber' && field.key !== 'employeeId' && field.key !== 'type' && field.key !== 'deviceNumber' && field.key !== 'deviceId' && field.key !== 'verifyMode' && field.key !== 'workCode');
+  // Função para resetar as colunas
+  const handleResetColumns = () => {
+    setSelectedColumns(["employeeName", "inOutMode", "attendanceTime"]);
+  };
 
-    // Definindo a coluna de Presença primeiro
-    const presenceColumn: TableColumn<EmployeeAttendanceTimes> = {
-        name: 'Presença',
-        selector: row => row.isPresent ? 'Presente' : 'Ausente',
-        format: row => (
-            <span style={{
-                color: row.isPresent ? 'green' : 'red',
-                backgroundColor: row.isPresent ? '#d4edda' : '#f8d7da',
-                borderRadius: '4px',
-                padding: '2px 10px',
-                display: 'inline-block'
-            }}>
-                {row.isPresent ? 'Presente' : 'Ausente'}
-            </span>
-        ),
-        sortable: true
-    };
+  // Remove o campo de observação, número, nome do funcionário e o tipo
+  const filteredColumns = employeeAttendanceTimesFields.filter(
+    (field) =>
+      field.key !== "observation" &&
+      field.key !== "enrollNumber" &&
+      field.key !== "employeeId" &&
+      field.key !== "type" &&
+      field.key !== "deviceNumber" &&
+      field.key !== "deviceId" &&
+      field.key !== "verifyMode" &&
+      field.key !== "workCode"
+  );
 
-    // Filtra os dados da tabela
-    const filteredDataTable = filteredAttendances.filter(attendances =>
-        Object.keys(filters).every(key =>
-            filters[key] === "" || (attendances[key] != null && String(attendances[key]).toLowerCase().includes(filters[key].toLowerCase()))
+  // Definindo a coluna de Presença primeiro
+  const presenceColumn: TableColumn<EmployeeAttendanceTimes> = {
+    name: "Presença",
+    selector: (row) => (row.isPresent ? "Presente" : "Ausente"),
+    format: (row) => (
+      <span
+        style={{
+          color: row.isPresent ? "green" : "red",
+          backgroundColor: row.isPresent ? "#d4edda" : "#f8d7da",
+          borderRadius: "4px",
+          padding: "2px 10px",
+          display: "inline-block",
+        }}
+      >
+        {row.isPresent ? "Presente" : "Ausente"}
+      </span>
+    ),
+    sortable: true,
+  };
+
+  // Filtra os dados da tabela
+  const filteredDataTable = filteredAttendances
+    .filter(
+      (attendances) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (attendances[key] != null &&
+              String(attendances[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
         ) &&
         Object.entries(attendances).some(([key, value]) => {
-            if (selectedColumns.includes(key) && value != null) {
-                if (value instanceof Date) {
-                    return value.toLocaleString().toLowerCase().includes(filterText.toLowerCase());
-                } else {
-                    return value.toString().toLowerCase().includes(filterText.toLowerCase());
-                }
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
             }
-            return false;
+          }
+          return false;
         })
-    ).sort((a, b) => new Date(b.attendanceTime).getTime() - new Date(a.attendanceTime).getTime());
-
-    // Função para abrir o modal de edição
-    const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
-        const employeeDetails = employees.find(emp => emp.employeeID === person.employeeId);
-        if (employeeDetails) {
-            setSelectedEmployee(employeeDetails);
-            setShowEditModal(true);
-        } else {
-            console.error("Funcionário não encontrado:", person.employeeName);
-        }
-    };
-
-    // Adicionando as outras colunas
-    const otherColumns: TableColumn<EmployeeAttendanceTimes>[] = employeeAttendanceTimesFields
-        .filter(field => selectedColumns.includes(field.key))
-        .map(field => {
-            if (field.key === 'employeeName') {
-                return {
-                    ...field,
-                    name: field.label,
-                    cell: (row: EmployeeAttendanceTimes) => (
-                        <div style={{ cursor: 'pointer' }} onClick={() => handleOpenEditModal(row)}>
-                            {row.employeeName}
-                        </div>
-                    )
-                };
-            }
-            const formatField = (row: EmployeeAttendanceTimes) => {
-                switch (field.key) {
-                    case 'attendanceTime':
-                        return new Date(row.attendanceTime).toLocaleString() || '';
-                    case 'inOutMode':
-                        switch (row[field.key]) {
-                            case 0: return 'Entrada';
-                            case 1: return 'Saída';
-                            case 2: return 'Pausa - Entrada';
-                            case 3: return 'Pausa - Saída';
-                            case 4: return 'Hora Extra - Entrada';
-                            case 5: return 'Hora Extra - Saída';
-                            default: return '';
-                        }
-                    default:
-                        return row[field.key];
-                }
-            };
-            return {
-                id: field.key,
-                name: (
-                    <>
-                        {field.label}
-                        <SelectFilter column={field.key} setFilters={setFilters} data={filteredDataTable} />
-                    </>
-                ),
-                selector: row => formatField(row),
-                sortable: true,
-                sortFunction: (rowA, rowB) => new Date(rowB.attendanceTime).getTime() - new Date(rowA.attendanceTime).getTime()
-            };
-        });
-
-    // Combinando colunas, com a coluna de Presença primeiro
-    const columns: TableColumn<EmployeeAttendanceTimes>[] = [presenceColumn, ...otherColumns];
-
-    // Define as opções de paginação de EN para PT
-    const paginationOptions = {
-        rowsPerPageText: 'Linhas por página',
-        rangeSeparatorText: 'de',
-    };
-
-    // Define a função selecionar uma linha
-    const handleRowSelected = (state: {
-        allSelected: boolean;
-        selectedCount: number;
-        selectedRows: EmployeeAttendanceTimes[];
-    }) => {
-        const sortedSelectedRows = state.selectedRows.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
-        setSelectedRows(sortedSelectedRows);
-    };
-
-    // Função para obter os campos selecionados baseado em selectedColumns
-    const getSelectedFields = () => {
-        return employeeAttendanceTimesFields.filter(field => selectedColumns.includes(field.key));
-    };
-
-    return (
-        <div className="main-container">
-            
-            <div className="content-container">
-                <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
-                    <div className="treeview-container">
-                        <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
-                    </div>
-                    <div className="datatable-container">
-                        <div className="datatable-title-text">
-                            <span>Presenças</span>
-                        </div>
-                        <div className="datatable-header">
-                            <div>
-                                <CustomSearchBox
-                                    label="Pesquisa"
-                                    variant="outlined"
-                                    size='small'
-                                    value={filterText}
-                                    onChange={e => setFilterText(e.target.value)}
-                                    style={{ marginTop: -5 }}
-                                />
-                            </div>
-                            <div className="buttons-container">
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi-arrow-clockwise" onClick={refreshAttendance} iconSize='1.1em'
-                                    />
-                                </OverlayTrigger>
-                                <OverlayTrigger
-                                    placement="top"
-                                    overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
-                                >
-                                    <CustomOutlineButton icon="bi-eye" onClick={() => setShowColumnSelector(true)} iconSize='1.1em'
-                                    />
-                                </OverlayTrigger>
-                                <ExportButton allData={filteredDataTable} selectedData={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                                <PrintButton data={selectedRows.length > 0 ? selectedRows : filteredDataTable} fields={getSelectedFields()} />
-                            </div>
-                        </div>
-                        <div className='content-wrapper'>
-                            <div className='table-css'>
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredDataTable}
-                                    pagination
-                                    paginationComponentOptions={paginationOptions}
-                                    selectableRows
-                                    paginationPerPage={20}
-                                    onSelectedRowsChange={handleRowSelected}
-                                    clearSelectedRows={clearSelectionToggle}
-                                    selectableRowsHighlight
-                                    noDataComponent="Não existem dados disponíveis para exibir."
-                                    customStyles={customStyles}
-                                    striped
-                                    defaultSortAsc={true}
-                                    defaultSortFieldId="attendanceTime"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </Split>
-            </div>
-            
-            {showColumnSelector && (
-                <ColumnSelectorModal
-                    columns={filteredColumns}
-                    selectedColumns={selectedColumns}
-                    onClose={() => setShowColumnSelector(false)}
-                    onColumnToggle={handleColumnToggle}
-                    onResetColumns={handleResetColumns}
-                    onSelectAllColumns={handleSelectAllColumns}
-                />
-            )}
-            {selectedEmployee && (
-                <UpdateModalEmployees
-                    open={showEditModal}
-                    onClose={() => setShowEditModal(false)}
-                    onUpdate={updateEmployeeAndCard}
-                    entity={selectedEmployee}
-                    fields={employeeFields}
-                    title="Atualizar Funcionário"
-                />
-            )}
-        </div>
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.attendanceTime).getTime() -
+        new Date(a.attendanceTime).getTime()
     );
+
+  // Função para abrir o modal de edição
+  const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
+    const employeeDetails = employees.find(
+      (emp) => emp.employeeID === person.employeeId
+    );
+    if (employeeDetails) {
+      setSelectedEmployee(employeeDetails);
+      setShowEditModal(true);
+    } else {
+      console.error("Funcionário não encontrado:", person.employeeName);
+    }
+  };
+
+  // Adicionando as outras colunas
+  const otherColumns: TableColumn<EmployeeAttendanceTimes>[] =
+    employeeAttendanceTimesFields
+      .filter((field) => selectedColumns.includes(field.key))
+      .map((field) => {
+        if (field.key === "employeeName") {
+          return {
+            ...field,
+            name: field.label,
+            cell: (row: EmployeeAttendanceTimes) => (
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => handleOpenEditModal(row)}
+              >
+                {row.employeeName}
+              </div>
+            ),
+          };
+        }
+        const formatField = (row: EmployeeAttendanceTimes) => {
+          switch (field.key) {
+            case "attendanceTime":
+              return new Date(row.attendanceTime).toLocaleString() || "";
+            case "inOutMode":
+              switch (row[field.key]) {
+                case 0:
+                  return "Entrada";
+                case 1:
+                  return "Saída";
+                case 2:
+                  return "Pausa - Entrada";
+                case 3:
+                  return "Pausa - Saída";
+                case 4:
+                  return "Hora Extra - Entrada";
+                case 5:
+                  return "Hora Extra - Saída";
+                default:
+                  return "";
+              }
+            default:
+              return row[field.key];
+          }
+        };
+        return {
+          id: field.key,
+          name: (
+            <>
+              {field.label}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            </>
+          ),
+          selector: (row) => formatField(row),
+          sortable: true,
+          sortFunction: (rowA, rowB) =>
+            new Date(rowB.attendanceTime).getTime() -
+            new Date(rowA.attendanceTime).getTime(),
+        };
+      });
+
+  // Combinando colunas, com a coluna de Presença primeiro
+  const columns: TableColumn<EmployeeAttendanceTimes>[] = [
+    presenceColumn,
+    ...otherColumns,
+  ];
+
+  // Define as opções de paginação de EN para PT
+  const paginationOptions = {
+    rowsPerPageText: "Linhas por página",
+    rangeSeparatorText: "de",
+  };
+
+  // Define a função selecionar uma linha
+  const handleRowSelected = (state: {
+    allSelected: boolean;
+    selectedCount: number;
+    selectedRows: EmployeeAttendanceTimes[];
+  }) => {
+    const sortedSelectedRows = state.selectedRows.sort(
+      (a, b) => Number(a.enrollNumber) - Number(b.enrollNumber)
+    );
+    setSelectedRows(sortedSelectedRows);
+  };
+
+  // Função para obter os campos selecionados baseado em selectedColumns
+  const getSelectedFields = () => {
+    return employeeAttendanceTimesFields.filter((field) =>
+      selectedColumns.includes(field.key)
+    );
+  };
+
+  return (
+    <div className="main-container">
+      <div className="content-container">
+        <Split
+          className="split"
+          sizes={[15, 85]}
+          minSize={100}
+          expandToMin={true}
+          gutterSize={15}
+          gutterAlign="center"
+          snapOffset={0}
+          dragInterval={1}
+        >
+          <div className="treeview-container">
+            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+          </div>
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span>Presenças</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <CustomSearchBox
+                  label="Pesquisa"
+                  variant="outlined"
+                  size="small"
+                  value={filterText}
+                  onChange={(e) => setFilterText(e.target.value)}
+                  style={{ marginTop: -5 }}
+                />
+              </div>
+              <div className="buttons-container">
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshAttendance}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setShowColumnSelector(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <ExportButton
+                  allData={filteredDataTable}
+                  selectedData={
+                    selectedRows.length > 0 ? selectedRows : filteredDataTable
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0 ? selectedRows : filteredDataTable
+                  }
+                  fields={getSelectedFields()}
+                />
+              </div>
+            </div>
+            <div className="content-wrapper">
+              <div className="table-css">
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  selectableRows
+                  paginationPerPage={20}
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  defaultSortAsc={true}
+                  defaultSortFieldId="attendanceTime"
+                />
+              </div>
+            </div>
+          </div>
+        </Split>
+      </div>
+      {showColumnSelector && (
+        <ColumnSelectorModal
+          columns={filteredColumns}
+          selectedColumns={selectedColumns}
+          onClose={() => setShowColumnSelector(false)}
+          onColumnToggle={handleColumnToggle}
+          onResetColumns={handleResetColumns}
+          onSelectAllColumns={handleSelectAllColumns}
+        />
+      )}
+      {selectedEmployee && (
+        <UpdateModalEmployees
+          open={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={updateEmployeeAndCard}
+          entity={selectedEmployee}
+          fields={employeeFields}
+          title="Atualizar Funcionário"
+        />
+      )}
+    </div>
+  );
 };

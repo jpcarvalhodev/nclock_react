@@ -7,7 +7,6 @@ import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExportButton } from "../../components/ExportButton";
 
-import { Footer } from "../../components/Footer";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 
@@ -160,7 +159,7 @@ export const AccessControls = () => {
   // Define a função de duplicar funcionários
   const handleDuplicate = (data: Partial<AccessControl>) => {
     console.log(data);
-    setInitialData({ ...data, nome: '' });
+    setInitialData({ ...data, nome: "" });
     setShowAddModal(true);
     setSelectedAccessControl(null);
     setShowUpdateModal(false);
@@ -391,7 +390,6 @@ export const AccessControls = () => {
           />
         </div>
       </div>
-      
       {openColumnSelector && (
         <ColumnSelectorModal
           columns={accessControlFields.filter(

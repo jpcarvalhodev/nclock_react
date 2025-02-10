@@ -41,7 +41,6 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 export const NkioskListPayments = () => {
-    
     const { devices, mbDevices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();
@@ -401,7 +400,6 @@ export const NkioskListPayments = () => {
 
     return (
         <div className="main-container">
-            
             <div className='content-container'>
                 <Split className='split' sizes={[15, 85]} minSize={100} expandToMin={true} gutterSize={15} gutterAlign="center" snapOffset={0} dragInterval={1}>
                     <div className="treeview-container">
@@ -502,7 +500,6 @@ export const NkioskListPayments = () => {
                     </div>
                 </Split>
             </div>
-            
             {openColumnSelector && (
                 <ColumnSelectorModal
                     columns={transactionMBFields}

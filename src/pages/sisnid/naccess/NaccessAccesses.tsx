@@ -7,7 +7,6 @@ import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-import { Footer } from "../../../components/Footer";
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
@@ -52,7 +51,6 @@ export const NaccessAccesses = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-
   const { employees, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -365,6 +363,86 @@ export const NaccessAccesses = () => {
       }
       const formatField = (row: Accesses) => {
         switch (field.key) {
+          case "deviceName":
+            return (
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
+              >
+                <span
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row[field.key]}
+                </span>
+              </OverlayTrigger>
+            );
+          case "eventDoorName":
+            return (
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
+              >
+                <span
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row[field.key]}
+                </span>
+              </OverlayTrigger>
+            );
+          case "readerName":
+            return (
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
+              >
+                <span
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row[field.key]}
+                </span>
+              </OverlayTrigger>
+            );
+          case "eventName":
+            return (
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
+              >
+                <span
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row[field.key]}
+                </span>
+              </OverlayTrigger>
+            );
           default:
             return row[field.key] || "";
         }
@@ -594,7 +672,6 @@ export const NaccessAccesses = () => {
           </div>
         </Split>
       </div>
-
       {showAddAccessModal && (
         <CreateModalAccess
           open={showAddAccessModal}
