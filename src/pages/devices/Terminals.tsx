@@ -1581,7 +1581,7 @@ export const Terminals = () => {
             >
               <Tab eventKey="tasks" title="Actividade">
                 <div>
-                  <p className="activityTabContent">Tarefas do Terminal</p>
+                  <p className="activityTabContent">Tarefas dos Equipamentos</p>
                   {selectedTerminal && selectedDeviceRows.length > 0 ? (
                     loadingActivityData ? (
                       <div
@@ -1610,12 +1610,12 @@ export const Terminals = () => {
                     )
                   ) : (
                     <p style={{ textAlign: "center" }}>
-                      Selecione um terminal para ver as actividades.
+                      Selecione um equipamento para ver as actividades.
                     </p>
                   )}
                 </div>
                 <div>
-                  <p className="activityTabContent">Movimentos do Terminal</p>
+                  <p className="activityTabContent">Movimentos dos Equipamentos</p>
                   {selectedTerminal && selectedDeviceRows.length > 0 ? (
                     loadingMovementData ? (
                       <div
@@ -1646,7 +1646,7 @@ export const Terminals = () => {
                     )
                   ) : (
                     <p style={{ textAlign: "center" }}>
-                      Selecione um terminal para ver os movimentos.
+                      Selecione um equipamento para ver os movimentos.
                     </p>
                   )}
                 </div>
@@ -1760,7 +1760,7 @@ export const Terminals = () => {
                   </Tab>
                   <Tab
                     eventKey="users-terminal"
-                    title="Utilizadores no terminal"
+                    title="Utilizadores no equipamento"
                   >
                     {loadingUsersInTerminalData ? (
                       <div
