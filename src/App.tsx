@@ -235,6 +235,7 @@ import { NvisitorGraph } from './pages/sisnid/nvisitor/NvisitorGraph';
 import { NvisitorListMovements } from './pages/sisnid/nvisitor/NvisitorListMovements';
 import { NvisitorMoveCard } from './pages/sisnid/nvisitor/NvisitorMoveCard';
 import { NvisitorMoveKiosk } from './pages/sisnid/nvisitor/NvisitorMoveKiosk';
+import { NaccessPresence } from './pages/sisnid/naccess/NaccessPresence';
 
 // Define a função de rotas com animação
 function AnimatedRoutes() {
@@ -291,6 +292,7 @@ function AnimatedRoutes() {
           <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />
           <Route path="/naccess/naccessgraph" element={<PageProtection><NaccessGraph /></PageProtection>} />
           <Route path="/naccess/naccessaccesses" element={<PageProtection><NaccessAccesses /></PageProtection>} />
+          <Route path="/naccess/naccesspresence" element={<PageProtection><NaccessPresence /></PageProtection>} />
 
           <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
           <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />

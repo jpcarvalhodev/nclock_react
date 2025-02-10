@@ -641,7 +641,7 @@ export const NaccessAccesses = () => {
                 style={{ marginTop: 0 }}
               >
                 <Nav.Item>
-                  <Nav.Link eventKey="movimentos">Movimentos</Nav.Link>
+                  <Nav.Link eventKey="movimentos" style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}>Movimentos</Nav.Link>
                 </Nav.Item>
               </Nav>
               <Tab.Content>

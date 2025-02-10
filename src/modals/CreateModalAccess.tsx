@@ -116,7 +116,7 @@ export const CreateModalAccess = <T extends Record<string, any>>({ title, open, 
             const sortedEmployees = employees.sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber));
             const sortedDevices = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
             const sortedDoors = door.sort((a, b) => a.doorNo - b.doorNo);
-            const selectedEmployee = sortedEmployees.find(emp => emp.employeeID === initialValues.selectedEmployeeIds);
+            const selectedEmployee = sortedEmployees.find(emp => emp.enrollNumber === initialValues.selectedEmployeeIds);
             setDropdownData(prevState => ({
                 ...prevState,
                 pin: selectedEmployee ? [selectedEmployee] : sortedEmployees,

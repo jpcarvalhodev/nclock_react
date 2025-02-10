@@ -3927,7 +3927,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             onClick={() => fetchAllAccessesbyDevice()}
                             type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/naccess/naccessaccesses" ? "current-active" : ""
                             }`}
                           >
                             <span className="icon">
@@ -3937,18 +3937,19 @@ export const NavBar = ({ style }: NavBarProps) => {
                           </Link>
                         </div>
                         <div className="icon-text-pessoas">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/naccess/naccesspresence" 
+                            onClick={() => fetchAllAccessesbyDevice()}
+                            type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/naccess/naccesspresence" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={presence} alt="botão presença" />
                             </span>
-                            <span className="text">Presença</span>
-                          </Button>
+                            <span className="text">Presenças</span>
+                          </Link>
                         </div>
                         <div>
                           <Button

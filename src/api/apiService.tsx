@@ -13,10 +13,19 @@ export const baseURL = process.env.REACT_APP_API_TICKETS;
 // Dados da versão da aplicação
 export const version = process.env.REACT_APP_VERSION;
 
+let hasShown403 = false;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DO CONTEXTO DOS MOVIMENTOS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const fetchAllAttendances = async () => {
     const response = await fetchWithAuth(`Attendances/GetAllAttendances`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -32,6 +41,13 @@ export const fetchAllAttendances = async () => {
 
 export const fetchAllAttendancesBetweenDates = async (startDate: string, endDate: string) => {
     const response = await fetchWithAuth(`Attendances/GetAttendanceTimesBetweenDates?fromDate=${startDate}&toDate=${endDate}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -53,6 +69,13 @@ export const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
         },
         body: JSON.stringify(attendance)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -74,6 +97,13 @@ export const addImportedAttendance = async (attendance: Partial<EmployeeAttendan
         },
         body: JSON.stringify(attendance)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -95,6 +125,13 @@ export const updateAttendance = async (attendance: EmployeeAttendanceTimes) => {
         },
         body: JSON.stringify(attendance)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -112,6 +149,13 @@ export const deleteAttendance = async (attendanceTimeId: string) => {
     const response = await fetchWithAuth(`Attendances/DeleteAttendanceTime?attendanceTimeId=${attendanceTimeId}`, {
         method: 'DELETE',
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -132,6 +176,13 @@ export const fetchAllData = async () => {
     const groupResponse = await fetchWithAuth(`Groups/Employees`);
     const employeesResponse = await fetchWithAuth(`Employees/GetDisabledEmployees`);
 
+    if (deptResponse.status === 403 || groupResponse.status === 403 || employeesResponse.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+      }
+    }
+    
     if (!deptResponse.ok || !groupResponse.ok || !employeesResponse.ok) {
         const errorData = await deptResponse.json() || await groupResponse.json() || await employeesResponse.json();
         toast.error(errorData.message || errorData.error);
@@ -149,6 +200,13 @@ export const fetchAllData = async () => {
 
 export const fetchAllEmployees = async () => {
     const response = await fetchWithAuth(`Employees/GetAllEmployees`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -164,6 +222,13 @@ export const fetchAllEmployees = async () => {
 
 export const fetchAllEmployeesWithDisabled = async () => {
     const response = await fetchWithAuth(`Employees/GetDisabledEmployees`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -185,6 +250,13 @@ export const addEmployee = async (employee: Employee) => {
         },
         body: JSON.stringify(employee)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.error);
@@ -201,6 +273,13 @@ export const updateEmployee = async (employee: Employee) => {
         },
         body: JSON.stringify(employee)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -222,6 +301,13 @@ export const deleteEmployee = async (employeeID: string[]) => {
         },
         body: JSON.stringify(employeeID)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -243,6 +329,13 @@ export const employeeImportFP = async (employeeFP: Partial<EmployeeFP>[]) => {
         },
         body: JSON.stringify(employeeFP)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -264,6 +357,13 @@ export const employeeImportFace = async (employeeFace: Partial<EmployeeFace>[]) 
         },
         body: JSON.stringify(employeeFace)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -285,6 +385,13 @@ export const employeeImportCard = async (employeeCard: Partial<EmployeeCard>[]) 
         },
         body: JSON.stringify(employeeCard)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -302,6 +409,13 @@ export const employeeImportCard = async (employeeCard: Partial<EmployeeCard>[]) 
 
 export const fetchAllDevices = async () => {
     const response = await fetchWithAuth(`Zkteco/GetAllDevices`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -317,6 +431,13 @@ export const fetchAllDevices = async () => {
 
 export const fetchAllEmployeeDevices = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/GetAllUserInfoOnDevice?deviceId=${zktecoDeviceID}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -332,6 +453,13 @@ export const fetchAllEmployeeDevices = async (zktecoDeviceID: Devices) => {
 
 export const fetchAllMBDevices = async () => {
     const response = await fetchWithAuth(`TerminalPagamento/GetAllTerminalPagamentoAsync`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -351,6 +479,13 @@ export const fetchAllTPCloseOpen = async (startDate?: string, endDate?: string) 
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -370,6 +505,13 @@ export const fetchAllManualDoorOpen = async (startDate?: string, endDate?: strin
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -395,6 +537,13 @@ export const sendAllEmployeesToDevice = async (zktecoDeviceID: Devices, employee
         method: 'POST',
     });
 
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -420,6 +569,13 @@ export const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, empl
         method: 'POST',
     });
 
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -435,6 +591,13 @@ export const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, empl
 
 export const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/SaveAllAttendancesEmployeesOnDeviceToDB/${zktecoDeviceID}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -450,6 +613,13 @@ export const saveAllAttendancesEmployeesOnDevice = async (zktecoDeviceID: Device
 
 export const syncTimeManuallyToDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/SyncTimeToDevice?deviceId=${zktecoDeviceID}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -471,6 +641,13 @@ export const openDeviceDoor = async (deviceSN: string, doorData: DoorDevice) => 
         },
         body: JSON.stringify(doorData)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -486,6 +663,13 @@ export const openDeviceDoor = async (deviceSN: string, doorData: DoorDevice) => 
 
 export const restartDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`Zkteco/RestartDevice/${zktecoDeviceID}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -507,6 +691,13 @@ export const sendClockToDevice = async (serialNumber: string, timeZoneId?: strin
         },
         body: JSON.stringify([])
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -532,6 +723,13 @@ export const deleteAllUsersOnDevice = async (zktecoDeviceID: Devices, employeeID
         method: 'POST',
     });
 
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error || 'Erro ao apagar utilizadores');
@@ -548,6 +746,13 @@ export const addDevice = async (device: Devices) => {
         },
         body: JSON.stringify(device)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error || 'Erro ao adicionar dispositivo');
@@ -564,6 +769,13 @@ export const updateDevice = async (device: Devices) => {
         },
         body: JSON.stringify(device)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -581,6 +793,13 @@ export const deleteDevice = async (zktecoDeviceID: string) => {
     const response = await fetchWithAuth(`Zkteco/DeleteDevice/${zktecoDeviceID}`, {
         method: 'DELETE'
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -602,6 +821,13 @@ export const addMBDevice = async (mbDevice: MBDevice) => {
         },
         body: JSON.stringify(mbDevice)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -623,6 +849,13 @@ export const updateMBDevice = async (mbDevice: MBDevice) => {
         },
         body: JSON.stringify(mbDevice)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -640,6 +873,13 @@ export const deleteMBDevice = async (mbDeviceID: string) => {
     const response = await fetchWithAuth(`TerminalPagamento/DeleteTerminalPagamento?id=${mbDeviceID}`, {
         method: 'DELETE'
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -661,6 +901,13 @@ export const restartMBDevice = async (mbDevice: Partial<MBDevice>) => {
         },
         body: JSON.stringify(mbDevice)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -682,6 +929,13 @@ export const addManualOpenDoor = async (door: Partial<ManualOpenDoor>) => {
         },
         body: JSON.stringify(door)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -699,6 +953,13 @@ export const addManualOpenDoor = async (door: Partial<ManualOpenDoor>) => {
 
 export const fetchAllCategories = async () => {
     const response = await fetchWithAuth(`Categories`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -720,6 +981,13 @@ export const addCategory = async (category: Category) => {
         },
         body: JSON.stringify(category)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -741,6 +1009,13 @@ export const updateCategory = async (category: Category) => {
         },
         body: JSON.stringify(category)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -762,6 +1037,13 @@ export const deleteCategory = async (categoryID: string[]) => {
         },
         body: JSON.stringify(categoryID)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -779,6 +1061,13 @@ export const deleteCategory = async (categoryID: string[]) => {
 
 export const fetchAllDepartments = async () => {
     const response = await fetchWithAuth(`Departaments`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -794,6 +1083,13 @@ export const fetchAllDepartments = async () => {
 
 export const fetchAllSubDepartments = async (parentId: number): Promise<Department[]> => {
     const response = await fetchWithAuth(`Departaments?parentId=${parentId}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         return [];
     }
@@ -802,6 +1098,13 @@ export const fetchAllSubDepartments = async (parentId: number): Promise<Departme
 
 export const fetchAllDepartmentsEmployees = async () => {
     const response = await fetchWithAuth(`Departaments/Employees`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -823,6 +1126,13 @@ export const addDepartment = async (department: Department) => {
         },
         body: JSON.stringify(department)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -844,6 +1154,13 @@ export const updateDepartment = async (department: Department) => {
         },
         body: JSON.stringify(department)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -865,6 +1182,13 @@ export const deleteDepartment = async (departmentID: string[]) => {
         },
         body: JSON.stringify(departmentID)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -882,6 +1206,13 @@ export const deleteDepartment = async (departmentID: string[]) => {
 
 export const fetchAllExternalEntities = async () => {
     const response = await fetchWithAuth(`ExternalEntities`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -921,6 +1252,13 @@ export const addExternalEntity = async (entity: ExternalEntity) => {
         },
         body: JSON.stringify(entity)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -942,6 +1280,13 @@ export const updateExternalEntity = async (entity: ExternalEntity) => {
         },
         body: JSON.stringify(entity)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -963,6 +1308,13 @@ export const deleteExternalEntity = async (externalEntityID: string[]) => {
         },
         body: JSON.stringify(externalEntityID)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -980,6 +1332,13 @@ export const deleteExternalEntity = async (externalEntityID: string[]) => {
 
 export const fetchAllGroups = async () => {
     const response = await fetchWithAuth(`Groups`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -995,6 +1354,13 @@ export const fetchAllGroups = async () => {
 
 export const fetchAllGroupsEmployees = async () => {
     const response = await fetchWithAuth(`Groups/Employees`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1016,6 +1382,13 @@ export const addGroup = async (group: Group) => {
         },
         body: JSON.stringify(group)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1037,6 +1410,13 @@ export const updateGroup = async (group: Group) => {
         },
         body: JSON.stringify(group)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1058,6 +1438,13 @@ export const deleteGroup = async (groupID: string[]) => {
         },
         body: JSON.stringify(groupID)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1075,6 +1462,13 @@ export const deleteGroup = async (groupID: string[]) => {
 
 export const fetchAllProfessions = async () => {
     const response = await fetchWithAuth(`Professions`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1096,6 +1490,13 @@ export const addProfession = async (profession: Profession) => {
         },
         body: JSON.stringify(profession)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1117,6 +1518,13 @@ export const updateProfession = async (profession: Profession) => {
         },
         body: JSON.stringify(profession)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1138,6 +1546,13 @@ export const deleteProfession = async (profession: string[]) => {
         },
         body: JSON.stringify(profession)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1155,6 +1570,13 @@ export const deleteProfession = async (profession: string[]) => {
 
 export const fetchAllExternalEntityTypes = async () => {
     const response = await fetchWithAuth(`ExternalEntityTypes`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1176,6 +1598,13 @@ export const addExternalEntityTypes = async (externalEntityType: ExternalEntityT
         },
         body: JSON.stringify(externalEntityType)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1197,6 +1626,13 @@ export const updateExternalEntityTypes = async (externalEntityType: ExternalEnti
         },
         body: JSON.stringify(externalEntityType)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1218,6 +1654,13 @@ export const deleteExternalEntityTypes = async (externalEntityID: string[]) => {
         },
         body: JSON.stringify(externalEntityID)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1235,6 +1678,13 @@ export const deleteExternalEntityTypes = async (externalEntityID: string[]) => {
 
 export const fetchAllZones = async () => {
     const response = await fetchWithAuth(`Zones`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1256,6 +1706,13 @@ export const addZone = async (zone: Zone) => {
         },
         body: JSON.stringify(zone)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1277,6 +1734,13 @@ export const updateZone = async (zone: Zone) => {
         },
         body: JSON.stringify(zone)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1298,6 +1762,13 @@ export const deleteZone = async (zoneID: string[]) => {
         },
         body: JSON.stringify(zoneID)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1315,6 +1786,13 @@ export const deleteZone = async (zoneID: string[]) => {
 
 export const fetchAllEmployeeCards = async () => {
     const response = await fetchWithAuth(`Employees/GetAllCardsEmployees`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1330,6 +1808,13 @@ export const fetchAllEmployeeCards = async () => {
 
 export const fetchEmployeeCardDataByEmployeeID = async (employeeID: string) => {
     const response = await fetchWithAuth(`Employees/GetEmployeeByIdCard/${employeeID}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1351,6 +1836,13 @@ export const addEmployeeCard = async (employeeCard: EmployeeCard) => {
         },
         body: JSON.stringify(employeeCard)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1373,6 +1865,13 @@ export const updateEmployeeCard = async (employeeCard: EmployeeCard) => {
         },
         body: JSON.stringify(employeeCard)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1390,6 +1889,13 @@ export const deleteEmployeeCard = async (cardId: string) => {
     const response = await fetchWithAuth(`Employees/DeleteEmployeeCard/${cardId}`, {
         method: 'DELETE'
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1411,6 +1917,13 @@ export const fetchAllAds = async (startDate?: string, endDate?: string) => {
         url += `?startTime=${startDate}&endTime=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1426,6 +1939,13 @@ export const fetchAllAds = async (startDate?: string, endDate?: string) => {
 
 export const fetchAllAdsByType = async (tipoArquivo: number) => {
     const response = await fetchWithAuth(`Publicidade/tipo/${tipoArquivo}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1441,6 +1961,13 @@ export const fetchAllAdsByType = async (tipoArquivo: number) => {
 
 export const fetchAdByid = async (id: string) => {
     const response = await fetchWithAuth(`Publicidade/${id}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1459,6 +1986,13 @@ export const addAd = async (ads: FormData) => {
         method: 'POST',
         body: ads
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message || errorData.error)
@@ -1472,6 +2006,13 @@ export const updateAd = async (ads: Ads, ad: FormData) => {
         method: 'PUT',
         body: ad
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1489,6 +2030,13 @@ export const deleteAd = async (id: string) => {
     const response = await fetchWithAuth(`Publicidade/${id}`, {
         method: 'DELETE'
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1506,6 +2054,13 @@ export const deleteAd = async (id: string) => {
 
 export const fetchAllKioskTransactions = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`KioskTransaction/GetAllTransactions?deviceID=${zktecoDeviceID}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1521,6 +2076,13 @@ export const fetchAllKioskTransactions = async (zktecoDeviceID: Devices) => {
 
 export const fetchAllKioskTransactionsOnDevice = async (zktecoDeviceID: Devices) => {
     const response = await fetchWithAuth(`KioskTransaction/GetAllTransactionsOnDevice?deviceID=${zktecoDeviceID}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1536,6 +2098,13 @@ export const fetchAllKioskTransactionsOnDevice = async (zktecoDeviceID: Devices)
 
 export const fetchKioskTransactionDoorAsync = async () => {
     const response = await fetchWithAuth(`KioskTransaction/GetAllTransactionDoorAsync`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1555,6 +2124,13 @@ export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (eventD
         url += `&startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1574,6 +2150,13 @@ export const fetchKioskTransactionsByCardAndDeviceSN = async (eventDoorId: strin
         url += `&startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1593,6 +2176,13 @@ export const fetchKioskTransactionsByMBAndDeviceSN = async (startDate?: string, 
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1612,6 +2202,13 @@ export const fetchKioskTransactionsByPayCoins = async (eventDoorId: string, devi
         url += `&startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1631,6 +2228,13 @@ export const fetchKioskTransactionsVideoPorteiro = async (eventDoorId: string, d
         url += `&startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1646,6 +2250,13 @@ export const fetchKioskTransactionsVideoPorteiro = async (eventDoorId: string, d
 
 export const fetchDataFimRecolha = async (deviceSN: string) => {
     const response = await fetchWithAuth(`KioskTransaction/GetLastDataFimRecolha?sn=${deviceSN}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1667,6 +2278,13 @@ export const addKioskTransaction = async (kioskTransaction: NewTransactionCard) 
         },
         body: JSON.stringify(kioskTransaction)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1684,6 +2302,13 @@ export const addKioskTransaction = async (kioskTransaction: NewTransactionCard) 
 
 export const fetchAllRegisteredUsers = async () => {
     const response = await fetchWithAuth(`Authentication/GetAllUsersWithRoles`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1699,6 +2324,13 @@ export const fetchAllRegisteredUsers = async () => {
 
 export const fetchAllCompanyConfig = async () => {
     const response = await fetchWithAuth(`Configuration/GetAllCompany`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1714,6 +2346,13 @@ export const fetchAllCompanyConfig = async () => {
 
 export const fetchAllEmailConfig = async () => {
     const response = await fetchWithAuth(`Configuration/GetEmailSMTPConfigurations`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1729,6 +2368,13 @@ export const fetchAllEmailConfig = async () => {
 
 export const fetchCompanyLogo = async (selectedNif: number) => {
     const response = await fetchWithAuth(`Configuration/GetEntidadeImage?nif=${selectedNif}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         console.error(errorData.message || errorData.error);
@@ -1742,6 +2388,13 @@ export const addNewRegisteredUser = async (registeredUser: FormData) => {
         method: 'POST',
         body: registeredUser
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1760,6 +2413,13 @@ export const updateRegisteredUser = async (registeredUser: FormData) => {
         method: 'PUT',
         body: registeredUser
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1777,6 +2437,13 @@ export const deleteRegisteredUser = async (id: string) => {
     const response = await fetchWithAuth(`Authentication/DeleteUser?id=${id}`, {
         method: 'DELETE'
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1798,6 +2465,13 @@ export const addUserEmailConfig = async (email: Partial<EmailUser>) => {
         },
         body: JSON.stringify(email)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1819,6 +2493,13 @@ export const updateUserEmailConfig = async (email: Partial<EmailUser>) => {
         },
         body: JSON.stringify(email)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1837,6 +2518,13 @@ export const addCompanyConfig = async (companyEmail: FormData) => {
         method: 'POST',
         body: companyEmail
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1856,6 +2544,13 @@ export const updateCompanyConfig = async (companyData: FormData) => {
         method: 'PUT',
         body: companyData
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1873,6 +2568,13 @@ export const deleteCompanyConfig = async (id: string) => {
     const response = await fetchWithAuth(`Configuration/DeleteCompany?id=${id}`, {
         method: 'DELETE'
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1894,6 +2596,13 @@ export const testEmail = async (email: string) => {
         },
         body: JSON.stringify(email)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1911,6 +2620,13 @@ export const testEmail = async (email: string) => {
 
 export const fetchAllTimePeriods = async () => {
     const response = await fetchWithAuth(`AccTimeSeg/GetAllTimezone`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1932,6 +2648,13 @@ export const addTimePeriod = async (timePeriod: Partial<TimePeriod>) => {
         },
         body: JSON.stringify(timePeriod)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1953,6 +2676,13 @@ export const updateTimePeriod = async (timePeriod: TimePeriod) => {
         },
         body: JSON.stringify(timePeriod)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1974,6 +2704,13 @@ export const deleteTimePeriod = async (id: string[]) => {
         },
         body: JSON.stringify(id)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -1991,6 +2728,13 @@ export const deleteTimePeriod = async (id: string[]) => {
 
 export const fetchAllTimePlans = async () => {
     const response = await fetchWithAuth(`AccPlanoHorario/GetAllAccPlanoHorario`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2012,6 +2756,13 @@ export const createTimePlan = async (timePlan: TimePlan) => {
         },
         body: JSON.stringify(timePlan)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2033,6 +2784,13 @@ export const updateTimePlan = async (timePlan: TimePlan) => {
         },
         body: JSON.stringify(timePlan)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2054,6 +2812,13 @@ export const deleteTimePlan = async (id: string[]) => {
         },
         body: JSON.stringify(id)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2075,6 +2840,13 @@ export const deletePeriodoTimePlan = async (planoId: string, id: string[]) => {
         },
         body: JSON.stringify(id)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2092,6 +2864,13 @@ export const deletePeriodoTimePlan = async (planoId: string, id: string[]) => {
 
 export const fetchAllAccessControl = async () => {
     const response = await fetchWithAuth(`AccPlanoAcesso/GetAllAccPlanoAcesso`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2113,6 +2892,13 @@ export const addAccessControl = async (accessControl: Partial<AccessControl>) =>
         },
         body: JSON.stringify(accessControl)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2134,6 +2920,13 @@ export const updateAccessControl = async (accessControl: Partial<AccessControl>)
         },
         body: JSON.stringify(accessControl)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2155,6 +2948,13 @@ export const deleteAccessControl = async (id: string[]) => {
         },
         body: JSON.stringify(id)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2172,6 +2972,13 @@ export const deleteAccessControl = async (id: string[]) => {
 
 export const fetchAllDoors = async () => {
     const response = await fetchWithAuth(`AccDoor`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2193,6 +3000,13 @@ export const updateDoor = async (door: Doors) => {
         },
         body: JSON.stringify(door)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2213,6 +3027,13 @@ export const updateDoor = async (door: Doors) => {
 
 export const fetchLicenses = async (key: string) => {
     const response = await fetchWithAuth(`Configuration/GetLisence?key=${key}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2228,6 +3049,13 @@ export const fetchLicenses = async (key: string) => {
 
 export const fetchLicensesWithoutKey = async () => {
     const response = await fetchWithAuth(`Configuration/GetValidLisence`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2249,6 +3077,13 @@ export const importLicense = async (licenseKey: Partial<LicenseKey>) => {
         },
         body: JSON.stringify(licenseKey)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2271,6 +3106,13 @@ export const updateLicenses = async (key: string, licences: License[]) => {
         body: JSON.stringify(licences)
     });
 
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2288,6 +3130,13 @@ export const updateLicenses = async (key: string, licences: License[]) => {
 
 export const fetchAllReaders = async (deviceId: string) => {
     const response = await fetchWithAuth(`AccDoor/GetReadersByDeviceId?deviceId=${deviceId}`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2309,6 +3158,13 @@ export const updateReaders = async (reader: Readers) => {
         },
         body: JSON.stringify(reader)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2330,6 +3186,13 @@ export const fetchRecolhasMoedeiro = async (startDate?: string, endDate?: string
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2345,6 +3208,13 @@ export const fetchRecolhasMoedeiro = async (startDate?: string, endDate?: string
 
 export const fetchContagemSNTransacoes = async () => {
     const response = await fetchWithAuth(`KioskTransaction/ObterContagemSNTransacoes`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2366,6 +3236,13 @@ export const addRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroEContad
         },
         body: JSON.stringify(recolhaMoedeiro)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2387,6 +3264,13 @@ export const updateRecolhaMoedeiro = async (recolhaMoedeiro: RecolhaMoedeiroECon
         },
         body: JSON.stringify(recolhaMoedeiro)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2408,6 +3292,13 @@ export const deleteRecolhaMoedeiro = async (id: string[]) => {
         },
         body: JSON.stringify(id)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2429,6 +3320,13 @@ export const resetRecolhaMoedeiro = async (resetCoin: ResetCoin) => {
         },
         body: JSON.stringify(resetCoin.observation)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2450,6 +3348,13 @@ export const fetchAllCleaningsAndOccurrences = async (tipo: number, startDate?: 
         url += `&startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2471,6 +3376,13 @@ export const addCleaning = async (cleaning: LimpezasEOcorrencias) => {
         },
         body: JSON.stringify(cleaning)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2492,6 +3404,13 @@ export const addOccurrence = async (occurrence: LimpezasEOcorrencias) => {
         },
         body: JSON.stringify(occurrence)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2513,6 +3432,13 @@ export const updateCleaning = async (cleaning: LimpezasEOcorrencias) => {
         },
         body: JSON.stringify(cleaning)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2534,6 +3460,13 @@ export const updateOccurrence = async (occurrence: LimpezasEOcorrencias) => {
         },
         body: JSON.stringify(occurrence)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2555,6 +3488,13 @@ export const deleteCleaning = async (id: string[]) => {
         },
         body: JSON.stringify(id)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2576,6 +3516,13 @@ export const deleteOccurrence = async (id: string[]) => {
         },
         body: JSON.stringify(id)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2597,6 +3544,13 @@ export const fetchAllContador = async (startDate?: string, endDate?: string) => 
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2618,6 +3572,13 @@ export const fetchAllAlerts = async (startDate?: string, endDate?: string) => {
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2639,6 +3600,13 @@ export const fetchAllHistoryLogs = async (startDate?: string, endDate?: string) 
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2658,6 +3626,13 @@ export const fetchAllLoginLogs = async (startDate?: string, endDate?: string) =>
         url += `?startDate=${startDate}&endDate=${endDate}`;
     }
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2675,6 +3650,13 @@ export const fetchAllLoginLogs = async (startDate?: string, endDate?: string) =>
 
 export const fetchAllCameras = async () => {
     const response = await fetchWithAuth(`ViewCamera/GetAllViewCameras`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2696,6 +3678,13 @@ export const addCamera = async (camera: Cameras) => {
         },
         body: JSON.stringify(camera)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2717,6 +3706,13 @@ export const updateCamera = async (camera: Cameras) => {
         },
         body: JSON.stringify(camera)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2734,6 +3730,13 @@ export const deleteCamera = async (id: string) => {
     const response = await fetchWithAuth(`ViewCamera/DeleteViewCamera?id=${id}`, {
         method: 'DELETE'
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2751,6 +3754,13 @@ export const deleteCamera = async (id: string) => {
 
 export const fetchKioskConfig = async () => {
     const response = await fetchWithAuth(`Configuration/GetKioskConfigurations`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2772,6 +3782,13 @@ export const addKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
         },
         body: JSON.stringify(kioskConfig)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2793,6 +3810,13 @@ export const updateKioskConfig = async (kioskConfig: Partial<KioskConfig>) => {
         },
         body: JSON.stringify(kioskConfig)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2820,6 +3844,13 @@ export const openAuxDoor = async (data: { deviceSN: string, auxData: FormData })
         },
         body: JSON.stringify(auxDataObj)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2837,6 +3868,13 @@ export const openAuxDoor = async (data: { deviceSN: string, auxData: FormData })
 
 export const fetchAllAux = async () => {
     const response = await fetchWithAuth(`AccAux/GetAllAux`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2852,6 +3890,13 @@ export const fetchAllAux = async () => {
 
 export const fetchInAux = async () => {
     const response = await fetchWithAuth(`AccAux/GetAllInAux`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2867,6 +3912,13 @@ export const fetchInAux = async () => {
 
 export const fetchOutAux = async () => {
     const response = await fetchWithAuth(`AccAux/GetAllOutAux`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2882,6 +3934,13 @@ export const fetchOutAux = async () => {
 
 export const fetchOutAuxEnabled = async () => {
     const response = await fetchWithAuth(`AccAux/GetAllOutAuxEnabeld`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2903,6 +3962,13 @@ export const updateAllAux = async (aux: Auxiliaries) => {
         },
         body: JSON.stringify(aux)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2926,6 +3992,13 @@ export const backupDatabase = async (backup: BackupDB) => {
         },
         body: JSON.stringify(backup)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2944,6 +4017,13 @@ export const importBackupDatabase = async (backup: FormData) => {
         method: 'POST',
         body: backup
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2962,6 +4042,13 @@ export const importEmployees = async (employees: FormData) => {
         method: 'POST',
         body: employees
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
@@ -2995,6 +4082,13 @@ export const fetchAllAccessesByDevice = async (deviceSN?: string, startDate?: st
     }
 
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -3025,6 +4119,13 @@ export const fetchAllAccessesByDoor = async (eventDoorId: number, deviceSN: stri
     }
 
     const response = await fetchWithAuth(url);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -3041,6 +4142,13 @@ export const addAccessTransaction = async (access: Partial<Accesses>) => {
         },
         body: JSON.stringify(access)
     });
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
     if (!response.ok) {
         const errorData = await response.json();
         const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;

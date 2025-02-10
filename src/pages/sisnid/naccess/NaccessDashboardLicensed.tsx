@@ -67,7 +67,6 @@ export const NaccessDashboardLicensed = () => {
             {
                 label: 'Exemplo de Dados 1',
                 data: [0],
-                fill: true,
                 borderColor: '#0050a0',
                 tension: 0.1
             },
