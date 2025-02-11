@@ -399,6 +399,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                         onChange={handleChange}
                                                         className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         required
+                                                        maxLength={50}
                                                     />
                                                 </OverlayTrigger>
                                             </Form.Group>
@@ -414,6 +415,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                     value={formData['description'] || ''}
                                                     onChange={handleChange}
                                                     className="custom-input-height custom-select-font-size"
+                                                    maxLength={50}
                                                 />
                                             </Form.Group>
                                         </Col>
@@ -497,6 +499,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                                     value={formData['description'] || ''}
                                                     onChange={handleChange}
                                                     className="custom-input-height custom-select-font-size"
+                                                    maxLength={50}
                                                 />
                                             </Form.Group>
                                         </Col>

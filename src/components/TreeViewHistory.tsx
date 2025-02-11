@@ -4,12 +4,11 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useEntity } from '../context/EntityContext';
 
 import { CustomOutlineButton } from './CustomOutlineButton';
-import { set } from 'date-fns';
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {

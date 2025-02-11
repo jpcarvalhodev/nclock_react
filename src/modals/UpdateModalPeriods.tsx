@@ -234,6 +234,7 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
                                     name="remark"
                                     value={formData.remark}
                                     onChange={handleChange}
+                                    maxLength={50}
                                 />
                             </Form.Group>
                         </Col>

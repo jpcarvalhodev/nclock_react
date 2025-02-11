@@ -218,6 +218,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                                         name="nomeCamera"
                                         value={formData.nomeCamera || ''}
                                         onChange={handleChange}
+                                        maxLength={100}
                                     />
                                 </OverlayTrigger>
                                 {errors['nomeCamera'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['nomeCamera']}</div>}
@@ -235,6 +236,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({ title, open, onClose
                                         placeholder='Coloque a URL completa'
                                         value={formData.url || ''}
                                         onChange={handleChange}
+                                        maxLength={200}
                                     />
                                 </OverlayTrigger>
                                 {errors['url'] && <div style={{ color: 'red', fontSize: 'small' }}>{errors['url']}</div>}

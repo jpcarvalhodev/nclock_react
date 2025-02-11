@@ -392,7 +392,7 @@ export const TerminalsMB = () => {
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text" style={{ color: "#000000" }}>
-              <span>Terminais</span>
+              <span>Multibanco</span>
             </div>
             <div className="datatable-header">
               <div className="buttons-container-others-mb">

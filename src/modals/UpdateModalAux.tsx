@@ -209,6 +209,7 @@ export const UpdateModalAux = <T extends Entity>({ title, open, onClose, onUpdat
                                     name="nome"
                                     value={formData.nome}
                                     onChange={handleChange}
+                                    maxLength={100}
                                 />
                             </Form.Group>
                         </Col>

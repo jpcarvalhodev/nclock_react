@@ -23,6 +23,10 @@
   border-color: #000000 !important;
 }
 
+.SearchBox label.MuiInputLabel-root.Mui-focused {
+  color: #000000 !important;
+}
+
 .MuiTreeItem-label {
   font-size: 0.8rem !important;
 }

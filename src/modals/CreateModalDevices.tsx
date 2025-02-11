@@ -315,6 +315,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({ title, open,
                                     value={formData['deviceName'] || ''}
                                     onChange={handleChange}
                                     className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
+                                    maxLength={50}
                                 >
                                 </Form.Control>
                             </OverlayTrigger>

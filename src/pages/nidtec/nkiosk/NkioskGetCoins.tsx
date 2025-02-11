@@ -497,7 +497,7 @@ export const NkioskGetCoins = () => {
                                     <CustomOutlineButton icon="bi bi-stop-circle" onClick={handleReset} iconSize='1.1em' />
                                 </OverlayTrigger>
                                 {loadingReset && (
-                                    <Spinner animation="border" size="sm" style={{ marginLeft: '5px' }} />
+                                    <Spinner animation="border" size="sm" style={{ marginTop: 5, marginLeft: 5 }} />
                                 )}
                             </div>
                             <div className="date-range-search">

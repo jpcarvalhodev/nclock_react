@@ -89,9 +89,11 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     // Função para buscar as opções do dropdown
     const fetchDropdownOptions = async () => {
         try {
+            const sortedDoor = door.sort((a, b) => a.doorNo - b.doorNo);
+            const sortedDevice = devices.sort((a, b) => a.deviceNumber - b.deviceNumber);
             setDropdownData({
-                doorId: door,
-                deviceId: devices
+                doorId: sortedDoor,
+                deviceId: sortedDevice
             });
             setAllDoors(door);
         } catch (error) {
@@ -147,6 +149,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({ title, open
     // Função para limpar e fechar o modal
     const handleClose = () => {
         setFormData({});
+        setDropdownData({});
         setShowValidationErrors(false);
         onClose();
     }

@@ -77,6 +77,7 @@ export const UpdateModalReaders = <T extends Entity>({ title, open, onClose, onU
                                     name="nameReader"
                                     value={formData.nameReader}
                                     onChange={handleChange}
+                                    maxLength={100}
                                 />
                             </Form.Group>
                         </Col>

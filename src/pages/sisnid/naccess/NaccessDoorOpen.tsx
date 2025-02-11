@@ -47,7 +47,7 @@ function CustomSearchBox(props: TextFieldProps) {
 }
 
 // Define o componente de terminais
-export const NkioskDoorOpen = () => {
+export const NaccessDoorOpen = () => {
     const { devices } = useTerminals();
     const currentDate = new Date();
     const pastDate = new Date();

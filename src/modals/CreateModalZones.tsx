@@ -201,6 +201,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                     onChange={handleChange}
                                     name="name"
                                     required
+                                    maxLength={50}
                                 />
                             </OverlayTrigger>
                             {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
@@ -222,6 +223,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                     onChange={handleChange}
                                     name="acronym"
                                     required
+                                    maxLength={4}
                                 />
                             </OverlayTrigger>
                             {errors.acronym && <Form.Text className="text-danger">{errors.acronym}</Form.Text>}
@@ -268,6 +270,7 @@ export const CreateModalZones = <T extends Record<string, any>>({ title, open, o
                                                 onChange={handleChange}
                                                 name="description"
                                                 className="custom-select-font-size textarea"
+                                                maxLength={50}
                                             />
                                         </Form.Group>
                                     </Col>

@@ -1,12 +1,10 @@
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { set } from 'date-fns';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { usePersons } from '../context/PersonsContext';
 import { useTerminals } from '../context/TerminalsContext';
@@ -98,7 +96,7 @@ export function TreeViewDataNkioskMove({ onSelectDevices }: TreeViewDataNkioskPr
                 children: [
                     {
                         id: 'dispositivos',
-                        label: 'NOME DO LOCAL',
+                        label: 'LOCAL',
                         children: buildDeviceTree
                     },
                     {

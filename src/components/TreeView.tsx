@@ -3,7 +3,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { usePersons } from '../context/PersonsContext';
 import { Department, Employee, Group } from '../types/Types';

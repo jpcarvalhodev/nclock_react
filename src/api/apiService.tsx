@@ -949,6 +949,28 @@ export const addManualOpenDoor = async (door: Partial<ManualOpenDoor>) => {
     return response.json();
 }
 
+export const fetchAllEventDevice = async () => {
+    const response = await fetchWithAuth(`Zkteco/GetAllEventDevice`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
+    if (!response.ok) {
+        const errorData = await response.json();
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
+        throw new Error();
+    }
+    return response.json();
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DAS CATEGORIAS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const fetchAllCategories = async () => {

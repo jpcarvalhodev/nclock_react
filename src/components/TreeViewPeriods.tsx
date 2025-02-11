@@ -4,7 +4,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useTerminals } from '../context/TerminalsContext';
 
@@ -86,7 +86,7 @@ export function TreeViewDataPeriods({ onSelectDevices }: TreeViewDataPeriodsProp
                 children: [
                     {
                         id: 'periodNames',
-                        label: 'NOMES',
+                        label: 'PERÍODOS',
                         children: buildDeviceTree
                     },
                 ],

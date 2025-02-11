@@ -225,6 +225,7 @@ export const ResetCoinModal = <T extends Entity>({ title, open, onClose, onSave,
                                     name="observation"
                                     value={formData.observation || ''}
                                     onChange={handleChange}
+                                    maxLength={50}
                                 />
                             </Form.Group>
                         </Col>

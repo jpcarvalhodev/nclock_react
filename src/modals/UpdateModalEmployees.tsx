@@ -544,6 +544,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   value={formData.name || ''}
                   onChange={handleChange}
                   name="name"
+                  maxLength={150}
                 />
               </OverlayTrigger>
               {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
@@ -562,7 +563,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   value={formData.shortName || ''}
                   onChange={handleChange}
                   name="shortName"
-                  maxLength={25}
+                  maxLength={50}
                 />
               </OverlayTrigger>
               {errors.shortName && <Form.Text className="text-danger">{errors.shortName}</Form.Text>}
@@ -581,7 +582,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                   value={formData.nameAcronym || ''}
                   onChange={handleChange}
                   name="nameAcronym"
-                  maxLength={4}
+                  maxLength={5}
                 />
               </OverlayTrigger>
             </Form.Group>
@@ -593,6 +594,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                 value={formData.comments || ''}
                 onChange={handleChange}
                 name="comments"
+                maxLength={50}
               />
             </Form.Group>
             <Form.Group controlId="formType">

@@ -177,6 +177,7 @@ export const UpdateTimePlansModal = <T extends Record<string, any>>({ title, ope
                                             name="nome"
                                             value={formData.nome}
                                             onChange={handleChange}
+                                            maxLength={150}
                                         />
                                     </Form.Group>
                                 </Col>
@@ -189,6 +190,7 @@ export const UpdateTimePlansModal = <T extends Record<string, any>>({ title, ope
                                             name="descricao"
                                             value={formData.descricao}
                                             onChange={handleChange}
+                                            maxLength={250}
                                         />
                                     </Form.Group>
                                 </Col>

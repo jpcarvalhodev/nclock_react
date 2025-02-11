@@ -353,6 +353,7 @@ export const UpdateModalDoor = <T extends Entity>({ title, open, onClose, onUpda
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
+                                    maxLength={100}
                                 />
                             </Form.Group>
                             <Form.Group controlId="formDelayOpenTime">

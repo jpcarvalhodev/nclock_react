@@ -200,7 +200,7 @@ export const Terminals = () => {
   const fileInputUserRef = React.createRef<HTMLInputElement>();
   const fileInputFPRef = React.createRef<HTMLInputElement>();
   const fileInputFaceRef = React.createRef<HTMLInputElement>();
-  const [movements, setMovements] = useState<Movement[]>([]);
+  const [movements, setMovements] = useState<KioskTransaction[]>([]);
   const [transactions, setTransactions] = useState<KioskTransaction[]>([]);
   const [loadingActivityData, setLoadingActivityData] = useState(false);
   const [loadingSendClock, setLoadingSendClock] = useState(false);
@@ -232,18 +232,23 @@ export const Terminals = () => {
     const fetchTransactions = async () => {
       if (selectedTerminal) {
         setLoadingActivityData(true);
+        setLoadingMovementData(true);
         try {
           const fetchedTransactions = await fetchAllKioskTransaction(
             selectedTerminal.zktecoDeviceID
           );
           setTransactions(fetchedTransactions);
+          setMovements(fetchedTransactions);
           setLoadingActivityData(false);
+          setLoadingMovementData(false);
         } catch (error) {
           console.error("Erro ao buscar transações:", error);
         }
       } else {
         setTransactions([]);
+        setMovements([]);
         setLoadingActivityData(false);
+        setLoadingMovementData(false);
       }
     };
     fetchTransactions();
@@ -514,7 +519,9 @@ export const Terminals = () => {
             return (
               <OverlayTrigger
                 placement="top"
-                overlay={<Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>}
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
               >
                 <span
                   style={{
@@ -549,7 +556,7 @@ export const Terminals = () => {
       };
     });
 
-  // Define as colunas de transações de quiosques
+  // Define as colunas de transações
   const transactionColumns: TableColumn<KioskTransaction>[] = transactionFields
     .filter(
       (field) =>
@@ -585,7 +592,81 @@ export const Terminals = () => {
             return (
               <OverlayTrigger
                 placement="top"
-                overlay={<Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>}
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
+              >
+                <span
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row[field.key]}
+                </span>
+              </OverlayTrigger>
+            );
+          default:
+            return row[field.key];
+        }
+      };
+      return {
+        name: (
+          <>
+            {field.label}
+            <SelectFilter
+              column={field.key}
+              setFilters={setFilters}
+              data={transactions}
+            />
+          </>
+        ),
+        selector: (row) => formatField(row),
+        sortable: true,
+      };
+    });
+
+  // Define as colunas de movimentos
+  const movementColumns: TableColumn<KioskTransaction>[] = transactionFields
+    .filter(
+      (field) =>
+        field.key !== "id" &&
+        field.key !== "eventId" &&
+        field.key !== "createTime" &&
+        field.key !== "updateTime"
+    )
+    .map((field) => {
+      const formatField = (row: KioskTransaction) => {
+        switch (field.key) {
+          case "eventTime":
+            return new Date(row[field.key]).toLocaleString() || "";
+          case "eventDoorId":
+            switch (row[field.key]) {
+              case 1:
+                return "Terminal";
+              case 2:
+                return "Moedeiro";
+              case 3:
+                return "Cartão";
+              case 4:
+                return "Video Porteiro";
+              default:
+                return row[field.key];
+            }
+          case "deviceSN":
+            return (
+              devices.find((device) => device.serialNumber === row[field.key])
+                ?.deviceName || ""
+            );
+          case "eventName":
+            return (
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
               >
                 <span
                   style={{
@@ -1444,32 +1525,6 @@ export const Terminals = () => {
     }
   };
 
-  // Define as colunas dos movimentos temporariamente
-  const movementColumns: TableColumn<Movement>[] = [
-    {
-      name: "ID do Usuário",
-      selector: (row) => row.UserID,
-      sortable: true,
-    },
-    {
-      name: "Estado",
-      selector: (row: Movement) => row.State,
-      sortable: true,
-      format: (row: Movement) => (row.IsInvalid ? "Inválido" : "Válido"),
-    },
-    {
-      name: "Hora",
-      selector: (row) => row.Time,
-      sortable: true,
-    },
-    {
-      name: "Método de Verificação",
-      selector: (row: Movement) => row.VerifyStyle,
-      sortable: true,
-      format: (row: Movement) => `${row.VerifyStyle}`,
-    },
-  ];
-
   // Função para abrir o modal para escolher porta
   const openDoorModal = () => {
     if (selectedTerminal) {
@@ -1603,6 +1658,7 @@ export const Terminals = () => {
                         paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                         paginationComponentOptions={paginationOptions}
                         selectableRows
+                        selectableRowsSingle
                         noDataComponent="Não há actividades disponíveis para exibir."
                         customStyles={customStyles}
                         striped
@@ -1615,7 +1671,9 @@ export const Terminals = () => {
                   )}
                 </div>
                 <div>
-                  <p className="activityTabContent">Movimentos dos Equipamentos</p>
+                  <p className="activityTabContent">
+                    Movimentos dos Equipamentos
+                  </p>
                   {selectedTerminal && selectedDeviceRows.length > 0 ? (
                     loadingMovementData ? (
                       <div
@@ -1626,10 +1684,7 @@ export const Terminals = () => {
                           height: "100px",
                         }}
                       >
-                        <Spinner
-                          style={{ width: 50, height: 50 }}
-                          animation="border"
-                        />
+                        <CustomSpinner />
                       </div>
                     ) : (
                       <DataTable
@@ -1639,6 +1694,8 @@ export const Terminals = () => {
                         paginationPerPage={5}
                         paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
                         paginationComponentOptions={paginationOptions}
+                        selectableRows
+                        selectableRowsSingle
                         noDataComponent="Não há movimentos disponíveis para exibir."
                         customStyles={customStyles}
                         striped
@@ -1845,6 +1902,7 @@ export const Terminals = () => {
                   paginationPerPage={20}
                   paginationComponentOptions={paginationOptions}
                   selectableRows
+                  selectableRowsSingle
                   onSelectedRowsChange={handleDeviceRowSelected}
                   selectableRowsHighlight
                   noDataComponent="Não há dados disponíveis para exibir."

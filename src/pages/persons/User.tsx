@@ -277,15 +277,16 @@ export const User = () => {
       const formatField = (row: Employee) => {
         switch (field.key) {
           case "birthday":
-            return new Date(row.birthday).toLocaleString() || "";
           case "admissionDate":
-            return new Date(row.admissionDate).toLocaleString() || "";
           case "bIissuance":
-            return new Date(row.bIissuance).toLocaleString() || "";
           case "biValidity":
-            return new Date(row.biValidity).toLocaleString() || "";
-          case "exitDate":
-            return new Date(row.exitDate).toLocaleString() || "";
+          case "exitDate": {
+            const formattedDate = new Date(row[field.key]).toLocaleString();
+            if (formattedDate === "01/01/1970, 01:00:00") {
+              return "";
+            }
+            return formattedDate;
+          }
           case "status":
             return row.status ? "Activo" : "Inactivo";
           case "statusEmail":

@@ -641,6 +641,7 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                     value={formData['deviceName'] || ''}
                                     onChange={handleChange}
                                     className={`custom-input-height form-control custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
+                                    maxLength={50}
                                 >
                                 </Form.Control>
                             </OverlayTrigger>

@@ -281,6 +281,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
                                     onChange={handleChange}
                                     name="name"
                                     required
+                                    maxLength={50}
                                 />
                             </OverlayTrigger>
                             {errors['name'] && <Form.Text className="text-danger">{errors['name']}</Form.Text>}
@@ -295,6 +296,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
                                 value={formData.commercialName || ''}
                                 onChange={handleChange}
                                 name="commercialName"
+                                maxLength={50}
                             />
                         </Form.Group>
                     </Col>
@@ -446,6 +448,7 @@ export const UpdateModalExtEnt = <T extends Entity>({ open, onClose, onUpdate, o
                                                 value={formData.comments || ''}
                                                 onChange={handleChange}
                                                 name="comments"
+                                                maxLength={50}
                                             />
                                         </Form.Group>
                                     </Col>

@@ -1,10 +1,9 @@
 import Box from '@mui/material/Box';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { set } from 'date-fns';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import '../css/TreeView.css';
 import { TextField, TextFieldProps } from '@mui/material';
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { AttendanceProvider } from '../context/MovementContext';
 import { usePersons } from '../context/PersonsContext';

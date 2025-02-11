@@ -249,8 +249,8 @@ export type KioskTransaction = {
     eventDoorId: number;
     verifyModeNo: number;
     deviceSN: string;
-    createTime: Date;
-    updateTime: Date;
+    inOutStatus: number;
+    eventIndex: number;
 };
 
 export type KioskTransactionMB = {
@@ -796,4 +796,29 @@ export type Readers = {
     doorId: string;
     doorName: string;
     doorNo: number;
+}
+
+export type Activity = {
+    [key: string]: any;
+    id: string;
+    eventTime: Date;
+    pin: number;
+    cardNo: number;
+    eventName: string;
+    eventId: number;
+    eventDoorId: number;
+    verifyModeNo: number;
+    deviceSN: string;
+};
+
+export type Movements = {
+    [key: string]: any;
+    id: string;
+    eventTime: Date;
+    cardNo: number;
+    eventName: string;
+    eventId: number;
+    eventDoorId: number;
+    deviceSN: string;
+    nomeResponsavel: string;
 }

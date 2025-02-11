@@ -125,7 +125,7 @@ export const employeeAttendanceTimesFields = [
 ];
 
 export const deviceFields = [
-    { key: "deviceNumber", label: "Nº", type: "number", required: true },
+    { key: "deviceNumber", label: "Número", type: "number", required: true },
     { key: "deviceName", label: "Nome", type: "string", required: true },
     { key: "status", label: "Estado", type: "boolean" },
     { key: "model", label: "Modelo", type: "string" },
@@ -200,7 +200,7 @@ export const transactionFields = [
     { key: 'cardNo', label: 'Nº do Cartão', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventId', label: 'Evento', type: 'number' },
-    { key: 'eventDoorId', label: 'Nome', type: 'number' },
+    { key: 'eventDoorId', label: 'Tipo', type: 'number' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
     { key: 'createTime', label: 'Data de Criação', type: 'Date' },
     { key: 'updateTime', label: 'Data de Atualização', type: 'Date' },
@@ -583,4 +583,24 @@ export const readersFields = [
     { key: 'readerInOut', label: 'Sentido', type: 'number' },
     { key: 'doorNo', label: 'Nº Porta', type: 'number' },
     { key: 'doorName', label: 'Nome Porta', type: 'string' },
+];
+
+export const activityFields = [
+    { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'cardNo', label: 'Nº do Cartão', type: 'number' },
+    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
+    { key: 'eventId', label: 'Evento', type: 'number' },
+    { key: 'eventDoorId', label: 'Tipo', type: 'number' },
+    { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
+    { key: 'inOutStatus', label: 'Sentido', type: 'string' },
+];
+
+export const movementFields = [
+    { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'cardNo', label: 'Nº do Cartão', type: 'number' },
+    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
+    { key: 'eventId', label: 'Evento', type: 'number' },
+    { key: 'eventDoorId', label: 'Nome', type: 'number' },
+    { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
+    { key: 'nomeResponsavel', label: 'Nome do Utilizador', type: 'string' },
 ];

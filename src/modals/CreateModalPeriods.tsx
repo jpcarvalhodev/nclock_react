@@ -246,6 +246,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({ title, open,
                                     name="remark"
                                     value={formData.remark}
                                     onChange={handleChange}
+                                    maxLength={50}
                                 />
                             </Form.Group>
                         </Col>

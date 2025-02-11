@@ -254,6 +254,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                     onChange={handleChange}
                                     name="name"
                                     required
+                                    maxLength={50}
                                 />
                             </OverlayTrigger>
                         </Form.Group>
@@ -267,6 +268,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                 value={formData.commercialName || ''}
                                 onChange={handleChange}
                                 name="commercialName"
+                                maxLength={50}
                             />
                         </Form.Group>
                     </Col>
@@ -418,6 +420,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({ title, open, 
                                                 value={formData.comments || ''}
                                                 onChange={handleChange}
                                                 name="comments"
+                                                maxLength={50}
                                             />
                                         </Form.Group>
                                     </Col>

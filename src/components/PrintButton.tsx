@@ -66,7 +66,7 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
     // Função para calcular o renderTimeout com base na quantidade de dados
     const calculateRenderTimeout = (dataLength: number): number => {
         const baseTimeout = 5000;
-        const timePerItem = 20;
+        const timePerItem = 50;
         return baseTimeout + (dataLength * timePerItem);
     };
 

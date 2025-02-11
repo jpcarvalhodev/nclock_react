@@ -1455,8 +1455,14 @@ export const NavBar = ({ style }: NavBarProps) => {
   useEffect(() => {
     const handleStateChange = () => {
       localStorage.setItem("showPessoasRibbon", String(showPessoasRibbon));
-      localStorage.setItem("showDispositivosRibbon", String(showDispositivosRibbon));
-      localStorage.setItem("showConfiguracaoRibbon", String(showConfiguracaoRibbon));
+      localStorage.setItem(
+        "showDispositivosRibbon",
+        String(showDispositivosRibbon)
+      );
+      localStorage.setItem(
+        "showConfiguracaoRibbon",
+        String(showConfiguracaoRibbon)
+      );
       localStorage.setItem("showAjudaRibbon", String(showAjudaRibbon));
       localStorage.setItem("showNclockRibbon", String(showNclockRibbon));
       localStorage.setItem("showNaccessRibbon", String(showNaccessRibbon));
@@ -1483,7 +1489,10 @@ export const NavBar = ({ style }: NavBarProps) => {
       localStorage.setItem("showNeventsRibbon", String(showNeventsRibbon));
       localStorage.setItem("showNserviceRibbon", String(showNserviceRibbon));
       localStorage.setItem("showNtaskRibbon", String(showNtaskRibbon));
-      localStorage.setItem("showNproductionRibbon", String(showNproductionRibbon));
+      localStorage.setItem(
+        "showNproductionRibbon",
+        String(showNproductionRibbon)
+      );
       localStorage.setItem("showNticketRibbon", String(showNticketRibbon));
       localStorage.setItem("showNsalesRibbon", String(showNsalesRibbon));
       localStorage.setItem("showNinvoiceRibbon", String(showNinvoiceRibbon));
@@ -1503,8 +1512,14 @@ export const NavBar = ({ style }: NavBarProps) => {
       localStorage.setItem("showNkioskRibbon", String(showNkioskRibbon));
       localStorage.setItem("showNledRibbon", String(showNledRibbon));
       localStorage.setItem("showNfireRibbon", String(showNfireRibbon));
-      localStorage.setItem("showNfurnitureRibbon", String(showNfurnitureRibbon));
-      localStorage.setItem("showNpartitionRibbon", String(showNpartitionRibbon));
+      localStorage.setItem(
+        "showNfurnitureRibbon",
+        String(showNfurnitureRibbon)
+      );
+      localStorage.setItem(
+        "showNpartitionRibbon",
+        String(showNpartitionRibbon)
+      );
       localStorage.setItem("showNdecorRibbon", String(showNdecorRibbon));
       localStorage.setItem("showNpingRibbon", String(showNpingRibbon));
       localStorage.setItem("showNconnectRibbon", String(showNconnectRibbon));
@@ -3927,7 +3942,9 @@ export const NavBar = ({ style }: NavBarProps) => {
                             onClick={() => fetchAllAccessesbyDevice()}
                             type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "/naccess/naccessaccesses" ? "current-active" : ""
+                              currentRoute === "/naccess/naccessaccesses"
+                                ? "current-active"
+                                : ""
                             }`}
                           >
                             <span className="icon">
@@ -3938,11 +3955,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                         </div>
                         <div className="icon-text-pessoas">
                           <Link
-                            to="/naccess/naccesspresence" 
+                            to="/naccess/naccesspresence"
                             onClick={() => fetchAllAccessesbyDevice()}
                             type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "/naccess/naccesspresence" ? "current-active" : ""
+                              currentRoute === "/naccess/naccesspresence"
+                                ? "current-active"
+                                : ""
                             }`}
                           >
                             <span className="icon">
@@ -4016,6 +4035,53 @@ export const NavBar = ({ style }: NavBarProps) => {
                       }
                     >
                       <span className="title">Movimentos</span>
+                    </div>
+                  </div>
+                  <div className="group">
+                    {(!isMobile || visibleGroup === "remota naccess") && (
+                      <div className="btn-group" role="group">
+                        <div className="icon-text-pessoas">
+                          <Button
+                            /* to="#" */
+                            type="button"
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
+                              currentRoute === "#"
+                                ? "current-active"
+                                : ""
+                            }`} disabled
+                          >
+                            <span className="icon">
+                              <img src={intercom} alt="botão vídeo porteiro" />
+                            </span>
+                            <span className="text">Video Porteiro</span>
+                          </Button>
+                        </div>
+                        <div className="icon-text-pessoas">
+                          <Link
+                            to="/naccess/naccessdooropen"
+                            type="button"
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
+                              currentRoute === "/naccess/naccessdooropen"
+                                ? "current-active"
+                                : ""
+                            }`}
+                          >
+                            <span className="icon">
+                              <img
+                                src={open_door}
+                                alt="botão abertura manual"
+                              />
+                            </span>
+                            <span className="text">Abertura Manual</span>
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                    <div
+                      className="title-container"
+                      onClick={() => toggleGroupVisibility("remota naccess")}
+                    >
+                      <span className="title">Remota</span>
                     </div>
                   </div>
                   <div className="group">
@@ -19715,7 +19781,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               alt="botão terminais multibanco"
                             />
                           </span>
-                          <span className="text">Terminais</span>
+                          <span className="text">Multibanco</span>
                         </Link>
                       </div>
                       <div className="icon-text-pessoas">

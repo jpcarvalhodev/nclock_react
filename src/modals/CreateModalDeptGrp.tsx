@@ -378,6 +378,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                         onChange={handleChange}
                                                         className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
                                                         required
+                                                        maxLength={50}
                                                     />
                                                 </OverlayTrigger>
                                             </Form.Group>
@@ -393,6 +394,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                     value={formData['description'] || ''}
                                                     onChange={handleChange}
                                                     className="custom-input-height custom-select-font-size"
+                                                    maxLength={50}
                                                 />
                                             </Form.Group>
                                         </Col>
@@ -445,6 +447,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                                     value={formData['description'] || ''}
                                                     onChange={handleChange}
                                                     className="custom-input-height custom-select-font-size"
+                                                    maxLength={50}
                                                 />
                                             </Form.Group>
                                         </Col>
