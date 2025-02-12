@@ -278,11 +278,16 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
   // Função para lidar com a mudança de dados do cartão
   const handleCardChange = (e: ChangeEvent<FormControlElement>) => {
-    const { name, value, type } = e.target;
-    const parsedValue = type === 'number' ? Number(value) : value;
+    const { name, value } = e.target;
+    let newValue = value;
+
+    if (name === "cardNumber") {
+      newValue = newValue.replace(/^0+/, "");
+    }
+
     setCardFormData(prevState => ({
       ...prevState,
-      [name]: parsedValue
+      [name]: newValue
     }));
   };
 

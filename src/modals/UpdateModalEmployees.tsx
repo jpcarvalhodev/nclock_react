@@ -1,23 +1,35 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { Col, Form, InputGroup, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import { toast } from 'react-toastify';
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import {
+  Col,
+  Form,
+  InputGroup,
+  Nav,
+  OverlayTrigger,
+  Row,
+  Tab,
+  Tooltip,
+} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import { toast } from "react-toastify";
 
-import hidepass from '../assets/img/login/hidepass.png';
-import showpass from '../assets/img/login/showpass.png';
-import modalAvatar from '../assets/img/navbar/navbar/modalAvatar.png';
-import { CustomOutlineButton } from '../components/CustomOutlineButton';
-import { useEntity } from '../context/EntityContext';
-import { usePersons } from '../context/PersonsContext';
-import { useTerminals } from '../context/TerminalsContext';
-import { departmentFields, groupFields } from '../fields/Fields';
-import { EmployeeCard } from '../types/Types';
+import hidepass from "../assets/img/login/hidepass.png";
+import showpass from "../assets/img/login/showpass.png";
+import modalAvatar from "../assets/img/navbar/navbar/modalAvatar.png";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { useEntity } from "../context/EntityContext";
+import { usePersons } from "../context/PersonsContext";
+import { useTerminals } from "../context/TerminalsContext";
+import { departmentFields, groupFields } from "../fields/Fields";
+import { EmployeeCard } from "../types/Types";
 
-import { CreateModalDeptGrp } from './CreateModalDeptGrp';
+import { CreateModalDeptGrp } from "./CreateModalDeptGrp";
 
 // Define o tipo FormControlElement
-type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+type FormControlElement =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement;
 
 // Define a interface Entity
 export interface Entity {
@@ -25,7 +37,7 @@ export interface Entity {
   [key: string]: any;
 }
 
-// Define a interface Field	
+// Define a interface Field
 interface Field {
   key: string;
   label: string;
@@ -52,14 +64,37 @@ interface UpdateModalProps<T extends Entity> {
 }
 
 // Define o componente
-export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplicate, onUpdate, entity, fields, title, canMoveNext, canMovePrev, onNext, onPrev }: UpdateModalProps<T>) => {
-  const { departments, groups, categories, professions, dataEE, zones, handleAddDepartment, handleAddGroup } = usePersons();
+export const UpdateModalEmployees = <T extends Entity>({
+  open,
+  onClose,
+  onDuplicate,
+  onUpdate,
+  entity,
+  fields,
+  title,
+  canMoveNext,
+  canMovePrev,
+  onNext,
+  onPrev,
+}: UpdateModalProps<T>) => {
+  const {
+    departments,
+    groups,
+    categories,
+    professions,
+    dataEE,
+    zones,
+    handleAddDepartment,
+    handleAddGroup,
+  } = usePersons();
   const { entities } = useEntity();
   const { accessControl } = useTerminals();
   const [formData, setFormData] = useState<T>({ ...entity });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
-  const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
+  const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(
+    null
+  );
   const [isFormValid, setIsFormValid] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -94,17 +129,21 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   useEffect(() => {
     const newErrors: Record<string, boolean> = {};
 
-    const isValid = fields.every(field => {
+    const isValid = fields.every((field) => {
       const fieldValue = formData[field.key];
       let valid = true;
 
-      if (field.required && (fieldValue === undefined || fieldValue === '')) {
+      if (field.required && (fieldValue === undefined || fieldValue === "")) {
         valid = false;
       }
-      if (field.type === 'number' && fieldValue != null && fieldValue < 0) {
+      if (field.type === "number" && fieldValue != null && fieldValue < 0) {
         valid = false;
       }
-      if (field.key === 'nif' && fieldValue != null && fieldValue.toString().length < 9) {
+      if (
+        field.key === "nif" &&
+        fieldValue != null &&
+        fieldValue.toString().length < 9
+      ) {
         valid = false;
       }
 
@@ -148,12 +187,12 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         zoneId: zones,
         externalEntityId: dataEE.externalEntity,
         entidadeId: entities,
-        accPlanoAcessoId: accessControl
+        accPlanoAcessoId: accessControl,
       });
       if (entities.length === 1) {
         setFormData((prevState) => ({
           ...prevState,
-          entidadeId: entities?.[0]?.id || '',
+          entidadeId: entities?.[0]?.id || "",
         }));
       }
     } catch (error) {
@@ -182,13 +221,13 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
             }
           }
 
-          const canvas = document.createElement('canvas');
+          const canvas = document.createElement("canvas");
           canvas.width = width;
           canvas.height = height;
-          const ctx = canvas.getContext('2d');
+          const ctx = canvas.getContext("2d");
           ctx?.drawImage(image, 0, 0, width, height);
 
-          const dataUrl = canvas.toDataURL('image/png');
+          const dataUrl = canvas.toDataURL("image/png");
           setProfileImage(dataUrl);
           setFormData({ ...formData, photo: dataUrl });
         };
@@ -201,32 +240,35 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   // Define a função para resetar a foto de perfil
   const resetToDefaultAvatar = () => {
     setProfileImage(modalAvatar);
-    setFormData({ ...formData, photo: '' });
+    setFormData({ ...formData, photo: "" });
   };
 
   // Define a função para acionar o popup de seleção de arquivo
   const triggerFileSelectPopup = () => fileInputRef.current?.click();
 
   // Função para lidar com a mudança do dropdown
-  const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+  const handleDropdownChange = (
+    key: string,
+    e: React.ChangeEvent<FormControlElement>
+  ) => {
     const { value } = e.target;
     const selectedOption = dropdownData[key]?.find((option: any) => {
       switch (key) {
-        case 'departmentId':
+        case "departmentId":
           return option.departmentID === value;
-        case 'groupId':
+        case "groupId":
           return option.groupID === value;
-        case 'categoryId':
+        case "categoryId":
           return option.categoryID === value;
-        case 'professionId':
+        case "professionId":
           return option.professionID === value;
-        case 'zoneId':
+        case "zoneId":
           return option.zoneID === value;
-        case 'externalEntityId':
+        case "externalEntityId":
           return option.externalEntityID === value;
-        case 'entidadeId':
+        case "entidadeId":
           return option.id === value;
-        case 'accPlanoAcessoId':
+        case "accPlanoAcessoId":
           return option.id === value;
         default:
           return false;
@@ -235,15 +277,17 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
     if (selectedOption) {
       const idKey = key;
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
         [idKey]: value,
-        ...(key === 'accPlanoAcessoId' && { accPlanoAcessoName: selectedOption.nome })
+        ...(key === "accPlanoAcessoId" && {
+          accPlanoAcessoName: selectedOption.nome,
+        }),
       }));
     } else {
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
-        [key]: value
+        [key]: value,
       }));
     }
   };
@@ -259,29 +303,29 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const handleChange = (e: ChangeEvent<FormControlElement>) => {
     const { name, value } = e.target;
     let parsedValue: any = value;
-    if (name === 'gender') {
-      parsedValue = value === 'true';
+    if (name === "gender") {
+      parsedValue = value === "true";
     }
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      [name]: parsedValue
+      [name]: parsedValue,
     }));
 
     if (showValidationErrors) {
       setShowValidationErrors(false);
     }
 
-    if (name === 'name') {
-      const names = value.split(' ');
-      let shortName = '';
+    if (name === "name") {
+      const names = value.split(" ");
+      let shortName = "";
       if (names.length > 1) {
         shortName = `${names[0]} ${names[names.length - 1]}`;
       } else if (names.length === 1) {
         shortName = names[0];
       }
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
-        shortName: shortName
+        shortName: shortName,
       }));
     }
 
@@ -290,31 +334,31 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Função para lidar com a mudança de dados do cartão
   const handleCardChange = (e: ChangeEvent<FormControlElement>) => {
-    const { name, value, type } = e.target;
-    const parsedValue = type === 'number' ? Number(value) : value;
+    const { name, value } = e.target;
 
-    if (name === 'devicePassword' && value.length === 0) {
-      setCardFormData(prevState => ({
+    let newValue = value;
+
+    if (name === "cardNumber") {
+      newValue = newValue.replace(/^0+/, "");
+    }
+
+    if (name === "devicePassword" && newValue.length === 0) {
+      setCardFormData((prevState) => ({
         ...prevState,
-        devicePassword: ''
+        devicePassword: "",
       }));
     }
 
-    if (name === 'cardNumber' && value.length > 0) {
-      setCardFormData(prevState => ({
+    if (name === "cardNumber") {
+      setCardFormData((prevState) => ({
         ...prevState,
-        deviceEnabled: true
-      }));
-    } else {
-      setCardFormData(prevState => ({
-        ...prevState,
-        deviceEnabled: false
+        deviceEnabled: newValue.length > 0,
       }));
     }
 
-    setCardFormData(prevState => ({
+    setCardFormData((prevState) => ({
       ...prevState,
-      [name]: parsedValue
+      [name]: newValue,
     }));
   };
 
@@ -322,14 +366,18 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   const handleSaveClick = () => {
     if (!isFormValid) {
       setShowValidationErrors(true);
-      toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
+      toast.warn(
+        "Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar."
+      );
       return;
     }
     handleSubmit();
   };
 
   // Função para remover campos vazios
-  function removeEmptyFields<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  function removeEmptyFields<T extends Record<string, unknown>>(
+    obj: T
+  ): Partial<T> {
     const result: Partial<T> = {};
 
     for (const [key, value] of Object.entries(obj)) {
@@ -428,32 +476,34 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
       externalEntityName: formData.externalEntityName,
 
       accPlanoAcessoId: formData.accPlanoAcessoId,
-      accPlanoAcessoName: formData.accPlanoAcessoName
-
+      accPlanoAcessoName: formData.accPlanoAcessoName,
     } as any;
 
     let employeeCardsData: any[] = [];
 
-    if (cardFormData.cardNumber && cardFormData.cardNumber.trim() !== "" || cardFormData.devicePassword && cardFormData.devicePassword.trim() !== "") {
+    if (
+      (cardFormData.cardNumber && cardFormData.cardNumber.trim() !== "") ||
+      (cardFormData.devicePassword && cardFormData.devicePassword.trim() !== "")
+    ) {
       employeeCardsData = [
         {
           cardId: cardFormData.cardId,
           devicePassword: cardFormData.devicePassword,
           devicePrivelage: cardFormData.devicePrivelage,
           deviceEnabled: true,
-          cardNumber: cardFormData.cardNumber
-        }
+          cardNumber: cardFormData.cardNumber,
+        },
       ];
     }
 
     let dataToSend: { employee: any; employeeCards?: any[] } = {
-      employee: employeeData
+      employee: employeeData,
     };
 
     if (employeeCardsData.length > 0) {
       dataToSend = {
         ...dataToSend,
-        employeeCards: employeeCardsData
+        employeeCards: employeeCardsData,
       };
     }
 
@@ -463,18 +513,18 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
 
   // Define as opções de tipo
   const typeOptions = [
-    { value: 'Funcionário', label: 'Funcionário' },
-    { value: 'Subcontratado', label: 'Subcontratado' },
-    { value: 'Utente', label: 'Utente' },
-    { value: 'Visitante', label: 'Visitante' },
-    { value: 'Contacto', label: 'Contacto' },
-    { value: 'Provisório', label: 'Provisório' }
+    { value: "Funcionário", label: "Funcionário" },
+    { value: "Subcontratado", label: "Subcontratado" },
+    { value: "Utente", label: "Utente" },
+    { value: "Visitante", label: "Visitante" },
+    { value: "Contacto", label: "Contacto" },
+    { value: "Provisório", label: "Provisório" },
   ];
 
   // Opções de género
   const genderOptions = [
-    { value: true, label: 'Masculino' },
-    { value: false, label: 'Feminino' }
+    { value: true, label: "Masculino" },
+    { value: false, label: "Feminino" },
   ];
 
   // Alterna a visibilidade da password
@@ -483,30 +533,48 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
   };
 
   return (
-    <Modal show={open} onHide={onClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
-      <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
+    <Modal
+      show={open}
+      onHide={onClose}
+      backdrop="static"
+      dialogClassName="custom-modal"
+      size="xl"
+      centered
+    >
+      <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-body-scrollable">
         <Row style={{ marginBottom: 20 }}>
-          <Col md={3} className='img-modal'>
+          <Col md={3} className="img-modal">
             <img
               src={profileImage || modalAvatar}
               alt="Profile Avatar"
-              style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover' }}
+              style={{
+                width: 128,
+                height: 128,
+                borderRadius: "50%",
+                cursor: "pointer",
+                objectFit: "cover",
+              }}
               onClick={triggerFileSelectPopup}
             />
             <div>
               <input
                 type="file"
                 accept="image/*"
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 onChange={handleImageChange}
                 ref={fileInputRef}
               />
             </div>
             <div>
-              <Button variant="outline-dark" onClick={resetToDefaultAvatar} size='sm' style={{ marginTop: 10 }}>
+              <Button
+                variant="outline-dark"
+                onClick={resetToDefaultAvatar}
+                size="sm"
+                style={{ marginTop: 10 }}
+              >
                 Remover Foto
               </Button>
             </div>
@@ -514,25 +582,31 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
           <Col md={3}>
             <Form.Group controlId="formEnrollNumber">
               <Form.Label>
-                Número da Pessoa <span style={{ color: 'red' }}>*</span>
+                Número da Pessoa <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                overlay={
+                  <Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>
+                }
               >
                 <Form.Control
                   type="number"
                   className="custom-input-height custom-select-font-size"
-                  value={formData.enrollNumber || ''}
+                  value={formData.enrollNumber || ""}
                   onChange={handleChange}
                   name="enrollNumber"
                 />
               </OverlayTrigger>
-              {errors.enrollNumber && <Form.Text className="text-danger">{errors.enrollNumber}</Form.Text>}
+              {errors.enrollNumber && (
+                <Form.Text className="text-danger">
+                  {errors.enrollNumber}
+                </Form.Text>
+              )}
             </Form.Group>
             <Form.Group controlId="formName">
               <Form.Label>
-                Nome <span style={{ color: 'red' }}>*</span>
+                Nome <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
                 placement="right"
@@ -540,33 +614,45 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               >
                 <Form.Control
                   type="string"
-                  className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                  value={formData.name || ''}
+                  className={`custom-input-height custom-select-font-size ${
+                    showValidationErrors ? "error-border" : ""
+                  }`}
+                  value={formData.name || ""}
                   onChange={handleChange}
                   name="name"
                   maxLength={150}
                 />
               </OverlayTrigger>
-              {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
+              {errors.name && (
+                <Form.Text className="text-danger">{errors.name}</Form.Text>
+              )}
             </Form.Group>
             <Form.Group controlId="formShortName">
               <Form.Label>
-                Nome Abreviado <span style={{ color: 'red' }}>*</span>
+                Nome Abreviado <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                overlay={
+                  <Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>
+                }
               >
                 <Form.Control
                   type="string"
-                  className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                  value={formData.shortName || ''}
+                  className={`custom-input-height custom-select-font-size ${
+                    showValidationErrors ? "error-border" : ""
+                  }`}
+                  value={formData.shortName || ""}
                   onChange={handleChange}
                   name="shortName"
                   maxLength={50}
                 />
               </OverlayTrigger>
-              {errors.shortName && <Form.Text className="text-danger">{errors.shortName}</Form.Text>}
+              {errors.shortName && (
+                <Form.Text className="text-danger">
+                  {errors.shortName}
+                </Form.Text>
+              )}
             </Form.Group>
           </Col>
           <Col md={3}>
@@ -574,12 +660,14 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               <Form.Label>Iniciais do Nome</Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-name">Máximo de 4 caracteres</Tooltip>}
+                overlay={
+                  <Tooltip id="tooltip-name">Máximo de 4 caracteres</Tooltip>
+                }
               >
                 <Form.Control
                   type="string"
                   className="custom-input-height custom-select-font-size"
-                  value={formData.nameAcronym || ''}
+                  value={formData.nameAcronym || ""}
                   onChange={handleChange}
                   name="nameAcronym"
                   maxLength={5}
@@ -591,7 +679,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               <Form.Control
                 type="string"
                 className="custom-input-height custom-select-font-size"
-                value={formData.comments || ''}
+                value={formData.comments || ""}
                 onChange={handleChange}
                 name="comments"
                 maxLength={50}
@@ -602,49 +690,90 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               <Form.Control
                 as="select"
                 className="custom-input-height custom-select-font-size"
-                value={formData.type || ''}
+                value={formData.type || ""}
                 onChange={handleChange}
                 name="type"
               >
                 <option value="">Selecione...</option>
-                {typeOptions.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                {typeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </Form.Control>
             </Form.Group>
           </Col>
           <Col md={3}>
-            <Form.Group controlId="formStatus" className="d-flex align-items-center mb-2">
-              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo:</Form.Label>
+            <Form.Group
+              controlId="formStatus"
+              className="d-flex align-items-center mb-2"
+            >
+              <Form.Label
+                className="mb-0 me-2 flex-shrink-0"
+                style={{ lineHeight: "32px" }}
+              >
+                Activo:
+              </Form.Label>
               <Form.Check
                 type="switch"
                 id="custom-switch-status"
                 checked={formData.status === true}
-                onChange={(e) => setFormData({ ...formData, status: e.target.checked ? true : false })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    status: e.target.checked ? true : false,
+                  })
+                }
                 className="ms-auto"
                 label=""
                 name="status"
               />
             </Form.Group>
-            <Form.Group controlId="formStatusEmail" className="d-flex align-items-center mb-2">
-              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo para E-Mail:</Form.Label>
+            <Form.Group
+              controlId="formStatusEmail"
+              className="d-flex align-items-center mb-2"
+            >
+              <Form.Label
+                className="mb-0 me-2 flex-shrink-0"
+                style={{ lineHeight: "32px" }}
+              >
+                Activo para E-Mail:
+              </Form.Label>
               <Form.Check
                 type="switch"
                 id="custom-switch-status-email"
                 checked={formData.statusEmail === true}
-                onChange={(e) => setFormData({ ...formData, statusEmail: e.target.checked ? true : false })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    statusEmail: e.target.checked ? true : false,
+                  })
+                }
                 className="ms-auto"
                 label=""
                 name="statusEmail"
               />
             </Form.Group>
-            <Form.Group controlId="formRgptAut" className="d-flex align-items-center">
-              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Autorização RGPD:</Form.Label>
+            <Form.Group
+              controlId="formRgptAut"
+              className="d-flex align-items-center"
+            >
+              <Form.Label
+                className="mb-0 me-2 flex-shrink-0"
+                style={{ lineHeight: "32px" }}
+              >
+                Autorização RGPD:
+              </Form.Label>
               <Form.Check
                 type="switch"
                 id="custom-switch-rgpt-aut"
                 checked={formData.rgpdAut === true}
-                onChange={(e) => setFormData({ ...formData, rgpdAut: e.target.checked ? true : false })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    rgpdAut: e.target.checked ? true : false,
+                  })
+                }
                 className="ms-auto"
                 label=""
                 name="rgpdAut"
@@ -655,12 +784,12 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               <Form.Control
                 as="select"
                 className="custom-input-height custom-select-font-size"
-                value={formData.entidadeId || ''}
-                onChange={(e) => handleDropdownChange('entidadeId', e)}
+                value={formData.entidadeId || ""}
+                onChange={(e) => handleDropdownChange("entidadeId", e)}
               >
                 {dropdownData.entidadeId?.map((option: any) => {
                   let optionId = option.id;
-                  let optionName = option.nome
+                  let optionName = option.nome;
                   return (
                     <option key={optionId} value={optionId}>
                       {optionName}
@@ -705,23 +834,31 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               <Form style={{ marginTop: 10, marginBottom: 10 }}>
                 <Row>
                   {[
-                    { key: 'nif', label: 'NIF', type: 'number' },
-                    { key: 'address', label: 'Morada', type: 'string' },
-                    { key: 'ziPcode', label: 'Código Postal', type: 'string' },
-                    { key: 'locality', label: 'Localidade', type: 'string' },
-                    { key: 'village', label: 'Freguesia', type: 'string' },
-                    { key: 'district', label: 'Distrito', type: 'string' },
-                    { key: 'phone', label: 'Telefone', type: 'string' },
-                    { key: 'mobile', label: 'Telemóvel', type: 'string' },
-                    { key: 'email', label: 'E-Mail', type: 'email' },
-                    { key: 'birthday', label: 'Data de Nascimento', type: 'datetime-local' },
-                    { key: 'nationality', label: 'Nacionalidade', type: 'string' },
-                    { key: 'gender', label: 'Gênero', type: 'boolean' }
+                    { key: "nif", label: "NIF", type: "number" },
+                    { key: "address", label: "Morada", type: "string" },
+                    { key: "ziPcode", label: "Código Postal", type: "string" },
+                    { key: "locality", label: "Localidade", type: "string" },
+                    { key: "village", label: "Freguesia", type: "string" },
+                    { key: "district", label: "Distrito", type: "string" },
+                    { key: "phone", label: "Telefone", type: "string" },
+                    { key: "mobile", label: "Telemóvel", type: "string" },
+                    { key: "email", label: "E-Mail", type: "email" },
+                    {
+                      key: "birthday",
+                      label: "Data de Nascimento",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "nationality",
+                      label: "Nacionalidade",
+                      type: "string",
+                    },
+                    { key: "gender", label: "Gênero", type: "boolean" },
                   ].map((field) => (
                     <Col md={3} key={field.key}>
                       <Form.Group controlId={`form${field.key}`}>
                         <Form.Label>{field.label}</Form.Label>
-                        {field.key === 'gender' ? (
+                        {field.key === "gender" ? (
                           <Form.Control
                             as="select"
                             className="custom-input-height custom-select-font-size"
@@ -730,21 +867,28 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                             name="gender"
                           >
                             <option value="">Selecione...</option>
-                            {genderOptions.map(option => (
-                              <option key={String(option.value)} value={String(option.value)}>
+                            {genderOptions.map((option) => (
+                              <option
+                                key={String(option.value)}
+                                value={String(option.value)}
+                              >
                                 {option.label}
                               </option>
                             ))}
                           </Form.Control>
-                        ) : field.key === 'nif' ? (
+                        ) : field.key === "nif" ? (
                           <OverlayTrigger
                             placement="right"
-                            overlay={<Tooltip id="tooltip-nif">NIF deve ter pelo menos 9 dígitos</Tooltip>}
+                            overlay={
+                              <Tooltip id="tooltip-nif">
+                                NIF deve ter pelo menos 9 dígitos
+                              </Tooltip>
+                            }
                           >
                             <Form.Control
                               type={field.type}
                               className="custom-input-height custom-select-font-size"
-                              value={formData[field.key] || ''}
+                              value={formData[field.key] || ""}
                               onChange={handleChange}
                               name={field.key}
                             />
@@ -753,12 +897,16 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                           <Form.Control
                             type={field.type}
                             className="custom-input-height custom-select-font-size"
-                            value={formData[field.key] || ''}
+                            value={formData[field.key] || ""}
                             onChange={handleChange}
                             name={field.key}
                           />
                         )}
-                        {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
+                        {errors[field.key] && (
+                          <Form.Text className="text-danger">
+                            {errors[field.key]}
+                          </Form.Text>
+                        )}
                       </Form.Group>
                     </Col>
                   ))}
@@ -769,50 +917,115 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
               <Form style={{ marginTop: 10, marginBottom: 10 }}>
                 <Row>
                   {[
-                    { key: 'bInumber', label: 'Número de BI', type: 'string' },
-                    { key: 'bIissuance', label: 'Emissão de BI', type: 'datetime-local' },
-                    { key: 'biValidity', label: 'Validade de BI', type: 'datetime-local' },
-                    { key: 'admissionDate', label: 'Data de Admissão', type: 'datetime-local' },
-                    { key: 'exitDate', label: 'Data de Saída', type: 'datetime-local' },
-                    { key: 'departmentId', label: 'Departamento', type: 'dropdown', required: true },
-                    { key: 'professionId', label: 'Profissão', type: 'dropdown' },
-                    { key: 'groupId', label: 'Grupo', type: 'dropdown', required: true },
-                    { key: 'categoryId', label: 'Categoria', type: 'dropdown' },
-                    { key: 'zoneId', label: 'Zona', type: 'dropdown' },
-                    { key: 'externalEntityId', label: 'Entidade Externa', type: 'dropdown' }
+                    { key: "bInumber", label: "Número de BI", type: "string" },
+                    {
+                      key: "bIissuance",
+                      label: "Emissão de BI",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "biValidity",
+                      label: "Validade de BI",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "admissionDate",
+                      label: "Data de Admissão",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "exitDate",
+                      label: "Data de Saída",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "departmentId",
+                      label: "Departamento",
+                      type: "dropdown",
+                      required: true,
+                    },
+                    {
+                      key: "professionId",
+                      label: "Profissão",
+                      type: "dropdown",
+                    },
+                    {
+                      key: "groupId",
+                      label: "Grupo",
+                      type: "dropdown",
+                      required: true,
+                    },
+                    { key: "categoryId", label: "Categoria", type: "dropdown" },
+                    { key: "zoneId", label: "Zona", type: "dropdown" },
+                    {
+                      key: "externalEntityId",
+                      label: "Entidade Externa",
+                      type: "dropdown",
+                    },
                   ].map((field) => (
                     <Col md={3} key={field.key}>
                       <Form.Group controlId={`form${field.key}`}>
-                        <Form.Label>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}</Form.Label>
+                        <Form.Label>
+                          {field.label}
+                          {field.required && (
+                            <span style={{ color: "red" }}> *</span>
+                          )}
+                        </Form.Label>
                         <OverlayTrigger
                           placement="right"
-                          overlay={<Tooltip id={`tooltip-${field.key}`}>Campo Obrigatório</Tooltip>}
+                          overlay={
+                            <Tooltip id={`tooltip-${field.key}`}>
+                              Campo Obrigatório
+                            </Tooltip>
+                          }
                         >
-                          {field.type === 'dropdown' ? (
+                          {field.type === "dropdown" ? (
                             <Row>
-                              {(field.key === 'departmentId' || field.key === 'groupId') ? (
+                              {field.key === "departmentId" ||
+                              field.key === "groupId" ? (
                                 <>
                                   <Col>
                                     <Form.Control
                                       as="select"
-                                      className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                      value={formData[field.key] || ''}
-                                      onChange={(e) => handleDropdownChange(field.key, e)}
+                                      className={`custom-input-height custom-select-font-size ${
+                                        showValidationErrors
+                                          ? "error-border"
+                                          : ""
+                                      }`}
+                                      value={formData[field.key] || ""}
+                                      onChange={(e) =>
+                                        handleDropdownChange(field.key, e)
+                                      }
                                     >
                                       <option value="">Selecione...</option>
-                                      {dropdownData[field.key]?.map((option: any) => {
-                                        let optionId = option.departmentID || option.groupID;
-                                        let optionName = option.name || option.description;
-                                        return (
-                                          <option key={optionId} value={optionId}>
-                                            {optionName}
-                                          </option>
-                                        );
-                                      })}
+                                      {dropdownData[field.key]?.map(
+                                        (option: any) => {
+                                          let optionId =
+                                            option.departmentID ||
+                                            option.groupID;
+                                          let optionName =
+                                            option.name || option.description;
+                                          return (
+                                            <option
+                                              key={optionId}
+                                              value={optionId}
+                                            >
+                                              {optionName}
+                                            </option>
+                                          );
+                                        }
+                                      )}
                                     </Form.Control>
                                   </Col>
                                   <Col xs="auto">
-                                    <CustomOutlineButton icon="bi-plus" onClick={() => (field.key === 'departmentId' ? setShowDeptModal(true) : setShowGrpModal(true))} />
+                                    <CustomOutlineButton
+                                      icon="bi-plus"
+                                      onClick={() =>
+                                        field.key === "departmentId"
+                                          ? setShowDeptModal(true)
+                                          : setShowGrpModal(true)
+                                      }
+                                    />
                                   </Col>
                                 </>
                               ) : (
@@ -820,19 +1033,31 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                                   <Form.Control
                                     as="select"
                                     className="custom-input-height custom-select-font-size"
-                                    value={formData[field.key] || ''}
-                                    onChange={(e) => handleDropdownChange(field.key, e)}
+                                    value={formData[field.key] || ""}
+                                    onChange={(e) =>
+                                      handleDropdownChange(field.key, e)
+                                    }
                                   >
                                     <option value="">Selecione...</option>
-                                    {dropdownData[field.key]?.map((option: any) => {
-                                      let optionId = option.professionID || option.zoneID || option.externalEntityID || option.categoryID;
-                                      let optionName = option.name || option.description;
-                                      return (
-                                        <option key={optionId} value={optionId}>
-                                          {optionName}
-                                        </option>
-                                      );
-                                    })}
+                                    {dropdownData[field.key]?.map(
+                                      (option: any) => {
+                                        let optionId =
+                                          option.professionID ||
+                                          option.zoneID ||
+                                          option.externalEntityID ||
+                                          option.categoryID;
+                                        let optionName =
+                                          option.name || option.description;
+                                        return (
+                                          <option
+                                            key={optionId}
+                                            value={optionId}
+                                          >
+                                            {optionName}
+                                          </option>
+                                        );
+                                      }
+                                    )}
                                   </Form.Control>
                                 </Col>
                               )}
@@ -841,13 +1066,17 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                             <Form.Control
                               type={field.type}
                               className="custom-input-height custom-select-font-size"
-                              value={formData[field.key] || ''}
+                              value={formData[field.key] || ""}
                               onChange={handleChange}
                               name={field.key}
                             />
                           )}
                         </OverlayTrigger>
-                        {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
+                        {errors[field.key] && (
+                          <Form.Text className="text-danger">
+                            {errors[field.key]}
+                          </Form.Text>
+                        )}
                       </Form.Group>
                     </Col>
                   ))}
@@ -863,7 +1092,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                       <Form.Control
                         type="text"
                         className="custom-input-height custom-select-font-size"
-                        value={cardFormData.cardNumber || ''}
+                        value={cardFormData.cardNumber || ""}
                         onChange={handleCardChange}
                         name="cardNumber"
                       />
@@ -874,7 +1103,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                       <Form.Label>Privilégio do Dispositivo</Form.Label>
                       <Form.Select
                         className="custom-input-height custom-select-font-size"
-                        value={cardFormData.devicePrivelage || ''}
+                        value={cardFormData.devicePrivelage || ""}
                         onChange={handleCardChange}
                         name="devicePrivelage"
                       >
@@ -888,24 +1117,32 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                       <Form.Label>Password do Dispositivo</Form.Label>
                       <InputGroup>
                         <Form.Control
-                          type={showPassword ? 'text' : 'password'}
+                          type={showPassword ? "text" : "password"}
                           className="custom-input-height custom-select-font-size"
-                          value={cardFormData.devicePassword || ''}
+                          value={cardFormData.devicePassword || ""}
                           onChange={handleCardChange}
                           name="devicePassword"
                           maxLength={6}
-                          style={{ borderRight: 'none' }}
+                          style={{ borderRight: "none" }}
                         />
                         <InputGroup.Text
                           style={{
-                            cursor: 'pointer',
-                            background: 'transparent',
-                            borderLeft: 'none',
-                            height: '30px',
+                            cursor: "pointer",
+                            background: "transparent",
+                            borderLeft: "none",
+                            height: "30px",
                           }}
                           onClick={togglePasswordVisibility}
                         >
-                          <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
+                          <img
+                            src={showPassword ? hidepass : showpass}
+                            alt={
+                              showPassword
+                                ? "Esconder password"
+                                : "Mostrar password"
+                            }
+                            style={{ width: 20, height: 20 }}
+                          />
                         </InputGroup.Text>
                       </InputGroup>
                     </Form.Group>
@@ -916,13 +1153,15 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
                       <Form.Control
                         as="select"
                         className="custom-input-height custom-select-font-size"
-                        value={formData.accPlanoAcessoId || ''}
-                        onChange={(e) => handleDropdownChange('accPlanoAcessoId', e)}
+                        value={formData.accPlanoAcessoId || ""}
+                        onChange={(e) =>
+                          handleDropdownChange("accPlanoAcessoId", e)
+                        }
                       >
                         <option value="">Selecione...</option>
                         {dropdownData.accPlanoAcessoId?.map((option: any) => {
                           let optionId = option.id;
-                          let optionName = option.nome
+                          let optionName = option.nome;
                           return (
                             <option key={optionId} value={optionId}>
                               {optionName}
@@ -938,22 +1177,49 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
           </Tab.Content>
         </Tab.Container>
       </Modal.Body>
-      <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
+      <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
         <OverlayTrigger
           placement="top"
           overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
         >
-          <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
+          <CustomOutlineButton
+            icon="bi-arrow-left"
+            onClick={onPrev}
+            disabled={!canMovePrev}
+          />
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
           overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
         >
-          <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />
+          <CustomOutlineButton
+            className="arrows-modal"
+            icon="bi-arrow-right"
+            onClick={onNext}
+            disabled={!canMoveNext}
+          />
         </OverlayTrigger>
-        <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleDuplicateClick}>Duplicar</Button>
-        <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={onClose}>Fechar</Button>
-        <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleSaveClick}>Guardar</Button>
+        <Button
+          className="narrow-mobile-modal-button"
+          variant="outline-dark"
+          onClick={handleDuplicateClick}
+        >
+          Duplicar
+        </Button>
+        <Button
+          className="narrow-mobile-modal-button"
+          variant="outline-dark"
+          onClick={onClose}
+        >
+          Fechar
+        </Button>
+        <Button
+          className="narrow-mobile-modal-button"
+          variant="outline-dark"
+          onClick={handleSaveClick}
+        >
+          Guardar
+        </Button>
       </Modal.Footer>
       <CreateModalDeptGrp
         title="Adicionar Departamento"
@@ -962,7 +1228,7 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         onSave={handleAddDepartment}
         fields={departmentFields}
         initialValues={{}}
-        entityType='department'
+        entityType="department"
       />
       <CreateModalDeptGrp
         title="Adicionar Grupo"
@@ -971,8 +1237,8 @@ export const UpdateModalEmployees = <T extends Entity>({ open, onClose, onDuplic
         onSave={handleAddGroup}
         fields={groupFields}
         initialValues={{}}
-        entityType='group'
+        entityType="group"
       />
-    </Modal >
+    </Modal>
   );
 };

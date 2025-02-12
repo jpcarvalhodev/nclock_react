@@ -55,7 +55,6 @@ import {
   EmployeeAndCard,
   EmployeeCard,
   EmployeesOnDevice,
-  KioskTransaction,
   Movements,
 } from "../../types/Types";
 import { CustomSpinner } from "../../components/CustomSpinner";
@@ -118,7 +117,6 @@ export const Terminals = () => {
   const { handleAddImportedAttendance } = useAttendance();
   const {
     employees,
-    fetchAllCardData,
     handleUpdateEmployee,
     handleImportEmployeeCard,
     handleImportEmployeeFP,
@@ -338,7 +336,6 @@ export const Terminals = () => {
   const refreshAll = () => {
     fetchAllDevices();
     fetchEmployeesAndCards();
-    fetchAllCardData();
     fetchAllAux();
     fetchAllDoorData();
     setClearSelectionToggle((prev) => !prev);
@@ -1606,8 +1603,7 @@ export const Terminals = () => {
               src={warning}
               alt="alerta"
             />
-            {confirmMessage  ||
-              "Tem certeza que deseja prosseguir?"}
+            {confirmMessage || "Tem certeza que deseja prosseguir?"}
           </div>
         </Modal.Body>
         <Modal.Footer>
