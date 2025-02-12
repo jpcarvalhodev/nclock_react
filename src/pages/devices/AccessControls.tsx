@@ -301,7 +301,7 @@ export const AccessControls = () => {
 
   return (
     <div className="dashboard-container">
-      <div className="datatable-container" style={{ flex: 1 }}>
+      <div className="datatable-container">
         <div className="datatable-title-text">
           <span style={{ color: "#000000" }}>Planos de Acessos</span>
         </div>
