@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from "../api/apiService";
-import { AccessControl, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, Readers, TimePeriod, TimePlan } from '../types/Types';
+import { AccessControl, Activity, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, Movements, Readers, TimePeriod, TimePlan } from '../types/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -60,6 +60,8 @@ export interface DeviceContextType {
     handleDeletePeriodTimePlan: (planoId: string, id: string[]) => Promise<void>;
     fetchReaders: (deviceId: string) => Promise<Readers[]>;
     handleUpdateReaders: (reader: Readers) => Promise<void>;
+    fetchEventsDevice: () => Promise<Activity[]>;
+    fetchEventsAndTransactionDevice: () => Promise<Movements[]>;
 }
 
 // Cria o contexto	
@@ -598,6 +600,28 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Função para buscar todos os eventos do dispositivo
+    const fetchEventsDevice = async (): Promise<Activity[]> => {
+        try {
+            const data = await apiService.fetchAllEventDevice();
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar eventos:', error);
+        }
+        return [];
+    }
+
+    // Função para buscar todos os eventos e transações do dispositivo
+    const fetchEventsAndTransactionDevice = async (): Promise<Movements[]> => {
+        try {
+            const data = await apiService.fetchAllEventAndTransactionDevice();
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar eventos:', error);
+        }
+        return [];
+    }
+
     // Busca todos os dispositivos ao carregar a página
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -670,6 +694,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleDeletePeriodTimePlan,
         fetchReaders,
         handleUpdateReaders,
+        fetchEventsDevice,
+        fetchEventsAndTransactionDevice
     };
 
     return (

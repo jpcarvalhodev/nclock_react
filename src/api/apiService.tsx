@@ -566,7 +566,7 @@ export const saveAllEmployeesOnDeviceToDB = async (zktecoDeviceID: Devices, empl
     }
 
     const response = await fetchWithAuth(url, {
-        method: 'POST',
+        method: 'GET',
     });
 
     if (response.status === 403) {
@@ -951,6 +951,28 @@ export const addManualOpenDoor = async (door: Partial<ManualOpenDoor>) => {
 
 export const fetchAllEventDevice = async () => {
     const response = await fetchWithAuth(`Zkteco/GetAllEventDevice`);
+    if (response.status === 403) {
+      if (!hasShown403) {
+        toast.error("Você não tem permissão para visualizar o conteúdo desta página");
+        hasShown403 = true;
+        throw new Error();
+      }
+    }
+    if (!response.ok) {
+        const errorData = await response.json();
+        const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+        if (message) {
+            toast.error(message);
+        } else {
+            toast.error(errorData.message || errorData.error);
+        }
+        throw new Error();
+    }
+    return response.json();
+}
+
+export const fetchAllEventAndTransactionDevice = async () => {
+    const response = await fetchWithAuth(`Zkteco/GetAllEventAndTransactionsDevice`);
     if (response.status === 403) {
       if (!hasShown403) {
         toast.error("Você não tem permissão para visualizar o conteúdo desta página");

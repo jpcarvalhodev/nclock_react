@@ -503,7 +503,7 @@ export const cameraFields = [
 ];
 
 export const employeesOnDeviceFields = [
-    { key: 'pin', label: 'Nº', type: 'string' },
+    { key: 'pin', label: 'Número', type: 'string' },
     { key: 'name', label: 'Nome', type: 'string' },
     { key: 'cardno', label: 'Nº do Cartão', type: 'string' },
 ];
@@ -590,17 +590,17 @@ export const activityFields = [
     { key: 'cardNo', label: 'Nº do Cartão', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventId', label: 'Evento', type: 'number' },
-    { key: 'eventDoorId', label: 'Tipo', type: 'number' },
+    { key: 'eventDoorId', label: 'Porta', type: 'number' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
     { key: 'inOutStatus', label: 'Sentido', type: 'string' },
 ];
 
 export const movementFields = [
     { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'nomeResponsavel', label: 'Nome do Utilizador', type: 'string' },
     { key: 'cardNo', label: 'Nº do Cartão', type: 'number' },
     { key: 'eventName', label: 'Nome do Evento', type: 'string' },
     { key: 'eventId', label: 'Evento', type: 'number' },
-    { key: 'eventDoorId', label: 'Nome', type: 'number' },
+    { key: 'eventDoorId', label: 'Porta', type: 'number' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
-    { key: 'nomeResponsavel', label: 'Nome do Utilizador', type: 'string' },
 ];

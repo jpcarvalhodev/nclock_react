@@ -50,6 +50,7 @@ export const Contacts = () => {
     "enrollNumber",
     "name",
     "shortName",
+    "status",
   ]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -220,33 +221,37 @@ export const Contacts = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredEmployees.filter(
-    (employee) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (employee[key] != null &&
-            String(employee[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(employee).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          }
-        }
-        return false;
-      })
-  );
+  const filteredDataTable = filteredEmployees.filter((employee) => {
+    const matchesFilters = Object.keys(filters).every((key) => {
+      if (!filters[key]) return true;
+      const value = employee[key];
+
+      return (
+        value != null &&
+        String(value).toLowerCase().includes(filters[key].toLowerCase())
+      );
+    });
+
+    const matchesSearchText = Object.entries(employee).some(([key, value]) => {
+      if (!selectedColumns.includes(key) || value == null) return false;
+
+      let searchableValue = value;
+      if (key === "departmentId") searchableValue = employee.departmentName;
+      if (key === "groupId") searchableValue = employee.groupName;
+      if (key === "categoryId") searchableValue = employee.categoryName;
+      if (key === "professionId") searchableValue = employee.professionName;
+      if (key === "zoneId") searchableValue = employee.zoneName;
+      if (key === "externalEntityId")
+        searchableValue = employee.externalEntityName;
+      if (key === "entidadeId") searchableValue = employee.entidadeName;
+
+      return String(searchableValue)
+        .toLowerCase()
+        .includes(filterText.toLowerCase());
+    });
+
+    return matchesFilters && matchesSearchText;
+  });
 
   // Define as colunas
   const columns: TableColumn<Employee>[] = employeeFields

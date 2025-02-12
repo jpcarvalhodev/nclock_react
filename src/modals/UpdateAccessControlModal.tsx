@@ -277,7 +277,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
             };
         });
 
-    // Filtra as portas que NÃO estão na tabela para o modal de adicionar equipamento
+    // Filtra as portas que não estão na tabela para o modal de adicionar equipamento
     const doorsInTable = devicesTableData.map((d) => d.idPorta);
     const availableDoors = door.filter(
         (d) => !doorsInTable.includes(d.id)
@@ -307,7 +307,6 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
             employeeIds,
         };
         onUpdate(payload as unknown as T);
-        handleClose();
     };
 
     return (
