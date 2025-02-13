@@ -233,27 +233,6 @@ export const NclockRequests = () => {
     }
   }, [resetSelection]);
 
-  // Função para filtrar as presenças com base no texto de pesquisa
-  useEffect(() => {
-    const lowercasedFilter = filterText.toLowerCase();
-    const filteredData = attendanceRequests.filter((att) => {
-      return Object.entries(att).some(([key, value]) => {
-        if (selectedColumns.includes(key)) {
-          if (key === "attendanceTime") {
-            const formattedDate = new Date(value).toLocaleString("pt");
-            return formattedDate.toLowerCase().includes(lowercasedFilter);
-          } else if (typeof value === "string") {
-            return value.toLowerCase().includes(lowercasedFilter);
-          } else if (value != null) {
-            return value.toString().toLowerCase().includes(lowercasedFilter);
-          }
-        }
-        return false;
-      });
-    });
-    setFilteredAttendances(filteredData);
-  }, [filterText, attendanceRequests]);
-
   // Atualiza a seleção ao mudar o filtro
   useEffect(() => {
     if (selectedEmployeeIds.length > 0) {
@@ -265,20 +244,6 @@ export const NclockRequests = () => {
       setFilteredAttendances(attendanceRequests);
     }
   }, [selectedEmployeeId, selectedEmployeeIds]);
-
-  // Atualiza o índice selecionado
-  useEffect(() => {
-    if (selectedAttendances && selectedAttendances.length > 0) {
-      const sortedAttendances = filteredAttendances.sort((a, b) =>
-        a.attendanceTime.toString().localeCompare(b.attendanceTime.toString())
-      );
-      const attendanceIndex = sortedAttendances.findIndex(
-        (att) =>
-          att.attendanceTimeId === selectedAttendances[0].attendanceTimeId
-      );
-      setCurrentAttendanceIndex(attendanceIndex);
-    }
-  }, [selectedAttendances, filteredAttendances]);
 
   // Define a seleção de funcionários
   const handleSelectFromTreeView = (selectedIds: string[]) => {

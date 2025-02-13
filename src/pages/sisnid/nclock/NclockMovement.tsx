@@ -206,27 +206,6 @@ export const NclockMovement = () => {
     }
   }, [resetSelection]);
 
-  // Função para filtrar os movimentos com base no texto de pesquisa
-  useEffect(() => {
-    const lowercasedFilter = filterText.toLowerCase();
-    const filteredData = attendanceMovement.filter((att) => {
-      return Object.entries(att).some(([key, value]) => {
-        if (selectedColumns.includes(key)) {
-          if (key === "attendanceTime") {
-            const formattedDate = new Date(value).toLocaleString("pt");
-            return formattedDate.toLowerCase().includes(lowercasedFilter);
-          } else if (typeof value === "string") {
-            return value.toLowerCase().includes(lowercasedFilter);
-          } else if (value != null) {
-            return value.toString().toLowerCase().includes(lowercasedFilter);
-          }
-        }
-        return false;
-      });
-    });
-    setFilteredAttendances(filteredData);
-  }, [filterText, attendanceMovement]);
-
   // Atualiza a seleção ao mudar o filtro
   useEffect(() => {
     if (selectedEmployeeIds.length > 0) {
@@ -308,15 +287,32 @@ export const NclockMovement = () => {
   );
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredAttendances.filter((attendances) =>
-    Object.keys(filters).every(
-      (key) =>
-        filters[key] === "" ||
-        (attendances[key] != null &&
-          String(attendances[key])
-            .toLowerCase()
-            .includes(filters[key].toLowerCase()))
-    )
+  const filteredDataTable = filteredAttendances.filter(
+    (attendances) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" ||
+          (attendances[key] != null &&
+            String(attendances[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase()))
+      ) &&
+      Object.entries(attendances).some(([key, value]) => {
+        if (selectedColumns.includes(key) && value != null) {
+          if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          }
+        }
+        return false;
+      })
   );
 
   // Função para abrir o modal de edição
@@ -584,6 +580,8 @@ export const NclockMovement = () => {
                   noDataComponent="Não existem dados disponíveis para exibir."
                   customStyles={customStyles}
                   striped
+                  responsive
+                  persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="attendanceTime"
                 />

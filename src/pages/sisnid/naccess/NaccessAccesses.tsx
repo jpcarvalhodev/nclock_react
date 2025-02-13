@@ -71,9 +71,6 @@ export const NaccessAccesses = () => {
   const [selectedRows, setSelectedRows] = useState<Accesses[]>([]);
   const [filterText, setFilterText] = useState("");
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
-    null
-  );
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>({});
   const [initialData, setInitialData] = useState<Partial<Accesses>>({});
@@ -202,12 +199,11 @@ export const NaccessAccesses = () => {
     } else if (access.length > 0) {
       setFilteredAccess(access);
     }
-  }, [selectedEmployeeId, selectedEmployeeIds]);
+  }, [selectedEmployeeIds]);
 
   // Define a seleção de funcionários
   const handleSelectFromTreeView = (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
-    setSelectedEmployeeId(selectedIds[0]);
   };
 
   // Função para alternar a visibilidade das colunas

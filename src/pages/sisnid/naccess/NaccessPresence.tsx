@@ -101,7 +101,6 @@ export const NaccessPresence = () => {
     const attendances = Object.values(employeeStatusMap);
 
     setAccessPresence(attendances);
-    setFilteredAccess(attendances);
   };
 
   // Função para atualizar um funcionário e um cartão
@@ -121,27 +120,6 @@ export const NaccessPresence = () => {
     fetchPresence();
     setClearSelectionToggle((prev) => !prev);
   };
-
-  // Função para filtrar as presenças com base no texto de pesquisa
-  useEffect(() => {
-    const lowercasedFilter = filterText.toLowerCase();
-    const filteredData = accessPresence.filter((att) => {
-      return Object.entries(att).some(([key, value]) => {
-        if (selectedColumns.includes(key)) {
-          if (key === "eventTime") {
-            const formattedDate = new Date(value).toLocaleString("pt");
-            return formattedDate.toLowerCase().includes(lowercasedFilter);
-          } else if (typeof value === "string") {
-            return value.toLowerCase().includes(lowercasedFilter);
-          } else if (value != null) {
-            return value.toString().toLowerCase().includes(lowercasedFilter);
-          }
-        }
-        return false;
-      });
-    });
-    setFilteredAccess(filteredData);
-  }, [filterText, accessPresence]);
 
   // Atualiza a seleção ao mudar o filtro
   useEffect(() => {

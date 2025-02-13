@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { Accesses, EmployeeAttendanceTimes } from "../../../types/Types";
+import { Accesses } from "../../../types/Types";
 import "../../../css/PagesStyles.css";
 
-import { format, getDay, parse, startOfWeek } from "date-fns";
+import { format, getDay, parse, startOfWeek, endOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { Bar, Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
-import * as apiService from "../../../api/apiService";
 import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
 import { ChartData } from "chart.js";
 import { useAttendance } from "../../../context/MovementContext";
@@ -59,24 +58,9 @@ const messages = {
   showMore: (total: number) => `+ Ver mais (${total})`,
 };
 
-// Formata a data para o início do dia às 00:00
-const formatDateToStartOfDay = (date: Date): string => {
-  return `${date.toISOString().substring(0, 10)}T00:00`;
-};
-
-// Formata a data para o final do dia às 23:59
-const formatDateToEndOfDay = (date: Date): string => {
-  return `${date.toISOString().substring(0, 10)}T23:59`;
-};
-
 // Define a página principal
 export const NaccessDashboardLicensed = () => {
-  const currentDate = new Date();
   const currentYear = new Date().getFullYear();
-  const [startDate, setStartDate] = useState(
-    formatDateToStartOfDay(currentDate)
-  );
-  const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const { access, fetchAllAccessesbyDevice } = useAttendance();
   const { manualOpenDoor } = useKiosk();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -102,18 +86,57 @@ export const NaccessDashboardLicensed = () => {
       datasets: [],
     });
 
-  // Define a data atual
+  // Busca os acessos ao carregar a página
   useEffect(() => {
     fetchAllAccessesbyDevice();
-    const currentDate = new Date();
-    setStartDate(formatDateToStartOfDay(currentDate));
-    setEndDate(formatDateToEndOfDay(currentDate));
   }, []);
+  
+  // Função para definir os eventos do calendário
+  useEffect(() => {
+    if (!access || access.length === 0) {
+      setEvents([]);
+      return;
+    }
 
-  // Função para verificar se a resposta tem uma mensagem de erro
-  const checkForErrorMessage = (response: string | any[]) => {
-    return response.length === 0 || (response[0] && response[0].message);
-  };
+    const groupedMap = new Map<string, { date: Date; doorName: string }>();
+
+    for (const item of access) {
+      const date = parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date(), {
+        locale: ptBR,
+      });
+      const day = format(date, "yyyy-MM-dd");
+
+      const key = `${day}::${item.eventDoorName}`;
+
+      if (!groupedMap.has(key)) {
+        groupedMap.set(key, {
+          date,
+          doorName: item.eventDoorName,
+        });
+      }
+    }
+
+    const newEvents: CalendarEvent[] = [];
+    for (const [key, value] of groupedMap.entries()) {
+
+      const startOfDay = parse(
+        format(value.date, "yyyy-MM-dd"),
+        "yyyy-MM-dd",
+        new Date()
+      );
+      const endOfDayDate = endOfDay(startOfDay);
+
+      newEvents.push({
+        id: key,
+        title: value.doorName,
+        start: startOfDay,
+        end: endOfDayDate,
+        allDay: true,
+      });
+    }
+
+    setEvents(newEvents);
+  }, [access]);
 
   // Função para renderizar os eventos no calendário
   const MyEvent = ({ event }: MyEventProps) => {
