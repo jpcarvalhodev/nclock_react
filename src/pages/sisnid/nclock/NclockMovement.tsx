@@ -308,39 +308,16 @@ export const NclockMovement = () => {
   );
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredAttendances
-    .filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            }
-          }
-          return false;
-        })
+  const filteredDataTable = filteredAttendances.filter((attendances) =>
+    Object.keys(filters).every(
+      (key) =>
+        filters[key] === "" ||
+        (attendances[key] != null &&
+          String(attendances[key])
+            .toLowerCase()
+            .includes(filters[key].toLowerCase()))
     )
-    .sort(
-      (a, b) =>
-        new Date(b.attendanceTime).getTime() -
-        new Date(a.attendanceTime).getTime()
-    );
+  );
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {

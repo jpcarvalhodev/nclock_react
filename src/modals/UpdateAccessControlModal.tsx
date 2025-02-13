@@ -379,6 +379,8 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         noDataComponent="Não existem dados disponíveis para exibir."
                                                         customStyles={customStyles}
                                                         striped
+                  responsive
+                  persistTableHead={true}
                                                         defaultSortAsc={true}
                                                         defaultSortFieldId="nomeTerminal"
                                                     />
@@ -415,6 +417,8 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                                                         clearSelectedRows={clearSelectionToggle}
                                                         customStyles={customStyles}
                                                         striped
+                  responsive
+                  persistTableHead={true}
                                                         defaultSortAsc={true}
                                                         defaultSortFieldId="enrollNumber"
                                                     />

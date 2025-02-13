@@ -926,6 +926,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     noDataComponent="Não existem dados disponíveis para exibir."
                                                     customStyles={customStyles}
                                                     striped
+                  responsive
+                  persistTableHead={true}
                                                     defaultSortAsc={true}
                                                     defaultSortFieldId="doorNo"
                                                 />
@@ -952,6 +954,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                     noDataComponent="Não existem dados disponíveis para exibir."
                                                     customStyles={customStyles}
                                                     striped
+                  responsive
+                  persistTableHead={true}
                                                     defaultSortAsc={true}
                                                     defaultSortFieldId="doorNo"
                                                 />
@@ -980,6 +984,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         noDataComponent="Não existem dados disponíveis para exibir."
                                                         customStyles={customStyles}
                                                         striped
+                  responsive
+                  persistTableHead={true}
                                                         defaultSortAsc={true}
                                                         defaultSortFieldId="auxNo"
                                                     />
@@ -1003,6 +1009,8 @@ export const UpdateModalDevices = <T extends Entity>({ open, onClose, onDuplicat
                                                         noDataComponent="Não existem dados disponíveis para exibir."
                                                         customStyles={customStyles}
                                                         striped
+                  responsive
+                  persistTableHead={true}
                                                         defaultSortAsc={true}
                                                         defaultSortFieldId="auxNo"
                                                     />

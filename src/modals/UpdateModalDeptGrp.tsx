@@ -446,6 +446,8 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                             data={subdepartments}
                                             customStyles={customStyles}
                                             striped
+                  responsive
+                  persistTableHead={true}
                                             noHeader
                                             pagination
                                             paginationComponentOptions={paginationOptions}
@@ -525,6 +527,8 @@ export const UpdateModalDeptGrp = <T extends Entity>({ open, onClose, onUpdate, 
                                     }
                                     customStyles={customStyles}
                                     striped
+                  responsive
+                  persistTableHead={true}
                                     noHeader
                                     pagination
                                     paginationComponentOptions={paginationOptions}

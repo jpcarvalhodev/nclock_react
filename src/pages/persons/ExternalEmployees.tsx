@@ -521,7 +521,7 @@ export const ExternalEmployees = () => {
               <div className="table-css">
                 <DataTable
                   columns={[...columns, actionColumn]}
-                  data={filteredDataTable}
+                  data={filteredDataTable || []}
                   onRowDoubleClicked={handleEditEmployee}
                   pagination
                   paginationComponentOptions={paginationOptions}
@@ -538,6 +538,8 @@ export const ExternalEmployees = () => {
                   noDataComponent="Não existem dados disponíveis para exibir."
                   customStyles={customStyles}
                   striped
+                  responsive
+                  persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="enrollNumber"
                 />

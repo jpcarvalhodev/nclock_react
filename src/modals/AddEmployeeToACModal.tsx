@@ -138,6 +138,8 @@ export const AddEmployeeToACModal = <T extends Record<string, any>>({ title, ope
                                 noDataComponent="Não existem dados disponíveis para exibir."
                                 customStyles={customStyles}
                                 striped
+                  responsive
+                  persistTableHead={true}
                                 defaultSortAsc={true}
                                 defaultSortFieldId='enrollNumber'
                             />

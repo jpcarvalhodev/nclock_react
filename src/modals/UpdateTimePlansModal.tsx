@@ -220,6 +220,8 @@ export const UpdateTimePlansModal = <T extends Record<string, any>>({ title, ope
                                         noDataComponent="Não existem dados disponíveis para exibir."
                                         customStyles={customStyles}
                                         striped
+                  responsive
+                  persistTableHead={true}
                                     />
                                 </Col>
                                 <div style={{ display: 'flex', marginTop: 10 }}>

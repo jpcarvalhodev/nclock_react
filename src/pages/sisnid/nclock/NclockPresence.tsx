@@ -26,6 +26,7 @@ import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { TextField, TextFieldProps } from "@mui/material";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -228,39 +229,33 @@ export const NclockPresence = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredAttendances
-    .filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            }
+  const filteredDataTable = filteredAttendances.filter(
+    (attendances) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" ||
+          (attendances[key] != null &&
+            String(attendances[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase()))
+      ) &&
+      Object.entries(attendances).some(([key, value]) => {
+        if (selectedColumns.includes(key) && value != null) {
+          if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
           }
-          return false;
-        })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.attendanceTime).getTime() -
-        new Date(a.attendanceTime).getTime()
-    );
+        }
+        return false;
+      })
+  );
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
@@ -456,6 +451,8 @@ export const NclockPresence = () => {
                   noDataComponent="Não existem dados disponíveis para exibir."
                   customStyles={customStyles}
                   striped
+                  responsive
+                  persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="attendanceTime"
                 />

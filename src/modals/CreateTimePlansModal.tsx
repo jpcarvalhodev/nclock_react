@@ -219,6 +219,8 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
                                             clearSelectedRows={clearSelectionToggle}
                                             customStyles={customStyles}
                                             striped
+                  responsive
+                  persistTableHead={true}
                                         />
                                     </Col>
                                     <div style={{ display: 'flex', marginTop: 10 }}>

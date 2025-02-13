@@ -359,39 +359,33 @@ export const NclockRequests = () => {
   );
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredAttendances
-    .filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            }
+  const filteredDataTable = filteredAttendances.filter(
+    (attendances) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" ||
+          (attendances[key] != null &&
+            String(attendances[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase()))
+      ) &&
+      Object.entries(attendances).some(([key, value]) => {
+        if (selectedColumns.includes(key) && value != null) {
+          if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
           }
-          return false;
-        })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.attendanceTime).getTime() -
-        new Date(a.attendanceTime).getTime()
-    );
+        }
+        return false;
+      })
+  );
 
   // Define os dados iniciais ao duplicar
   const handleDuplicate = (attendance: Partial<EmployeeAttendanceTimes>) => {
@@ -722,6 +716,8 @@ export const NclockRequests = () => {
                   noDataComponent="Não existem dados disponíveis para exibir."
                   customStyles={customStyles}
                   striped
+                  responsive
+                  persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="attendanceTime"
                 />

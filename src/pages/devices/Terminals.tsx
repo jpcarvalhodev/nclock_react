@@ -1701,6 +1701,8 @@ export const Terminals = () => {
                 noDataComponent="Não há dados disponíveis para exibir."
                 customStyles={customStyles}
                 striped
+                  responsive
+                  persistTableHead={true}
                 defaultSortAsc={true}
                 defaultSortFieldId="deviceNumber"
               />
@@ -1743,6 +1745,8 @@ export const Terminals = () => {
                           noDataComponent="Não há actividades disponíveis para exibir."
                           customStyles={customStyles}
                           striped
+                  responsive
+                  persistTableHead={true}
                         />
                       )
                     ) : (
@@ -1780,6 +1784,8 @@ export const Terminals = () => {
                           noDataComponent="Não há movimentos disponíveis para exibir."
                           customStyles={customStyles}
                           striped
+                  responsive
+                  persistTableHead={true}
                         />
                       )
                     ) : (
@@ -1816,6 +1822,8 @@ export const Terminals = () => {
                             noDataComponent="Não há dados disponíveis para exibir."
                             customStyles={customStyles}
                             striped
+                  responsive
+                  persistTableHead={true}
                             defaultSortAsc={true}
                             defaultSortFieldId="enrollNumber"
                           />
@@ -1932,6 +1940,8 @@ export const Terminals = () => {
                           }
                           customStyles={customStyles}
                           striped
+                  responsive
+                  persistTableHead={true}
                           defaultSortAsc={true}
                           defaultSortFieldId="pin"
                         />
@@ -1951,6 +1961,8 @@ export const Terminals = () => {
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
+                  responsive
+                  persistTableHead={true}
                         defaultSortAsc={true}
                         defaultSortFieldId="enrollNumber"
                       />
@@ -1969,6 +1981,8 @@ export const Terminals = () => {
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
+                  responsive
+                  persistTableHead={true}
                         defaultSortAsc={true}
                         defaultSortFieldId="enrollNumber"
                       />
@@ -1989,6 +2003,8 @@ export const Terminals = () => {
                     noDataComponent="Não há dados disponíveis para exibir."
                     customStyles={customStyles}
                     striped
+                  responsive
+                  persistTableHead={true}
                   />
                 </Tab>
               </Tabs>

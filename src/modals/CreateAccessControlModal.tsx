@@ -455,6 +455,8 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                             noDataComponent="Não existem dados disponíveis para exibir."
                             customStyles={customStyles}
                             striped
+                  responsive
+                  persistTableHead={true}
                             defaultSortAsc={true}
                             defaultSortFieldId="nomeTerminal"
                           />
@@ -510,6 +512,8 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                             clearSelectedRows={clearSelectionToggle}
                             customStyles={customStyles}
                             striped
+                  responsive
+                  persistTableHead={true}
                             defaultSortAsc={true}
                             defaultSortFieldId="enrollNumber"
                           />

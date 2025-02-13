@@ -440,6 +440,8 @@ export const Groups = () => {
             noDataComponent="Não existem dados disponíveis para exibir."
             customStyles={customStyles}
             striped
+                  responsive
+                  persistTableHead={true}
             defaultSortAsc={true}
             defaultSortFieldId="name"
           />

@@ -201,39 +201,33 @@ export const NaccessPresence = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredAccess
-    .filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            }
+  const filteredDataTable = filteredAccess.filter(
+    (attendances) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" ||
+          (attendances[key] != null &&
+            String(attendances[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase()))
+      ) &&
+      Object.entries(attendances).some(([key, value]) => {
+        if (selectedColumns.includes(key) && value != null) {
+          if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
           }
-          return false;
-        })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.attendanceTime).getTime() -
-        new Date(a.attendanceTime).getTime()
-    );
+        }
+        return false;
+      })
+  );
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
@@ -301,8 +295,8 @@ export const NaccessPresence = () => {
         selector: (row) => formatField(row),
         sortable: true,
         sortFunction: (rowA, rowB) =>
-          new Date(rowB.attendanceTime).getTime() -
-          new Date(rowA.attendanceTime).getTime(),
+          new Date(rowB.eventTime).getTime() -
+          new Date(rowA.eventTime).getTime(),
       };
     });
 
@@ -420,6 +414,8 @@ export const NaccessPresence = () => {
                   noDataComponent="Não existem dados disponíveis para exibir."
                   customStyles={customStyles}
                   striped
+                  responsive
+                  persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
                 />

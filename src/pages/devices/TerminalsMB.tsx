@@ -470,6 +470,8 @@ export const TerminalsMB = () => {
                 noDataComponent="Não existem dados disponíveis para exibir."
                 customStyles={customStyles}
                 striped
+                  responsive
+                  persistTableHead={true}
               />
             </div>
             <div

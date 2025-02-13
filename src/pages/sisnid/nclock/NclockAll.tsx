@@ -295,11 +295,6 @@ export const NclockAll = () => {
           }
           return false;
         })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.attendanceTime).getTime() -
-        new Date(a.attendanceTime).getTime()
     );
 
   // Função para abrir o modal de edição
@@ -562,6 +557,8 @@ export const NclockAll = () => {
                   noDataComponent="Não existem dados disponíveis para exibir."
                   customStyles={customStyles}
                   striped
+                  responsive
+                  persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="attendanceTime"
                 />

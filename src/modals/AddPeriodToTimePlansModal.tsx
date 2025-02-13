@@ -132,6 +132,8 @@ export const AddPeriodToTimePlansModal = <T extends Record<string, any>>({ title
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
+                  responsive
+                  persistTableHead={true}
                     />
                 </Col>
             </Modal.Body>

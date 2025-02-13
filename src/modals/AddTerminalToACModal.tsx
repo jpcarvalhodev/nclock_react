@@ -263,6 +263,8 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({
               noDataComponent="Não existem dados disponíveis para exibir."
               customStyles={getCustomStyles()}
               striped
+                  responsive
+                  persistTableHead={true}
             />
           </Row>
         </Form>

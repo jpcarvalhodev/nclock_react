@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 import { toast } from "react-toastify";
@@ -192,27 +192,6 @@ export const NaccessAccesses = () => {
     }
   }, [resetSelection]);
 
-  // Função para filtrar os movimentos com base no texto de pesquisa
-  useEffect(() => {
-    const lowercasedFilter = filterText.toLowerCase();
-    const filteredData = access.filter((att) => {
-      return Object.entries(att).some(([key, value]) => {
-        if (selectedColumns.includes(key)) {
-          if (key === "eventTime") {
-            const formattedDate = new Date(value).toLocaleString("pt");
-            return formattedDate.toLowerCase().includes(lowercasedFilter);
-          } else if (typeof value === "string") {
-            return value.toLowerCase().includes(lowercasedFilter);
-          } else if (value != null) {
-            return value.toString().toLowerCase().includes(lowercasedFilter);
-          }
-        }
-        return false;
-      });
-    });
-    setFilteredAccess(filteredData);
-  }, [filterText, access]);
-
   // Atualiza a seleção ao mudar o filtro
   useEffect(() => {
     if (selectedEmployeeIds.length > 0) {
@@ -263,6 +242,7 @@ export const NaccessAccesses = () => {
   // Função para atualizar os funcionários
   const refreshAccess = () => {
     fetchAllAccessesbyDevice();
+    setFilteredAccess(access);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -294,38 +274,33 @@ export const NaccessAccesses = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredAccess
-    .filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            }
+  const filteredDataTable = filteredAccess.filter(
+    (attendances) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" ||
+          (attendances[key] != null &&
+            String(attendances[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase()))
+      ) &&
+      Object.entries(attendances).some(([key, value]) => {
+        if (selectedColumns.includes(key) && value != null) {
+          if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
           }
-          return false;
-        })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
-    );
+        }
+        return false;
+      })
+  );
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
@@ -641,7 +616,12 @@ export const NaccessAccesses = () => {
                 style={{ marginTop: 0 }}
               >
                 <Nav.Item>
-                  <Nav.Link eventKey="movimentos" style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}>Movimentos</Nav.Link>
+                  <Nav.Link
+                    eventKey="movimentos"
+                    style={{ padding: "0.25rem 0.5rem", fontSize: "0.85rem" }}
+                  >
+                    Movimentos
+                  </Nav.Link>
                 </Nav.Item>
               </Nav>
               <Tab.Content>
@@ -661,6 +641,8 @@ export const NaccessAccesses = () => {
                         noDataComponent="Não existem dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
+                        responsive
+                        persistTableHead={true}
                         defaultSortAsc={true}
                         defaultSortFieldId="eventTime"
                       />

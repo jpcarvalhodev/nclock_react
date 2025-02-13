@@ -461,6 +461,8 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     data={entityType === 'department' ? dropdownData.departments : dropdownData.groups}
                                     customStyles={customStyles}
                                     striped
+                  responsive
+                  persistTableHead={true}
                                     noHeader
                                     pagination
                                     paginationComponentOptions={paginationOptions}
@@ -485,6 +487,8 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({ open, onClos
                                     data={employeeData.length > 0 ? employeeData : []}
                                     customStyles={customStyles}
                                     striped
+                  responsive
+                  persistTableHead={true}
                                     noHeader
                                     pagination
                                     paginationComponentOptions={paginationOptions}
