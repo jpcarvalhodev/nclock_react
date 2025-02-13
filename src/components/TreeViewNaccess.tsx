@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import "../css/TreeView.css";
 import { TextField, TextFieldProps } from "@mui/material";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -91,7 +91,7 @@ export function TreeViewDataNaccess({
   const selectionChangedRef = { current: false };
 
   // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
-  useEffect(() => {
+  const memoizedTreeItems = useMemo(() => {
     const departments = data.departments;
     const groups = data.groups;
     const allEmployees = data.employees;
@@ -211,11 +211,16 @@ export function TreeViewDataNaccess({
         ],
       },
     ];
-    setItems(treeItems);
-    setFilteredItems(treeItems);
-    const allExpandableIds = collectAllExpandableItemIds(treeItems);
-    setExpandedIds(allExpandableIds);
+    return treeItems;
   }, [data]);
+
+  // Atualiza a árvore de itens ao receber os dados dos departamentos, grupos e funcionários
+  useEffect(() => {
+    setItems(memoizedTreeItems);
+    setFilteredItems(memoizedTreeItems);
+    const allExpandableIds = collectAllExpandableItemIds(memoizedTreeItems);
+    setExpandedIds(allExpandableIds);
+  }, [memoizedTreeItems]);
 
   // Função para lidar com a expansão dos itens
   const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {

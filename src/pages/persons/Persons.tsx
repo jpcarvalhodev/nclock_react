@@ -127,20 +127,7 @@ export const Persons = () => {
     }
 
     setFilteredEmployees(filtered);
-  }, [disabledEmployees, selectedEmployeeIds, filterText]);
-
-  // Atualiza o índice do funcionário selecionado
-  useEffect(() => {
-    if (selectedEmployee) {
-      const sortedEmployees = filteredEmployees.sort(
-        (a, b) => Number(a.enrollNumber) - Number(b.enrollNumber)
-      );
-      const employeeIndex = sortedEmployees.findIndex(
-        (emp) => emp.employeeID === selectedEmployee.employeeID
-      );
-      setCurrentEmployeeIndex(employeeIndex);
-    }
-  }, [selectedEmployee, data.employees]);
+  }, [disabledEmployees, selectedEmployeeIds]);
 
   // Define a seleção da árvore
   const handleSelectFromTreeView = (selectedIds: string[]) => {

@@ -1,25 +1,20 @@
-import Box from '@mui/material/Box';
-import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { SyntheticEvent, useEffect, useState } from 'react';
-import '../css/TreeView.css';
-import { TextField, TextFieldProps } from '@mui/material';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import Box from "@mui/material/Box";
+import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
+import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import "../css/TreeView.css";
+import { TextField, TextFieldProps } from "@mui/material";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { usePersons } from '../context/PersonsContext';
-import { Department, Employee, Group } from '../types/Types';
+import { usePersons } from "../context/PersonsContext";
+import { Department, Employee, Group } from "../types/Types";
 
-import { TreeViewBaseItem } from '@mui/x-tree-view/models/items';
+import { TreeViewBaseItem } from "@mui/x-tree-view/models/items";
 
-import { CustomOutlineButton } from './CustomOutlineButton';
+import { CustomOutlineButton } from "./CustomOutlineButton";
 
 // Define a interface para as propriedades do componente CustomSearchBox
 function CustomSearchBox(props: TextFieldProps) {
-  return (
-    <TextField
-      {...props}
-      className="SearchBox"
-    />
-  );
+  return <TextField {...props} className="SearchBox" />;
 }
 
 // Define a interface para as propriedades do componente TreeViewData
@@ -29,13 +24,20 @@ interface TreeViewDataProps {
 }
 
 // Função para filtrar os itens
-function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem[], Set<string>] {
+function filterItems(
+  items: TreeViewBaseItem[],
+  term: string
+): [TreeViewBaseItem[], Set<string>] {
   let expandedIds = new Set<string>();
 
   function filterRecursively(item: TreeViewBaseItem): TreeViewBaseItem | null {
-    const matchesSearch = item.label?.toLowerCase().includes(term.toLowerCase());
+    const matchesSearch = item.label
+      ?.toLowerCase()
+      .includes(term.toLowerCase());
     const children = item.children || [];
-    const filteredChildren = children.map(filterRecursively).filter((child): child is TreeViewBaseItem => child !== null);
+    const filteredChildren = children
+      .map(filterRecursively)
+      .filter((child): child is TreeViewBaseItem => child !== null);
 
     if (matchesSearch || filteredChildren.length > 0) {
       expandedIds.add(item.id);
@@ -45,7 +47,9 @@ function filterItems(items: TreeViewBaseItem[], term: string): [TreeViewBaseItem
     return null;
   }
 
-  const filteredItems = items.map(filterRecursively).filter((item): item is TreeViewBaseItem => item !== null);
+  const filteredItems = items
+    .map(filterRecursively)
+    .filter((item): item is TreeViewBaseItem => item !== null);
   return [filteredItems, expandedIds];
 }
 
@@ -63,68 +67,76 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps) {
+export function TreeViewData({
+  onSelectEmployees,
+  employees,
+}: TreeViewDataProps) {
   const { data, fetchAllData } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
-  const [expandedIds, setExpandedIds] = useState<string[]>(['nidgroup']);
+  const [expandedIds, setExpandedIds] = useState<string[]>(["nidgroup"]);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
 
   // Define e mapeia os dados para os itens da árvore
-  useEffect(() => {
+  const memoizedTreeItems = useMemo(() => {
     const departments = data.departments;
     const groups = data.groups;
-    const allEmployees = (employees && employees.length > 0) ? employees : data.employees;
+    const allEmployees =
+      employees && employees.length > 0 ? employees : data.employees;
 
     const departmentMap = new Map();
     const deptIdToCodeMap = new Map();
 
-    departments.forEach(dept => {
+    departments.forEach((dept) => {
       deptIdToCodeMap.set(dept.departmentID, dept.code);
       departmentMap.set(dept.code, {
         ...dept,
         children: [],
-        employees: []
+        employees: [],
       });
     });
 
-    allEmployees.forEach(emp => {
+    allEmployees.forEach((emp) => {
       if (emp.departmentId && deptIdToCodeMap.has(emp.departmentId)) {
         const deptCode = deptIdToCodeMap.get(emp.departmentId);
         if (departmentMap.has(deptCode)) {
           departmentMap.get(deptCode).employees.push({
             id: `emp-${emp.employeeID}`,
-            label: `${emp.enrollNumber} - ${emp.shortName}`
+            label: `${emp.enrollNumber} - ${emp.shortName}`,
           });
         }
       }
     });
 
-    departments.forEach(dept => {
+    departments.forEach((dept) => {
       if (dept.paiId && departmentMap.has(dept.paiId)) {
-        departmentMap.get(dept.paiId).children.push(departmentMap.get(dept.code));
+        departmentMap
+          .get(dept.paiId)
+          .children.push(departmentMap.get(dept.code));
       }
     });
 
-    const unassignedDept = allEmployees.filter((emp: Employee) =>
-      emp.departmentId === null
+    const unassignedDept = allEmployees.filter(
+      (emp: Employee) => emp.departmentId === null
     );
 
-    const unassignedGroup = allEmployees.filter((emp: Employee) =>
-      emp.groupId === null
+    const unassignedGroup = allEmployees.filter(
+      (emp: Employee) => emp.groupId === null
     );
 
-    const deactivatedEmployees = allEmployees.filter((emp: Employee) =>
-      emp.status === false
+    const deactivatedEmployees = allEmployees.filter(
+      (emp: Employee) => emp.status === false
     );
 
-    const topDepartments = Array.from(departmentMap.values()).filter(dept => !dept.paiId);
+    const topDepartments = Array.from(departmentMap.values()).filter(
+      (dept) => !dept.paiId
+    );
 
     const buildDepartmentTree = (dept: Department) => ({
       id: `department-${dept.departmentID}`,
-      label: dept.name || 'Sem Nome',
+      label: dept.name || "Sem Nome",
       children: [
         ...dept.children.map(buildDepartmentTree),
         ...allEmployees
@@ -132,7 +144,7 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
           .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
           .map((emp: Employee) => ({
             id: `dept-${dept.departmentID}-emp-${emp.employeeID}`,
-            label: `${emp.enrollNumber} - ${emp.shortName}`
+            label: `${emp.enrollNumber} - ${emp.shortName}`,
           })),
       ],
     });
@@ -145,64 +157,87 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((group: Group) => ({
         id: `group-${group.groupID}`,
-        label: group.name || 'Sem Nome',
+        label: group.name || "Sem Nome",
         children: allEmployees
-          .filter(emp => emp.groupId === group.groupID)
+          .filter((emp) => emp.groupId === group.groupID)
           .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
           .map((emp: Employee) => ({
             id: `group-${group.groupID}-emp-${emp.employeeID}`,
-            label: `${emp.enrollNumber} - ${emp.shortName}`
+            label: `${emp.enrollNumber} - ${emp.shortName}`,
           })),
       }));
 
     const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
       id: `empd-${emp.employeeID}`,
-      label: `${emp.enrollNumber} - ${emp.shortName}`
+      label: `${emp.enrollNumber} - ${emp.shortName}`,
     }));
 
     const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
       id: `empg-${emp.employeeID}`,
-      label: `${emp.enrollNumber} - ${emp.shortName}`
+      label: `${emp.enrollNumber} - ${emp.shortName}`,
     }));
 
     const treeItems = [
       {
-        id: 'nidgroup',
-        label: 'NIDGROUP',
+        id: "nidgroup",
+        label: "NIDGROUP",
         children: [
-          { id: 'departments', label: 'DEPARTAMENTOS', children: departmentItems },
-          ...(unassignedDepartmentItems.length > 0 ? [{
-            id: 'unassignedDept',
-            label: 'SEM DEPARTAMENTO',
-            children: unassignedDepartmentItems,
-          }] : []),
-          { id: 'groups', label: 'GRUPOS', children: groupItems },
-          ...(unassignedGroupItems.length > 0 ? [{
-            id: 'unassignedGroup',
-            label: 'SEM GRUPO',
-            children: unassignedGroupItems,
-          }] : []),
-          ...(deactivatedEmployees.length > 0 ? [{
-            id: 'deactivatedEmployees',
-            label: 'INACTIVOS',
-            children: deactivatedEmployees.map((emp: Employee) => ({
-              id: `empoff-${emp.employeeID}`,
-              label: `${emp.enrollNumber} - ${emp.shortName}`
-            })),
-          }] : []),
+          {
+            id: "departments",
+            label: "DEPARTAMENTOS",
+            children: departmentItems,
+          },
+          ...(unassignedDepartmentItems.length > 0
+            ? [
+                {
+                  id: "unassignedDept",
+                  label: "SEM DEPARTAMENTO",
+                  children: unassignedDepartmentItems,
+                },
+              ]
+            : []),
+          { id: "groups", label: "GRUPOS", children: groupItems },
+          ...(unassignedGroupItems.length > 0
+            ? [
+                {
+                  id: "unassignedGroup",
+                  label: "SEM GRUPO",
+                  children: unassignedGroupItems,
+                },
+              ]
+            : []),
+          ...(deactivatedEmployees.length > 0
+            ? [
+                {
+                  id: "deactivatedEmployees",
+                  label: "INACTIVOS",
+                  children: deactivatedEmployees.map((emp: Employee) => ({
+                    id: `empoff-${emp.employeeID}`,
+                    label: `${emp.enrollNumber} - ${emp.shortName}`,
+                  })),
+                },
+              ]
+            : []),
         ],
       },
     ];
-
-    setItems(treeItems);
-    setFilteredItems(treeItems);
-    const allExpandableIds = collectAllExpandableItemIds(treeItems);
-    setExpandedIds(allExpandableIds);
+    return treeItems;
   }, [data, employees]);
+
+  // Atualiza os itens da árvore ao mudar os dados
+  useEffect(() => {
+    setItems(memoizedTreeItems);
+    setFilteredItems(memoizedTreeItems);
+    const allExpandableIds = collectAllExpandableItemIds(memoizedTreeItems);
+    setExpandedIds(allExpandableIds);
+  }, [memoizedTreeItems]);
 
   // Filtra os itens ao mudar o termo de pesquisa
   useEffect(() => {
-    const [newFilteredItems, newExpandedIds] = filterItems(items, searchTerm.toLowerCase());
+    const [newFilteredItems, newExpandedIds] = filterItems(
+      items,
+      searchTerm.toLowerCase()
+    );
     setFilteredItems(newFilteredItems);
     if (searchTerm.trim()) {
       setExpandedIds([...newExpandedIds]);
@@ -222,9 +257,9 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
 
     function mapItemsRecursively(item: TreeViewBaseItem) {
       itemsMap.set(item.id, item);
-      item.children?.forEach(child => mapItemsRecursively(child));
+      item.children?.forEach((child) => mapItemsRecursively(child));
     }
-    items.forEach(item => mapItemsRecursively(item));
+    items.forEach((item) => mapItemsRecursively(item));
 
     const newSelectedIds = new Set(itemIds);
     const previouslySelectedIds = new Set(selectedEmployeeIds);
@@ -232,7 +267,7 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
     function updateChildSelection(itemId: string, isSelected: boolean) {
       const item = itemsMap.get(itemId);
       if (item) {
-        item.children?.forEach(child => {
+        item.children?.forEach((child) => {
           if (isSelected) {
             newSelectedIds.add(child.id);
           } else {
@@ -243,32 +278,37 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
       }
     }
 
-    const addedIds = Array.from(newSelectedIds).filter(id => !previouslySelectedIds.has(id));
-    const removedIds = Array.from(previouslySelectedIds).filter(id => !newSelectedIds.has(id));
+    const addedIds = Array.from(newSelectedIds).filter(
+      (id) => !previouslySelectedIds.has(id)
+    );
+    const removedIds = Array.from(previouslySelectedIds).filter(
+      (id) => !newSelectedIds.has(id)
+    );
 
-    addedIds.forEach(id => updateChildSelection(id, true));
-    removedIds.forEach(id => updateChildSelection(id, false));
+    addedIds.forEach((id) => updateChildSelection(id, true));
+    removedIds.forEach((id) => updateChildSelection(id, false));
 
     setSelectedEmployeeIds(Array.from(newSelectedIds));
 
-    const employeeIds = Array.from(newSelectedIds).filter(id =>
-      id.includes('emp') || id.includes('-emp-')
-    ).map(id => {
-      if (id.includes('-emp-')) {
-        return id.substring(id.lastIndexOf('-emp-') + 5);
-      } else if (id.startsWith('unassigned-empdept-')) {
-        return id.substring(19);
-      } else if (id.startsWith('unassigned-empgrp-')) {
-        return id.substring(18);
-      } else if (id.startsWith('emp-')) {
-        return id.substring(4);
-      } else if (id.startsWith('empd-')) {
-        return id.substring(5);
-      } else if (id.startsWith('empg-')) {
-        return id.substring(5);
-      }
-      return null;
-    }).filter(id => id !== null);
+    const employeeIds = Array.from(newSelectedIds)
+      .filter((id) => id.includes("emp") || id.includes("-emp-"))
+      .map((id) => {
+        if (id.includes("-emp-")) {
+          return id.substring(id.lastIndexOf("-emp-") + 5);
+        } else if (id.startsWith("unassigned-empdept-")) {
+          return id.substring(19);
+        } else if (id.startsWith("unassigned-empgrp-")) {
+          return id.substring(18);
+        } else if (id.startsWith("emp-")) {
+          return id.substring(4);
+        } else if (id.startsWith("empd-")) {
+          return id.substring(5);
+        } else if (id.startsWith("empg-")) {
+          return id.substring(5);
+        }
+        return null;
+      })
+      .filter((id) => id !== null);
 
     onSelectEmployees(employeeIds as string[]);
   };
@@ -282,32 +322,37 @@ export function TreeViewData({ onSelectEmployees, employees }: TreeViewDataProps
 
   return (
     <Box className="TreeViewContainer">
-      <p className='treeview-title-text'>Filtros</p>
-      <div style={{ display: 'flex' }}>
+      <p className="treeview-title-text">Filtros</p>
+      <div style={{ display: "flex" }}>
         <CustomSearchBox
           label="Pesquisa"
           variant="outlined"
-          size='small'
+          size="small"
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <OverlayTrigger
           placement="top"
           overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
         >
-          <CustomOutlineButton className='treeview-button' icon="bi-arrow-clockwise" onClick={() => fetchAllData()} iconSize='1.1em'></CustomOutlineButton>
+          <CustomOutlineButton
+            className="treeview-button"
+            icon="bi-arrow-clockwise"
+            onClick={() => fetchAllData()}
+            iconSize="1.1em"
+          ></CustomOutlineButton>
         </OverlayTrigger>
       </div>
       <Box className="treeViewFlexItem">
-          <RichTreeView
-            multiSelect
-            checkboxSelection
-            items={filteredItems}
-            getItemId={(item: TreeViewBaseItem) => item.id}
-            onSelectedItemsChange={handleSelectedItemsChange}
-            selectedItems={selectedEmployeeIds}
-            expandedItems={expandedIds}
-            onExpandedItemsChange={handleToggle}
-          />
+        <RichTreeView
+          multiSelect
+          checkboxSelection
+          items={filteredItems}
+          getItemId={(item: TreeViewBaseItem) => item.id}
+          onSelectedItemsChange={handleSelectedItemsChange}
+          selectedItems={selectedEmployeeIds}
+          expandedItems={expandedIds}
+          onExpandedItemsChange={handleToggle}
+        />
       </Box>
     </Box>
   );
