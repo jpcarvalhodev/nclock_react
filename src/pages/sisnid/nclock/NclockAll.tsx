@@ -25,16 +25,11 @@ import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { TextField, TextFieldProps } from "@mui/material";
+import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
   [key: string]: string;
-}
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
 }
 
 // Formata a data para o início do dia às 00:00
@@ -247,34 +242,33 @@ export const NclockAll = () => {
   );
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredAttendances
-    .filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            }
+  const filteredDataTable = filteredAttendances.filter(
+    (attendances) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" ||
+          (attendances[key] != null &&
+            String(attendances[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase()))
+      ) &&
+      Object.entries(attendances).some(([key, value]) => {
+        if (selectedColumns.includes(key) && value != null) {
+          if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
           }
-          return false;
-        })
-    );
+        }
+        return false;
+      })
+  );
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
@@ -403,13 +397,8 @@ export const NclockAll = () => {
             </div>
             <div className="datatable-header">
               <div className="search-box">
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container">

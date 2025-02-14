@@ -283,8 +283,6 @@ export const NkioskCounter = () => {
     .map((field) => {
       const formatField = (row: Counter) => {
         switch (field.key) {
-          case "eventTime":
-            return new Date(row.eventTime).toLocaleString();
           case "deviceSN":
             return (
               devices.find((device) => device.serialNumber === row.deviceSN)

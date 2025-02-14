@@ -1,4 +1,3 @@
-import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -20,11 +19,7 @@ import { CreateModalRegisterUsers } from "../../modals/CreateModalRegisterUsers"
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
 import { Register } from "../../types/Types";
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
-}
+import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 
 export const NewUsers = () => {
   const {
@@ -305,13 +300,8 @@ export const NewUsers = () => {
             </div>
             <div className="datatable-header">
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container-others">

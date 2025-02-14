@@ -20,19 +20,14 @@ import { usePersons } from "../../../context/PersonsContext";
 import { CreateModalAccess } from "../../../modals/CreateModalAccess";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
-import { TextField, TextFieldProps } from "@mui/material";
 import { Accesses, Employee } from "../../../types/Types";
 import { accessesFields, employeeFields } from "../../../fields/Fields";
 import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
+import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
   [key: string]: string;
-}
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
 }
 
 // Formata a data para o início do dia às 00:00
@@ -182,6 +177,13 @@ export const NaccessAccesses = () => {
     fetchAllAccessesbyDevice();
   }, []);
 
+  // Atualiza os movimentos ao mudar a lista de movimentos
+  useEffect(() => {
+    if (access.length > 0) {
+      setFilteredAccess(access);
+    }
+  }, [access]);
+
   // Atualiza a seleção ao resetar
   useEffect(() => {
     if (resetSelection) {
@@ -270,35 +272,33 @@ export const NaccessAccesses = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = useMemo(() => {
-    return filteredAccess.filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            }
+  const filteredDataTable = filteredAccess.filter(
+    (attendances) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" ||
+          (attendances[key] != null &&
+            String(attendances[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase()))
+      ) &&
+      Object.entries(attendances).some(([key, value]) => {
+        if (selectedColumns.includes(key) && value != null) {
+          if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
           }
-          return false;
-        })
-    );
-  }, [filteredAccess, filters, filterText]);
+        }
+        return false;
+      })
+  );
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
@@ -475,13 +475,8 @@ export const NaccessAccesses = () => {
             </div>
             <div className="datatable-header" style={{ marginBottom: 0 }}>
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container">

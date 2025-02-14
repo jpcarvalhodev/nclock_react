@@ -1,4 +1,3 @@
-import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -17,15 +16,11 @@ import { CreateModalCatProfTypes } from "../../modals/CreateModalCatProfTypes";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { ExternalEntityTypes } from "../../types/Types";
+import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
   [key: string]: string;
-}
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
 }
 
 // Define a página de tipos de entidades externas
@@ -332,14 +327,7 @@ export const Types = () => {
         </div>
         <div className="datatable-header">
           <div>
-            <CustomSearchBox
-              label="Pesquisa"
-              variant="outlined"
-              size="small"
-              value={filterText}
-              onChange={(e) => setFilterText(e.target.value)}
-              style={{ marginTop: -5 }}
-            />
+            <SearchBoxContainer onSearch={(value) => setFilterText(value)} />
           </div>
           <div className="buttons-container-others">
             <OverlayTrigger
@@ -415,8 +403,8 @@ export const Types = () => {
             noDataComponent="Não existem dados disponíveis para exibir."
             customStyles={customStyles}
             striped
-                  responsive
-                  persistTableHead={true}
+            responsive
+            persistTableHead={true}
             defaultSortAsc={true}
             defaultSortFieldId="order"
           />

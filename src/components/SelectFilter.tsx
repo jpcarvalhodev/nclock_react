@@ -158,8 +158,6 @@ const formatDataItem = (
       }
     case "code":
     case "machineNumber":
-    case "cardNumber":
-      return item[column] === 0 ? "" : item[column];
     case "eventDoorId":
       switch (item.eventDoorId) {
         case 1:

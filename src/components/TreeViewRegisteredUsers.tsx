@@ -2,18 +2,13 @@ import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import "../css/TreeView.css";
-import { TextField, TextFieldProps } from "@mui/material";
 import { TreeViewBaseItem } from "@mui/x-tree-view";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { usePersons } from "../context/PersonsContext";
 
 import { CustomOutlineButton } from "./CustomOutlineButton";
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
-}
+import { SearchBoxContainer } from "./SearchBoxContainer";
 
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataUsersProps {
@@ -182,12 +177,9 @@ export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
     <Box className="TreeViewContainer">
       <p className="treeview-title-text">Filtros</p>
       <div style={{ display: "flex" }}>
-        <CustomSearchBox
-          label="Pesquisa"
-          variant="outlined"
-          size="small"
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div style={{ marginTop: 5 }}>
+          <SearchBoxContainer onSearch={(value) => setSearchTerm(value)} />
+        </div>
         <OverlayTrigger
           placement="top"
           overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}

@@ -21,8 +21,8 @@ import { Accesses, Employee } from "../../../types/Types";
 import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { TextField, TextFieldProps } from "@mui/material";
 import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
+import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
@@ -34,11 +34,6 @@ interface EmployeeAccessWithPresence extends Accesses {
   isPresent: boolean;
 }
 
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
-}
-
 // Função para converter a data para o formato ISO
 const convertToISO = (dateString: string) => {
   const [datePart, timePart] = dateString.split(" ");
@@ -48,7 +43,7 @@ const convertToISO = (dateString: string) => {
 
 // Define a página de presença
 export const NaccessPresence = () => {
-  const { access } = useAttendance();
+  const { access, fetchAllAccessesbyDevice } = useAttendance();
   const { employees, handleUpdateEmployee } = usePersons();
   const [accessPresence, setAccessPresence] = useState<
     EmployeeAccessWithPresence[]
@@ -110,9 +105,16 @@ export const NaccessPresence = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
+  // Busca os movimentos ao carregar a página
+  useEffect(() => {
+    fetchAllAccessesbyDevice();
+  }, []);
+
   // Busca as presenças ao montar o componente
   useEffect(() => {
-    fetchPresence();
+    if (access.length > 0) {
+      fetchPresence();
+    }
   }, []);
 
   // Função para atualizar os dados da tabela
@@ -328,13 +330,8 @@ export const NaccessPresence = () => {
             </div>
             <div className="datatable-header">
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container">

@@ -1,4 +1,3 @@
-import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
   Button,
@@ -27,15 +26,11 @@ import { CreateModalDeviceMB } from "../../modals/CreateModalDeviceMB";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
 import { MBDevice } from "../../types/Types";
+import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
   [key: string]: string;
-}
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
 }
 
 // Define o componente de terminais
@@ -395,15 +390,12 @@ export const TerminalsMB = () => {
               <span>Multibanco</span>
             </div>
             <div className="datatable-header">
-              <div className="buttons-container-others-mb">
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
+              </div>
+              <div className="buttons-container-others-mb">
                 <div className="custom-buttons">
                   <OverlayTrigger
                     placement="top"
@@ -470,8 +462,8 @@ export const TerminalsMB = () => {
                 noDataComponent="Não existem dados disponíveis para exibir."
                 customStyles={customStyles}
                 striped
-                  responsive
-                  persistTableHead={true}
+                responsive
+                persistTableHead={true}
               />
             </div>
             <div

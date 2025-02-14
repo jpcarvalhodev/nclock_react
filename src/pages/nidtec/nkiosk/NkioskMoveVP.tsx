@@ -1,4 +1,3 @@
-import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -18,6 +17,7 @@ import { useTerminals } from "../../../context/TerminalsContext";
 import { transactionCardFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { KioskTransactionCard } from "../../../types/Types";
+import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -43,11 +43,6 @@ const convertStringToDate = (dateStr: string) => {
     parseInt(timeParts[2], 10)
   );
 };
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
-}
 
 export const NkioskMoveVP = () => {
   const { devices } = useTerminals();
@@ -97,12 +92,10 @@ export const NkioskMoveVP = () => {
         (data) => Array.isArray(data) && data.length > 0
       );
 
-      const combinedData = validData
-        .flat()
-        .map((data) => ({
-          ...data,
-          eventTime: convertStringToDate(data.eventTime),
-        }));
+      const combinedData = validData.flat().map((data) => ({
+        ...data,
+        eventTime: convertStringToDate(data.eventTime),
+      }));
 
       setMoveVP(combinedData);
     } catch (error) {
@@ -447,13 +440,8 @@ export const NkioskMoveVP = () => {
             </div>
             <div className="datatable-header">
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container-others">
@@ -581,8 +569,8 @@ export const NkioskMoveVP = () => {
                 noDataComponent="Não existem dados disponíveis para exibir."
                 customStyles={customStyles}
                 striped
-                  responsive
-                  persistTableHead={true}
+                responsive
+                persistTableHead={true}
                 defaultSortAsc={true}
                 defaultSortFieldId="eventTime"
               />

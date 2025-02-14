@@ -59,6 +59,7 @@ import {
 } from "../../types/Types";
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { UpdateModalEmployees } from "../../modals/UpdateModalEmployees";
+import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
@@ -212,6 +213,7 @@ export const Terminals = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
   const [confirmMessage, setConfirmMessage] = useState("");
+  const [filterText, setFilterText] = useState("");
 
   // Função para buscar todos os utilizadores e cartões
   const fetchEmployeesAndCards = async () => {
@@ -481,11 +483,32 @@ export const Terminals = () => {
   ];
 
   // Filtra os dados da tabela de dispositivos
-  const filteredDeviceDataTable = devices.filter((device) =>
-    Object.keys(filters).every(
-      (key) =>
-        filters[key] === "" || String(device[key]) === String(filters[key])
-    )
+  const filteredDeviceDataTable = devices.filter(
+    (device) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" ||
+          (device[key] != null &&
+            String(device[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase()))
+      ) &&
+      Object.entries(device).some(([key, value]) => {
+        if (selectedColumns.includes(key) && value != null) {
+          if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          }
+        }
+        return false;
+      })
   );
 
   // Seleciona a entidade anterior
@@ -1625,6 +1648,11 @@ export const Terminals = () => {
               <span>Equipamentos</span>
             </div>
             <div className="datatable-header">
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
+              </div>
               <div className="buttons-container-others" style={{ flexGrow: 1 }}>
                 <OverlayTrigger
                   placement="top"
@@ -1701,8 +1729,8 @@ export const Terminals = () => {
                 noDataComponent="Não há dados disponíveis para exibir."
                 customStyles={customStyles}
                 striped
-                  responsive
-                  persistTableHead={true}
+                responsive
+                persistTableHead={true}
                 defaultSortAsc={true}
                 defaultSortFieldId="deviceNumber"
               />
@@ -1745,8 +1773,8 @@ export const Terminals = () => {
                           noDataComponent="Não há actividades disponíveis para exibir."
                           customStyles={customStyles}
                           striped
-                  responsive
-                  persistTableHead={true}
+                          responsive
+                          persistTableHead={true}
                         />
                       )
                     ) : (
@@ -1784,8 +1812,8 @@ export const Terminals = () => {
                           noDataComponent="Não há movimentos disponíveis para exibir."
                           customStyles={customStyles}
                           striped
-                  responsive
-                  persistTableHead={true}
+                          responsive
+                          persistTableHead={true}
                         />
                       )
                     ) : (
@@ -1822,8 +1850,8 @@ export const Terminals = () => {
                             noDataComponent="Não há dados disponíveis para exibir."
                             customStyles={customStyles}
                             striped
-                  responsive
-                  persistTableHead={true}
+                            responsive
+                            persistTableHead={true}
                             defaultSortAsc={true}
                             defaultSortFieldId="enrollNumber"
                           />
@@ -1940,8 +1968,8 @@ export const Terminals = () => {
                           }
                           customStyles={customStyles}
                           striped
-                  responsive
-                  persistTableHead={true}
+                          responsive
+                          persistTableHead={true}
                           defaultSortAsc={true}
                           defaultSortFieldId="pin"
                         />
@@ -1961,8 +1989,8 @@ export const Terminals = () => {
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
-                  responsive
-                  persistTableHead={true}
+                        responsive
+                        persistTableHead={true}
                         defaultSortAsc={true}
                         defaultSortFieldId="enrollNumber"
                       />
@@ -1981,8 +2009,8 @@ export const Terminals = () => {
                         noDataComponent="Não há dados disponíveis para exibir."
                         customStyles={customStyles}
                         striped
-                  responsive
-                  persistTableHead={true}
+                        responsive
+                        persistTableHead={true}
                         defaultSortAsc={true}
                         defaultSortFieldId="enrollNumber"
                       />
@@ -2003,8 +2031,8 @@ export const Terminals = () => {
                     noDataComponent="Não há dados disponíveis para exibir."
                     customStyles={customStyles}
                     striped
-                  responsive
-                  persistTableHead={true}
+                    responsive
+                    persistTableHead={true}
                   />
                 </Tab>
               </Tabs>

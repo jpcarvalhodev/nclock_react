@@ -1,4 +1,3 @@
-import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -20,11 +19,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
 import { TimePeriod } from "../../types/Types";
 import { toast } from "react-toastify";
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
-}
+import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 
 export const TimePeriods = () => {
   const {
@@ -403,13 +398,8 @@ export const TimePeriods = () => {
             </div>
             <div className="datatable-header">
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container-others">
@@ -490,8 +480,8 @@ export const TimePeriods = () => {
                 noDataComponent="Não existem dados disponíveis para exibir."
                 customStyles={customStyles}
                 striped
-                  responsive
-                  persistTableHead={true}
+                responsive
+                persistTableHead={true}
               />
             </div>
           </div>

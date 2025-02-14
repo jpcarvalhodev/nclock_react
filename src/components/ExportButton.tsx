@@ -167,8 +167,6 @@ const formatField = (
       }
     case "code":
     case "machineNumber":
-    case "cardNumber":
-      return item[fieldKey] === 0 ? "" : item[fieldKey];
     case "eventDoorId":
       switch (item.eventDoorId) {
         case 1:

@@ -21,16 +21,11 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalEmployees } from "../../modals/UpdateModalEmployees";
 import { Employee } from "../../types/Types";
 
-import { TextField, TextFieldProps } from "@mui/material";
+import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
   [key: string]: string;
-}
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
 }
 
 // Define a página de Funcionários Externos
@@ -438,13 +433,8 @@ export const ExternalEmployees = () => {
             </div>
             <div className="datatable-header">
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container">

@@ -19,18 +19,13 @@ import { Department } from "../../types/Types";
 import "../../css/PagesStyles.css";
 
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { TextField, TextFieldProps } from "@mui/material";
 
 import { usePersons } from "../../context/PersonsContext";
+import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
   [key: string]: string;
-}
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
 }
 
 // Define a página de departamentos
@@ -384,14 +379,7 @@ export const Departments = () => {
         </div>
         <div className="datatable-header">
           <div>
-            <CustomSearchBox
-              label="Pesquisa"
-              variant="outlined"
-              size="small"
-              value={filterText}
-              onChange={(e) => setFilterText(e.target.value)}
-              style={{ marginTop: -5 }}
-            />
+            <SearchBoxContainer onSearch={(value) => setFilterText(value)} />
           </div>
           <div className="buttons-container-others">
             <OverlayTrigger
@@ -508,8 +496,8 @@ export const Departments = () => {
             noDataComponent="Não existem dados disponíveis para exibir."
             customStyles={customStyles}
             striped
-                  responsive
-                  persistTableHead={true}
+            responsive
+            persistTableHead={true}
             defaultSortAsc={true}
             defaultSortFieldId="code"
           />

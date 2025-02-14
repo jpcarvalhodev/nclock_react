@@ -17,17 +17,11 @@ import { CreateModalExtEnt } from "../../modals/CreateModalExtEnt";
 import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalExtEnt } from "../../modals/UpdateModalExtEnt";
 import { ExternalEntity } from "../../types/Types";
-
-import { TextField, TextFieldProps } from "@mui/material";
+import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
   [key: string]: string;
-}
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
 }
 
 // Define a página de Entidades Externas
@@ -344,14 +338,7 @@ export const ExternalEntities = () => {
         </div>
         <div className="datatable-header">
           <div>
-            <CustomSearchBox
-              label="Pesquisa"
-              variant="outlined"
-              size="small"
-              value={filterText}
-              onChange={(e) => setFilterText(e.target.value)}
-              style={{ marginTop: -5 }}
-            />
+            <SearchBoxContainer onSearch={(value) => setFilterText(value)} />
           </div>
           <div className="buttons-container-others">
             <OverlayTrigger
@@ -458,8 +445,8 @@ export const ExternalEntities = () => {
             noDataComponent="Não existem dados disponíveis para exibir."
             customStyles={customStyles}
             striped
-                  responsive
-                  persistTableHead={true}
+            responsive
+            persistTableHead={true}
             defaultSortAsc={true}
             defaultSortFieldId="name"
           />

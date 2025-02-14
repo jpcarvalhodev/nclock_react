@@ -25,8 +25,7 @@ import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { TextField, TextFieldProps } from "@mui/material";
-import { set } from "date-fns";
+import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 
 // Define a interface para os filtros
 interface Filters {
@@ -41,11 +40,6 @@ interface EmployeeAttendanceWithPresence extends EmployeeAttendanceTimes {
 // Este objeto mapeará IDs de funcionários para seus respectivos status de presença
 interface EmployeeStatus {
   [key: string]: EmployeeAttendanceTimes & { isPresent: boolean };
-}
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
 }
 
 // Define a página de presença
@@ -366,13 +360,8 @@ export const NclockPresence = () => {
             </div>
             <div className="datatable-header">
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container">

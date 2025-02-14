@@ -1,4 +1,3 @@
-import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -23,6 +22,7 @@ import { employeeFields, transactionCardFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { Employee, KioskTransactionCard } from "../../../types/Types";
+import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -33,11 +33,6 @@ const formatDateToStartOfDay = (date: Date): string => {
 const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
-}
 
 export const NvisitorListMovements = () => {
   const { employees, handleUpdateEmployee } = usePersons();
@@ -569,13 +564,8 @@ export const NvisitorListMovements = () => {
               </div>
               <div className="datatable-header">
                 <div>
-                  <CustomSearchBox
-                    label="Pesquisa"
-                    variant="outlined"
-                    size="small"
-                    value={filterText}
-                    onChange={(e) => setFilterText(e.target.value)}
-                    style={{ marginTop: -5 }}
+                  <SearchBoxContainer
+                    onSearch={(value) => setFilterText(value)}
                   />
                 </div>
                 <div className="buttons-container-others">

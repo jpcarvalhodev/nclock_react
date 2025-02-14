@@ -1,4 +1,3 @@
-import { TextField, TextFieldProps } from "@mui/material";
 import { useEffect, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
@@ -17,6 +16,7 @@ import { useEntity } from "../../context/EntityContext";
 import { logsFields } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { Logs } from "../../types/Types";
+import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -27,11 +27,6 @@ const formatDateToStartOfDay = (date: Date): string => {
 const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
-}
 
 export const LoginLogs = () => {
   const currentDate = new Date();
@@ -297,13 +292,8 @@ export const LoginLogs = () => {
             </div>
             <div className="datatable-header">
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container-others">
@@ -427,8 +417,8 @@ export const LoginLogs = () => {
                 noDataComponent="Não existem dados disponíveis para exibir."
                 customStyles={customStyles}
                 striped
-                  responsive
-                  persistTableHead={true}
+                responsive
+                persistTableHead={true}
                 defaultSortAsc={true}
                 defaultSortFieldId="createdDate"
               />
