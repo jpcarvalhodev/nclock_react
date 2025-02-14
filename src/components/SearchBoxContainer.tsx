@@ -35,7 +35,7 @@ export function SearchBoxContainer({ onSearch }: Props) {
       }}
       InputProps={{
         endAdornment: isTyping && (
-          <CircularProgress size={20} color="inherit" style={{ marginRight: 5 }} />
+          <CircularProgress size={20} color="inherit" style={{ marginLeft: 5, marginRight: 5 }} />
         ),
       }}
       style={{ marginTop: -5 }}

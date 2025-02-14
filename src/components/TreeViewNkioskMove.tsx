@@ -10,6 +10,7 @@ import { useTerminals } from "../context/TerminalsContext";
 
 import { CustomOutlineButton } from "./CustomOutlineButton";
 import { SearchBoxContainer } from "./SearchBoxContainer";
+import { CustomSpinner } from "./CustomSpinner";
 
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataNkioskProps {
@@ -71,6 +72,7 @@ export function TreeViewDataNkioskMove({
   const [expandedIds, setExpandedIds] = useState<string[]>(["nidgroup"]);
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
+  const [loading, setLoading] = useState(false);
 
   // Busca os dados dos dispositivos e mapeia para os itens da árvore
   const memoizedTreeItems = useMemo(() => {
@@ -118,6 +120,14 @@ export function TreeViewDataNkioskMove({
     const allExpandableIds = collectAllExpandableItemIds(memoizedTreeItems);
     setExpandedIds(allExpandableIds);
   }, [memoizedTreeItems]);
+
+  // Atualiza o estado de carregamento ao expandir os itens
+  useEffect(() => {
+    setLoading(true);
+    if (filteredItems.length > 0) {
+      setLoading(false);
+    }
+  }, [filteredItems]);
 
   // Função para lidar com a expansão dos itens
   const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
@@ -206,16 +216,29 @@ export function TreeViewDataNkioskMove({
         </OverlayTrigger>
       </div>
       <Box className="treeViewFlexItem">
-        <RichTreeView
-          multiSelect={true}
-          checkboxSelection={true}
-          items={filteredItems}
-          getItemId={(item: TreeViewBaseItem) => item.id}
-          onSelectedItemsChange={handleSelectedItemsChange}
-          selectedItems={selectedDevicesIds}
-          expandedItems={expandedIds}
-          onExpandedItemsChange={handleToggle}
-        />
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px",
+            }}
+          >
+            <CustomSpinner />
+          </div>
+        ) : (
+          <RichTreeView
+            multiSelect={true}
+            checkboxSelection={true}
+            items={filteredItems}
+            getItemId={(item: TreeViewBaseItem) => item.id}
+            onSelectedItemsChange={handleSelectedItemsChange}
+            selectedItems={selectedDevicesIds}
+            expandedItems={expandedIds}
+            onExpandedItemsChange={handleToggle}
+          />
+        )}
       </Box>
     </Box>
   );

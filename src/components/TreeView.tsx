@@ -11,6 +11,7 @@ import { TreeViewBaseItem } from "@mui/x-tree-view/models/items";
 
 import { CustomOutlineButton } from "./CustomOutlineButton";
 import { SearchBoxContainer } from "./SearchBoxContainer";
+import { CustomSpinner } from "./CustomSpinner";
 
 // Define a interface para as propriedades do componente TreeViewData
 interface TreeViewDataProps {
@@ -73,6 +74,7 @@ export function TreeViewData({
   const [expandedIds, setExpandedIds] = useState<string[]>(["nidgroup"]);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const selectionChangedRef = { current: false };
+  const [loading, setLoading] = useState(false);
 
   // Define e mapeia os dados para os itens da árvore
   const memoizedTreeItems = useMemo(() => {
@@ -227,6 +229,14 @@ export function TreeViewData({
     setExpandedIds(allExpandableIds);
   }, [memoizedTreeItems]);
 
+  // Atualiza o estado de carregamento ao expandir os itens
+  useEffect(() => {
+    setLoading(true);
+    if (filteredItems.length > 0) {
+      setLoading(false);
+    }
+  }, [filteredItems]);
+
   // Filtra os itens ao mudar o termo de pesquisa
   useEffect(() => {
     const [newFilteredItems, newExpandedIds] = filterItems(
@@ -335,16 +345,29 @@ export function TreeViewData({
         </OverlayTrigger>
       </div>
       <Box className="treeViewFlexItem">
-        <RichTreeView
-          multiSelect
-          checkboxSelection
-          items={filteredItems}
-          getItemId={(item: TreeViewBaseItem) => item.id}
-          onSelectedItemsChange={handleSelectedItemsChange}
-          selectedItems={selectedEmployeeIds}
-          expandedItems={expandedIds}
-          onExpandedItemsChange={handleToggle}
-        />
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px",
+            }}
+          >
+            <CustomSpinner />
+          </div>
+        ) : (
+          <RichTreeView
+            multiSelect
+            checkboxSelection
+            items={filteredItems}
+            getItemId={(item: TreeViewBaseItem) => item.id}
+            onSelectedItemsChange={handleSelectedItemsChange}
+            selectedItems={selectedEmployeeIds}
+            expandedItems={expandedIds}
+            onExpandedItemsChange={handleToggle}
+          />
+        )}
       </Box>
     </Box>
   );
