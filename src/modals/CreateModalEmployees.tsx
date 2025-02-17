@@ -2,7 +2,16 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import "../css/PagesStyles.css";
-import { Col, Form, InputGroup, Nav, OverlayTrigger, Row, Tab, Tooltip } from "react-bootstrap";
+import {
+  Col,
+  Form,
+  InputGroup,
+  Nav,
+  OverlayTrigger,
+  Row,
+  Tab,
+  Tooltip,
+} from "react-bootstrap";
 import { toast } from "react-toastify";
 
 import hidepass from "../assets/img/login/hidepass.png";
@@ -18,7 +27,10 @@ import { Employee, EmployeeCard } from "../types/Types";
 import { CreateModalDeptGrp } from "./CreateModalDeptGrp";
 
 // Define a interface para os itens de campo
-type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+type FormControlElement =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement;
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -42,14 +54,36 @@ interface Props<T> {
 }
 
 // Define o componente
-export const CreateModalEmployees = <T extends Record<string, any>>({ title, open, onClose, onSave, fields, initialValues }: Props<T>) => {
-  const { employees, departments, groups, categories, professions, dataEE, zones, handleAddDepartment, handleAddGroup } = usePersons();
+export const CreateModalEmployees = <T extends Record<string, any>>({
+  title,
+  open,
+  onClose,
+  onSave,
+  fields,
+  initialValues,
+}: Props<T>) => {
+  const {
+    employees,
+    departments,
+    groups,
+    categories,
+    professions,
+    dataEE,
+    zones,
+    handleAddDepartment,
+    handleAddGroup,
+  } = usePersons();
   const { entities } = useEntity();
   const { accessControl } = useTerminals();
-  const [formData, setFormData] = useState<Partial<T>>({ ...initialValues, status: true });
+  const [formData, setFormData] = useState<Partial<T>>({
+    ...initialValues,
+    status: true,
+  });
   const [cardFormData, setCardFormData] = useState<Partial<EmployeeCard>>({});
   const [dropdownData, setDropdownData] = useState<Record<string, any[]>>({});
-  const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(null);
+  const [profileImage, setProfileImage] = useState<string | ArrayBuffer | null>(
+    null
+  );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -63,9 +97,31 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     if (open) {
       fetchEmployeesAndSetNextEnrollNumber();
       fetchDropdownOptions();
-      if (initialValues.name) {
-        setFormData({ ...initialValues, status: true });
+
+      let newFormData = {
+        ...initialValues,
+        status: true,
+      };
+      if (window.location.pathname.includes("Employees")) {
+        newFormData = { ...newFormData, type: "Funcionário" };
+      } else if (window.location.pathname.includes("ExternalEmployees")) {
+        newFormData = { ...newFormData, type: "Subcontratado" };
+      } else if (window.location.pathname.includes("User")) {
+        newFormData = { ...newFormData, type: "Utente" };
+      } else if (window.location.pathname.includes("Visitors")) {
+        newFormData = { ...newFormData, type: "Visitante" };
+      } else if (window.location.pathname.includes("Contacts")) {
+        newFormData = { ...newFormData, type: "Contacto" };
+      } else if (window.location.pathname.includes("Temporaries")) {
+        newFormData = { ...newFormData, type: "Provisório" };
       }
+      if (initialValues.name) {
+        newFormData = {
+          ...newFormData,
+          status: true,
+        };
+      }
+      setFormData(newFormData);
     } else {
       setFormData({ ...initialValues, status: true });
       setCardFormData({});
@@ -87,7 +143,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
       if (field.type === "number" && fieldValue != null && fieldValue < 0) {
         valid = false;
       }
-      if (field.key === 'nif' && fieldValue != null && fieldValue.toString().length < 9) {
+      if (
+        field.key === "nif" &&
+        fieldValue != null &&
+        fieldValue.toString().length < 9
+      ) {
         valid = false;
       }
 
@@ -150,12 +210,12 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
         zoneId: zones,
         externalEntityId: dataEE.externalEntity,
         entidadeId: entities,
-        accPlanoAcessoId: accessControl
+        accPlanoAcessoId: accessControl,
       });
       if (entities.length === 1) {
         setFormData((prevState) => ({
           ...prevState,
-          entidadeId: entities?.[0]?.id || '',
+          entidadeId: entities?.[0]?.id || "",
         }));
       }
     } catch (error) {
@@ -238,25 +298,28 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   };
 
   // Função para lidar com a mudança do dropdown
-  const handleDropdownChange = (key: string, e: React.ChangeEvent<FormControlElement>) => {
+  const handleDropdownChange = (
+    key: string,
+    e: React.ChangeEvent<FormControlElement>
+  ) => {
     const { value } = e.target;
     const selectedOption = dropdownData[key]?.find((option: any) => {
       switch (key) {
-        case 'departmentId':
+        case "departmentId":
           return option.departmentID === value;
-        case 'groupId':
+        case "groupId":
           return option.groupID === value;
-        case 'categoryId':
+        case "categoryId":
           return option.categoryID === value;
-        case 'professionId':
+        case "professionId":
           return option.professionID === value;
-        case 'zoneId':
+        case "zoneId":
           return option.zoneID === value;
-        case 'externalEntityId':
+        case "externalEntityId":
           return option.externalEntityID === value;
-        case 'entidadeId':
+        case "entidadeId":
           return option.id === value;
-        case 'accPlanoAcessoId':
+        case "accPlanoAcessoId":
           return option.id === value;
         default:
           return false;
@@ -264,14 +327,14 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
     });
     if (selectedOption) {
       const idKey = key;
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
-        [idKey]: value
+        [idKey]: value,
       }));
     } else {
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
-        [key]: value
+        [key]: value,
       }));
     }
   };
@@ -285,9 +348,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
       newValue = newValue.replace(/^0+/, "");
     }
 
-    setCardFormData(prevState => ({
+    setCardFormData((prevState) => ({
       ...prevState,
-      [name]: newValue
+      [name]: newValue,
     }));
   };
 
@@ -301,7 +364,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   };
 
   // Função para remover campos vazios
-  function removeEmptyFields<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  function removeEmptyFields<T extends Record<string, unknown>>(
+    obj: T
+  ): Partial<T> {
     const result: Partial<T> = {};
 
     for (const [key, value] of Object.entries(obj)) {
@@ -313,20 +378,17 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
           return item;
         });
         (result as Record<string, unknown>)[key] = cleanedArray;
-      }
-      else if (
+      } else if (
         value === null ||
         value === undefined ||
         (typeof value === "string" && value.trim() === "")
       ) {
         continue;
-      }
-      else if (typeof value === "object") {
+      } else if (typeof value === "object") {
         (result as Record<string, unknown>)[key] = removeEmptyFields(
           value as Record<string, unknown>
         );
-      }
-      else {
+      } else {
         result[key as keyof T] = value as T[keyof T];
       }
     }
@@ -338,7 +400,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   const handleSaveClick = () => {
     if (!isFormValid) {
       setShowValidationErrors(true);
-      toast.warn('Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar.');
+      toast.warn(
+        "Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar."
+      );
       return;
     }
     handleSave();
@@ -413,8 +477,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
       externalEntityName: formData.externalEntityName,
 
       accPlanoAcessoId: formData.accPlanoAcessoId,
-      accPlanoAcessoName: formData.accPlanoAcessoName
-
+      accPlanoAcessoName: formData.accPlanoAcessoName,
     } as any;
 
     let employeeCardsData: any[] = [];
@@ -425,19 +488,19 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
           devicePassword: cardFormData.devicePassword,
           devicePrivelage: cardFormData.devicePrivelage,
           deviceEnabled: true,
-          cardNumber: cardFormData.cardNumber
-        }
+          cardNumber: cardFormData.cardNumber,
+        },
       ];
     }
 
     let dataToSend: { employee: any; employeeCards?: any[] } = {
-      employee: employeeData
+      employee: employeeData,
     };
 
     if (employeeCardsData.length > 0) {
       dataToSend = {
         ...dataToSend,
-        employeeCards: employeeCardsData
+        employeeCards: employeeCardsData,
       };
     }
 
@@ -448,18 +511,18 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
 
   // Opções do tipo
   const typeOptions = [
-    { value: 'Funcionário', label: 'Funcionário' },
-    { value: 'Subcontratado', label: 'Subcontratado' },
-    { value: 'Utente', label: 'Utente' },
-    { value: 'Visitante', label: 'Visitante' },
-    { value: 'Contacto', label: 'Contacto' },
-    { value: 'Provisório', label: 'Provisório' }
+    { value: "Funcionário", label: "Funcionário" },
+    { value: "Subcontratado", label: "Subcontratado" },
+    { value: "Utente", label: "Utente" },
+    { value: "Visitante", label: "Visitante" },
+    { value: "Contacto", label: "Contacto" },
+    { value: "Provisório", label: "Provisório" },
   ];
 
   // Opções de género
   const genderOptions = [
-    { value: true, label: 'Masculino' },
-    { value: false, label: 'Feminino' }
+    { value: true, label: "Masculino" },
+    { value: false, label: "Feminino" },
   ];
 
   // Alterna a visibilidade da password
@@ -468,24 +531,37 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
   };
 
   return (
-    <Modal show={open} onHide={handleClose} backdrop="static" dialogClassName="custom-modal" size="xl" centered>
-      <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
+    <Modal
+      show={open}
+      onHide={handleClose}
+      backdrop="static"
+      dialogClassName="custom-modal"
+      size="xl"
+      centered
+    >
+      <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-body-scrollable">
         <Row style={{ marginBottom: 20 }}>
-          <Col md={3} className='img-modal'>
+          <Col md={3} className="img-modal">
             <img
               src={profileImage || modalAvatar}
               alt="Profile Avatar"
-              style={{ width: 128, height: 128, borderRadius: '50%', cursor: 'pointer', objectFit: 'cover' }}
+              style={{
+                width: 128,
+                height: 128,
+                borderRadius: "50%",
+                cursor: "pointer",
+                objectFit: "cover",
+              }}
               onClick={triggerFileSelectPopup}
             />
             <div>
               <input
                 type="file"
                 accept="image/*"
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 onChange={handleImageChange}
                 ref={fileInputRef}
               />
@@ -494,25 +570,31 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
           <Col md={3}>
             <Form.Group controlId="formEnrollNumber">
               <Form.Label>
-                Número da Pessoa <span style={{ color: 'red' }}>*</span>
+                Número da Pessoa <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>}
+                overlay={
+                  <Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>
+                }
               >
                 <Form.Control
                   type="number"
                   className="custom-input-height custom-select-font-size"
-                  value={formData.enrollNumber || ''}
+                  value={formData.enrollNumber || ""}
                   onChange={handleChange}
                   name="enrollNumber"
                 />
               </OverlayTrigger>
-              {errors.enrollNumber && <Form.Text className="text-danger">{errors.enrollNumber}</Form.Text>}
+              {errors.enrollNumber && (
+                <Form.Text className="text-danger">
+                  {errors.enrollNumber}
+                </Form.Text>
+              )}
             </Form.Group>
             <Form.Group controlId="formName">
               <Form.Label>
-                Nome <span style={{ color: 'red' }}>*</span>
+                Nome <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
                 placement="right"
@@ -520,33 +602,45 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
               >
                 <Form.Control
                   type="string"
-                  className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                  value={formData.name || ''}
+                  className={`custom-input-height custom-select-font-size ${
+                    showValidationErrors ? "error-border" : ""
+                  }`}
+                  value={formData.name || ""}
                   onChange={handleChange}
                   name="name"
                   maxLength={150}
                 />
               </OverlayTrigger>
-              {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
+              {errors.name && (
+                <Form.Text className="text-danger">{errors.name}</Form.Text>
+              )}
             </Form.Group>
             <Form.Group controlId="formShortName">
               <Form.Label>
-                Nome Abreviado <span style={{ color: 'red' }}>*</span>
+                Nome Abreviado <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>}
+                overlay={
+                  <Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>
+                }
               >
                 <Form.Control
                   type="string"
-                  className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                  value={formData.shortName || ''}
+                  className={`custom-input-height custom-select-font-size ${
+                    showValidationErrors ? "error-border" : ""
+                  }`}
+                  value={formData.shortName || ""}
                   onChange={handleChange}
                   name="shortName"
                   maxLength={50}
                 />
               </OverlayTrigger>
-              {errors.shortName && <Form.Text className="text-danger">{errors.shortName}</Form.Text>}
+              {errors.shortName && (
+                <Form.Text className="text-danger">
+                  {errors.shortName}
+                </Form.Text>
+              )}
             </Form.Group>
           </Col>
           <Col md={3}>
@@ -554,12 +648,14 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
               <Form.Label>Iniciais do Nome</Form.Label>
               <OverlayTrigger
                 placement="right"
-                overlay={<Tooltip id="tooltip-name">Máximo de 4 caracteres</Tooltip>}
+                overlay={
+                  <Tooltip id="tooltip-name">Máximo de 4 caracteres</Tooltip>
+                }
               >
                 <Form.Control
                   type="string"
                   className="custom-input-height custom-select-font-size"
-                  value={formData.nameAcronym || ''}
+                  value={formData.nameAcronym || ""}
                   onChange={handleChange}
                   name="nameAcronym"
                   maxLength={5}
@@ -571,7 +667,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
               <Form.Control
                 type="string"
                 className="custom-input-height custom-select-font-size"
-                value={formData.comments || ''}
+                value={formData.comments || ""}
                 onChange={handleChange}
                 name="comments"
                 maxLength={50}
@@ -582,49 +678,90 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
               <Form.Control
                 as="select"
                 className="custom-input-height custom-select-font-size"
-                value={formData.type || ''}
+                value={formData.type || ""}
                 onChange={handleChange}
                 name="type"
               >
                 <option value="">Selecione...</option>
-                {typeOptions.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                {typeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </Form.Control>
             </Form.Group>
           </Col>
           <Col md={3}>
-            <Form.Group controlId="formStatus" className="d-flex align-items-center mb-2">
-              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo:</Form.Label>
+            <Form.Group
+              controlId="formStatus"
+              className="d-flex align-items-center mb-2"
+            >
+              <Form.Label
+                className="mb-0 me-2 flex-shrink-0"
+                style={{ lineHeight: "32px" }}
+              >
+                Activo:
+              </Form.Label>
               <Form.Check
                 type="switch"
                 id="custom-switch-status"
                 checked={formData.status === true}
-                onChange={(e) => setFormData({ ...formData, status: e.target.checked ? true : false })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    status: e.target.checked ? true : false,
+                  })
+                }
                 className="ms-auto"
                 label=""
                 name="status"
               />
             </Form.Group>
-            <Form.Group controlId="formStatusEmail" className="d-flex align-items-center mb-2">
-              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Activo para E-Mail:</Form.Label>
+            <Form.Group
+              controlId="formStatusEmail"
+              className="d-flex align-items-center mb-2"
+            >
+              <Form.Label
+                className="mb-0 me-2 flex-shrink-0"
+                style={{ lineHeight: "32px" }}
+              >
+                Activo para E-Mail:
+              </Form.Label>
               <Form.Check
                 type="switch"
                 id="custom-switch-status-email"
                 checked={formData.statusEmail === true}
-                onChange={(e) => setFormData({ ...formData, statusEmail: e.target.checked ? true : false })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    statusEmail: e.target.checked ? true : false,
+                  })
+                }
                 className="ms-auto"
                 label=""
                 name="statusEmail"
               />
             </Form.Group>
-            <Form.Group controlId="formRgptAut" className="d-flex align-items-center">
-              <Form.Label className="mb-0 me-2 flex-shrink-0" style={{ lineHeight: '32px' }}>Autorização RGPD:</Form.Label>
+            <Form.Group
+              controlId="formRgptAut"
+              className="d-flex align-items-center"
+            >
+              <Form.Label
+                className="mb-0 me-2 flex-shrink-0"
+                style={{ lineHeight: "32px" }}
+              >
+                Autorização RGPD:
+              </Form.Label>
               <Form.Check
                 type="switch"
                 id="custom-switch-rgpt-aut"
                 checked={formData.rgpdAut === true}
-                onChange={(e) => setFormData({ ...formData, rgpdAut: e.target.checked ? true : false })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    rgpdAut: e.target.checked ? true : false,
+                  })
+                }
                 className="ms-auto"
                 label=""
                 name="rgpdAut"
@@ -635,12 +772,12 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
               <Form.Control
                 as="select"
                 className="custom-input-height custom-select-font-size"
-                value={formData.entidadeId || ''}
-                onChange={(e) => handleDropdownChange('entidadeId', e)}
+                value={formData.entidadeId || ""}
+                onChange={(e) => handleDropdownChange("entidadeId", e)}
               >
                 {dropdownData.entidadeId?.map((option: any) => {
                   let optionId = option.id;
-                  let optionName = option.nome
+                  let optionName = option.nome;
                   return (
                     <option key={optionId} value={optionId}>
                       {optionName}
@@ -685,23 +822,31 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
               <Form style={{ marginTop: 10, marginBottom: 10 }}>
                 <Row>
                   {[
-                    { key: 'nif', label: 'NIF', type: 'number' },
-                    { key: 'address', label: 'Morada', type: 'string' },
-                    { key: 'ziPcode', label: 'Código Postal', type: 'string' },
-                    { key: 'locality', label: 'Localidade', type: 'string' },
-                    { key: 'village', label: 'Freguesia', type: 'string' },
-                    { key: 'district', label: 'Distrito', type: 'string' },
-                    { key: 'phone', label: 'Telefone', type: 'string' },
-                    { key: 'mobile', label: 'Telemóvel', type: 'string' },
-                    { key: 'email', label: 'E-Mail', type: 'email' },
-                    { key: 'birthday', label: 'Data de Nascimento', type: 'datetime-local' },
-                    { key: 'nationality', label: 'Nacionalidade', type: 'string' },
-                    { key: 'gender', label: 'Gênero', type: 'boolean' }
+                    { key: "nif", label: "NIF", type: "number" },
+                    { key: "address", label: "Morada", type: "string" },
+                    { key: "ziPcode", label: "Código Postal", type: "string" },
+                    { key: "locality", label: "Localidade", type: "string" },
+                    { key: "village", label: "Freguesia", type: "string" },
+                    { key: "district", label: "Distrito", type: "string" },
+                    { key: "phone", label: "Telefone", type: "string" },
+                    { key: "mobile", label: "Telemóvel", type: "string" },
+                    { key: "email", label: "E-Mail", type: "email" },
+                    {
+                      key: "birthday",
+                      label: "Data de Nascimento",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "nationality",
+                      label: "Nacionalidade",
+                      type: "string",
+                    },
+                    { key: "gender", label: "Gênero", type: "boolean" },
                   ].map((field) => (
                     <Col md={3} key={field.key}>
                       <Form.Group controlId={`form${field.key}`}>
                         <Form.Label>{field.label}</Form.Label>
-                        {field.key === 'gender' ? (
+                        {field.key === "gender" ? (
                           <Form.Control
                             as="select"
                             className="custom-input-height custom-select-font-size"
@@ -710,21 +855,28 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             name="gender"
                           >
                             <option value="">Selecione...</option>
-                            {genderOptions.map(option => (
-                              <option key={String(option.value)} value={String(option.value)}>
+                            {genderOptions.map((option) => (
+                              <option
+                                key={String(option.value)}
+                                value={String(option.value)}
+                              >
                                 {option.label}
                               </option>
                             ))}
                           </Form.Control>
-                        ) : field.key === 'nif' ? (
+                        ) : field.key === "nif" ? (
                           <OverlayTrigger
                             placement="right"
-                            overlay={<Tooltip id="tooltip-nif">NIF deve ter pelo menos 9 dígitos</Tooltip>}
+                            overlay={
+                              <Tooltip id="tooltip-nif">
+                                NIF deve ter pelo menos 9 dígitos
+                              </Tooltip>
+                            }
                           >
                             <Form.Control
                               type={field.type}
                               className="custom-input-height custom-select-font-size"
-                              value={formData[field.key] || ''}
+                              value={formData[field.key] || ""}
                               onChange={handleChange}
                               name={field.key}
                             />
@@ -733,12 +885,16 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                           <Form.Control
                             type={field.type}
                             className="custom-input-height custom-select-font-size"
-                            value={formData[field.key] || ''}
+                            value={formData[field.key] || ""}
                             onChange={handleChange}
                             name={field.key}
                           />
                         )}
-                        {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
+                        {errors[field.key] && (
+                          <Form.Text className="text-danger">
+                            {errors[field.key]}
+                          </Form.Text>
+                        )}
                       </Form.Group>
                     </Col>
                   ))}
@@ -749,50 +905,115 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
               <Form style={{ marginTop: 10, marginBottom: 10 }}>
                 <Row>
                   {[
-                    { key: 'bInumber', label: 'Número de BI', type: 'string' },
-                    { key: 'bIissuance', label: 'Emissão de BI', type: 'datetime-local' },
-                    { key: 'biValidity', label: 'Validade de BI', type: 'datetime-local' },
-                    { key: 'admissionDate', label: 'Data de Admissão', type: 'datetime-local' },
-                    { key: 'exitDate', label: 'Data de Saída', type: 'datetime-local' },
-                    { key: 'departmentId', label: 'Departamento', type: 'dropdown', required: true },
-                    { key: 'professionId', label: 'Profissão', type: 'dropdown' },
-                    { key: 'groupId', label: 'Grupo', type: 'dropdown', required: true },
-                    { key: 'categoryId', label: 'Categoria', type: 'dropdown' },
-                    { key: 'zoneId', label: 'Zona', type: 'dropdown' },
-                    { key: 'externalEntityId', label: 'Entidade Externa', type: 'dropdown' }
+                    { key: "bInumber", label: "Número de BI", type: "string" },
+                    {
+                      key: "bIissuance",
+                      label: "Emissão de BI",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "biValidity",
+                      label: "Validade de BI",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "admissionDate",
+                      label: "Data de Admissão",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "exitDate",
+                      label: "Data de Saída",
+                      type: "datetime-local",
+                    },
+                    {
+                      key: "departmentId",
+                      label: "Departamento",
+                      type: "dropdown",
+                      required: true,
+                    },
+                    {
+                      key: "professionId",
+                      label: "Profissão",
+                      type: "dropdown",
+                    },
+                    {
+                      key: "groupId",
+                      label: "Grupo",
+                      type: "dropdown",
+                      required: true,
+                    },
+                    { key: "categoryId", label: "Categoria", type: "dropdown" },
+                    { key: "zoneId", label: "Zona", type: "dropdown" },
+                    {
+                      key: "externalEntityId",
+                      label: "Entidade Externa",
+                      type: "dropdown",
+                    },
                   ].map((field) => (
                     <Col md={3} key={field.key}>
                       <Form.Group controlId={`form${field.key}`}>
-                        <Form.Label>{field.label}{field.required && <span style={{ color: 'red' }}> *</span>}</Form.Label>
+                        <Form.Label>
+                          {field.label}
+                          {field.required && (
+                            <span style={{ color: "red" }}> *</span>
+                          )}
+                        </Form.Label>
                         <OverlayTrigger
                           placement="right"
-                          overlay={<Tooltip id={`tooltip-${field.key}`}>Campo Obrigatório</Tooltip>}
+                          overlay={
+                            <Tooltip id={`tooltip-${field.key}`}>
+                              Campo Obrigatório
+                            </Tooltip>
+                          }
                         >
-                          {field.type === 'dropdown' ? (
+                          {field.type === "dropdown" ? (
                             <Row>
-                              {(field.key === 'departmentId' || field.key === 'groupId') ? (
+                              {field.key === "departmentId" ||
+                              field.key === "groupId" ? (
                                 <>
                                   <Col>
                                     <Form.Control
                                       as="select"
-                                      className={`custom-input-height custom-select-font-size ${showValidationErrors ? 'error-border' : ''}`}
-                                      value={formData[field.key] || ''}
-                                      onChange={(e) => handleDropdownChange(field.key, e)}
+                                      className={`custom-input-height custom-select-font-size ${
+                                        showValidationErrors
+                                          ? "error-border"
+                                          : ""
+                                      }`}
+                                      value={formData[field.key] || ""}
+                                      onChange={(e) =>
+                                        handleDropdownChange(field.key, e)
+                                      }
                                     >
                                       <option value="">Selecione...</option>
-                                      {dropdownData[field.key]?.map((option: any) => {
-                                        let optionId = option.departmentID || option.groupID;
-                                        let optionName = option.name || option.description;
-                                        return (
-                                          <option key={optionId} value={optionId}>
-                                            {optionName}
-                                          </option>
-                                        );
-                                      })}
+                                      {dropdownData[field.key]?.map(
+                                        (option: any) => {
+                                          let optionId =
+                                            option.departmentID ||
+                                            option.groupID;
+                                          let optionName =
+                                            option.name || option.description;
+                                          return (
+                                            <option
+                                              key={optionId}
+                                              value={optionId}
+                                            >
+                                              {optionName}
+                                            </option>
+                                          );
+                                        }
+                                      )}
                                     </Form.Control>
                                   </Col>
                                   <Col xs="auto">
-                                    <CustomOutlineButton icon="bi-plus" onClick={() => (field.key === 'departmentId' ? setShowDeptModal(true) : setShowGrpModal(true))} />
+                                    <CustomOutlineButton
+                                      icon="bi-plus"
+                                      onClick={() =>
+                                        field.key === "departmentId"
+                                          ? setShowDeptModal(true)
+                                          : setShowGrpModal(true)
+                                      }
+                                    />
                                   </Col>
                                 </>
                               ) : (
@@ -800,19 +1021,31 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                                   <Form.Control
                                     as="select"
                                     className="custom-input-height custom-select-font-size"
-                                    value={formData[field.key] || ''}
-                                    onChange={(e) => handleDropdownChange(field.key, e)}
+                                    value={formData[field.key] || ""}
+                                    onChange={(e) =>
+                                      handleDropdownChange(field.key, e)
+                                    }
                                   >
                                     <option value="">Selecione...</option>
-                                    {dropdownData[field.key]?.map((option: any) => {
-                                      let optionId = option.professionID || option.zoneID || option.externalEntityID || option.categoryID;
-                                      let optionName = option.name || option.description;
-                                      return (
-                                        <option key={optionId} value={optionId}>
-                                          {optionName}
-                                        </option>
-                                      );
-                                    })}
+                                    {dropdownData[field.key]?.map(
+                                      (option: any) => {
+                                        let optionId =
+                                          option.professionID ||
+                                          option.zoneID ||
+                                          option.externalEntityID ||
+                                          option.categoryID;
+                                        let optionName =
+                                          option.name || option.description;
+                                        return (
+                                          <option
+                                            key={optionId}
+                                            value={optionId}
+                                          >
+                                            {optionName}
+                                          </option>
+                                        );
+                                      }
+                                    )}
                                   </Form.Control>
                                 </Col>
                               )}
@@ -821,13 +1054,17 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                             <Form.Control
                               type={field.type}
                               className="custom-input-height custom-select-font-size"
-                              value={formData[field.key] || ''}
+                              value={formData[field.key] || ""}
                               onChange={handleChange}
                               name={field.key}
                             />
                           )}
                         </OverlayTrigger>
-                        {errors[field.key] && <Form.Text className="text-danger">{errors[field.key]}</Form.Text>}
+                        {errors[field.key] && (
+                          <Form.Text className="text-danger">
+                            {errors[field.key]}
+                          </Form.Text>
+                        )}
                       </Form.Group>
                     </Col>
                   ))}
@@ -843,7 +1080,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                       <Form.Control
                         type="text"
                         className="custom-input-height custom-select-font-size"
-                        value={cardFormData.cardNumber || ''}
+                        value={cardFormData.cardNumber || ""}
                         onChange={handleCardChange}
                         name="cardNumber"
                       />
@@ -854,7 +1091,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                       <Form.Label>Privilégio do Dispositivo</Form.Label>
                       <Form.Select
                         className="custom-input-height custom-select-font-size"
-                        value={cardFormData.devicePrivelage || ''}
+                        value={cardFormData.devicePrivelage || ""}
                         onChange={handleCardChange}
                         name="devicePrivelage"
                       >
@@ -868,24 +1105,32 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                       <Form.Label>Password do Dispositivo</Form.Label>
                       <InputGroup>
                         <Form.Control
-                          type={showPassword ? 'text' : 'password'}
+                          type={showPassword ? "text" : "password"}
                           className="custom-input-height custom-select-font-size"
-                          value={cardFormData.devicePassword || ''}
+                          value={cardFormData.devicePassword || ""}
                           onChange={handleCardChange}
                           name="devicePassword"
                           maxLength={6}
-                          style={{ borderRight: 'none' }}
+                          style={{ borderRight: "none" }}
                         />
                         <InputGroup.Text
                           style={{
-                            cursor: 'pointer',
-                            background: 'transparent',
-                            borderLeft: 'none',
-                            height: '30px',
+                            cursor: "pointer",
+                            background: "transparent",
+                            borderLeft: "none",
+                            height: "30px",
                           }}
                           onClick={togglePasswordVisibility}
                         >
-                          <img src={showPassword ? hidepass : showpass} alt={showPassword ? "Esconder password" : "Mostrar password"} style={{ width: 20, height: 20 }} />
+                          <img
+                            src={showPassword ? hidepass : showpass}
+                            alt={
+                              showPassword
+                                ? "Esconder password"
+                                : "Mostrar password"
+                            }
+                            style={{ width: 20, height: 20 }}
+                          />
                         </InputGroup.Text>
                       </InputGroup>
                     </Form.Group>
@@ -896,13 +1141,15 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
                       <Form.Control
                         as="select"
                         className="custom-input-height custom-select-font-size"
-                        value={formData.accPlanoAcessoId || ''}
-                        onChange={(e) => handleDropdownChange('accPlanoAcessoId', e)}
+                        value={formData.accPlanoAcessoId || ""}
+                        onChange={(e) =>
+                          handleDropdownChange("accPlanoAcessoId", e)
+                        }
                       >
                         <option value="">Selecione...</option>
                         {dropdownData.accPlanoAcessoId?.map((option: any) => {
                           let optionId = option.id;
-                          let optionName = option.nome
+                          let optionName = option.nome;
                           return (
                             <option key={optionId} value={optionId}>
                               {optionName}
@@ -918,12 +1165,17 @@ export const CreateModalEmployees = <T extends Record<string, any>>({ title, ope
           </Tab.Content>
         </Tab.Container>
       </Modal.Body>
-      <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-        <Button className='narrow-mobile-modal-button' variant="outline-dark" type="button" onClick={handleClose}>
+      <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
+        <Button
+          className="narrow-mobile-modal-button"
+          variant="outline-dark"
+          type="button"
+          onClick={handleClose}
+        >
           Fechar
         </Button>
         <Button
-          className='narrow-mobile-modal-button'
+          className="narrow-mobile-modal-button"
           variant="outline-dark"
           type="button"
           onClick={handleSaveClick}

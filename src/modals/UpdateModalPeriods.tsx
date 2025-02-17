@@ -310,12 +310,38 @@ export const UpdateModalPeriods = <T extends Entity>({ title, open, onClose, onU
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
                 >
                     <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />

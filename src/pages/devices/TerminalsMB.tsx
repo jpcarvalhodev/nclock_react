@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   OverlayTrigger,
@@ -27,6 +27,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
 import { MBDevice } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 // Define a interface para os filtros
 interface Filters {
@@ -73,6 +74,7 @@ export const TerminalsMB = () => {
   const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
   const [selectedRows, setSelectedRows] = useState<MBDevice[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Função para atualizar todos os dispositivos
   const refreshMBDevices = () => {
@@ -208,33 +210,35 @@ export const TerminalsMB = () => {
   };
 
   // Filtra os dados da tabela de dispositivos
-  const filteredDataTable = filteredDevices.filter(
-    (device) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (device[key] != null &&
-            String(device[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(device).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return filteredDevices.filter(
+      (device) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (device[key] != null &&
+              String(device[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(device).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
           }
-        }
-        return false;
-      })
-  );
+          return false;
+        })
+    );
+  }, [filteredDevices, filters, filterText]);
 
   // Define as colunas de dispositivos
   const columns: TableColumn<MBDevice>[] = mbDeviceFields
@@ -290,6 +294,19 @@ export const TerminalsMB = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -300,6 +317,19 @@ export const TerminalsMB = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -310,6 +340,19 @@ export const TerminalsMB = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -367,6 +410,22 @@ export const TerminalsMB = () => {
     );
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="main-container">
       <div className="content-container">
@@ -399,6 +458,19 @@ export const TerminalsMB = () => {
                 <div className="custom-buttons">
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                     }
@@ -410,6 +482,19 @@ export const TerminalsMB = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                     }
@@ -422,6 +507,19 @@ export const TerminalsMB = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">Colunas</Tooltip>
                     }
@@ -448,23 +546,36 @@ export const TerminalsMB = () => {
               </div>
             </div>
             <div className="table-css">
-              <DataTable
-                columns={[...columns, devicesActionColumn]}
-                data={filteredDataTable}
-                pagination
-                paginationComponentOptions={paginationOptions}
-                paginationPerPage={20}
-                selectableRows
-                onSelectedRowsChange={handleDeviceRowSelected}
-                clearSelectedRows={clearSelectionToggle}
-                selectableRowsHighlight
-                onRowDoubleClicked={handleEditDevices}
-                noDataComponent="Não existem dados disponíveis para exibir."
-                customStyles={customStyles}
-                striped
-                responsive
-                persistTableHead={true}
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={[...columns, devicesActionColumn]}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  selectableRows
+                  onSelectedRowsChange={handleDeviceRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  onRowDoubleClicked={handleEditDevices}
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                />
+              )}
             </div>
             <div
               className="content-section deviceTabsMobile"

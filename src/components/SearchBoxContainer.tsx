@@ -15,7 +15,7 @@ function CustomSearchBox(props: TextFieldProps) {
 export function SearchBoxContainer({ onSearch }: Props) {
   const [searchInput, setSearchInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const debouncedValue = useDebounce(searchInput, 500);
+  const debouncedValue = useDebounce(searchInput, 300);
 
   // Atualiza o valor de debouncedValue e chama a função onSearch
   useEffect(() => {

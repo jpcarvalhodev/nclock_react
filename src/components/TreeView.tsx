@@ -232,9 +232,17 @@ export function TreeViewData({
   // Atualiza o estado de carregamento ao expandir os itens
   useEffect(() => {
     setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
     if (filteredItems.length > 0) {
+      clearTimeout(timeout);
       setLoading(false);
     }
+
+    return () => clearTimeout(timeout);
   }, [filteredItems]);
 
   // Filtra os itens ao mudar o termo de pesquisa
@@ -334,6 +342,19 @@ export function TreeViewData({
         </div>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
         >
           <CustomOutlineButton

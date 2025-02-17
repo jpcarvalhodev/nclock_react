@@ -100,6 +100,19 @@ export const PrintButton = ({ data, fields, renderTimeout, showModalOnInit, onCl
         <>
             <OverlayTrigger
                 placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                 overlay={<Tooltip className="custom-tooltip">Imprimir</Tooltip>}
             >
                 <CustomOutlineButton onClick={handleShowModal} icon='bi-printer' iconSize='1.1em'></CustomOutlineButton >

@@ -1,5 +1,6 @@
 import {
   AccessControl,
+  Accesses,
   Ads,
   Category,
   Department,
@@ -61,7 +62,9 @@ type DataItem =
   | ManualOpenDoor
   | LimpezasEOcorrencias
   | Logs
-  | Readers;
+  | Readers
+  | AccessControl
+  | Accesses;
 
 // Propriedades do componente de filtro de seleção
 interface SelectFilterProps {
@@ -244,13 +247,26 @@ export const SelectFilter = ({
   const dataArray = Array.isArray(data) ? data : [];
 
   // Formata os dados
-  const options = Array.from(
-    new Set(
-      dataArray.map((item) =>
-        formatDataItem(item, column, devices, mbDevices, accessControl)
+  let options: string[];
+  if (column === 'isPresent') {
+    options = ['true', 'false'];
+  } else {
+    options = Array.from(
+      new Set(
+        dataArray.map((item) =>
+          formatDataItem(item, column, devices, mbDevices, accessControl)
+        )
       )
-    )
-  );
+    );
+  }
+
+  // Função para traduzir 'true' e 'false' para 'Presente' e 'Ausente'
+  const getDisplayValue = (value: string) => {
+    if (column === 'isPresent') {
+      return value === 'true' ? 'Presente' : 'Ausente';
+    }
+    return value;
+  };
 
   // Obter o elemento do portal
   const portalElement = document.getElementById("portal-root");
@@ -259,7 +275,7 @@ export const SelectFilter = ({
   const handleChange = (value: string) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [column]: value,
+      [column]: String(value),
     }));
   };
 
@@ -292,7 +308,7 @@ export const SelectFilter = ({
                 key={`${option}-${index}`}
                 onClick={() => handleChange(option)}
               >
-                {option}
+                {getDisplayValue(option)}
               </Dropdown.Item>
             ))}
           </Dropdown.Menu>,

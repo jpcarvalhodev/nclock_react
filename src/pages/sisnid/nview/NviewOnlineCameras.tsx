@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
@@ -18,6 +18,7 @@ import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateOnlineCameraModal } from "../../../modals/UpdateOnlineCameraModal";
 import { Cameras } from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 
 export const NviewOnlineCameras = () => {
   const [cameras, setCameras] = useState<Cameras[]>([]);
@@ -42,6 +43,7 @@ export const NviewOnlineCameras = () => {
   const [selectedCameras, setSelectedCameras] = useState<Cameras | null>(null);
   const [initialData, setInitialData] = useState<Partial<Cameras> | null>(null);
   const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   // Função para buscar as câmeras
   const fetchAllCameras = async () => {
@@ -235,11 +237,13 @@ export const NviewOnlineCameras = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={cameras}
-            />
+            {field.key !== "createdDate" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
@@ -251,32 +255,34 @@ export const NviewOnlineCameras = () => {
     });
 
   // Filtra os dados da tabela
-  const filteredDataTable = cameras.filter(
-    (getCoin) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (getCoin[key] != null &&
-            String(getCoin[key])
+  const filteredDataTable = useMemo(() => {
+    return cameras.filter(
+      (getCoin) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (getCoin[key] != null &&
+              String(getCoin[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(getCoin).some((value) => {
+          if (value == null) {
+            return false;
+          } else if (value instanceof Date) {
+            return value
+              .toLocaleString()
               .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.values(getCoin).some((value) => {
-        if (value == null) {
-          return false;
-        } else if (value instanceof Date) {
-          return value
-            .toLocaleString()
-            .toLowerCase()
-            .includes(filterText.toLowerCase());
-        } else {
-          return value
-            .toString()
-            .toLowerCase()
-            .includes(filterText.toLowerCase());
-        }
-      })
-  );
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          }
+        })
+    );
+  }, [cameras, filters, filterText]);
 
   // Define as colunas de ação
   const actionColumn: TableColumn<Cameras> = {
@@ -285,6 +291,19 @@ export const NviewOnlineCameras = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -295,6 +314,19 @@ export const NviewOnlineCameras = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -305,6 +337,19 @@ export const NviewOnlineCameras = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -324,6 +369,22 @@ export const NviewOnlineCameras = () => {
     return cameraFields.filter((field) => selectedColumns.includes(field.key));
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="main-container">
       <div className="datatable-container" style={{ flex: 1 }}>
@@ -337,6 +398,19 @@ export const NviewOnlineCameras = () => {
           <div className="buttons-container-others">
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
               <CustomOutlineButton
@@ -347,6 +421,19 @@ export const NviewOnlineCameras = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
             >
               <CustomOutlineButton
@@ -357,6 +444,19 @@ export const NviewOnlineCameras = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
             >
               <CustomOutlineButton
@@ -379,25 +479,38 @@ export const NviewOnlineCameras = () => {
           </div>
         </div>
         <div className="table-css">
-          <DataTable
-            columns={[...columns, actionColumn]}
-            data={filteredDataTable}
-            pagination
-            paginationComponentOptions={paginationOptions}
-            paginationPerPage={20}
-            selectableRows
-            onSelectedRowsChange={handleRowSelected}
-            clearSelectedRows={clearSelectionToggle}
-            selectableRowsHighlight
-            onRowDoubleClicked={handleEditCameras}
-            noDataComponent="Não existem dados disponíveis para exibir."
-            customStyles={customStyles}
-            striped
-            responsive
-            persistTableHead={true}
-            defaultSortAsc={true}
-            defaultSortFieldId="createdDate"
-          />
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <CustomSpinner />
+            </div>
+          ) : (
+            <DataTable
+              columns={[...columns, actionColumn]}
+              data={filteredDataTable}
+              pagination
+              paginationComponentOptions={paginationOptions}
+              paginationPerPage={20}
+              selectableRows
+              onSelectedRowsChange={handleRowSelected}
+              clearSelectedRows={clearSelectionToggle}
+              selectableRowsHighlight
+              onRowDoubleClicked={handleEditCameras}
+              noDataComponent="Não existem dados disponíveis para exibir."
+              customStyles={customStyles}
+              striped
+              responsive
+              persistTableHead={true}
+              defaultSortAsc={true}
+              defaultSortFieldId="createdDate"
+            />
+          )}
         </div>
       </div>
       <CreateOnlineCameraModal

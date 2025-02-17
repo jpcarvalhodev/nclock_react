@@ -368,8 +368,7 @@ export const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-
-            <div className="dashboard-tabs-container">
+            <div className="dashboard-tabs-container" id='cards-dashboard'>
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k as TabName)}>
                     <Nav variant="pills" className="nav-pills justify-content-center align-items-center">
                         {Object.keys(cardData).map((key) => (

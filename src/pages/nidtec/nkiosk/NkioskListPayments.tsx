@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -19,6 +19,7 @@ import { transactionMBFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { KioskTransactionMB } from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -66,6 +67,7 @@ export const NkioskListPayments = () => {
   const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>(
     []
   );
+  const [loading, setLoading] = useState(false);
   const eventDoorId = "2";
 
   // Função para buscar os pagamentos dos terminais
@@ -374,41 +376,45 @@ export const NkioskListPayments = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredDevices
-    .filter(
-      (payTerminals) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (payTerminals[key] != null &&
-              String(payTerminals[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(payTerminals).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (key === "transactionType") {
-              const typeText = value === 1 ? "Multibanco" : "Moedeiro";
-              return typeText.toLowerCase().includes(filterText.toLowerCase());
-            } else if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return filteredDevices
+      .filter(
+        (payTerminals) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (payTerminals[key] != null &&
+                String(payTerminals[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(payTerminals).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (key === "transactionType") {
+                const typeText = value === 1 ? "Multibanco" : "Moedeiro";
+                return typeText
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
+            return false;
+          })
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+  }, [filteredDevices, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields
@@ -468,11 +474,13 @@ export const NkioskListPayments = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={filteredDataTable}
-            />
+            {field.key !== "timestamp" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
@@ -525,6 +533,22 @@ export const NkioskListPayments = () => {
     );
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="main-container">
       <div className="content-container">
@@ -554,6 +578,19 @@ export const NkioskListPayments = () => {
               <div className="buttons-container-others">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -565,6 +602,19 @@ export const NkioskListPayments = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -595,6 +645,19 @@ export const NkioskListPayments = () => {
               <div className="date-range-search">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Total Hoje</Tooltip>
                   }
@@ -607,6 +670,19 @@ export const NkioskListPayments = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Total Dia Anterior
@@ -621,6 +697,19 @@ export const NkioskListPayments = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Total Dia Seguinte
@@ -652,6 +741,19 @@ export const NkioskListPayments = () => {
                 />
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton
@@ -663,24 +765,37 @@ export const NkioskListPayments = () => {
               </div>
             </div>
             <div className="table-css">
-              <DataTable
-                columns={columns}
-                data={filteredDataTable}
-                pagination
-                paginationComponentOptions={paginationOptions}
-                paginationPerPage={20}
-                selectableRows
-                onSelectedRowsChange={handleRowSelected}
-                clearSelectedRows={clearSelectionToggle}
-                selectableRowsHighlight
-                noDataComponent="Não existem dados disponíveis para exibir."
-                customStyles={customStyles}
-                striped
-                responsive
-                persistTableHead={true}
-                defaultSortAsc={true}
-                defaultSortFieldId="timestamp"
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="timestamp"
+                />
+              )}
               <div style={{ marginLeft: 10, marginTop: -5 }}>
                 <strong>Recebimentos Totais: </strong> Valor -{" "}
                 {totalAmount.toFixed(2)}€ | Visitantes -{" "}

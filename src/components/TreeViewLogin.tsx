@@ -132,9 +132,17 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
   // Atualiza o estado de carregamento ao expandir os itens
   useEffect(() => {
     setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
     if (filteredItems.length > 0) {
+      clearTimeout(timeout);
       setLoading(false);
     }
+
+    return () => clearTimeout(timeout);
   }, [filteredItems]);
 
   // Função para lidar com a expansão dos itens
@@ -213,6 +221,19 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
         </div>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
         >
           <CustomOutlineButton

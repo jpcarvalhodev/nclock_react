@@ -60,6 +60,7 @@ import {
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { UpdateModalEmployees } from "../../modals/UpdateModalEmployees";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -203,8 +204,6 @@ export const Terminals = () => {
   const [loadingActivityData, setLoadingActivityData] = useState(false);
   const [loadingSendClock, setLoadingSendClock] = useState(false);
   const [showDoorModal, setShowDoorModal] = useState(false);
-  const [loadingUsersInTerminalData, setLoadingUsersInTerminalData] =
-    useState(false);
   const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [loadingMovementData, setLoadingMovementData] = useState(false);
@@ -214,9 +213,15 @@ export const Terminals = () => {
   const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
   const [confirmMessage, setConfirmMessage] = useState("");
   const [filterText, setFilterText] = useState("");
+  const [deviceLoading, setDeviceLoading] = useState(false);
+  const [stateLoading, setStateLoading] = useState(false);
+  const [userSoftwareLoading, setUserSoftwareLoading] = useState(false);
+  const [userTerminalLoading, setUserTerminalLoading] = useState(false);
+  const [bioLoading, setBioLoading] = useState(false);
+  const [cardLoading, setCardLoading] = useState(false);
 
-  // Função para buscar todos os utilizadores e cartões
-  const fetchEmployeesAndCards = async () => {
+  // Função para buscar todos as biometrias
+  const fetchEmployeesBio = () => {
     const filteredEmployeesBio = employees.filter(
       (employee) =>
         employee.statusFprint === true || employee.statusFace === true
@@ -227,7 +232,10 @@ export const Terminals = () => {
       return aNum - bNum;
     });
     setEmployeesBio(sortedEmployeesBio);
+  };
 
+  // Função para buscar todos os cartões
+  const fetchEmployeesCards = () => {
     const filteredEmployeesWithCards = employees.filter(
       (employee) => employee.employeeCards.length > 0
     );
@@ -276,21 +284,6 @@ export const Terminals = () => {
       }
     };
     fetchMovement();
-
-    const fetchUsersInTerminal = async () => {
-      if (selectedTerminal && selectedTerminal.status) {
-        setLoadingUsersInTerminalData(true);
-        try {
-          await fetchAllEmployeeDevices(selectedTerminal.zktecoDeviceID);
-          setLoadingUsersInTerminalData(false);
-        } catch (error) {
-          console.error("Erro ao buscar utilizadores no terminal:", error);
-        }
-      } else {
-        setLoadingUsersInTerminalData(false);
-      }
-    };
-    fetchUsersInTerminal();
   }, [selectedTerminal]);
 
   // Função para adicionar um dispositivo
@@ -322,10 +315,11 @@ export const Terminals = () => {
     refreshAll();
   };
 
-  // Função para carregar as biometrias e os cartões
+  // Função para carregar biometrias e cartões
   useEffect(() => {
-    fetchEmployeesAndCards();
-  }, []);
+    fetchEmployeesBio();
+    fetchEmployeesCards();
+  }, [employees]);
 
   // Atualiza a seleção ao resetar
   useEffect(() => {
@@ -337,7 +331,8 @@ export const Terminals = () => {
   // Função para atualizar todos os dispositivos
   const refreshAll = () => {
     fetchAllDevices();
-    fetchEmployeesAndCards();
+    fetchEmployeesBio();
+    fetchEmployeesCards();
     fetchAllAux();
     fetchAllDoorData();
     setClearSelectionToggle((prev) => !prev);
@@ -483,33 +478,35 @@ export const Terminals = () => {
   ];
 
   // Filtra os dados da tabela de dispositivos
-  const filteredDeviceDataTable = devices.filter(
-    (device) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (device[key] != null &&
-            String(device[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(device).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
+  const filteredDeviceDataTable = useMemo(() => {
+    return devices.filter(
+      (device) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (device[key] != null &&
+              String(device[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(device).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
           }
-        }
-        return false;
-      })
-  );
+          return false;
+        })
+    );
+  }, [devices, filters, filterText]);
 
   // Seleciona a entidade anterior
   const handleNextDevice = () => {
@@ -567,6 +564,19 @@ export const Terminals = () => {
             return (
               <OverlayTrigger
                 placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                 overlay={
                   <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
                 }
@@ -619,6 +629,19 @@ export const Terminals = () => {
         const applyTooltip = (text: string) => (
           <OverlayTrigger
             placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
             overlay={<Tooltip className="custom-tooltip">{text}</Tooltip>}
           >
             <span
@@ -679,6 +702,19 @@ export const Terminals = () => {
         const applyTooltip = (text: string) => (
           <OverlayTrigger
             placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
             overlay={<Tooltip className="custom-tooltip">{text}</Tooltip>}
           >
             <span
@@ -731,12 +767,14 @@ export const Terminals = () => {
     });
 
   // Filtra os dados da tabela de estado de dispositivos
-  const filteredStateDataTable = devices.filter((device) =>
-    Object.keys(filters).every(
-      (key) =>
-        filters[key] === "" || String(device[key]) === String(filters[key])
-    )
-  );
+  const filteredStateDataTable = useMemo(() => {
+    return devices.filter((device) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" || String(device[key]) === String(filters[key])
+      )
+    );
+  }, [devices]);
 
   // Define as colunas de estado de dispositivos
   const stateColumns: TableColumn<Devices>[] = deviceFields
@@ -913,12 +951,14 @@ export const Terminals = () => {
   const excludedBioColumns = ["statusFprint", "statusFace", "statusPalm"];
 
   // Define os dados da tabela de biometria
-  const filteredBioDataTable = employeesBio.filter((employee) =>
-    Object.keys(filters).every(
-      (key) =>
-        filters[key] === "" || String(employee[key]) === String(filters[key])
-    )
-  );
+  const filteredBioDataTable = useMemo(() => {
+    return employeesBio.filter((employee) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" || String(employee[key]) === String(filters[key])
+      )
+    );
+  }, [employeesBio]);
 
   // Define as colunas de utilizadores
   const bioColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
@@ -974,12 +1014,14 @@ export const Terminals = () => {
   const excludedCardColumns = ["statusFprint", "statusFace", "statusPalm"];
 
   // Filtra os dados da tabela de cartões
-  const filteredCardDataTable = employeeCards.filter((employee) =>
-    Object.keys(filters).every(
-      (key) =>
-        filters[key] === "" || String(employee[key]) === String(filters[key])
-    )
-  );
+  const filteredCardDataTable = useMemo(() => {
+    return employeeCards.filter((employee) =>
+      Object.keys(filters).every(
+        (key) =>
+          filters[key] === "" || String(employee[key]) === String(filters[key])
+      )
+    );
+  }, [employeeCards]);
 
   // Define as colunas de utilizadores
   const cardColumns: TableColumn<EmployeeAndCard>[] = combinedEmployeeFields
@@ -1130,6 +1172,19 @@ export const Terminals = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -1140,6 +1195,19 @@ export const Terminals = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -1150,6 +1218,19 @@ export const Terminals = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -1601,6 +1682,104 @@ export const Terminals = () => {
     setShowConfirmModal(true);
   };
 
+  // Controla o loading da tabela de dispositivos
+  useEffect(() => {
+    setDeviceLoading(true);
+
+    const timeout = setTimeout(() => {
+      setDeviceLoading(false);
+    }, 1000);
+
+    if (filteredDeviceDataTable.length > 0) {
+      clearTimeout(timeout);
+      setDeviceLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDeviceDataTable]);
+
+  // Controla o loading da tabela de estado
+  useEffect(() => {
+    setStateLoading(true);
+
+    const timeout = setTimeout(() => {
+      setStateLoading(false);
+    }, 1000);
+
+    if (filteredStateDataTable.length > 0) {
+      clearTimeout(timeout);
+      setStateLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredStateDataTable]);
+
+  // Controla o loading da tabela de utilizadores no software
+  useEffect(() => {
+    setUserSoftwareLoading(true);
+
+    const timeout = setTimeout(() => {
+      setUserSoftwareLoading(false);
+    }, 1000);
+
+    if (filteredUsersInSoftware.length > 0) {
+      clearTimeout(timeout);
+      setUserSoftwareLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredUsersInSoftware]);
+
+  // Controla o loading da tabela de utilizadores no terminal
+  useEffect(() => {
+    if (selectedTerminal) {
+      setUserTerminalLoading(true);
+    }
+
+    const timeout = setTimeout(() => {
+      setUserTerminalLoading(false);
+    }, 1000);
+
+    if (selectedTerminal && filteredUsersInTerminal.length > 0) {
+      clearTimeout(timeout);
+      setUserTerminalLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredUsersInTerminal]);
+
+  // Controla o loading da tabela de biometrias
+  useEffect(() => {
+    setBioLoading(true);
+
+    const timeout = setTimeout(() => {
+      setBioLoading(false);
+    }, 1000);
+
+    if (filteredBioDataTable.length > 0) {
+      clearTimeout(timeout);
+      setBioLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredBioDataTable]);
+
+  // Controla o loading da tabela de cartões
+  useEffect(() => {
+    setCardLoading(true);
+
+    const timeout = setTimeout(() => {
+      setCardLoading(false);
+    }, 1000);
+
+    if (filteredCardDataTable.length > 0) {
+      clearTimeout(timeout);
+      setCardLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredCardDataTable]);
+
   return (
     <>
       <Modal
@@ -1656,6 +1835,19 @@ export const Terminals = () => {
               <div className="buttons-container-others" style={{ flexGrow: 1 }}>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -1667,6 +1859,19 @@ export const Terminals = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -1679,6 +1884,19 @@ export const Terminals = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -1713,27 +1931,40 @@ export const Terminals = () => {
             style={{ display: "flex", flex: 1 }}
           >
             <div style={{ flex: 1.5 }} className="deviceMobile">
-              <DataTable
-                columns={[...deviceColumns, devicesActionColumn]}
-                data={filteredDeviceDataTable}
-                onRowDoubleClicked={handleEditDevices}
-                pagination
-                paginationPerPage={20}
-                paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                paginationComponentOptions={paginationOptions}
-                selectableRows
-                selectableRowsSingle
-                clearSelectedRows={clearSelectionToggle}
-                onSelectedRowsChange={handleDeviceRowSelected}
-                selectableRowsHighlight
-                noDataComponent="Não há dados disponíveis para exibir."
-                customStyles={customStyles}
-                striped
-                responsive
-                persistTableHead={true}
-                defaultSortAsc={true}
-                defaultSortFieldId="deviceNumber"
-              />
+              {deviceLoading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={[...deviceColumns, devicesActionColumn]}
+                  data={filteredDeviceDataTable}
+                  onRowDoubleClicked={handleEditDevices}
+                  pagination
+                  paginationPerPage={20}
+                  paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                  paginationComponentOptions={paginationOptions}
+                  selectableRows
+                  selectableRowsSingle
+                  clearSelectedRows={clearSelectionToggle}
+                  onSelectedRowsChange={handleDeviceRowSelected}
+                  selectableRowsHighlight
+                  noDataComponent="Não há dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="deviceNumber"
+                />
+              )}
             </div>
             <div style={{ flex: 2, overflow: "auto" }}>
               <Tabs
@@ -1755,7 +1986,7 @@ export const Terminals = () => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            height: "100px",
+                            height: "200px",
                           }}
                         >
                           <CustomSpinner />
@@ -1794,7 +2025,7 @@ export const Terminals = () => {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            height: "100px",
+                            height: "200px",
                           }}
                         >
                           <CustomSpinner />
@@ -1837,24 +2068,37 @@ export const Terminals = () => {
                     >
                       <div style={{ display: "flex" }}>
                         <div style={{ flex: 5 }}>
-                          <DataTable
-                            columns={userColumns}
-                            data={filteredUsersInSoftware}
-                            pagination
-                            paginationPerPage={20}
-                            paginationComponentOptions={paginationOptions}
-                            selectableRows
-                            clearSelectedRows={clearSelectionToggle}
-                            onSelectedRowsChange={handleUserRowSelected}
-                            selectableRowsHighlight
-                            noDataComponent="Não há dados disponíveis para exibir."
-                            customStyles={customStyles}
-                            striped
-                            responsive
-                            persistTableHead={true}
-                            defaultSortAsc={true}
-                            defaultSortFieldId="enrollNumber"
-                          />
+                          {userSoftwareLoading ? (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: "200px",
+                              }}
+                            >
+                              <CustomSpinner />
+                            </div>
+                          ) : (
+                            <DataTable
+                              columns={userColumns}
+                              data={filteredUsersInSoftware}
+                              pagination
+                              paginationPerPage={20}
+                              paginationComponentOptions={paginationOptions}
+                              selectableRows
+                              clearSelectedRows={clearSelectionToggle}
+                              onSelectedRowsChange={handleUserRowSelected}
+                              selectableRowsHighlight
+                              noDataComponent="Não há dados disponíveis para exibir."
+                              customStyles={customStyles}
+                              striped
+                              responsive
+                              persistTableHead={true}
+                              defaultSortAsc={true}
+                              defaultSortFieldId="enrollNumber"
+                            />
+                          )}
                         </div>
                         <div
                           style={{
@@ -1936,19 +2180,16 @@ export const Terminals = () => {
                       eventKey="users-terminal"
                       title="Utilizadores no equipamento"
                     >
-                      {loadingUsersInTerminalData ? (
+                      {userTerminalLoading ? (
                         <div
                           style={{
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            height: "100px",
+                            height: "200px",
                           }}
                         >
-                          <Spinner
-                            style={{ width: 50, height: 50 }}
-                            animation="border"
-                          />
+                          <CustomSpinner />
                         </div>
                       ) : (
                         <DataTable
@@ -1976,64 +2217,103 @@ export const Terminals = () => {
                       )}
                     </Tab>
                     <Tab eventKey="facial-taken" title="Biometria recolhida">
-                      <DataTable
-                        columns={bioColumns}
-                        data={filteredBioDataTable}
-                        pagination
-                        paginationPerPage={20}
-                        paginationComponentOptions={paginationOptions}
-                        selectableRows
-                        clearSelectedRows={clearSelectionToggle}
-                        onSelectedRowsChange={handleUserRowSelected}
-                        selectableRowsHighlight
-                        noDataComponent="Não há dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        responsive
-                        persistTableHead={true}
-                        defaultSortAsc={true}
-                        defaultSortFieldId="enrollNumber"
-                      />
+                      {bioLoading ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "200px",
+                          }}
+                        >
+                          <CustomSpinner />
+                        </div>
+                      ) : (
+                        <DataTable
+                          columns={bioColumns}
+                          data={filteredBioDataTable}
+                          pagination
+                          paginationPerPage={20}
+                          paginationComponentOptions={paginationOptions}
+                          selectableRows
+                          clearSelectedRows={clearSelectionToggle}
+                          onSelectedRowsChange={handleUserRowSelected}
+                          selectableRowsHighlight
+                          noDataComponent="Não há dados disponíveis para exibir."
+                          customStyles={customStyles}
+                          striped
+                          responsive
+                          persistTableHead={true}
+                          defaultSortAsc={true}
+                          defaultSortFieldId="enrollNumber"
+                        />
+                      )}
                     </Tab>
                     <Tab eventKey="cards-taken" title="Cartões recolhidos">
-                      <DataTable
-                        columns={cardColumns}
-                        data={filteredCardDataTable}
-                        pagination
-                        paginationPerPage={20}
-                        paginationComponentOptions={paginationOptions}
-                        selectableRows
-                        clearSelectedRows={clearSelectionToggle}
-                        onSelectedRowsChange={handleUserRowSelected}
-                        selectableRowsHighlight
-                        noDataComponent="Não há dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        responsive
-                        persistTableHead={true}
-                        defaultSortAsc={true}
-                        defaultSortFieldId="enrollNumber"
-                      />
+                      {cardLoading ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "200px",
+                          }}
+                        >
+                          <CustomSpinner />
+                        </div>
+                      ) : (
+                        <DataTable
+                          columns={cardColumns}
+                          data={filteredCardDataTable}
+                          pagination
+                          paginationPerPage={20}
+                          paginationComponentOptions={paginationOptions}
+                          selectableRows
+                          clearSelectedRows={clearSelectionToggle}
+                          onSelectedRowsChange={handleUserRowSelected}
+                          selectableRowsHighlight
+                          noDataComponent="Não há dados disponíveis para exibir."
+                          customStyles={customStyles}
+                          striped
+                          responsive
+                          persistTableHead={true}
+                          defaultSortAsc={true}
+                          defaultSortFieldId="enrollNumber"
+                        />
+                      )}
                     </Tab>
                   </Tabs>
                 </Tab>
                 <Tab eventKey="state" title="Estado">
-                  <DataTable
-                    columns={stateColumns}
-                    data={filteredStateDataTable}
-                    pagination
-                    paginationPerPage={20}
-                    paginationComponentOptions={paginationOptions}
-                    selectableRows
-                    selectableRowsSingle
-                    onSelectedRowsChange={handleDeviceRowSelected}
-                    selectableRowsHighlight
-                    noDataComponent="Não há dados disponíveis para exibir."
-                    customStyles={customStyles}
-                    striped
-                    responsive
-                    persistTableHead={true}
-                  />
+                  {stateLoading ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "200px",
+                      }}
+                    >
+                      <CustomSpinner />
+                    </div>
+                  ) : (
+                    <DataTable
+                      columns={stateColumns}
+                      data={filteredStateDataTable}
+                      pagination
+                      paginationPerPage={20}
+                      paginationComponentOptions={paginationOptions}
+                      selectableRows
+                      selectableRowsSingle
+                      onSelectedRowsChange={handleDeviceRowSelected}
+                      selectableRowsHighlight
+                      noDataComponent="Não há dados disponíveis para exibir."
+                      customStyles={customStyles}
+                      striped
+                      responsive
+                      persistTableHead={true}
+                    />
+                  )}
                 </Tab>
               </Tabs>
             </div>

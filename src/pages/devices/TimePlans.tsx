@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -17,6 +17,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateTimePlansModal } from "../../modals/UpdateTimePlansModal";
 import { TimePlan } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 export const TimePlans = () => {
   const {
@@ -48,6 +49,7 @@ export const TimePlans = () => {
   const [initialData, setInitialData] = useState<Partial<TimePlan> | null>(
     null
   );
+  const [loading, setLoading] = useState(false);
 
   // Função para adicionar o plano de horários
   const addTimePlan = async (newTimePlan: TimePlan) => {
@@ -192,35 +194,37 @@ export const TimePlans = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = timePlans
-    .filter(
-      (timePlan) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (timePlan[key] != null &&
-              String(timePlan[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(timePlan).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return timePlans
+      .filter(
+        (timePlan) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (timePlan[key] != null &&
+                String(timePlan[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(timePlan).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    )
-    .sort((a, b) => a.nome.localeCompare(b.nome));
+            return false;
+          })
+      )
+      .sort((a, b) => a.nome.localeCompare(b.nome));
+  }, [timePlans, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<TimePlan>[] = timePlanFields
@@ -256,6 +260,19 @@ export const TimePlans = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -266,6 +283,19 @@ export const TimePlans = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -276,6 +306,19 @@ export const TimePlans = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -297,6 +340,22 @@ export const TimePlans = () => {
     );
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="dashboard-container">
       <div className="datatable-container">
@@ -310,6 +369,19 @@ export const TimePlans = () => {
           <div className="buttons-container-others">
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
               <CustomOutlineButton
@@ -319,6 +391,19 @@ export const TimePlans = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
             >
               <CustomOutlineButton
@@ -329,6 +414,19 @@ export const TimePlans = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
             >
               <CustomOutlineButton
@@ -338,6 +436,19 @@ export const TimePlans = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={
                 <Tooltip className="custom-tooltip">
                   Apagar Selecionados
@@ -364,23 +475,36 @@ export const TimePlans = () => {
           </div>
         </div>
         <div className="table-css">
-          <DataTable
-            columns={[...columns, actionColumn]}
-            data={filteredDataTable}
-            pagination
-            paginationComponentOptions={paginationOptions}
-            paginationPerPage={20}
-            onRowDoubleClicked={handleEditTimePlan}
-            selectableRows
-            onSelectedRowsChange={handleRowSelected}
-            clearSelectedRows={clearSelectionToggle}
-            selectableRowsHighlight
-            noDataComponent="Não existem dados disponíveis para exibir."
-            customStyles={customStyles}
-            striped
-            responsive
-            persistTableHead={true}
-          />
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <CustomSpinner />
+            </div>
+          ) : (
+            <DataTable
+              columns={[...columns, actionColumn]}
+              data={filteredDataTable}
+              pagination
+              paginationComponentOptions={paginationOptions}
+              paginationPerPage={20}
+              onRowDoubleClicked={handleEditTimePlan}
+              selectableRows
+              onSelectedRowsChange={handleRowSelected}
+              clearSelectedRows={clearSelectionToggle}
+              selectableRowsHighlight
+              noDataComponent="Não existem dados disponíveis para exibir."
+              customStyles={customStyles}
+              striped
+              responsive
+              persistTableHead={true}
+            />
+          )}
         </div>
       </div>
       {openColumnSelector && (

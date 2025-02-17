@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -18,6 +18,7 @@ import { transactionCardFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { KioskTransactionCard } from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -68,6 +69,7 @@ export const NkioskMoveVP = () => {
   const [filteredDevices, setFilteredDevices] = useState<
     KioskTransactionCard[]
   >([]);
+  const [loading, setLoading] = useState(false);
   const eventDoorId = "3";
 
   // Função para buscar os movimentos de videoporteiro entre datas
@@ -309,38 +311,40 @@ export const NkioskMoveVP = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredDevices
-    .filter(
-      (moveCards) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (moveCards[key] != null &&
-              String(moveCards[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(moveCards).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return filteredDevices
+      .filter(
+        (moveCards) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (moveCards[key] != null &&
+                String(moveCards[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(moveCards).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
-    );
+            return false;
+          })
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+      );
+  }, [filteredDevices, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields
@@ -374,11 +378,13 @@ export const NkioskMoveVP = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={filteredDataTable}
-            />
+            {field.key !== "eventTime" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
@@ -418,6 +424,22 @@ export const NkioskMoveVP = () => {
     );
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="main-container">
       <div className="content-container">
@@ -447,6 +469,19 @@ export const NkioskMoveVP = () => {
               <div className="buttons-container-others">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -458,6 +493,19 @@ export const NkioskMoveVP = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -488,6 +536,19 @@ export const NkioskMoveVP = () => {
               <div className="date-range-search">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">VP Hoje</Tooltip>
                   }
@@ -500,6 +561,19 @@ export const NkioskMoveVP = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       VP Dia Anterior
@@ -514,6 +588,19 @@ export const NkioskMoveVP = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       VP Dia Seguinte
@@ -545,6 +632,19 @@ export const NkioskMoveVP = () => {
                 />
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton
@@ -556,24 +656,37 @@ export const NkioskMoveVP = () => {
               </div>
             </div>
             <div className="table-css">
-              <DataTable
-                columns={columns}
-                data={filteredDataTable}
-                pagination
-                paginationComponentOptions={paginationOptions}
-                paginationPerPage={20}
-                selectableRows
-                onSelectedRowsChange={handleRowSelected}
-                clearSelectedRows={clearSelectionToggle}
-                selectableRowsHighlight
-                noDataComponent="Não existem dados disponíveis para exibir."
-                customStyles={customStyles}
-                striped
-                responsive
-                persistTableHead={true}
-                defaultSortAsc={true}
-                defaultSortFieldId="eventTime"
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="eventTime"
+                />
+              )}
             </div>
             <div style={{ marginLeft: 10, marginTop: -5 }}>
               <strong>Movimentos do Video Porteiro: </strong>

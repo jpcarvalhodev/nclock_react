@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -17,6 +17,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { ExternalEntityTypes } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 // Define a interface para os filtros
 interface Filters {
@@ -54,6 +55,7 @@ export const Types = () => {
     useState(0);
   const [selectedRows, setSelectedRows] = useState<ExternalEntityTypes[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Função para adicionar um tipo de uma entidade externa
   const addExternalEntityTypes = async (
@@ -190,35 +192,37 @@ export const Types = () => {
   }, {});
 
   // Filtra os dados da tabela
-  const filteredDataTable = dataEE.externalEntityTypes
-    .filter(
-      (externalEntityType) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (externalEntityType[key] != null &&
-              String(externalEntityType[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(externalEntityType).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return dataEE.externalEntityTypes
+      .filter(
+        (externalEntityType) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (externalEntityType[key] != null &&
+                String(externalEntityType[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(externalEntityType).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    )
-    .sort((a, b) => a.order - b.order);
+            return false;
+          })
+      )
+      .sort((a, b) => a.order - b.order);
+  }, [dataEE.externalEntityTypes, filters, filterText]);
 
   // Define os dados iniciais ao duplicar
   const handleDuplicate = (entity: Partial<ExternalEntityTypes>) => {
@@ -278,6 +282,19 @@ export const Types = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -288,6 +305,19 @@ export const Types = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -298,6 +328,19 @@ export const Types = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -319,6 +362,22 @@ export const Types = () => {
     );
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="main-container">
       <div className="filter-refresh-add-edit-upper-class">
@@ -332,6 +391,19 @@ export const Types = () => {
           <div className="buttons-container-others">
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
               <CustomOutlineButton
@@ -342,6 +414,19 @@ export const Types = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
             >
               <CustomOutlineButton
@@ -352,6 +437,19 @@ export const Types = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
             >
               <CustomOutlineButton
@@ -362,6 +460,19 @@ export const Types = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={
                 <Tooltip className="custom-tooltip">
                   Apagar Selecionados
@@ -390,24 +501,37 @@ export const Types = () => {
       </div>
       <div className="content-wrapper">
         <div className="table-css">
-          <DataTable
-            columns={[...tableColumns, actionColumn]}
-            data={filteredDataTable}
-            onRowDoubleClicked={handleEditExternalEntity}
-            pagination
-            paginationComponentOptions={paginationOptions}
-            paginationPerPage={20}
-            selectableRows
-            onSelectedRowsChange={handleRowSelected}
-            clearSelectedRows={clearSelectionToggle}
-            noDataComponent="Não existem dados disponíveis para exibir."
-            customStyles={customStyles}
-            striped
-            responsive
-            persistTableHead={true}
-            defaultSortAsc={true}
-            defaultSortFieldId="order"
-          />
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <CustomSpinner />
+            </div>
+          ) : (
+            <DataTable
+              columns={[...tableColumns, actionColumn]}
+              data={filteredDataTable}
+              onRowDoubleClicked={handleEditExternalEntity}
+              pagination
+              paginationComponentOptions={paginationOptions}
+              paginationPerPage={20}
+              selectableRows
+              onSelectedRowsChange={handleRowSelected}
+              clearSelectedRows={clearSelectionToggle}
+              noDataComponent="Não existem dados disponíveis para exibir."
+              customStyles={customStyles}
+              striped
+              responsive
+              persistTableHead={true}
+              defaultSortAsc={true}
+              defaultSortFieldId="order"
+            />
+          )}
         </div>
       </div>
       <CreateModalCatProfTypes

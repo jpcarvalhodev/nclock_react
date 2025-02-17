@@ -24,6 +24,7 @@ import { Accesses, Employee } from "../../../types/Types";
 import { accessesFields, employeeFields } from "../../../fields/Fields";
 import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 
 // Define a interface para os filtros
 interface Filters {
@@ -71,6 +72,7 @@ export const NaccessAccesses = () => {
   const [initialData, setInitialData] = useState<Partial<Accesses>>({});
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+  const [loading, setLoading] = useState(false);
 
   // Função para buscar todos as assiduidades entre datas
   const fetchAccessesBetweenDates = async () => {
@@ -272,33 +274,35 @@ export const NaccessAccesses = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredAccess.filter(
-    (attendances) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (attendances[key] != null &&
-            String(attendances[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(attendances).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return filteredAccess.filter(
+      (attendances) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (attendances[key] != null &&
+              String(attendances[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(attendances).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
           }
-        }
-        return false;
-      })
-  );
+          return false;
+        })
+    );
+  }, [filteredAccess, filters, filterText]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
@@ -340,6 +344,19 @@ export const NaccessAccesses = () => {
             return (
               <OverlayTrigger
                 placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                 overlay={
                   <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
                 }
@@ -360,6 +377,19 @@ export const NaccessAccesses = () => {
             return (
               <OverlayTrigger
                 placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                 overlay={
                   <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
                 }
@@ -380,6 +410,19 @@ export const NaccessAccesses = () => {
             return (
               <OverlayTrigger
                 placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                 overlay={
                   <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
                 }
@@ -400,6 +443,19 @@ export const NaccessAccesses = () => {
             return (
               <OverlayTrigger
                 placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                 overlay={
                   <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
                 }
@@ -425,11 +481,13 @@ export const NaccessAccesses = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={filteredDataTable}
-            />
+            {field.key !== "eventTime" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
@@ -452,6 +510,22 @@ export const NaccessAccesses = () => {
       selectedColumns.includes(field.key)
     );
   };
+
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
 
   return (
     <div className="main-container">
@@ -482,6 +556,19 @@ export const NaccessAccesses = () => {
               <div className="buttons-container">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -494,6 +581,19 @@ export const NaccessAccesses = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -506,6 +606,19 @@ export const NaccessAccesses = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -533,6 +646,19 @@ export const NaccessAccesses = () => {
               <div className="date-range-search">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Movimentos Hoje
@@ -547,6 +673,19 @@ export const NaccessAccesses = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Movimentos Dia Anterior
@@ -561,6 +700,19 @@ export const NaccessAccesses = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Movimentos Dia Seguinte
@@ -592,6 +744,19 @@ export const NaccessAccesses = () => {
                 />
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton
@@ -621,24 +786,37 @@ export const NaccessAccesses = () => {
                 <Tab.Pane eventKey="movimentos">
                   <div className="content-wrapper">
                     <div className="table-css">
-                      <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        selectableRows
-                        paginationPerPage={20}
-                        clearSelectedRows={clearSelectionToggle}
-                        selectableRowsHighlight
-                        onSelectedRowsChange={handleRowSelected}
-                        noDataComponent="Não existem dados disponíveis para exibir."
-                        customStyles={customStyles}
-                        striped
-                        responsive
-                        persistTableHead={true}
-                        defaultSortAsc={true}
-                        defaultSortFieldId="eventTime"
-                      />
+                      {loading ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "200px",
+                          }}
+                        >
+                          <CustomSpinner />
+                        </div>
+                      ) : (
+                        <DataTable
+                          columns={columns}
+                          data={filteredDataTable}
+                          pagination
+                          paginationComponentOptions={paginationOptions}
+                          selectableRows
+                          paginationPerPage={20}
+                          clearSelectedRows={clearSelectionToggle}
+                          selectableRowsHighlight
+                          onSelectedRowsChange={handleRowSelected}
+                          noDataComponent="Não existem dados disponíveis para exibir."
+                          customStyles={customStyles}
+                          striped
+                          responsive
+                          persistTableHead={true}
+                          defaultSortAsc={true}
+                          defaultSortFieldId="eventTime"
+                        />
+                      )}
                     </div>
                   </div>
                 </Tab.Pane>

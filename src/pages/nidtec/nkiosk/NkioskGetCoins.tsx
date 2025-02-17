@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Spinner, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -26,6 +26,7 @@ import { ResetCoinModal } from "../../../modals/ResetCoinModal";
 import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeiroModal";
 import { RecolhaMoedeiroEContador, ResetCoin } from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -84,6 +85,7 @@ export const NkioskGetCoins = () => {
   const [selectedRecolhasForDelete, setSelectedRecolhasForDelete] = useState<
     any | null
   >(null);
+  const [loading, setLoading] = useState(false);
 
   // Função para buscar as recolhas do moedeiro entre datas
   const fetchCoinsBetweenDates = async () => {
@@ -291,38 +293,40 @@ export const NkioskGetCoins = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredDevices
-    .filter(
-      (getCoin) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (getCoin[key] != null &&
-              String(getCoin[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(getCoin).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return filteredDevices
+      .filter(
+        (getCoin) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (getCoin[key] != null &&
+                String(getCoin[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(getCoin).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.dataRecolha).getTime() - new Date(a.dataRecolha).getTime()
-    );
+            return false;
+          })
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.dataRecolha).getTime() - new Date(a.dataRecolha).getTime()
+      );
+  }, [filteredDevices, filters, filterText]);
 
   // Define a função de duplicar funcionários
   const handleDuplicate = (data: Partial<RecolhaMoedeiroEContador>) => {
@@ -406,11 +410,13 @@ export const NkioskGetCoins = () => {
           name: (
             <>
               {field.label}
-              <SelectFilter
-                column={field.key}
-                setFilters={setFilters}
-                data={filteredDataTable}
-              />
+              {field.key !== "dataRecolha" && field.key !== "dataFimRecolha" && (
+                <SelectFilter
+                  column={field.key}
+                  setFilters={setFilters}
+                  data={filteredDataTable}
+                />
+              )}
             </>
           ),
           selector: (row) => formatField(row),
@@ -428,6 +434,19 @@ export const NkioskGetCoins = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -438,6 +457,19 @@ export const NkioskGetCoins = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -448,6 +480,19 @@ export const NkioskGetCoins = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -537,6 +582,22 @@ export const NkioskGetCoins = () => {
     );
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="main-container">
       <div className="content-container">
@@ -566,6 +627,19 @@ export const NkioskGetCoins = () => {
               <div className="buttons-container-others">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -577,6 +651,19 @@ export const NkioskGetCoins = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -589,6 +676,19 @@ export const NkioskGetCoins = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -600,6 +700,19 @@ export const NkioskGetCoins = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Apagar Selecionados
@@ -631,6 +744,19 @@ export const NkioskGetCoins = () => {
                 />
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={<Tooltip className="custom-tooltip">Reset</Tooltip>}
                 >
                   <CustomOutlineButton
@@ -650,6 +776,19 @@ export const NkioskGetCoins = () => {
               <div className="date-range-search">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Recolhas Hoje</Tooltip>
                   }
@@ -662,6 +801,19 @@ export const NkioskGetCoins = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Recolhas Dia Anterior
@@ -676,6 +828,19 @@ export const NkioskGetCoins = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Recolhas Dia Seguinte
@@ -707,6 +872,19 @@ export const NkioskGetCoins = () => {
                 />
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton
@@ -718,25 +896,38 @@ export const NkioskGetCoins = () => {
               </div>
             </div>
             <div className="table-css">
-              <DataTable
-                columns={[...columns, actionColumn]}
-                data={filteredDataTable}
-                pagination
-                paginationComponentOptions={paginationOptions}
-                paginationPerPage={20}
-                selectableRows
-                onSelectedRowsChange={handleRowSelected}
-                clearSelectedRows={clearSelectionToggle}
-                selectableRowsHighlight
-                onRowDoubleClicked={handleEditRecolhas}
-                noDataComponent="Não existem dados disponíveis para exibir."
-                customStyles={customStyles}
-                striped
-                responsive
-                persistTableHead={true}
-                defaultSortAsc={true}
-                defaultSortFieldId="dataRecolha"
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={[...columns, actionColumn]}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  onRowDoubleClicked={handleEditRecolhas}
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="dataRecolha"
+                />
+              )}
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ marginLeft: 10, marginRight: 10 }}>

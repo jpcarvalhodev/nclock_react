@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -18,6 +18,7 @@ import { useTerminals } from "../../../context/TerminalsContext";
 import { counterFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { Counter } from "../../../types/Types";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -74,6 +75,7 @@ export const NkioskCounter = () => {
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
   const [filteredDevices, setFilteredDevices] = useState<Counter[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Busca os dados do contador entre as datas especificadas
   const fetchAllCounterBetweenDates = async () => {
@@ -239,38 +241,40 @@ export const NkioskCounter = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredDevices
-    .filter(
-      (getCoin) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (getCoin[key] != null &&
-              String(getCoin[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(getCoin).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return filteredDevices
+      .filter(
+        (getCoin) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (getCoin[key] != null &&
+                String(getCoin[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(getCoin).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
-    );
+            return false;
+          })
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+      );
+  }, [filteredDevices, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Counter>[] = counterFields
@@ -297,11 +301,13 @@ export const NkioskCounter = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={filteredDataTable}
-            />
+            {field.key !== "dataRecolha" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
@@ -348,6 +354,22 @@ export const NkioskCounter = () => {
     return counterFields.filter((field) => selectedColumns.includes(field.key));
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="main-container">
       <div className="content-container">
@@ -382,6 +404,19 @@ export const NkioskCounter = () => {
               <div className="buttons-container-others">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -393,6 +428,19 @@ export const NkioskCounter = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -423,6 +471,19 @@ export const NkioskCounter = () => {
               <div className="date-range-search">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Contador Hoje</Tooltip>
                   }
@@ -435,6 +496,19 @@ export const NkioskCounter = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Contador Dia Anterior
@@ -449,6 +523,19 @@ export const NkioskCounter = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Contador Dia Seguinte
@@ -480,6 +567,19 @@ export const NkioskCounter = () => {
                 />
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton
@@ -491,24 +591,37 @@ export const NkioskCounter = () => {
               </div>
             </div>
             <div className="table-css">
-              <DataTable
-                columns={columns}
-                data={filteredDataTable}
-                pagination
-                paginationComponentOptions={paginationOptions}
-                paginationPerPage={20}
-                selectableRows
-                onSelectedRowsChange={handleRowSelected}
-                clearSelectedRows={clearSelectionToggle}
-                selectableRowsHighlight
-                noDataComponent="Não existem dados disponíveis para exibir."
-                customStyles={customStyles}
-                striped
-                responsive
-                persistTableHead={true}
-                defaultSortAsc={true}
-                defaultSortFieldId="eventTime"
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="eventTime"
+                />
+              )}
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ marginLeft: 10, marginRight: 10 }}>

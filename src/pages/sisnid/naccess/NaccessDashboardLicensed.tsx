@@ -12,6 +12,8 @@ import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
 import { ChartData } from "chart.js";
 import { useAttendance } from "../../../context/MovementContext";
 import { useKiosk } from "../../../context/KioskContext";
+import { usePersons } from "../../../context/PersonsContext";
+import { useNavigate } from "react-router-dom";
 
 // Define a linguagem do calendário
 const locales = {
@@ -60,9 +62,11 @@ const messages = {
 
 // Define a página principal
 export const NaccessDashboardLicensed = () => {
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   const { access, fetchAllAccessesbyDevice } = useAttendance();
   const { manualOpenDoor } = useKiosk();
+  const { employees } = usePersons();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [accessLineChartData, setAccessLineChartData] = useState<ChartData>({
     labels: [],
@@ -76,10 +80,11 @@ export const NaccessDashboardLicensed = () => {
     labels: [],
     datasets: [],
   });
-  const [vpBarChartData, setVpBarChartData] = useState<ChartData>({
-    labels: [],
-    datasets: [],
-  });
+  const [noPresenceBarChartData, setNoPresenceBarChartData] =
+    useState<ChartData>({
+      labels: [],
+      datasets: [],
+    });
   const [manualDoorBarChartData, setManualDoorBarChartData] =
     useState<ChartData>({
       labels: [],
@@ -90,7 +95,7 @@ export const NaccessDashboardLicensed = () => {
   useEffect(() => {
     fetchAllAccessesbyDevice();
   }, []);
-  
+
   // Função para definir os eventos do calendário
   useEffect(() => {
     if (!access || access.length === 0) {
@@ -118,7 +123,6 @@ export const NaccessDashboardLicensed = () => {
 
     const newEvents: CalendarEvent[] = [];
     for (const [key, value] of groupedMap.entries()) {
-
       const startOfDay = parse(
         format(value.date, "yyyy-MM-dd"),
         "yyyy-MM-dd",
@@ -238,6 +242,41 @@ export const NaccessDashboardLicensed = () => {
     setPresenceBarChartData(chartData);
   }, [access]);
 
+  // Define os dados do gráfico de linha para as ausências de hoje
+  useEffect(() => {
+    const today = format(new Date(), "dd/MM/yyyy", { locale: ptBR });
+
+    const todayAccesses = access.filter((item) => {
+      const eventDate = format(
+        parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date()),
+        "dd/MM/yyyy",
+        { locale: ptBR }
+      );
+      return eventDate === today;
+    });
+
+    const uniqueEmployeesWhoAccessed = new Set(
+      todayAccesses.map((item) => item.id)
+    );
+
+    const totalEmployees = employees.length;
+
+    const noPresenceCount = totalEmployees - uniqueEmployeesWhoAccessed.size;
+
+    const chartData = {
+      labels: ["Hoje"],
+      datasets: [
+        {
+          label: "Ausências Hoje",
+          data: [noPresenceCount],
+          backgroundColor: "#0050a0",
+        },
+      ],
+    };
+
+    setNoPresenceBarChartData(chartData);
+  }, [access, employees]);
+
   // Define os dados do gráfico de linha para os visitantes de hoje
   useEffect(() => {
     const chartData = {
@@ -251,21 +290,6 @@ export const NaccessDashboardLicensed = () => {
       ],
     };
     setVisitorBarChartData(chartData);
-  }, []);
-
-  // Define os dados do gráfico de linha para o video porteiro de hoje
-  useEffect(() => {
-    const chartData = {
-      labels: ["Hoje"],
-      datasets: [
-        {
-          label: "Video Porteiro Hoje",
-          data: [0],
-          backgroundColor: "#0050a0",
-        },
-      ],
-    };
-    setVpBarChartData(chartData);
   }, []);
 
   // Define os dados do gráfico de linha para as aberturas manuais de hoje
@@ -339,6 +363,7 @@ export const NaccessDashboardLicensed = () => {
               <Line
                 className="departments-groups-chart-data"
                 data={accessLineChartData}
+                onClick={() => navigate('/naccess/naccessaccesses')}
               />
             </div>
             <div style={{ height: "26rem", maxWidth: "56rem", margin: "auto" }}>
@@ -367,6 +392,19 @@ export const NaccessDashboardLicensed = () => {
             <Bar
               className="departments-groups-chart-data"
               data={presenceBarChartData}
+              onClick={() => navigate('/naccess/naccesspresence')}
+            />
+          </div>
+        </div>
+        <div className="carousel-chart-container-graphs" id="carousel-chart">
+          <div className="departments-groups-chart" style={{ height: "16rem" }}>
+            <h2 className="departments-groups-chart-text">
+              Ausências hoje: {}
+            </h2>
+            <Bar
+              className="departments-groups-chart-data"
+              data={noPresenceBarChartData}
+              onClick={() => navigate('/naccess/naccesspresence')}
             />
           </div>
         </div>
@@ -384,22 +422,12 @@ export const NaccessDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
             <h2 className="departments-groups-chart-text">
-              Video porteiro hoje: {}
-            </h2>
-            <Bar
-              className="departments-groups-chart-data"
-              data={vpBarChartData}
-            />
-          </div>
-        </div>
-        <div className="carousel-chart-container-graphs" id="carousel-chart">
-          <div className="departments-groups-chart" style={{ height: "16rem" }}>
-            <h2 className="departments-groups-chart-text">
               Abertura manual hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
               data={manualDoorBarChartData}
+              onClick={() => navigate('/naccess/naccessdooropen')}
             />
           </div>
         </div>

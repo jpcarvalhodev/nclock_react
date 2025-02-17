@@ -464,6 +464,19 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                         <div style={{ display: "flex", marginTop: 10 }}>
                           <OverlayTrigger
                             placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                             overlay={
                               <Tooltip className="custom-tooltip">
                                 Adicionar
@@ -479,6 +492,19 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                           </OverlayTrigger>
                           <OverlayTrigger
                             placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                             overlay={
                               <Tooltip className="custom-tooltip">
                                 Apagar Selecionados
@@ -521,6 +547,19 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                         <div style={{ display: "flex", marginTop: 10 }}>
                           <OverlayTrigger
                             placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                             overlay={
                               <Tooltip className="custom-tooltip">
                                 Adicionar
@@ -536,6 +575,19 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                           </OverlayTrigger>
                           <OverlayTrigger
                             placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                             overlay={
                               <Tooltip className="custom-tooltip">
                                 Apagar Selecionados

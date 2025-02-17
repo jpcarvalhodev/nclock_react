@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 import { toast } from "react-toastify";
@@ -27,6 +27,7 @@ import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { usePersons } from "../../../context/PersonsContext";
 import { useAttendance } from "../../../context/MovementContext";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 
 // Define a interface para os filtros
 interface Filters {
@@ -97,6 +98,7 @@ export const NclockRequests = () => {
   const [currentAttendanceIndex, setCurrentAttendanceIndex] = useState(0);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+  const [loading, setLoading] = useState(false);
 
   // Função para buscar todos as assiduidades
   const fetchRequests = () => {
@@ -319,33 +321,35 @@ export const NclockRequests = () => {
   );
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredAttendances.filter(
-    (attendances) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (attendances[key] != null &&
-            String(attendances[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(attendances).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return filteredAttendances.filter(
+      (attendances) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (attendances[key] != null &&
+              String(attendances[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(attendances).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
           }
-        }
-        return false;
-      })
-  );
+          return false;
+        })
+    );
+  }, [filteredAttendances, filters, filterText]);
 
   // Define os dados iniciais ao duplicar
   const handleDuplicate = (attendance: Partial<EmployeeAttendanceTimes>) => {
@@ -374,7 +378,16 @@ export const NclockRequests = () => {
         if (field.key === "employeeName") {
           return {
             ...field,
-            name: field.label,
+            name: (
+              <>
+                {field.label}
+                <SelectFilter
+                  column={field.key}
+                  setFilters={setFilters}
+                  data={filteredAttendances}
+                />
+              </>
+            ),
             cell: (row: EmployeeAttendanceTimes) => (
               <div
                 style={{ cursor: "pointer" }}
@@ -415,11 +428,13 @@ export const NclockRequests = () => {
           name: (
             <>
               {field.label}
-              <SelectFilter
-                column={field.key}
-                setFilters={setFilters}
-                data={filteredDataTable}
-              />
+              {field.key !== "attendanceTime" && (
+                <SelectFilter
+                  column={field.key}
+                  setFilters={setFilters}
+                  data={filteredDataTable}
+                />
+              )}
             </>
           ),
           selector: (row) => formatField(row),
@@ -464,6 +479,19 @@ export const NclockRequests = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -474,6 +502,19 @@ export const NclockRequests = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -484,6 +525,19 @@ export const NclockRequests = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -504,6 +558,22 @@ export const NclockRequests = () => {
       selectedColumns.includes(field.key)
     );
   };
+
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
 
   return (
     <div className="main-container">
@@ -534,6 +604,19 @@ export const NclockRequests = () => {
               <div className="buttons-container">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -546,6 +629,19 @@ export const NclockRequests = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -558,6 +654,19 @@ export const NclockRequests = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -585,6 +694,19 @@ export const NclockRequests = () => {
               <div className="date-range-search">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Pedidos Hoje</Tooltip>
                   }
@@ -597,6 +719,19 @@ export const NclockRequests = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Pedidos Dia Anterior
@@ -611,6 +746,19 @@ export const NclockRequests = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Pedidos Dia Seguinte
@@ -642,6 +790,19 @@ export const NclockRequests = () => {
                 />
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton
@@ -654,28 +815,41 @@ export const NclockRequests = () => {
             </div>
             <div className="content-wrapper">
               <div className="table-css">
-                <DataTable
-                  columns={[...columns, actionColumn]}
-                  data={filteredDataTable}
-                  onRowDoubleClicked={(row) => {
-                    setSelectedAttendances([row]);
-                    setShowUpdateAttendanceModal(true);
-                  }}
-                  pagination
-                  paginationComponentOptions={paginationOptions}
-                  selectableRows
-                  paginationPerPage={20}
-                  onSelectedRowsChange={handleRowSelected}
-                  clearSelectedRows={clearSelectionToggle}
-                  selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
-                  customStyles={customStyles}
-                  striped
-                  responsive
-                  persistTableHead={true}
-                  defaultSortAsc={true}
-                  defaultSortFieldId="attendanceTime"
-                />
+                {loading ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "200px",
+                    }}
+                  >
+                    <CustomSpinner />
+                  </div>
+                ) : (
+                  <DataTable
+                    columns={[...columns, actionColumn]}
+                    data={filteredDataTable}
+                    onRowDoubleClicked={(row) => {
+                      setSelectedAttendances([row]);
+                      setShowUpdateAttendanceModal(true);
+                    }}
+                    pagination
+                    paginationComponentOptions={paginationOptions}
+                    selectableRows
+                    paginationPerPage={20}
+                    onSelectedRowsChange={handleRowSelected}
+                    clearSelectedRows={clearSelectionToggle}
+                    selectableRowsHighlight
+                    noDataComponent="Não existem dados disponíveis para exibir."
+                    customStyles={customStyles}
+                    striped
+                    responsive
+                    persistTableHead={true}
+                    defaultSortAsc={true}
+                    defaultSortFieldId="attendanceTime"
+                  />
+                )}
               </div>
             </div>
           </div>

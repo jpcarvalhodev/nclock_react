@@ -536,6 +536,19 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             <Col md={6}>
               <OverlayTrigger
                 placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                 overlay={<Tooltip className="custom-tooltip">Adicionar Licença</Tooltip>}
               >
                 <CustomOutlineButton icon='bi-plus' iconSize='1.1em' onClick={handleCreateNewLicense} />
@@ -559,6 +572,19 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
               </Form.Group>
               <OverlayTrigger
                 placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                 overlay={<Tooltip className="custom-tooltip">Copiar Chave</Tooltip>}
               >
                 <CustomOutlineButton icon='bi bi-copy' iconSize='1em' onClick={() => handleCopyKey(licenseString)} />

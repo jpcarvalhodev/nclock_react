@@ -10,23 +10,26 @@ import { TreeViewData } from "../components/TreeView";
 import { usePersons } from "../context/PersonsContext";
 import { employeeFields } from "../fields/Fields";
 import { Employee } from "../types/Types";
+import { toast } from "react-toastify";
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
   title: string;
   open: boolean;
   onClose: () => void;
-  onSave: (data: T) => void;
+  onUpdate: (data: T) => void;
   entity?: Partial<Employee>;
+  type: string;
 }
 
 // Define o componente
-export const AddEmployeeToDeptGrpModal = <T extends Record<string, any>>({
+export const AddEmployeeToPersonFilterModal = <T extends Record<string, any>>({
   title,
   open,
   onClose,
-  onSave,
+  onUpdate,
   entity,
+  type
 }: CreateModalProps<T>) => {
   const { data } = usePersons();
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
@@ -39,16 +42,9 @@ export const AddEmployeeToDeptGrpModal = <T extends Record<string, any>>({
     let employeesToShow = data.employees;
 
     if (entity) {
-      if (entity.departmentID) {
-        employeesToShow = employeesToShow.filter(
-          (employee) => employee.departmentId !== entity.departmentID
-        );
-      }
-      if (entity.groupID) {
-        employeesToShow = employeesToShow.filter(
-          (employee) => employee.groupId !== entity.groupID
-        );
-      }
+      employeesToShow = employeesToShow.filter(
+        (employee) => employee.type !== type
+      );
     }
 
     if (selectedEmployeeIds.length > 0) {
@@ -121,28 +117,106 @@ export const AddEmployeeToDeptGrpModal = <T extends Record<string, any>>({
 
   // Função para salvar os dados
   const handleSave = () => {
-    const updatedEmployees = selectedRows.map((employee) => ({
-      ...employee,
-      ...(entity?.departmentID
-        ? { departmentId: entity.departmentID, departmentName: entity.name }
-        : {}),
-      ...(entity?.groupID
-        ? { groupId: entity.groupID, groupName: entity.name }
-        : {}),
-    }));
+    if (selectedRows.length > 1) {
+      toast.warn("Selecione apenas um funcionário para adicionar!");
+      return;
+    }
 
-    const selectedEmployee = updatedEmployees[0];
+    const selectedEmployee = selectedRows[0];
 
-    const { employeeCards, ...employeeData } = selectedEmployee;
+    const employeeData = {
+      employeeID: selectedEmployee.employeeID,
 
-    const payload = {
-      employee: employeeData,
-      employeeCards:
-        employeeCards && employeeCards.length > 0 ? employeeCards : [],
+      enrollNumber: selectedEmployee.enrollNumber,
+      name: selectedEmployee.name,
+      shortName: selectedEmployee.shortName,
+      nameAcronym: selectedEmployee.nameAcronym,
+      comments: selectedEmployee.comments,
+      photo: selectedEmployee.photo,
+
+      address: selectedEmployee.address,
+      ziPcode: selectedEmployee.ziPcode,
+      locality: selectedEmployee.locality,
+      village: selectedEmployee.village,
+      district: selectedEmployee.district,
+
+      phone: selectedEmployee.phone,
+      mobile: selectedEmployee.mobile,
+
+      email: selectedEmployee.email,
+
+      birthday: selectedEmployee.birthday,
+
+      nationality: selectedEmployee.nationality,
+      gender: selectedEmployee.gender,
+
+      bInumber: selectedEmployee.bInumber,
+      bIissuance: selectedEmployee.bIissuance,
+      biValidity: selectedEmployee.biValidity,
+
+      nif: selectedEmployee.nif,
+
+      admissionDate: selectedEmployee.admissionDate,
+      exitDate: selectedEmployee.exitDate,
+
+      rgpdAut: selectedEmployee.rgpdAut,
+      status: selectedEmployee.status,
+      statusEmail: selectedEmployee.statusEmail,
+      statusFprint: selectedEmployee.statusFprint,
+      statusFace: selectedEmployee.statusFace,
+      statusPalm: selectedEmployee.statusPalm,
+
+      type: type,
+      employeeDisabled: selectedEmployee.employeeDisabled,
+
+      entidadeId: selectedEmployee.entidadeId,
+      entidadeName: selectedEmployee.entidadeName,
+
+      departmentId: selectedEmployee.departmentId,
+      departmentName: selectedEmployee.departmentName,
+
+      professionId: selectedEmployee.professionId,
+      professionName: selectedEmployee.professionName,
+
+      categoryId: selectedEmployee.categoryId,
+      categoryName: selectedEmployee.categoryName,
+
+      groupId: selectedEmployee.groupId,
+      groupName: selectedEmployee.groupName,
+
+      zoneId: selectedEmployee.zoneId,
+      zoneName: selectedEmployee.zoneName,
+
+      externalEntityId: selectedEmployee.externalEntityId,
+      externalEntityName: selectedEmployee.externalEntityName,
+
+      accPlanoAcessoId: selectedEmployee.accPlanoAcessoId,
+      accPlanoAcessoName: selectedEmployee.accPlanoAcessoName,
     };
 
-    onSave(payload as unknown as T);
-    handleClose();
+    let employeeCardsData: any[] = [];
+    if (
+      selectedEmployee.employeeCards &&
+      selectedEmployee.employeeCards.length > 0
+    ) {
+      employeeCardsData = selectedEmployee.employeeCards.map((card: any) => ({
+        cardId: card.cardId,
+        devicePassword: card.devicePassword,
+        devicePrivelage: card.devicePrivelage,
+        deviceEnabled: card.deviceEnabled ?? true,
+        cardNumber: card.cardNumber,
+      }));
+    }
+
+    let dataToSend: { employee: any; employeeCards?: any[] } = {
+      employee: employeeData,
+    };
+
+    if (employeeCardsData.length > 0) {
+      dataToSend.employeeCards = employeeCardsData;
+    }
+
+    onUpdate(dataToSend as unknown as T);
   };
 
   return (

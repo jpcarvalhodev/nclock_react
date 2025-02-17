@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -20,6 +20,7 @@ import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
 import { TimePeriod } from "../../types/Types";
 import { toast } from "react-toastify";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 export const TimePeriods = () => {
   const {
@@ -58,6 +59,7 @@ export const TimePeriods = () => {
   const [currentPeriodIndex, setCurrentPeriodIndex] = useState(0);
   const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Função para adicionar um período
   const addPeriod = async (newPeriod: Partial<TimePeriod>) => {
@@ -153,33 +155,35 @@ export const TimePeriods = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredPeriods.filter(
-    (getCoin) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (getCoin[key] != null &&
-            String(getCoin[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(getCoin).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return filteredPeriods.filter(
+      (getCoin) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (getCoin[key] != null &&
+              String(getCoin[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(getCoin).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
           }
-        }
-        return false;
-      })
-  );
+          return false;
+        })
+    );
+  }, [filteredPeriods, filters, filterText]);
 
   // Define a função de seleção de linhas
   const handleRowSelected = (state: {
@@ -335,6 +339,19 @@ export const TimePeriods = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -345,6 +362,19 @@ export const TimePeriods = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -355,6 +385,19 @@ export const TimePeriods = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -375,6 +418,22 @@ export const TimePeriods = () => {
       selectedColumns.includes(field.key)
     );
   };
+
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
 
   return (
     <div className="dashboard-container">
@@ -405,6 +464,19 @@ export const TimePeriods = () => {
               <div className="buttons-container-others">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -416,6 +488,19 @@ export const TimePeriods = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -428,6 +513,19 @@ export const TimePeriods = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -439,6 +537,19 @@ export const TimePeriods = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Apagar Selecionados
@@ -467,22 +578,35 @@ export const TimePeriods = () => {
               </div>
             </div>
             <div className="table-css">
-              <DataTable
-                columns={[...columns, actionColumn]}
-                data={filteredDataTable}
-                onRowDoubleClicked={handleEditPeriod}
-                pagination
-                paginationComponentOptions={paginationOptions}
-                paginationPerPage={20}
-                clearSelectedRows={clearSelectionToggle}
-                selectableRows
-                onSelectedRowsChange={handleRowSelected}
-                noDataComponent="Não existem dados disponíveis para exibir."
-                customStyles={customStyles}
-                striped
-                responsive
-                persistTableHead={true}
-              />
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={[...columns, actionColumn]}
+                  data={filteredDataTable}
+                  onRowDoubleClicked={handleEditPeriod}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                />
+              )}
             </div>
           </div>
         </Split>

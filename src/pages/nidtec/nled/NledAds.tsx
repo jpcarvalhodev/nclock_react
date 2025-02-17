@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -20,6 +20,7 @@ import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateModalAds } from "../../../modals/UpdateModalAds";
 import { Ads } from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -69,6 +70,7 @@ export const NledAds = () => {
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [selectedRows, setSelectedRows] = useState<Ads[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Função para buscar os ads de hoje
   const fetchAdsToday = async () => {
@@ -271,6 +273,37 @@ export const NledAds = () => {
     setSelectedRows(sortedSelectedRows);
   };
 
+  // Filtra os dados da tabela
+  const filteredDataTable = useMemo(() => {
+    return filteredDevices.filter(
+      (ad: Ads) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (ad[key] != null &&
+              String(ad[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(ad).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
+          }
+          return false;
+        })
+    );
+  }, [filteredDevices, filters, filterText]);
+
   // Define as colunas da tabela
   const columns: TableColumn<Ads>[] = adsFields
     .filter((field) => selectedColumns.includes(field.key))
@@ -298,44 +331,21 @@ export const NledAds = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={ads}
-            />
+            {field.key !== "createDate" &&
+              field.key !== "updateDate" &&
+              field.key !== "dataFim" && (
+                <SelectFilter
+                  column={field.key}
+                  setFilters={setFilters}
+                  data={filteredDataTable}
+                />
+              )}
           </>
         ),
         selector: (row) => formatField(row),
         sortable: true,
       };
     });
-
-  // Filtra os dados da tabela
-  const filteredDataTable = filteredDevices.filter(
-    (ad: Ads) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (ad[key] != null &&
-            String(ad[key]).toLowerCase().includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(ad).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          }
-        }
-        return false;
-      })
-  );
 
   // Define a coluna de ações
   const actionColumn: TableColumn<Ads> = {
@@ -344,6 +354,19 @@ export const NledAds = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -354,6 +377,19 @@ export const NledAds = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -364,6 +400,19 @@ export const NledAds = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -382,6 +431,22 @@ export const NledAds = () => {
   const getSelectedFields = () => {
     return adsFields.filter((field) => selectedColumns.includes(field.key));
   };
+
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
 
   return (
     <div className="dashboard-container">
@@ -412,6 +477,19 @@ export const NledAds = () => {
               <div className="buttons-container-others">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -423,6 +501,19 @@ export const NledAds = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -435,6 +526,19 @@ export const NledAds = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -461,6 +565,19 @@ export const NledAds = () => {
               <div className="date-range-search">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Ads Hoje</Tooltip>
                   }
@@ -473,6 +590,19 @@ export const NledAds = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Ads Dia Anterior
@@ -487,6 +617,19 @@ export const NledAds = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Ads Dia Seguinte
@@ -518,6 +661,19 @@ export const NledAds = () => {
                 />
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton
@@ -530,24 +686,37 @@ export const NledAds = () => {
             </div>
             <div className="content-wrapper">
               <div className="table-css">
-                <DataTable
-                  columns={[...columns, actionColumn]}
-                  data={filteredDataTable}
-                  onRowDoubleClicked={handleEditAds}
-                  pagination
-                  paginationComponentOptions={paginationOptions}
-                  clearSelectedRows={clearSelectionToggle}
-                  paginationPerPage={20}
-                  selectableRows
-                  onSelectedRowsChange={handleRowSelected}
-                  noDataComponent="Não existem dados disponíveis para exibir."
-                  customStyles={customStyles}
-                  striped
-                  responsive
-                  persistTableHead={true}
-                  defaultSortAsc={false}
-                  defaultSortFieldId="nomeArquivo"
-                />
+                {loading ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "200px",
+                    }}
+                  >
+                    <CustomSpinner />
+                  </div>
+                ) : (
+                  <DataTable
+                    columns={[...columns, actionColumn]}
+                    data={filteredDataTable}
+                    onRowDoubleClicked={handleEditAds}
+                    pagination
+                    paginationComponentOptions={paginationOptions}
+                    clearSelectedRows={clearSelectionToggle}
+                    paginationPerPage={20}
+                    selectableRows
+                    onSelectedRowsChange={handleRowSelected}
+                    noDataComponent="Não existem dados disponíveis para exibir."
+                    customStyles={customStyles}
+                    striped
+                    responsive
+                    persistTableHead={true}
+                    defaultSortAsc={false}
+                    defaultSortFieldId="nomeArquivo"
+                  />
+                )}
               </div>
             </div>
           </div>

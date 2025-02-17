@@ -226,12 +226,38 @@ export const CreateTimePlansModal = <T extends Record<string, any>>({ title, ope
                                     <div style={{ display: 'flex', marginTop: 10 }}>
                                         <OverlayTrigger
                                             placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                                             overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                         >
                                             <CustomOutlineButton className="accesscontrol-buttons" icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                         </OverlayTrigger>
                                         <OverlayTrigger
                                             placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                                             overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
                                         >
                                             <CustomOutlineButton icon="bi bi-trash-fill" onClick={removeSelectedPeriods} iconSize='1.1em' />

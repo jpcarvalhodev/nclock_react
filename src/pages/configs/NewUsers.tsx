@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -20,6 +20,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalRegisterUsers } from "../../modals/UpdateModalRegisterUser";
 import { Register } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 export const NewUsers = () => {
   const {
@@ -53,6 +54,7 @@ export const NewUsers = () => {
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
   const [filteredData, setFilteredData] = useState<Register[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Busca os utilizadores ao carregar a página
   useEffect(() => {
@@ -165,33 +167,35 @@ export const NewUsers = () => {
   );
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredData.filter(
-    (employee) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (employee[key] != null &&
-            String(employee[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(employee).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return filteredData.filter(
+      (employee) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (employee[key] != null &&
+              String(employee[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(employee).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
           }
-        }
-        return false;
-      })
-  );
+          return false;
+        })
+    );
+  }, [filteredData, filters, filterText]);
 
   // Define a colunas excluídas
   const excludedColumns = ["id", "password", "confirmPassword"];
@@ -237,6 +241,19 @@ export const NewUsers = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -247,6 +264,19 @@ export const NewUsers = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -257,6 +287,19 @@ export const NewUsers = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -277,6 +320,22 @@ export const NewUsers = () => {
       selectedColumns.includes(field.key)
     );
   };
+
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
 
   return (
     <div className="dashboard-container">
@@ -307,6 +366,19 @@ export const NewUsers = () => {
               <div className="buttons-container-others">
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -318,6 +390,19 @@ export const NewUsers = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -330,6 +415,19 @@ export const NewUsers = () => {
                 </OverlayTrigger>
                 <OverlayTrigger
                   placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -356,28 +454,41 @@ export const NewUsers = () => {
             </div>
             <div className="content-wrapper">
               <div className="table-css">
-                <DataTable
-                  columns={[...columns, actionColumn]}
-                  data={filteredDataTable}
-                  onRowDoubleClicked={handleEditUsers}
-                  pagination
-                  paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
-                  selectableRows
-                  onSelectedRowsChange={handleRowSelected}
-                  clearSelectedRows={clearSelectionToggle}
-                  expandableRows
-                  expandableRowsComponent={({ data }) =>
-                    expandableRowComponent(data)
-                  }
-                  noDataComponent="Não existem dados disponíveis para exibir."
-                  customStyles={customStyles}
-                  striped
-                  responsive
-                  persistTableHead={true}
-                  defaultSortAsc={true}
-                  defaultSortFieldId="name"
-                />
+                {loading ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "200px",
+                    }}
+                  >
+                    <CustomSpinner />
+                  </div>
+                ) : (
+                  <DataTable
+                    columns={[...columns, actionColumn]}
+                    data={filteredDataTable}
+                    onRowDoubleClicked={handleEditUsers}
+                    pagination
+                    paginationComponentOptions={paginationOptions}
+                    paginationPerPage={20}
+                    selectableRows
+                    onSelectedRowsChange={handleRowSelected}
+                    clearSelectedRows={clearSelectionToggle}
+                    expandableRows
+                    expandableRowsComponent={({ data }) =>
+                      expandableRowComponent(data)
+                    }
+                    noDataComponent="Não existem dados disponíveis para exibir."
+                    customStyles={customStyles}
+                    striped
+                    responsive
+                    persistTableHead={true}
+                    defaultSortAsc={true}
+                    defaultSortFieldId="name"
+                  />
+                )}
               </div>
             </div>
           </div>

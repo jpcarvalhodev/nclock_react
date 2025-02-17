@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -17,6 +17,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateAccessControlModal } from "../../modals/UpdateAccessControlModal";
 import { AccessControl } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 export const AccessControls = () => {
   const {
@@ -47,6 +48,7 @@ export const AccessControls = () => {
   const [initialData, setInitialData] = useState<Partial<AccessControl> | null>(
     null
   );
+  const [loading, setLoading] = useState(false);
 
   // Função para adicionar o controle de acesso
   const addAccessControl = async (newAccessControl: Partial<AccessControl>) => {
@@ -189,33 +191,35 @@ export const AccessControls = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = accessControl.filter(
-    (accessControls) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (accessControls[key] != null &&
-            String(accessControls[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(accessControls).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return accessControl.filter(
+      (accessControls) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (accessControls[key] != null &&
+              String(accessControls[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(accessControls).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
           }
-        }
-        return false;
-      })
-  );
+          return false;
+        })
+    );
+  }, [accessControl, filters, filterText]);
 
   // Define a coluna de ações
   const actionColumn: TableColumn<AccessControl> = {
@@ -224,6 +228,19 @@ export const AccessControls = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -234,6 +251,19 @@ export const AccessControls = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -244,6 +274,19 @@ export const AccessControls = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -294,6 +337,22 @@ export const AccessControls = () => {
     );
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="dashboard-container">
       <div className="datatable-container">
@@ -307,6 +366,19 @@ export const AccessControls = () => {
           <div className="buttons-container-others">
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
               <CustomOutlineButton
@@ -316,6 +388,19 @@ export const AccessControls = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
             >
               <CustomOutlineButton
@@ -326,6 +411,19 @@ export const AccessControls = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
             >
               <CustomOutlineButton
@@ -335,6 +433,19 @@ export const AccessControls = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={
                 <Tooltip className="custom-tooltip">
                   Apagar Selecionados
@@ -361,23 +472,36 @@ export const AccessControls = () => {
           </div>
         </div>
         <div className="table-css">
-          <DataTable
-            columns={[...columns, actionColumn]}
-            data={filteredDataTable}
-            pagination
-            paginationComponentOptions={paginationOptions}
-            paginationPerPage={20}
-            onRowDoubleClicked={handleEditAccessControl}
-            selectableRows
-            onSelectedRowsChange={handleRowSelected}
-            clearSelectedRows={clearSelectionToggle}
-            selectableRowsHighlight
-            noDataComponent="Não existem dados disponíveis para exibir."
-            customStyles={customStyles}
-            striped
-            responsive
-            persistTableHead={true}
-          />
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <CustomSpinner />
+            </div>
+          ) : (
+            <DataTable
+              columns={[...columns, actionColumn]}
+              data={filteredDataTable}
+              pagination
+              paginationComponentOptions={paginationOptions}
+              paginationPerPage={20}
+              onRowDoubleClicked={handleEditAccessControl}
+              selectableRows
+              onSelectedRowsChange={handleRowSelected}
+              clearSelectedRows={clearSelectionToggle}
+              selectableRowsHighlight
+              noDataComponent="Não existem dados disponíveis para exibir."
+              customStyles={customStyles}
+              striped
+              responsive
+              persistTableHead={true}
+            />
+          )}
         </div>
       </div>
       {openColumnSelector && (

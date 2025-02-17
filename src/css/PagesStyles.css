@@ -915,10 +915,6 @@ body {
 .custom-tooltip {
   font-size: 10px;
   position: fixed;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  top: 0;
 }
 
 .error-border {
@@ -1035,6 +1031,7 @@ body {
     flex-direction: column;
     height: auto;
     margin-top: 20px;
+    width: 80%;
   }
 
   .card {
@@ -1076,6 +1073,7 @@ body {
     justify-items: center;
     overflow-y: auto !important;
     height: 50vh !important;
+    width: 100% !important;
   }
 
   .arrows-cards {
@@ -1187,8 +1185,7 @@ body {
 
   .nav.nav-pills {
     flex-direction: column;
-    height: auto;
-    margin-top: 20px;
+    width: 80%;
   }
 
   .card {
@@ -1230,6 +1227,7 @@ body {
     justify-items: center;
     overflow-y: auto !important;
     height: 50vh !important;
+    width: 100% !important;
   }
 
   .arrows-cards {
@@ -1285,6 +1283,7 @@ body {
 
   .nav.nav-pills {
     margin-top: 20px;
+    width: 110%;
   }
 
   .card-container {
@@ -1293,6 +1292,7 @@ body {
     grid-template-columns: repeat(4, 1fr);
     justify-items: center;
     overflow-y: auto !important;
+    width: 100% !important;
   }
 
   .card {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { toast } from "react-toastify";
 
@@ -22,6 +22,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { usePersons } from "../../context/PersonsContext";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 // Define a interface para os filtros
 interface Filters {
@@ -60,6 +61,7 @@ export const Departments = () => {
   const [currentDepartmentIndex, setCurrentDepartmentIndex] = useState(0);
   const [selectedRows, setSelectedRows] = useState<Department[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Busca os departamentos
   const fetchDepartments = async () => {
@@ -177,33 +179,35 @@ export const Departments = () => {
   );
 
   // Filtra os dados da tabela
-  const filteredDataTable = departments.filter(
-    (department) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (department[key] != null &&
-            String(department[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(department).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return departments.filter(
+      (department) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (department[key] != null &&
+              String(department[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(department).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
           }
-        }
-        return false;
-      })
-  );
+          return false;
+        })
+    );
+  }, [departments, filters, filterText]);
 
   // Define as colunas da tabela
   const tableColumns = selectedColumns.map((columnKey) => ({
@@ -315,6 +319,19 @@ export const Departments = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -325,6 +342,19 @@ export const Departments = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -335,6 +365,19 @@ export const Departments = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -371,6 +414,22 @@ export const Departments = () => {
     );
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="main-container">
       <div className="filter-refresh-add-edit-upper-class">
@@ -384,6 +443,19 @@ export const Departments = () => {
           <div className="buttons-container-others">
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
               <CustomOutlineButton
@@ -394,6 +466,19 @@ export const Departments = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
             >
               <CustomOutlineButton
@@ -404,6 +489,19 @@ export const Departments = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
             >
               <CustomOutlineButton
@@ -414,6 +512,19 @@ export const Departments = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={
                 <Tooltip className="custom-tooltip">
                   Apagar Selecionados
@@ -475,32 +586,45 @@ export const Departments = () => {
       </div>
       <div className="content-wrapper">
         <div className="table-css">
-          <DataTable
-            columns={[...tableColumns, actionColumn]}
-            data={filteredDataTable}
-            onRowDoubleClicked={handleEditDepartment}
-            pagination
-            paginationComponentOptions={paginationOptions}
-            paginationPerPage={20}
-            selectableRows
-            onSelectedRowsChange={handleRowSelected}
-            clearSelectedRows={clearSelectionToggle}
-            expandableRows
-            expandableRowsComponent={(props) => (
-              <ExpandedComponentDept
-                data={props.data}
-                fetchSubdepartments={fetchAllSubDepartments}
-                isRoot={true}
-              />
-            )}
-            noDataComponent="Não existem dados disponíveis para exibir."
-            customStyles={customStyles}
-            striped
-            responsive
-            persistTableHead={true}
-            defaultSortAsc={true}
-            defaultSortFieldId="code"
-          />
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <CustomSpinner />
+            </div>
+          ) : (
+            <DataTable
+              columns={[...tableColumns, actionColumn]}
+              data={filteredDataTable}
+              onRowDoubleClicked={handleEditDepartment}
+              pagination
+              paginationComponentOptions={paginationOptions}
+              paginationPerPage={20}
+              selectableRows
+              onSelectedRowsChange={handleRowSelected}
+              clearSelectedRows={clearSelectionToggle}
+              expandableRows
+              expandableRowsComponent={(props) => (
+                <ExpandedComponentDept
+                  data={props.data}
+                  fetchSubdepartments={fetchAllSubDepartments}
+                  isRoot={true}
+                />
+              )}
+              noDataComponent="Não existem dados disponíveis para exibir."
+              customStyles={customStyles}
+              striped
+              responsive
+              persistTableHead={true}
+              defaultSortAsc={true}
+              defaultSortFieldId="code"
+            />
+          )}
         </div>
       </div>
       {openColumnSelector && (

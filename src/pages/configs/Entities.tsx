@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -16,6 +16,7 @@ import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
 import { UpdateEntityModal } from "../../modals/UpdateEntityModal";
 import { Entity } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 export const Entities = () => {
   const { entities, fetchAllEntity, updateEntity } = useEntity();
@@ -34,6 +35,7 @@ export const Entities = () => {
   const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
   const [selectedRows, setSelectedRows] = useState<Entity[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Função para atualizar os dados da entidade
   const handleUpdateCompanyData = async (entityData: FormData) => {
@@ -174,35 +176,37 @@ export const Entities = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = Array.isArray(entities)
-    ? entities.filter(
-        (user) =>
-          Object.keys(filters).every(
-            (key) =>
-              filters[key] === "" ||
-              (user[key] != null &&
-                String(user[key])
-                  .toLowerCase()
-                  .includes(filters[key].toLowerCase()))
-          ) &&
-          Object.entries(user).some(([key, value]) => {
-            if (selectedColumns.includes(key) && value != null) {
-              if (value instanceof Date) {
-                return value
-                  .toLocaleString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              } else {
-                return value
-                  .toString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return Array.isArray(entities)
+      ? entities.filter(
+          (user) =>
+            Object.keys(filters).every(
+              (key) =>
+                filters[key] === "" ||
+                (user[key] != null &&
+                  String(user[key])
+                    .toLowerCase()
+                    .includes(filters[key].toLowerCase()))
+            ) &&
+            Object.entries(user).some(([key, value]) => {
+              if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                  return value
+                    .toLocaleString()
+                    .toLowerCase()
+                    .includes(filterText.toLowerCase());
+                } else {
+                  return value
+                    .toString()
+                    .toLowerCase()
+                    .includes(filterText.toLowerCase());
+                }
               }
-            }
-            return false;
-          })
-      )
-    : [];
+              return false;
+            })
+        )
+      : [];
+  }, [entities, filters, filterText]);
 
   // Define as colunas excluídas
   const excludedColumns = ["logotipo"];
@@ -233,11 +237,13 @@ export const Entities = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={filteredDataTable}
-            />
+            {field.key !== "createdDate" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
@@ -255,6 +261,19 @@ export const Entities = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -265,6 +284,19 @@ export const Entities = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Desactivar</Tooltip>}
         >
           <CustomOutlineButton
@@ -284,6 +316,22 @@ export const Entities = () => {
     return entityFields.filter((field) => selectedColumns.includes(field.key));
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="dashboard-container">
       <div className="filter-refresh-add-edit-upper-class">
@@ -297,6 +345,19 @@ export const Entities = () => {
           <div className="buttons-container-others">
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
               <CustomOutlineButton
@@ -306,6 +367,19 @@ export const Entities = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
             >
               <CustomOutlineButton
@@ -329,26 +403,41 @@ export const Entities = () => {
       </div>
       <div className="content-wrapper">
         <div className="table-css">
-          <DataTable
-            columns={[...columns, actionColumn]}
-            data={filteredDataTable}
-            onRowDoubleClicked={handleEditEntity}
-            pagination
-            paginationComponentOptions={paginationOptions}
-            paginationPerPage={20}
-            selectableRows
-            onSelectedRowsChange={handleRowSelected}
-            clearSelectedRows={clearSelectionToggle}
-            expandableRows
-            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-            noDataComponent="Não existem dados disponíveis para exibir."
-            customStyles={customStyles}
-            striped
-            responsive
-            persistTableHead={true}
-            defaultSortAsc={true}
-            defaultSortFieldId="createdDate"
-          />
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <CustomSpinner />
+            </div>
+          ) : (
+            <DataTable
+              columns={[...columns, actionColumn]}
+              data={filteredDataTable}
+              onRowDoubleClicked={handleEditEntity}
+              pagination
+              paginationComponentOptions={paginationOptions}
+              paginationPerPage={20}
+              selectableRows
+              onSelectedRowsChange={handleRowSelected}
+              clearSelectedRows={clearSelectionToggle}
+              expandableRows
+              expandableRowsComponent={({ data }) =>
+                expandableRowComponent(data)
+              }
+              noDataComponent="Não existem dados disponíveis para exibir."
+              customStyles={customStyles}
+              striped
+              responsive
+              persistTableHead={true}
+              defaultSortAsc={true}
+              defaultSortFieldId="createdDate"
+            />
+          )}
         </div>
       </div>
       {selectedEntity && (

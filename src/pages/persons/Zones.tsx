@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import "../../css/PagesStyles.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -18,6 +18,7 @@ import { DeleteModal } from "../../modals/DeleteModal";
 import { UpdateModalZones } from "../../modals/UpdateModalZones";
 import { Zone } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../components/CustomSpinner";
 
 // Define a interface para os filtros
 interface Filters {
@@ -51,6 +52,7 @@ export const Zones = () => {
   const [currentZoneIndex, setCurrentZoneIndex] = useState(0);
   const [selectedRows, setSelectedRows] = useState<Zone[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Função para adicionar uma zona
   const addZone = async (zone: Zone) => {
@@ -194,33 +196,35 @@ export const Zones = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = zones.filter(
-    (zone) =>
-      Object.keys(filters).every(
-        (key) =>
-          filters[key] === "" ||
-          (zone[key] != null &&
-            String(zone[key])
-              .toLowerCase()
-              .includes(filters[key].toLowerCase()))
-      ) &&
-      Object.entries(zone).some(([key, value]) => {
-        if (selectedColumns.includes(key) && value != null) {
-          if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
+  const filteredDataTable = useMemo(() => {
+    return zones.filter(
+      (zone) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (zone[key] != null &&
+              String(zone[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(zone).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
           }
-        }
-        return false;
-      })
-  );
+          return false;
+        })
+    );
+  }, [zones, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Zone>[] = zoneFields
@@ -275,6 +279,19 @@ export const Zones = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Duplicar</Tooltip>}
         >
           <CustomOutlineButton
@@ -285,6 +302,19 @@ export const Zones = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Editar</Tooltip>}
         >
           <CustomOutlineButton
@@ -295,6 +325,19 @@ export const Zones = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
           overlay={<Tooltip className="custom-tooltip">Apagar</Tooltip>}
         >
           <CustomOutlineButton
@@ -314,6 +357,22 @@ export const Zones = () => {
     return zoneFields.filter((field) => selectedColumns.includes(field.key));
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <div className="main-container">
       <div className="filter-refresh-add-edit-upper-class">
@@ -327,6 +386,19 @@ export const Zones = () => {
           <div className="buttons-container-others">
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
               <CustomOutlineButton
@@ -337,6 +409,19 @@ export const Zones = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
             >
               <CustomOutlineButton
@@ -347,6 +432,19 @@ export const Zones = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
             >
               <CustomOutlineButton
@@ -357,6 +455,19 @@ export const Zones = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
               overlay={
                 <Tooltip className="custom-tooltip">
                   Apagar Selecionados
@@ -414,26 +525,41 @@ export const Zones = () => {
       </div>
       <div className="content-wrapper">
         <div className="table-css">
-          <DataTable
-            columns={[...columns, actionColumn]}
-            data={filteredDataTable}
-            onRowDoubleClicked={handleEditZone}
-            pagination
-            paginationComponentOptions={paginationOptions}
-            paginationPerPage={20}
-            selectableRows
-            onSelectedRowsChange={handleRowSelected}
-            clearSelectedRows={clearSelectionToggle}
-            expandableRows
-            expandableRowsComponent={({ data }) => expandableRowComponent(data)}
-            noDataComponent="Não existem dados disponíveis para exibir."
-            customStyles={customStyles}
-            striped
-            responsive
-            persistTableHead={true}
-            defaultSortAsc={true}
-            defaultSortFieldId="name"
-          />
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <CustomSpinner />
+            </div>
+          ) : (
+            <DataTable
+              columns={[...columns, actionColumn]}
+              data={filteredDataTable}
+              onRowDoubleClicked={handleEditZone}
+              pagination
+              paginationComponentOptions={paginationOptions}
+              paginationPerPage={20}
+              selectableRows
+              onSelectedRowsChange={handleRowSelected}
+              clearSelectedRows={clearSelectionToggle}
+              expandableRows
+              expandableRowsComponent={({ data }) =>
+                expandableRowComponent(data)
+              }
+              noDataComponent="Não existem dados disponíveis para exibir."
+              customStyles={customStyles}
+              striped
+              responsive
+              persistTableHead={true}
+              defaultSortAsc={true}
+              defaultSortFieldId="name"
+            />
+          )}
         </div>
       </div>
       {openColumnSelector && (

@@ -388,12 +388,38 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                                                 <div style={{ display: 'flex', marginTop: 10 }}>
                                                     <OverlayTrigger
                                                         placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                                                         overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                                     >
                                                         <CustomOutlineButton className="accesscontrol-buttons" icon="bi-plus" onClick={() => setShowAddModal(true)} iconSize='1.1em' />
                                                     </OverlayTrigger>
                                                     <OverlayTrigger
                                                         placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                                                         overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
                                                     >
                                                         <CustomOutlineButton icon="bi bi-trash-fill" onClick={removeSelectedDevices} iconSize='1.1em' />
@@ -426,12 +452,38 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
                                                 <div style={{ display: 'flex', marginTop: 10 }}>
                                                     <OverlayTrigger
                                                         placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                                                         overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
                                                     >
                                                         <CustomOutlineButton className="accesscontrol-buttons" icon="bi-plus" onClick={() => setShowEmployeeAddModal(true)} iconSize='1.1em' />
                                                     </OverlayTrigger>
                                                     <OverlayTrigger
                                                         placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                                                         overlay={<Tooltip className="custom-tooltip">Apagar Selecionados</Tooltip>}
                                                     >
                                                         <CustomOutlineButton icon="bi bi-trash-fill" onClick={removeSelectedEmployees} iconSize='1.1em' />
@@ -449,12 +501,38 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({ title,
             <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
                 <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
                 >
                     <CustomOutlineButton icon="bi-arrow-left" onClick={onPrev} disabled={!canMovePrev} />
                 </OverlayTrigger>
                 <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
                 >
                     <CustomOutlineButton className='arrows-modal' icon="bi-arrow-right" onClick={onNext} disabled={!canMoveNext} />

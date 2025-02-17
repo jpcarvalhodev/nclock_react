@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
@@ -29,6 +29,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { Employee, KioskTransactionCard } from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 
 // Define a interface SaveData
 interface SaveData {
@@ -76,6 +77,7 @@ export const NvisitorMoveCard = () => {
   const [loadingAuxOut, setLoadingAuxOut] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+  const [loading, setLoading] = useState(false);
   const eventDoorId = "3";
 
   // Função para buscar os movimentos dos cartões entre datas
@@ -347,37 +349,39 @@ export const NvisitorMoveCard = () => {
   };
 
   // Filtra os dados da tabela
-  const filteredDataTable = filteredDevices
-    .filter(
-      (moveCards) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (moveCards[key] != null &&
-              String(moveCards[key])
+  const filteredDataTable = useMemo(() => {
+    return filteredDevices
+      .filter(
+        (moveCards) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (moveCards[key] != null &&
+                String(moveCards[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.values(moveCards).some((value) => {
+            if (value == null) {
+              return false;
+            } else if (value instanceof Date) {
+              return value
+                .toLocaleString()
                 .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(moveCards).some((value) => {
-          if (value == null) {
-            return false;
-          } else if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          }
-        })
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
-    );
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
+          })
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+      );
+  }, [filteredDevices, filters, filterText]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: KioskTransactionCard) => {
@@ -435,11 +439,13 @@ export const NvisitorMoveCard = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={filteredDataTable}
-            />
+            {field.key !== "eventTime" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
@@ -485,6 +491,22 @@ export const NvisitorMoveCard = () => {
     );
   };
 
+  // Controla o loading da tabela
+  useEffect(() => {
+    setLoading(true);
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    if (filteredDataTable.length > 0) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [filteredDataTable]);
+
   return (
     <TerminalsProvider>
       <div className="main-container">
@@ -517,6 +539,19 @@ export const NvisitorMoveCard = () => {
                 <div className="buttons-container-others">
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                     }
@@ -528,6 +563,19 @@ export const NvisitorMoveCard = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">Colunas</Tooltip>
                     }
@@ -556,6 +604,19 @@ export const NvisitorMoveCard = () => {
                   />
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">Braço</Tooltip>
                     }
@@ -569,6 +630,19 @@ export const NvisitorMoveCard = () => {
                 <div className="date-range-search">
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Torniquete Hoje
@@ -583,6 +657,19 @@ export const NvisitorMoveCard = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Torniquete Dia Anterior
@@ -597,6 +684,19 @@ export const NvisitorMoveCard = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Torniquete Dia Seguinte
@@ -628,6 +728,19 @@ export const NvisitorMoveCard = () => {
                   />
                   <OverlayTrigger
                     placement="top"
+                  delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: 'fixed',
+            modifiers: [
+              {
+                name: 'preventOverflow',
+                options: {
+                  boundary: 'window',
+                },
+              },
+            ],
+          }}
                     overlay={
                       <Tooltip className="custom-tooltip">Buscar</Tooltip>
                     }
@@ -641,24 +754,37 @@ export const NvisitorMoveCard = () => {
                 </div>
               </div>
               <div className="table-css">
-                <DataTable
-                  columns={columns}
-                  data={filteredDataTable}
-                  pagination
-                  paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
-                  selectableRows
-                  onSelectedRowsChange={handleRowSelected}
-                  clearSelectedRows={clearSelectionToggle}
-                  selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
-                  customStyles={customStyles}
-                  striped
-                  responsive
-                  persistTableHead={true}
-                  defaultSortAsc={true}
-                  defaultSortFieldId="eventTime"
-                />
+                {loading ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "200px",
+                    }}
+                  >
+                    <CustomSpinner />
+                  </div>
+                ) : (
+                  <DataTable
+                    columns={columns}
+                    data={filteredDataTable}
+                    pagination
+                    paginationComponentOptions={paginationOptions}
+                    paginationPerPage={20}
+                    selectableRows
+                    onSelectedRowsChange={handleRowSelected}
+                    clearSelectedRows={clearSelectionToggle}
+                    selectableRowsHighlight
+                    noDataComponent="Não existem dados disponíveis para exibir."
+                    customStyles={customStyles}
+                    striped
+                    responsive
+                    persistTableHead={true}
+                    defaultSortAsc={true}
+                    defaultSortFieldId="eventTime"
+                  />
+                )}
               </div>
               <div style={{ marginLeft: 10, marginTop: -5 }}>
                 <strong>Movimentos do Torniquete: </strong>
