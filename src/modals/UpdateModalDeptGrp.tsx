@@ -386,10 +386,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({
     name: "Campo obrigatório",
   };
 
-  // Define o texto do tooltip
-  const tooltipText =
-    entityType === "department" ? "Trocar Departamento" : "Trocar Grupo";
-
   return (
     <Modal show={open} onHide={onClose} backdrop="static" size="xl" centered>
       <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
@@ -606,18 +602,18 @@ export const UpdateModalDeptGrp = <T extends Entity>({
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Adicionar Funcionário
@@ -638,15 +634,15 @@ export const UpdateModalDeptGrp = <T extends Entity>({
       <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -661,15 +657,15 @@ export const UpdateModalDeptGrp = <T extends Entity>({
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],

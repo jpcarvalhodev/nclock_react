@@ -291,6 +291,7 @@ export const Terminals = () => {
     await handleAddDevice(device);
     refreshAll();
     setClearSelectionToggle((prev) => !prev);
+    window.location.reload();
   };
 
   // Função para atualizar um dispositivo

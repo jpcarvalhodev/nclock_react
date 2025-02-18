@@ -27,6 +27,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
+import { useMediaQuery } from "react-responsive";
 
 // Define a interface para os filtros
 interface Filters {
@@ -70,6 +71,7 @@ export const NclockPresence = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 500 });
 
   // Função para buscar todos as assiduidades
   const fetchPresence = () => {
@@ -381,6 +383,120 @@ export const NclockPresence = () => {
   return (
     <div className="main-container">
       <div className="content-container">
+        {isMobile && (
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span>Presenças</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
+              </div>
+              <div className="buttons-container">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshAttendance}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setShowColumnSelector(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <ExportButton
+                  allData={filteredDataTable}
+                  selectedData={
+                    selectedRows.length > 0 ? selectedRows : filteredDataTable
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0 ? selectedRows : filteredDataTable
+                  }
+                  fields={getSelectedFields()}
+                />
+              </div>
+            </div>
+            <div className="content-wrapper">
+              <div className="table-css">
+                {loading ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "200px",
+                    }}
+                  >
+                    <CustomSpinner />
+                  </div>
+                ) : (
+                  <DataTable
+                    columns={columns}
+                    data={filteredDataTable}
+                    pagination
+                    paginationComponentOptions={paginationOptions}
+                    selectableRows
+                    paginationPerPage={20}
+                    onSelectedRowsChange={handleRowSelected}
+                    clearSelectedRows={clearSelectionToggle}
+                    selectableRowsHighlight
+                    noDataComponent="Não existem dados disponíveis para exibir."
+                    customStyles={customStyles}
+                    striped
+                    responsive
+                    persistTableHead={true}
+                    defaultSortAsc={true}
+                    defaultSortFieldId="attendanceTime"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         <Split
           className="split"
           sizes={[15, 85]}

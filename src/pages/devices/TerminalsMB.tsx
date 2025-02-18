@@ -28,6 +28,7 @@ import { UpdateModalDeviceMB } from "../../modals/UpdateModalDeviceMB";
 import { MBDevice } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
+import { useMediaQuery } from "react-responsive";
 
 // Define a interface para os filtros
 interface Filters {
@@ -75,6 +76,7 @@ export const TerminalsMB = () => {
   const [selectedRows, setSelectedRows] = useState<MBDevice[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [loading, setLoading] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 500 });
 
   // Função para atualizar todos os dispositivos
   const refreshMBDevices = () => {
@@ -429,6 +431,204 @@ export const TerminalsMB = () => {
   return (
     <div className="main-container">
       <div className="content-container">
+        {isMobile && (
+          <div className="datatable-container">
+            <div className="datatable-title-text" style={{ color: "#000000" }}>
+              <span>Multibanco</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
+              </div>
+              <div className="buttons-container-others-mb">
+                <div className="custom-buttons">
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi-arrow-clockwise"
+                      onClick={refreshMBDevices}
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">Adicionar</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi-plus"
+                      onClick={() => setShowAddModal(true)}
+                      iconSize="1.1em"
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi-eye"
+                      onClick={() => setShowColumnSelector(true)}
+                    />
+                  </OverlayTrigger>
+                  <ExportButton
+                    allData={filteredDataTable}
+                    selectedData={
+                      selectedRows.length > 0 ? selectedRows : filteredDataTable
+                    }
+                    fields={getSelectedFields()}
+                  />
+                  <PrintButton
+                    data={
+                      selectedRows.length > 0 ? selectedRows : filteredDataTable
+                    }
+                    fields={getSelectedFields()}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="table-css">
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={[...columns, devicesActionColumn]}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  selectableRows
+                  onSelectedRowsChange={handleDeviceRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  onRowDoubleClicked={handleEditDevices}
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                />
+              )}
+            </div>
+            <div
+              className="content-section deviceTabsMobile"
+              style={{ marginTop: "auto" }}
+            >
+              <div>
+                <Tabs
+                  id="controlled-tab-terminals-buttons"
+                  activeKey={userTabKey}
+                  onSelect={handleUserSelect}
+                  className="nav-modal"
+                >
+                  <Tab eventKey="onOff" title="Ligação">
+                    <div style={{ display: "flex", marginTop: 10 }}>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="button-terminals-users"
+                        onClick={handleTurnOffDevice}
+                      >
+                        {loadingTurnOffDevice ? (
+                          <Spinner
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <i
+                            className="bi bi-power"
+                            style={{ marginRight: 5, fontSize: "1rem" }}
+                          ></i>
+                        )}
+                        Executar Fecho
+                      </Button>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="button-terminals-users"
+                        onClick={handleRestartDevice}
+                      >
+                        {loadingRestartDevice ? (
+                          <Spinner
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <i
+                            className="bi bi-bootstrap-reboot"
+                            style={{ marginRight: 5, fontSize: "1rem" }}
+                          ></i>
+                        )}
+                        Reiniciar
+                      </Button>
+                    </div>
+                  </Tab>
+                </Tabs>
+              </div>
+            </div>
+          </div>
+        )}
         <Split
           className="split"
           sizes={[15, 85]}

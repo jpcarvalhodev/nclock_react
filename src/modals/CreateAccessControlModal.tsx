@@ -72,39 +72,43 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
   useEffect(() => {
     if (open && initialValuesData) {
       if (Array.isArray(initialValuesData.employees)) {
-        const mappedEmployees = initialValuesData.employees.map((emp: Employee) => ({
-          employeeID: emp.id,
-          name: emp.nome,
-          enrollNumber: "",
-        }));
+        const mappedEmployees = initialValuesData.employees.map(
+          (emp: Employee) => ({
+            employeeID: emp.id,
+            name: emp.nome,
+            enrollNumber: "",
+          })
+        );
         setEmployeeTableData(mappedEmployees);
       }
 
       if (Array.isArray(initialValuesData.planosAcessoDispositivos)) {
         const devicesParsed =
-          initialValuesData.planosAcessoDispositivos.flatMap((item: PlanoAcessoDispositivos) => {
-            if (!Array.isArray(item.dispositivos)) return [];
-            return item.dispositivos.map((dev) => {
-              if (!Array.isArray(dev.portas) || dev.portas.length === 0) {
-                return {
+          initialValuesData.planosAcessoDispositivos.flatMap(
+            (item: PlanoAcessoDispositivos) => {
+              if (!Array.isArray(item.dispositivos)) return [];
+              return item.dispositivos.map((dev) => {
+                if (!Array.isArray(dev.portas) || dev.portas.length === 0) {
+                  return {
+                    idTerminal: dev.idTerminal || "",
+                    nomeTerminal: dev.nomeTerminal || "",
+                    idPlanoHorario: dev.idPlanoHorario || "",
+                    nomePlanoHorario: dev.nomePlanoHorario || "",
+                    idPorta: "",
+                    nomePorta: "",
+                  };
+                }
+                return dev.portas.map((p) => ({
                   idTerminal: dev.idTerminal || "",
                   nomeTerminal: dev.nomeTerminal || "",
                   idPlanoHorario: dev.idPlanoHorario || "",
                   nomePlanoHorario: dev.nomePlanoHorario || "",
-                  idPorta: "",
-                  nomePorta: "",
-                };
-              }
-              return dev.portas.map((p) => ({
-                idTerminal: dev.idTerminal || "",
-                nomeTerminal: dev.nomeTerminal || "",
-                idPlanoHorario: dev.idPlanoHorario || "",
-                nomePlanoHorario: dev.nomePlanoHorario || "",
-                idPorta: p.idPorta || "",
-                nomePorta: p.nomePorta || "",
-              }));
-            });
-          });
+                  idPorta: p.idPorta || "",
+                  nomePorta: p.nomePorta || "",
+                }));
+              });
+            }
+          );
 
         const normalizedDevices = devicesParsed.flat();
 
@@ -455,8 +459,8 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                             noDataComponent="Não existem dados disponíveis para exibir."
                             customStyles={customStyles}
                             striped
-                  responsive
-                  persistTableHead={true}
+                            responsive
+                            persistTableHead={true}
                             defaultSortAsc={true}
                             defaultSortFieldId="nomeTerminal"
                           />
@@ -464,19 +468,19 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                         <div style={{ display: "flex", marginTop: 10 }}>
                           <OverlayTrigger
                             placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                            delay={0}
+                            container={document.body}
+                            popperConfig={{
+                              strategy: "fixed",
+                              modifiers: [
+                                {
+                                  name: "preventOverflow",
+                                  options: {
+                                    boundary: "window",
+                                  },
+                                },
+                              ],
+                            }}
                             overlay={
                               <Tooltip className="custom-tooltip">
                                 Adicionar
@@ -492,19 +496,19 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                           </OverlayTrigger>
                           <OverlayTrigger
                             placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                            delay={0}
+                            container={document.body}
+                            popperConfig={{
+                              strategy: "fixed",
+                              modifiers: [
+                                {
+                                  name: "preventOverflow",
+                                  options: {
+                                    boundary: "window",
+                                  },
+                                },
+                              ],
+                            }}
                             overlay={
                               <Tooltip className="custom-tooltip">
                                 Apagar Selecionados
@@ -538,8 +542,8 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                             clearSelectedRows={clearSelectionToggle}
                             customStyles={customStyles}
                             striped
-                  responsive
-                  persistTableHead={true}
+                            responsive
+                            persistTableHead={true}
                             defaultSortAsc={true}
                             defaultSortFieldId="enrollNumber"
                           />
@@ -547,19 +551,19 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                         <div style={{ display: "flex", marginTop: 10 }}>
                           <OverlayTrigger
                             placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                            delay={0}
+                            container={document.body}
+                            popperConfig={{
+                              strategy: "fixed",
+                              modifiers: [
+                                {
+                                  name: "preventOverflow",
+                                  options: {
+                                    boundary: "window",
+                                  },
+                                },
+                              ],
+                            }}
                             overlay={
                               <Tooltip className="custom-tooltip">
                                 Adicionar
@@ -575,19 +579,19 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                           </OverlayTrigger>
                           <OverlayTrigger
                             placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                            delay={0}
+                            container={document.body}
+                            popperConfig={{
+                              strategy: "fixed",
+                              modifiers: [
+                                {
+                                  name: "preventOverflow",
+                                  options: {
+                                    boundary: "window",
+                                  },
+                                },
+                              ],
+                            }}
                             overlay={
                               <Tooltip className="custom-tooltip">
                                 Apagar Selecionados

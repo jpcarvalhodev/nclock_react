@@ -19,7 +19,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarEleme
 
 // Define a linguagem do calendário
 const locales = {
-    'pt': pt,
+    pt,
 };
 
 // Define o localizador de datas

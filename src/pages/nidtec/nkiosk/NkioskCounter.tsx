@@ -19,6 +19,7 @@ import { counterFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { Counter } from "../../../types/Types";
 import { CustomSpinner } from "../../../components/CustomSpinner";
+import { useMediaQuery } from "react-responsive";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -76,6 +77,7 @@ export const NkioskCounter = () => {
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
   const [filteredDevices, setFilteredDevices] = useState<Counter[]>([]);
   const [loading, setLoading] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 500 });
 
   // Busca os dados do contador entre as datas especificadas
   const fetchAllCounterBetweenDates = async () => {
@@ -373,6 +375,255 @@ export const NkioskCounter = () => {
   return (
     <div className="main-container">
       <div className="content-container">
+        {isMobile && (
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span>Contador de Dados</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <CustomSearchBox
+                  label="Pesquisa"
+                  variant="outlined"
+                  size="small"
+                  value={filterText}
+                  onChange={(e) => setFilterText(e.target.value)}
+                  style={{ marginTop: -5 }}
+                />
+              </div>
+              <div className="buttons-container-others">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshCounter}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setOpenColumnSelector(true)}
+                  />
+                </OverlayTrigger>
+                <ExportButton
+                  allData={getCounterWithNames}
+                  selectedData={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : getCounterWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : getCounterWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+              </div>
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Contador Hoje</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    onClick={fetchCounterToday}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Contador Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    onClick={fetchCounterForPreviousDay}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Contador Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    onClick={fetchCounterForNextDay}
+                    iconSize="1.1em"
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi-search"
+                    onClick={fetchAllCounterBetweenDates}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+              </div>
+            </div>
+            <div className="table-css">
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="eventTime"
+                />
+              )}
+            </div>
+            <div style={{ display: "flex" }}>
+              <div style={{ marginLeft: 10, marginRight: 10 }}>
+                <strong>Total de Movimentos:</strong> Torniquete -{" "}
+                {totalCardAmount} | Quiosque - {totalKioskAmount} | Total -{" "}
+                {totalCardAmount + totalKioskAmount}
+              </div>
+            </div>
+          </div>
+        )}
         <Split
           className="split"
           sizes={[15, 85]}

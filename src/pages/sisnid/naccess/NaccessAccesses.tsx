@@ -25,6 +25,7 @@ import { accessesFields, employeeFields } from "../../../fields/Fields";
 import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
+import { useMediaQuery } from "react-responsive";
 
 // Define a interface para os filtros
 interface Filters {
@@ -73,6 +74,7 @@ export const NaccessAccesses = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 500 });
 
   // Função para buscar todos as assiduidades entre datas
   const fetchAccessesBetweenDates = async () => {
@@ -530,6 +532,290 @@ export const NaccessAccesses = () => {
   return (
     <div className="main-container">
       <div className="content-container">
+        {isMobile && (
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span>Acessos</span>
+            </div>
+            <div className="datatable-header" style={{ marginBottom: 0 }}>
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
+              </div>
+              <div className="buttons-container">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshAccess}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Adicionar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-plus"
+                    onClick={handleOpenAddAccessModal}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setShowColumnSelector(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <ExportButton
+                  allData={filteredDataTable}
+                  selectedData={
+                    selectedRows.length > 0 ? selectedRows : filteredDataTable
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0 ? selectedRows : filteredDataTable
+                  }
+                  fields={getSelectedFields()}
+                />
+              </div>
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Movimentos Hoje
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    onClick={fetchAccessesToday}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Movimentos Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    onClick={fetchAccessesForPreviousDay}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Movimentos Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    onClick={fetchAccessesForNextDay}
+                    iconSize="1.1em"
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi-search"
+                    onClick={fetchAccessesBetweenDates}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+              </div>
+            </div>
+            <Tab.Container defaultActiveKey="movimentos">
+              <Nav
+                variant="tabs"
+                className="nav-modal"
+                style={{ marginTop: 0 }}
+              >
+                <Nav.Item>
+                  <Nav.Link
+                    eventKey="movimentos"
+                    style={{ padding: "0.25rem 0.5rem", fontSize: "0.85rem" }}
+                  >
+                    Movimentos
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+              <Tab.Content>
+                <Tab.Pane eventKey="movimentos">
+                  <div className="content-wrapper">
+                    <div className="table-css">
+                      {loading ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "200px",
+                          }}
+                        >
+                          <CustomSpinner />
+                        </div>
+                      ) : (
+                        <DataTable
+                          columns={columns}
+                          data={filteredDataTable}
+                          pagination
+                          paginationComponentOptions={paginationOptions}
+                          selectableRows
+                          paginationPerPage={20}
+                          clearSelectedRows={clearSelectionToggle}
+                          selectableRowsHighlight
+                          onSelectedRowsChange={handleRowSelected}
+                          noDataComponent="Não existem dados disponíveis para exibir."
+                          customStyles={customStyles}
+                          striped
+                          responsive
+                          persistTableHead={true}
+                          defaultSortAsc={true}
+                          defaultSortFieldId="eventTime"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </Tab.Pane>
+              </Tab.Content>
+            </Tab.Container>
+          </div>
+        )}
         <Split
           className="split"
           sizes={[15, 85]}

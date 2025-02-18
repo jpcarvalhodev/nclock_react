@@ -4,7 +4,7 @@ import { Accesses } from "../../../types/Types";
 import "../../../css/PagesStyles.css";
 
 import { format, getDay, parse, startOfWeek, endOfDay } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { pt } from "date-fns/locale";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { Bar, Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 
 // Define a linguagem do calendário
 const locales = {
-  pt: ptBR,
+  pt,
 };
 
 // Define o localizador de datas
@@ -106,8 +106,9 @@ export const NaccessDashboardLicensed = () => {
     const groupedMap = new Map<string, { date: Date; doorName: string }>();
 
     for (const item of access) {
+      if (!item.eventTime) continue;
       const date = parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date(), {
-        locale: ptBR,
+        locale: pt,
       });
       const day = format(date, "yyyy-MM-dd");
 
@@ -150,8 +151,9 @@ export const NaccessDashboardLicensed = () => {
   // Função para agrupar os eventos por mês
   function groupByMonth(data: Accesses[]) {
     const grouped = data.reduce((acc, item) => {
+      if (!item.eventTime) return acc;
       const date = parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date(), {
-        locale: ptBR,
+        locale: pt,
       });
 
       const yearMonth = format(date, "yyyy-MM");
@@ -216,13 +218,14 @@ export const NaccessDashboardLicensed = () => {
 
   // Define os dados do gráfico de linha para as presenças de hoje
   useEffect(() => {
-    const today = format(new Date(), "dd/MM/yyyy", { locale: ptBR });
+    const today = format(new Date(), "dd/MM/yyyy", { locale: pt });
 
     const todayAccesses = access.filter((item) => {
+      if (!item.eventTime) return false;
       const eventDate = format(
         parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date()),
         "dd/MM/yyyy",
-        { locale: ptBR }
+        { locale: pt }
       );
       return eventDate === today;
     });
@@ -244,13 +247,14 @@ export const NaccessDashboardLicensed = () => {
 
   // Define os dados do gráfico de linha para as ausências de hoje
   useEffect(() => {
-    const today = format(new Date(), "dd/MM/yyyy", { locale: ptBR });
+    const today = format(new Date(), "dd/MM/yyyy", { locale: pt });
 
     const todayAccesses = access.filter((item) => {
+      if (!item.eventTime) return false;
       const eventDate = format(
         parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date()),
         "dd/MM/yyyy",
-        { locale: ptBR }
+        { locale: pt }
       );
       return eventDate === today;
     });
@@ -294,13 +298,14 @@ export const NaccessDashboardLicensed = () => {
 
   // Define os dados do gráfico de linha para as aberturas manuais de hoje
   useEffect(() => {
-    const today = format(new Date(), "dd/MM/yyyy", { locale: ptBR });
+    const today = format(new Date(), "dd/MM/yyyy", { locale: pt });
 
     const todayManualDoor = manualOpenDoor.filter((item) => {
+      if (!item.eventTime) return false;
       const eventDate = format(
         parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date()),
         "dd/MM/yyyy",
-        { locale: ptBR }
+        { locale: pt }
       );
       return eventDate === today;
     });

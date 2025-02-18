@@ -11,6 +11,8 @@ import { usePersons } from "../context/PersonsContext";
 import { employeeFields } from "../fields/Fields";
 import { Employee } from "../types/Types";
 import { toast } from "react-toastify";
+import { SearchBoxContainer } from "../components/SearchBoxContainer";
+import { useMediaQuery } from "react-responsive";
 
 // Interface para as propriedades do modal
 interface CreateModalProps<T> {
@@ -29,13 +31,15 @@ export const AddEmployeeToPersonFilterModal = <T extends Record<string, any>>({
   onClose,
   onUpdate,
   entity,
-  type
+  type,
 }: CreateModalProps<T>) => {
   const { data } = usePersons();
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
+  const [filterText, setFilterText] = useState("");
+  const isMobile = useMediaQuery({ maxWidth: 500 });
 
   // Atualiza os funcionários filtrados com base nos funcionários selecionados
   useEffect(() => {
@@ -53,8 +57,21 @@ export const AddEmployeeToPersonFilterModal = <T extends Record<string, any>>({
       );
     }
 
+    if (filterText) {
+      const text = filterText.toLowerCase();
+      employeesToShow = employeesToShow.filter(
+        (employee) =>
+          employee.enrollNumber.toLowerCase().includes(text) ||
+          employee.name.toLowerCase().includes(text) ||
+          employee.shortName.toLowerCase().includes(text) ||
+          employee.employeeCards?.some((card) =>
+            card.cardNumber?.toLowerCase().includes(text)
+          )
+      );
+    }
+
     setFilteredEmployees(employeesToShow);
-  }, [selectedEmployeeIds, data.employees, entity]);
+  }, [data.employees, entity, type, selectedEmployeeIds, filterText]);
 
   // Define as opções de paginação de EN para PT
   const paginationOptions = {
@@ -232,6 +249,33 @@ export const AddEmployeeToPersonFilterModal = <T extends Record<string, any>>({
       </Modal.Header>
       <Modal.Body className="modal-body-scrollable">
         <div className="content-container">
+          {isMobile && (
+            <div className="datatable-container">
+              <div style={{ marginTop: 10 }}>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
+              </div>
+              <DataTable
+                columns={columns}
+                data={filteredEmployees}
+                pagination
+                paginationComponentOptions={paginationOptions}
+                paginationPerPage={20}
+                selectableRows
+                onSelectedRowsChange={handleRowSelected}
+                clearSelectedRows={clearSelectionToggle}
+                selectableRowsHighlight
+                noDataComponent="Não existem dados disponíveis para exibir."
+                customStyles={customStyles}
+                striped
+                responsive
+                persistTableHead={true}
+                defaultSortAsc={true}
+                defaultSortFieldId="enrollNumber"
+              />
+            </div>
+          )}
           <Split
             className="split"
             sizes={[15, 85]}
@@ -249,6 +293,11 @@ export const AddEmployeeToPersonFilterModal = <T extends Record<string, any>>({
               />
             </div>
             <div className="datatable-container">
+              <div style={{ marginTop: 10 }}>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
+              </div>
               <DataTable
                 columns={columns}
                 data={filteredEmployees}

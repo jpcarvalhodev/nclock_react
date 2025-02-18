@@ -27,6 +27,7 @@ import { UpdateRecolhaMoedeiroModal } from "../../../modals/UpdateRecolhaMoedeir
 import { RecolhaMoedeiroEContador, ResetCoin } from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
+import { useMediaQuery } from "react-responsive";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -86,6 +87,7 @@ export const NkioskGetCoins = () => {
     any | null
   >(null);
   const [loading, setLoading] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 500 });
 
   // Função para buscar as recolhas do moedeiro entre datas
   const fetchCoinsBetweenDates = async () => {
@@ -602,6 +604,333 @@ export const NkioskGetCoins = () => {
   return (
     <div className="main-container">
       <div className="content-container">
+        {isMobile && (
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span>Recolhas do Moedeiro</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
+              </div>
+              <div className="buttons-container-others">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshRecolhaMoedeiro}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Adicionar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-plus"
+                    onClick={() => setShowAddModal(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setOpenColumnSelector(true)}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Apagar Selecionados
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-trash-fill"
+                    onClick={handleSelectedRecolhasToDelete}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <ExportButton
+                  allData={getCoinsWithNames}
+                  selectedData={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : getCoinsWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : getCoinsWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Reset</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-stop-circle"
+                    onClick={handleReset}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                {loadingReset && (
+                  <Spinner
+                    animation="border"
+                    size="sm"
+                    style={{ marginTop: 5, marginLeft: 5 }}
+                  />
+                )}
+              </div>
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Recolhas Hoje</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    onClick={fetchRecolhasToday}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Recolhas Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    onClick={fetchRecolhasForPreviousDay}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Recolhas Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    onClick={fetchRecolhasForNextDay}
+                    iconSize="1.1em"
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi-search"
+                    onClick={fetchCoinsBetweenDates}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+              </div>
+            </div>
+            <div className="table-css">
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={[...columns, actionColumn]}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  onRowDoubleClicked={handleEditRecolhas}
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="dataRecolha"
+                />
+              )}
+            </div>
+            <div style={{ display: "flex" }}>
+              <div style={{ marginLeft: 10, marginRight: 10 }}>
+                <strong>Valor Total Online: </strong>Recolhas -{" "}
+                {totalAmount.toFixed(2)}€ | Diferença -{" "}
+                {totalAmountDifference.toFixed(2)}€
+              </div>
+            </div>
+          </div>
+        )}
         <Split
           className="split"
           sizes={[15, 85]}

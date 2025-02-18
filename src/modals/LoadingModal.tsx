@@ -12,7 +12,14 @@ export const LoadingModal = ({ show }: LoadingModalProps) => {
   return (
     <Modal show={show} backdrop="static" keyboard={false} centered>
       <Modal.Body>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
           <Col>
             <CustomSpinner />
           </Col>

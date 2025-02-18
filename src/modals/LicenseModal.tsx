@@ -1,5 +1,17 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Form, FormControl, InputGroup, Modal, OverlayTrigger, Row, Tab, Tabs, Tooltip } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Form,
+  FormControl,
+  InputGroup,
+  Modal,
+  OverlayTrigger,
+  Row,
+  Tab,
+  Tabs,
+  Tooltip,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -40,7 +52,12 @@ interface UpdateModalProps<T> {
   fields: Field[];
 }
 
-export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields }: UpdateModalProps<T>) => {
+export const LicenseModal = <T extends Entity>({
+  open,
+  onClose,
+  onUpdate,
+  fields,
+}: UpdateModalProps<T>) => {
   const { fetchAllLicenses, fetchAllLicensesWithoutKey } = useLicense();
   const [formData, setFormData] = useState<Partial<License>>({});
   const [isCheckVisible, setIsCheckVisible] = useState<boolean>(false);
@@ -53,7 +70,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   const [entities, setEntities] = useState<Array<License>>([]);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
   const [allEnabled, setAllEnabled] = useState(false);
-  const [licenseString, setLicenseString] = useState<string>('');
+  const [licenseString, setLicenseString] = useState<string>("");
 
   // Atualiza o estado de visibilidade do primeiro modal baseado na prop open
   useEffect(() => {
@@ -133,9 +150,11 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
   // Função para verificar se todos os produtos no formData estão ativados
   const checkAllProductsEnabled = () => {
-    return Object.keys(formData).every(key => {
+    return Object.keys(formData).every((key) => {
       const product = formData[key];
-      return typeof product === 'object' && product !== null ? product.enable : true;
+      return typeof product === "object" && product !== null
+        ? product.enable
+        : true;
     });
   };
 
@@ -157,15 +176,15 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     const { name, value, type, checked } = event.target as HTMLInputElement;
 
     if (name.includes(".")) {
-      const [productName, productProperty] = name.split('.');
+      const [productName, productProperty] = name.split(".");
       let parsedValue: string | number | boolean | null = value;
 
-      if (type === 'checkbox') {
+      if (type === "checkbox") {
         parsedValue = checked;
-      } else if (type === 'number') {
+      } else if (type === "number") {
         parsedValue = Number(value) || defaultValueFor(productProperty);
-      } else if (productProperty === 'sn') {
-        parsedValue = value.replace(/\s+/g, '');
+      } else if (productProperty === "sn") {
+        parsedValue = value.replace(/\s+/g, "");
       } else {
         parsedValue = value || defaultValueFor(productProperty);
       }
@@ -175,17 +194,17 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
           ...prevState,
           [productName]: {
             ...prevState[productName],
-            [productProperty]: parsedValue
-          }
+            [productProperty]: parsedValue,
+          },
         };
 
         setEntities((prevEntities) =>
           prevEntities.map((entity) =>
             entity.entidadeNumber?.toString() === activeTab
               ? {
-                ...entity,
-                ...updatedFormData,
-              }
+                  ...entity,
+                  ...updatedFormData,
+                }
               : entity
           )
         );
@@ -195,12 +214,12 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
     } else {
       let parsedValue: string | number | boolean | null = value;
 
-      if (type === 'checkbox') {
+      if (type === "checkbox") {
         parsedValue = checked;
-      } else if (type === 'number') {
+      } else if (type === "number") {
         parsedValue = Number(value) || defaultValueFor(name);
-      } else if (name === 'sn') {
-        parsedValue = value.replace(/\s+/g, '');
+      } else if (name === "sn") {
+        parsedValue = value.replace(/\s+/g, "");
       } else {
         parsedValue = value || defaultValueFor(name);
       }
@@ -215,9 +234,9 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
           prevEntities.map((entity) =>
             entity.entidadeNumber?.toString() === activeTab
               ? {
-                ...entity,
-                ...updatedFormData,
-              }
+                  ...entity,
+                  ...updatedFormData,
+                }
               : entity
           )
         );
@@ -284,7 +303,12 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         nevents: { enable: false, validacao: 0, pacote: "", createDate: "" },
         nservice: { enable: false, validacao: 0, pacote: "", createDate: "" },
         ntask: { enable: false, validacao: 0, pacote: "", createDate: "" },
-        nproduction: { enable: false, validacao: 0, pacote: "", createDate: "" },
+        nproduction: {
+          enable: false,
+          validacao: 0,
+          pacote: "",
+          createDate: "",
+        },
         nticket: { enable: false, validacao: 0, pacote: "", createDate: "" },
         nsales: { enable: false, validacao: 0, pacote: "", createDate: "" },
         ninvoice: { enable: false, validacao: 0, pacote: "", createDate: "" },
@@ -294,10 +318,10 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         nschool: { enable: false, validacao: 0, pacote: "", createDate: "" },
         nclinic: { enable: false, validacao: 0, pacote: "", createDate: "" },
         noptics: { enable: false, validacao: 0, pacote: "", createDate: "" },
-        ngold: { enable: false, validacao: 0, pacote: "", createDate: "" }
+        ngold: { enable: false, validacao: 0, pacote: "", createDate: "" },
       };
 
-      Object.keys(newLicense.products || {}).forEach(product => {
+      Object.keys(newLicense.products || {}).forEach((product) => {
         newLicense.products[product] = {
           enable: false,
           validacao: 0,
@@ -429,12 +453,12 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
   // Função para truncar texto
   const truncateText = (text: string, limit: number) => {
-    return text.length > limit ? text.substring(0, limit) + '...' : text;
+    return text.length > limit ? text.substring(0, limit) + "..." : text;
   };
 
   // Função para reagir ao pressionar a tecla Enter
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       verifyKey();
     }
   };
@@ -443,11 +467,17 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   const toggleAllEnabled = () => {
     const currentState = !allEnabled;
     setAllEnabled(currentState);
-    setFormData(prevState => {
+    setFormData((prevState) => {
       const updatedFormData = { ...prevState };
-      Object.keys(updatedFormData).forEach(key => {
-        if (typeof updatedFormData[key] === 'object' && updatedFormData[key] !== null) {
-          updatedFormData[key] = { ...updatedFormData[key], enable: currentState };
+      Object.keys(updatedFormData).forEach((key) => {
+        if (
+          typeof updatedFormData[key] === "object" &&
+          updatedFormData[key] !== null
+        ) {
+          updatedFormData[key] = {
+            ...updatedFormData[key],
+            enable: currentState,
+          };
         }
       });
       return updatedFormData;
@@ -456,7 +486,9 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
   // Função para remover entidade localmente
   const handleDeleteEntity = (entidadeNumber: number) => {
-    const updatedEntities = entities.filter((ent) => ent.entidadeNumber !== entidadeNumber);
+    const updatedEntities = entities.filter(
+      (ent) => ent.entidadeNumber !== entidadeNumber
+    );
 
     setEntities(updatedEntities);
 
@@ -471,7 +503,8 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
 
   // Função para copiar a chave
   const handleCopyKey = (key: string) => {
-    navigator.clipboard.writeText(key)
+    navigator.clipboard
+      .writeText(key)
       .then(() => {
         toast.success("Chave copiada para a área de transferência!");
       })
@@ -483,7 +516,7 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
   return (
     <div>
       <Modal show={isCheckVisible} onHide={onClose} backdrop="static" centered>
-        <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
+        <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
           <Modal.Title>Inserir Password</Modal.Title>
         </Modal.Header>
         <InputGroup className="license-check-modal">
@@ -493,15 +526,15 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             onChange={handleKeyChange}
             onKeyDown={handleKeyDown}
             type={showPassword ? "text" : "password"}
-            style={{ borderRight: 'none' }}
+            style={{ borderRight: "none" }}
           />
           <InputGroup.Text
             onClick={togglePasswordVisibility}
             style={{
-              cursor: 'pointer',
-              background: 'transparent',
-              borderLeft: 'none',
-              height: '38px',
+              cursor: "pointer",
+              background: "transparent",
+              borderLeft: "none",
+              height: "38px",
             }}
           >
             <img
@@ -511,7 +544,9 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
             />
           </InputGroup.Text>
         </InputGroup>
-        <div style={{ display: "flex", justifyContent: "center", padding: "20px" }}>
+        <div
+          style={{ display: "flex", justifyContent: "center", padding: "20px" }}
+        >
           <Button
             style={{ width: "40%" }}
             variant="outline-dark"
@@ -528,34 +563,50 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
         size="xl"
         centered
       >
-        <Modal.Header closeButton style={{ backgroundColor: '#f2f2f2' }}>
+        <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
           <Modal.Title>Licenciamento</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Row style={{ display: 'flex', alignItems: 'center' }}>
+          <Row style={{ display: "flex", alignItems: "center" }}>
             <Col md={6}>
               <OverlayTrigger
                 placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
-                overlay={<Tooltip className="custom-tooltip">Adicionar Licença</Tooltip>}
+                delay={0}
+                container={document.body}
+                popperConfig={{
+                  strategy: "fixed",
+                  modifiers: [
+                    {
+                      name: "preventOverflow",
+                      options: {
+                        boundary: "window",
+                      },
+                    },
+                  ],
+                }}
+                overlay={
+                  <Tooltip className="custom-tooltip">
+                    Adicionar Licença
+                  </Tooltip>
+                }
               >
-                <CustomOutlineButton icon='bi-plus' iconSize='1.1em' onClick={handleCreateNewLicense} />
+                <CustomOutlineButton
+                  icon="bi-plus"
+                  iconSize="1.1em"
+                  onClick={handleCreateNewLicense}
+                />
               </OverlayTrigger>
             </Col>
-            <Col md={6} style={{ display: 'flex', alignItems: 'center' }}>
-              <Form.Group style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, marginRight: 10 }}>
+            <Col md={6} style={{ display: "flex", alignItems: "center" }}>
+              <Form.Group
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  flex: 1,
+                  marginRight: 10,
+                }}
+              >
                 <Form.Label style={{ marginBottom: 0 }}>Chave</Form.Label>
                 <Form.Control
                   type="string"
@@ -563,31 +614,37 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                   value={licenseString}
                   name="chave"
                   style={{
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
                   }}
                   readOnly
                 />
               </Form.Group>
               <OverlayTrigger
                 placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
-                overlay={<Tooltip className="custom-tooltip">Copiar Chave</Tooltip>}
+                delay={0}
+                container={document.body}
+                popperConfig={{
+                  strategy: "fixed",
+                  modifiers: [
+                    {
+                      name: "preventOverflow",
+                      options: {
+                        boundary: "window",
+                      },
+                    },
+                  ],
+                }}
+                overlay={
+                  <Tooltip className="custom-tooltip">Copiar Chave</Tooltip>
+                }
               >
-                <CustomOutlineButton icon='bi bi-copy' iconSize='1em' onClick={() => handleCopyKey(licenseString)} />
+                <CustomOutlineButton
+                  icon="bi bi-copy"
+                  iconSize="1em"
+                  onClick={() => handleCopyKey(licenseString)}
+                />
               </OverlayTrigger>
             </Col>
           </Row>
@@ -602,13 +659,14 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                 eventKey={entity.entidadeNumber?.toString()}
                 key={entity.entidadeNumber}
                 title={
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
                     <span>
-                      {truncateText(entity.name || '', 20) || `Entidade ${entity.entidadeNumber}`}
+                      {truncateText(entity.name || "", 20) ||
+                        `Entidade ${entity.entidadeNumber}`}
                     </span>
                     <i
                       className="bi bi-trash-fill ms-2"
-                      style={{ cursor: 'pointer', color: 'black' }}
+                      style={{ cursor: "pointer", color: "black" }}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteEntity(entity.entidadeNumber!);
@@ -705,7 +763,13 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                       </Form.Group>
                     </Col>
                   </Row>
-                  <Form style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Form
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
                     <Form.Group controlId="formAllEnabledSwitch">
                       <Form.Check
                         type="switch"
@@ -716,42 +780,73 @@ export const LicenseModal = <T extends Entity>({ open, onClose, onUpdate, fields
                       />
                     </Form.Group>
                   </Form>
-                  <Tabs defaultActiveKey={Object.keys(formData).find(key => typeof formData[key] === 'object' && formData[key] !== null)} id="product-tabs" className='nav-modal' style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  <Tabs
+                    defaultActiveKey={Object.keys(formData).find(
+                      (key) =>
+                        typeof formData[key] === "object" &&
+                        formData[key] !== null
+                    )}
+                    id="product-tabs"
+                    className="nav-modal"
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
                     {Object.keys(formData)
-                      .filter(key => typeof formData[key] === 'object' && formData[key] !== null)
-                      .map(product => (
+                      .filter(
+                        (key) =>
+                          typeof formData[key] === "object" &&
+                          formData[key] !== null
+                      )
+                      .map((product) => (
                         <Tab
                           eventKey={product}
                           title={product.toUpperCase()}
                           key={product}
-                          tabClassName={`nav-item ${formData[product].enable ? 'enabled-tab' : ''} tab-${product.toUpperCase()}`}
+                          tabClassName={`nav-item ${
+                            formData[product].enable ? "enabled-tab" : ""
+                          } tab-${product.toUpperCase()}`}
                         >
                           <Row>
                             {Object.entries(formData[product])
-                              .filter(([propKey]) => propKey !== 'createDate')
+                              .filter(([propKey]) => propKey !== "createDate")
                               .map(([prop, value], index) => (
-                                <Col md={2} key={`${product}-${prop}`} className='mt-5'>
-                                  <Form.Group controlId={`form${product}${prop}`}>
+                                <Col
+                                  md={2}
+                                  key={`${product}-${prop}`}
+                                  className="mt-5"
+                                >
+                                  <Form.Group
+                                    controlId={`form${product}${prop}`}
+                                  >
                                     {renderFormControl(product, prop)}
                                   </Form.Group>
                                 </Col>
-                              ))
-                            }
+                              ))}
                           </Row>
                         </Tab>
-                      ))
-                    }
+                      ))}
                   </Tabs>
                 </div>
               </Tab>
             ))}
           </Tabs>
         </Modal.Body>
-        <Modal.Footer style={{ backgroundColor: '#f2f2f2' }}>
-          <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleClose}>
+        <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
+          <Button
+            className="narrow-mobile-modal-button"
+            variant="outline-dark"
+            onClick={handleClose}
+          >
             Fechar
           </Button>
-          <Button className='narrow-mobile-modal-button' variant="outline-dark" onClick={handleUpdate}>
+          <Button
+            className="narrow-mobile-modal-button"
+            variant="outline-dark"
+            onClick={handleUpdate}
+          >
             Guardar
           </Button>
         </Modal.Footer>

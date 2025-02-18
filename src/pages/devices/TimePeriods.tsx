@@ -21,6 +21,7 @@ import { TimePeriod } from "../../types/Types";
 import { toast } from "react-toastify";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
+import { useMediaQuery } from "react-responsive";
 
 export const TimePeriods = () => {
   const {
@@ -60,6 +61,7 @@ export const TimePeriods = () => {
   const [selectedRows, setSelectedRows] = useState<TimePeriod[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [loading, setLoading] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 500 });
 
   // Função para adicionar um período
   const addPeriod = async (newPeriod: Partial<TimePeriod>) => {
@@ -438,6 +440,166 @@ export const TimePeriods = () => {
   return (
     <div className="dashboard-container">
       <div className="content-container">
+        {isMobile && (
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span style={{ color: "#000000" }}>Períodos de Horários</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
+              </div>
+              <div className="buttons-container-others">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshPeriods}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Adicionar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-plus"
+                    onClick={() => setShowAddModal(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setOpenColumnSelector(true)}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Apagar Selecionados
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-trash-fill"
+                    onClick={handleSelectedPeriodToDelete}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <ExportButton
+                  allData={filteredDataTable}
+                  selectedData={
+                    selectedRows.length > 0 ? selectedRows : filteredDataTable
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0 ? selectedRows : filteredDataTable
+                  }
+                  fields={getSelectedFields()}
+                />
+              </div>
+            </div>
+            <div className="table-css">
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={[...columns, actionColumn]}
+                  data={filteredDataTable}
+                  onRowDoubleClicked={handleEditPeriod}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={20}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  noDataComponent="Não existem dados disponíveis para exibir."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                />
+              )}
+            </div>
+          </div>
+        )}
         <Split
           className="split"
           sizes={[15, 85]}

@@ -24,6 +24,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { KioskTransactionMB } from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
+import { useMediaQuery } from "react-responsive";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -61,6 +62,7 @@ export const NkioskPayCoins = () => {
     []
   );
   const [loading, setLoading] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 500 });
   const eventDoorId = "2";
 
   // Função para buscar os pagamentos do moedeiro entre datas
@@ -483,6 +485,277 @@ export const NkioskPayCoins = () => {
     <TerminalsProvider>
       <div className="main-container">
         <div className="content-container">
+          {isMobile && (
+            <div className="datatable-container">
+              <div className="datatable-title-text">
+                <span>Pagamentos no Moedeiro</span>
+              </div>
+              <div className="datatable-header">
+                <div>
+                  <SearchBoxContainer
+                    onSearch={(value) => setFilterText(value)}
+                  />
+                </div>
+                <div className="buttons-container-others">
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi-arrow-clockwise"
+                      onClick={refreshPayCoins}
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi-eye"
+                      onClick={() => setOpenColumnSelector(true)}
+                    />
+                  </OverlayTrigger>
+                  <ExportButton
+                    allData={payCoinsWithNames}
+                    selectedData={
+                      selectedRows.length > 0
+                        ? selectedRowsWithNames
+                        : payCoinsWithNames
+                    }
+                    fields={getSelectedFields()}
+                  />
+                  <PrintButton
+                    data={
+                      selectedRows.length > 0
+                        ? selectedRowsWithNames
+                        : payCoinsWithNames
+                    }
+                    fields={getSelectedFields()}
+                  />
+                </div>
+                <div className="buttons-container-data-range">
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">
+                        Moedas Online
+                      </Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi bi-cash-coin"
+                      onClick={fetchAllDataFromLastRecolha}
+                      iconSize="1.1em"
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">Moedas Hoje</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi bi-calendar-event"
+                      onClick={fetchPaymentsCoinToday}
+                      iconSize="1.1em"
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">
+                        Moedas Dia Anterior
+                      </Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi bi-arrow-left-circle"
+                      onClick={fetchPaymentsCoinForPreviousDay}
+                      iconSize="1.1em"
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">
+                        Moedas Dia Seguinte
+                      </Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi bi-arrow-right-circle"
+                      onClick={fetchPaymentsCoinForNextDay}
+                      iconSize="1.1em"
+                      disabled={
+                        new Date(endDate) >=
+                        new Date(new Date().toISOString().substring(0, 10))
+                      }
+                    />
+                  </OverlayTrigger>
+                </div>
+                <div className="date-range-search">
+                  <input
+                    type="datetime-local"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="search-input"
+                  />
+                  <span> até </span>
+                  <input
+                    type="datetime-local"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="search-input"
+                  />
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">Buscar</Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi-search"
+                      onClick={fetchPaymentsCoinBetweenDates}
+                      iconSize="1.1em"
+                    />
+                  </OverlayTrigger>
+                </div>
+              </div>
+              <div className="table-css">
+                {loading ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "200px",
+                    }}
+                  >
+                    <CustomSpinner />
+                  </div>
+                ) : (
+                  <DataTable
+                    columns={columns}
+                    data={filteredDataTable}
+                    pagination
+                    paginationComponentOptions={paginationOptions}
+                    paginationPerPage={20}
+                    selectableRows
+                    onSelectedRowsChange={handleRowSelected}
+                    clearSelectedRows={clearSelectionToggle}
+                    selectableRowsHighlight
+                    noDataComponent="Não existem dados disponíveis para exibir."
+                    customStyles={customStyles}
+                    striped
+                    responsive
+                    persistTableHead={true}
+                    defaultSortAsc={true}
+                    defaultSortFieldId="timestamp"
+                  />
+                )}
+              </div>
+              <div style={{ marginLeft: 10, marginTop: -5 }}>
+                <strong>Recebimentos Moedeiro: </strong> Valor -{" "}
+                {totalAmount.toFixed(2)}€ | Visitantes -{" "}
+                {filteredDataTable.length}
+              </div>
+            </div>
+          )}
           <Split
             className="split"
             sizes={[15, 85]}

@@ -1180,15 +1180,15 @@ export const UpdateModalEmployees = <T extends Entity>({
       <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -1203,15 +1203,15 @@ export const UpdateModalEmployees = <T extends Entity>({
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
