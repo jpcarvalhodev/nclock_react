@@ -398,19 +398,19 @@ export const NaccessDoorOpen = () => {
                 <div className="custom-buttons">
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                     }
@@ -422,19 +422,19 @@ export const NaccessDoorOpen = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Colunas</Tooltip>
                     }
@@ -463,19 +463,19 @@ export const NaccessDoorOpen = () => {
                   />
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Abrir</Tooltip>
                     }
@@ -494,22 +494,22 @@ export const NaccessDoorOpen = () => {
                     />
                   )}
                 </div>
-                <div className="date-range-search">
+                <div className="buttons-container-data-range">
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Aberturas Hoje
@@ -524,19 +524,19 @@ export const NaccessDoorOpen = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Aberturas Dia Anterior
@@ -551,19 +551,19 @@ export const NaccessDoorOpen = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Aberturas Dia Seguinte
@@ -580,6 +580,8 @@ export const NaccessDoorOpen = () => {
                       }
                     />
                   </OverlayTrigger>
+                </div>
+                <div className="date-range-search">
                   <input
                     type="datetime-local"
                     value={startDate}
@@ -595,19 +597,19 @@ export const NaccessDoorOpen = () => {
                   />
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Buscar</Tooltip>
                     }

@@ -120,7 +120,6 @@ export const employeeAttendanceTimesFields = [
     { key: 'inOutMode', label: 'Tipo', type: 'number' },
     { key: 'observation', label: 'Observação', type: 'string' },
     { key: 'type', label: 'Tipo', type: 'number' },
-    { key: 'verifyMode', label: 'Modo de Verificação', type: 'number' },
     { key: 'workCode', label: 'Código', type: 'number' },
 ];
 
@@ -603,4 +602,14 @@ export const movementFields = [
     { key: 'eventId', label: 'Evento', type: 'number' },
     { key: 'eventDoorId', label: 'Porta', type: 'number' },
     { key: 'deviceSN', label: 'Nome do Local', type: 'string' },
+];
+
+export const alertsFields = [
+    { key: 'eventTime', label: 'Hora do Evento', type: 'Date' },
+    { key: 'eventName', label: 'Nome do Evento', type: 'string' },
+    { key: 'deviceSN', label: 'Serial do Local', type: 'string' },
+    { key: 'name', label: 'Porta/Auxiliar', type: 'string' },
+    { key: 'deviceName', label: 'Nome do Local', type: 'string' },
+    { key: 'estado', label: 'Estado', type: 'string' },
+    { key: 'inOutStatus', label: 'Sentido', type: 'string' },
 ];

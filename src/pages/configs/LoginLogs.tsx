@@ -322,18 +322,18 @@ export const LoginLogs = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -346,18 +346,18 @@ export const LoginLogs = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -381,22 +381,22 @@ export const LoginLogs = () => {
                   fields={getSelectedFields()}
                 />
               </div>
-              <div className="date-range-search">
+              <div className="buttons-container-data-range">
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Login Hoje</Tooltip>
                   }
@@ -410,18 +410,18 @@ export const LoginLogs = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Login Dia Anterior
@@ -437,18 +437,18 @@ export const LoginLogs = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Login Dia Seguinte
@@ -465,6 +465,8 @@ export const LoginLogs = () => {
                     }
                   />
                 </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
                 <input
                   type="datetime-local"
                   value={startDate}
@@ -481,18 +483,18 @@ export const LoginLogs = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton

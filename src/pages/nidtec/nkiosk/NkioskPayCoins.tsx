@@ -511,19 +511,19 @@ export const NkioskPayCoins = () => {
                 <div className="buttons-container-others">
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                     }
@@ -535,19 +535,19 @@ export const NkioskPayCoins = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Colunas</Tooltip>
                     }
@@ -575,22 +575,22 @@ export const NkioskPayCoins = () => {
                     fields={getSelectedFields()}
                   />
                 </div>
-                <div className="date-range-search">
+                <div className="buttons-container-data-range">
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Moedas Online
@@ -605,19 +605,19 @@ export const NkioskPayCoins = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Moedas Hoje</Tooltip>
                     }
@@ -630,19 +630,19 @@ export const NkioskPayCoins = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Moedas Dia Anterior
@@ -657,19 +657,19 @@ export const NkioskPayCoins = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Moedas Dia Seguinte
@@ -686,6 +686,8 @@ export const NkioskPayCoins = () => {
                       }
                     />
                   </OverlayTrigger>
+                </div>
+                <div className="date-range-search">
                   <input
                     type="datetime-local"
                     value={startDate}
@@ -701,19 +703,19 @@ export const NkioskPayCoins = () => {
                   />
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Buscar</Tooltip>
                     }

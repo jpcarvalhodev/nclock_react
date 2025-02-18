@@ -479,15 +479,15 @@ export const NclockRequests = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -502,15 +502,15 @@ export const NclockRequests = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -525,15 +525,15 @@ export const NclockRequests = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -605,18 +605,18 @@ export const NclockRequests = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -630,18 +630,18 @@ export const NclockRequests = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -655,18 +655,18 @@ export const NclockRequests = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -691,22 +691,22 @@ export const NclockRequests = () => {
                   fields={getSelectedFields()}
                 />
               </div>
-              <div className="date-range-search">
+              <div className="buttons-container-data-range">
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Pedidos Hoje</Tooltip>
                   }
@@ -720,18 +720,18 @@ export const NclockRequests = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Pedidos Dia Anterior
@@ -747,18 +747,18 @@ export const NclockRequests = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Pedidos Dia Seguinte
@@ -775,6 +775,8 @@ export const NclockRequests = () => {
                     }
                   />
                 </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
                 <input
                   type="datetime-local"
                   value={startDate}
@@ -791,18 +793,18 @@ export const NclockRequests = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton

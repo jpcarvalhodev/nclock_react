@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from "../api/apiService";
-import { AccessControl, Activity, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, Movements, Readers, TimePeriod, TimePlan } from '../types/Types';
+import { AccessControl, Activity, Alerts, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, Movements, Readers, TimePeriod, TimePlan } from '../types/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -15,6 +15,8 @@ export interface DeviceContextType {
     aux: Auxiliaries[];
     auxData: AuxOut[];
     cameras: Cameras[];
+    events: Alerts[];
+    setEvents: (events: Alerts[]) => void;
     fetchAllDevices: () => Promise<Devices[]>;
     fetchAllEmployeeDevices: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
@@ -80,6 +82,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [aux, setAux] = useState<Auxiliaries[]>([]);
     const [cameras, setCameras] = useState<Cameras[]>([]);
     const [timePlans, setTimePlans] = useState<TimePlan[]>([]);
+    const [events, setEvents] = useState<Alerts[]>([]);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<Devices[]> => {
@@ -604,6 +607,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchEventsDevice = async (): Promise<Activity[]> => {
         try {
             const data = await apiService.fetchAllEventDevice();
+            setEvents(data);
             return data;
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
@@ -635,6 +639,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllAux();
             fetchAllAuxData();
             fetchTimePlans();
+            fetchCameras();
+            fetchEventsDevice();
+            fetchEventsAndTransactionDevice();
         }
     }, []);
 
@@ -649,6 +656,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         aux,
         auxData,
         cameras,
+        events,
+        setEvents,
         fetchAllDevices,
         fetchAllEmployeeDevices,
         fetchAllKioskTransaction,

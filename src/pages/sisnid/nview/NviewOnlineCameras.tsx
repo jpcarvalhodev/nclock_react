@@ -201,6 +201,36 @@ export const NviewOnlineCameras = () => {
     }
   };
 
+  // Filtra os dados da tabela
+  const filteredDataTable = useMemo(() => {
+    return cameras.filter(
+      (getCoin) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (getCoin[key] != null &&
+              String(getCoin[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.values(getCoin).some((value) => {
+          if (value == null) {
+            return false;
+          } else if (value instanceof Date) {
+            return value
+              .toLocaleString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          } else {
+            return value
+              .toString()
+              .toLowerCase()
+              .includes(filterText.toLowerCase());
+          }
+        })
+    );
+  }, [cameras, filters, filterText]);
+
   // Define as colunas da tabela
   const columns: TableColumn<Cameras>[] = cameraFields
     .filter((field) => selectedColumns.includes(field.key))
@@ -254,36 +284,6 @@ export const NviewOnlineCameras = () => {
       };
     });
 
-  // Filtra os dados da tabela
-  const filteredDataTable = useMemo(() => {
-    return cameras.filter(
-      (getCoin) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (getCoin[key] != null &&
-              String(getCoin[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.values(getCoin).some((value) => {
-          if (value == null) {
-            return false;
-          } else if (value instanceof Date) {
-            return value
-              .toLocaleString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          } else {
-            return value
-              .toString()
-              .toLowerCase()
-              .includes(filterText.toLowerCase());
-          }
-        })
-    );
-  }, [cameras, filters, filterText]);
-
   // Define as colunas de ação
   const actionColumn: TableColumn<Cameras> = {
     name: "Ações",
@@ -291,15 +291,15 @@ export const NviewOnlineCameras = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -314,15 +314,15 @@ export const NviewOnlineCameras = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -337,15 +337,15 @@ export const NviewOnlineCameras = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -398,19 +398,19 @@ export const NviewOnlineCameras = () => {
           <div className="buttons-container-others">
             <OverlayTrigger
               placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+              delay={0}
+              container={document.body}
+              popperConfig={{
+                strategy: "fixed",
+                modifiers: [
+                  {
+                    name: "preventOverflow",
+                    options: {
+                      boundary: "window",
+                    },
+                  },
+                ],
+              }}
               overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
               <CustomOutlineButton
@@ -421,19 +421,19 @@ export const NviewOnlineCameras = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+              delay={0}
+              container={document.body}
+              popperConfig={{
+                strategy: "fixed",
+                modifiers: [
+                  {
+                    name: "preventOverflow",
+                    options: {
+                      boundary: "window",
+                    },
+                  },
+                ],
+              }}
               overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
             >
               <CustomOutlineButton
@@ -444,19 +444,19 @@ export const NviewOnlineCameras = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+              delay={0}
+              container={document.body}
+              popperConfig={{
+                strategy: "fixed",
+                modifiers: [
+                  {
+                    name: "preventOverflow",
+                    options: {
+                      boundary: "window",
+                    },
+                  },
+                ],
+              }}
               overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
             >
               <CustomOutlineButton

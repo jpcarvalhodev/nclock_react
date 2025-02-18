@@ -142,7 +142,6 @@ export type EmployeeAttendanceTimes = {
     employeeId: string;
     enrollNumber: string;
     employeeName: string;
-    verifyMode: number;
     inOutMode: number;
     workCode: number;
     observation: string;
@@ -247,7 +246,6 @@ export type KioskTransaction = {
     eventName: string;
     eventId: number;
     eventDoorId: number;
-    verifyModeNo: number;
     deviceSN: string;
     inOutStatus: number;
     eventIndex: number;
@@ -280,7 +278,6 @@ export type KioskTransactionCard = {
     eventDoorName: string;
     eventTime: Date;
     pin: number;
-    verifyModeNo: number;
 };
 
 export type Register = {
@@ -736,7 +733,6 @@ export type Counter = {
     eventType: string;
     eventTime: Date;
     pin: number;
-    verifyModeNo: number;
 }
 
 export type LicenseKey = {
@@ -807,7 +803,6 @@ export type Activity = {
     eventName: string;
     eventId: number;
     eventDoorId: number;
-    verifyModeNo: number;
     deviceSN: string;
 };
 
@@ -821,4 +816,16 @@ export type Movements = {
     eventDoorId: number;
     deviceSN: string;
     nomeResponsavel: string;
+}
+
+export type Alerts = {
+    [key: string]: any;
+    id: string;
+    eventTime: Date;
+    eventName: string;
+    deviceSN: string;
+    deviceName: string;
+    name: string;
+    estado: boolean;
+    inOutStatus: number;
 }

@@ -323,6 +323,42 @@ export const NkioskOccurrences = () => {
     setShowDeleteModal(true);
   };
 
+  // Filtra os dados da tabela
+  const filteredDataTable = useMemo(() => {
+    return filteredDevices
+      .filter(
+        (getCoin) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (getCoin[key] != null &&
+                String(getCoin[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(getCoin).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
+            }
+            return false;
+          })
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime()
+      );
+  }, [filteredDevices, filters, filterText]);
+
   // Define as colunas da tabela
   const columns: TableColumn<LimpezasEOcorrencias>[] =
     limpezasEOcorrenciasFields
@@ -370,15 +406,15 @@ export const NkioskOccurrences = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -393,15 +429,15 @@ export const NkioskOccurrences = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -416,15 +452,15 @@ export const NkioskOccurrences = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -442,42 +478,6 @@ export const NkioskOccurrences = () => {
     selector: (row: LimpezasEOcorrencias) => row.id,
     ignoreRowClick: true,
   };
-
-  // Filtra os dados da tabela
-  const filteredDataTable = useMemo(() => {
-    return filteredDevices
-      .filter(
-        (getCoin) =>
-          Object.keys(filters).every(
-            (key) =>
-              filters[key] === "" ||
-              (getCoin[key] != null &&
-                String(getCoin[key])
-                  .toLowerCase()
-                  .includes(filters[key].toLowerCase()))
-          ) &&
-          Object.entries(getCoin).some(([key, value]) => {
-            if (selectedColumns.includes(key) && value != null) {
-              if (value instanceof Date) {
-                return value
-                  .toLocaleString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              } else {
-                return value
-                  .toString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              }
-            }
-            return false;
-          })
-      )
-      .sort(
-        (a, b) =>
-          new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime()
-      );
-  }, [filteredDevices, filters, filterText]);
 
   // Função para obter os campos selecionados baseado em selectedColumns
   const getSelectedFields = () => {
@@ -532,18 +532,18 @@ export const NkioskOccurrences = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -556,18 +556,18 @@ export const NkioskOccurrences = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -581,18 +581,18 @@ export const NkioskOccurrences = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -605,18 +605,18 @@ export const NkioskOccurrences = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Apagar Selecionados
@@ -643,22 +643,22 @@ export const NkioskOccurrences = () => {
                   fields={getSelectedFields()}
                 />
               </div>
-              <div className="date-range-search">
+              <div className="buttons-container-data-range">
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Ocorrências Hoje
@@ -674,18 +674,18 @@ export const NkioskOccurrences = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Ocorrências Dia Anterior
@@ -701,18 +701,18 @@ export const NkioskOccurrences = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">
                       Ocorrências Dia Seguinte
@@ -729,6 +729,8 @@ export const NkioskOccurrences = () => {
                     }
                   />
                 </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
                 <input
                   type="datetime-local"
                   value={startDate}
@@ -745,18 +747,18 @@ export const NkioskOccurrences = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
                 >
                   <CustomOutlineButton

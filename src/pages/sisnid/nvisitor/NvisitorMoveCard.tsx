@@ -539,19 +539,19 @@ export const NvisitorMoveCard = () => {
                 <div className="buttons-container-others">
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                     }
@@ -563,19 +563,19 @@ export const NvisitorMoveCard = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Colunas</Tooltip>
                     }
@@ -604,19 +604,19 @@ export const NvisitorMoveCard = () => {
                   />
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Braço</Tooltip>
                     }
@@ -627,22 +627,22 @@ export const NvisitorMoveCard = () => {
                     />
                   </OverlayTrigger>
                 </div>
-                <div className="date-range-search">
+                <div className="buttons-container-data-range">
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Torniquete Hoje
@@ -657,19 +657,19 @@ export const NvisitorMoveCard = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Torniquete Dia Anterior
@@ -684,19 +684,19 @@ export const NvisitorMoveCard = () => {
                   </OverlayTrigger>
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">
                         Torniquete Dia Seguinte
@@ -713,6 +713,8 @@ export const NvisitorMoveCard = () => {
                       }
                     />
                   </OverlayTrigger>
+                </div>
+                <div className="date-range-search">
                   <input
                     type="datetime-local"
                     value={startDate}
@@ -728,19 +730,19 @@ export const NvisitorMoveCard = () => {
                   />
                   <OverlayTrigger
                     placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
                     overlay={
                       <Tooltip className="custom-tooltip">Buscar</Tooltip>
                     }

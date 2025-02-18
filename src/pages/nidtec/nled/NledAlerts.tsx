@@ -29,7 +29,7 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
-export const NkioskAlerts = () => {
+export const NledAlerts = () => {
   const { events, setEvents, fetchEventsDevice } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();

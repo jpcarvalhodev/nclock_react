@@ -568,7 +568,6 @@ body {
 .buttons-container-others-mb {
   display: flex;
   flex-direction: row;
-  gap: 10px;
   width: 100%;
 }
 
@@ -576,12 +575,20 @@ body {
   margin-left: auto;
 }
 
+.buttons-container-data-range {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-left: auto;
+  margin-right: 10px;
+}
+
 .date-range-search {
   display: flex;
   align-items: center;
-  margin-left: auto;
   margin-right: 30px;
   gap: 10px;
+  margin-top: -5px;
 }
 
 .search-input {
@@ -1006,6 +1013,12 @@ body {
     flex-direction: column;
   }
 
+  .buttons-container-data-range {
+    margin-top: 5px;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
   .cards-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1021,6 +1034,7 @@ body {
 
   .dashboard-carousel-container {
     max-height: 800px;
+    max-width: 100%;
   }
 
   .nav-pills .nav-item {
@@ -1030,7 +1044,6 @@ body {
   .nav.nav-pills {
     flex-direction: column;
     height: auto;
-    margin-top: 20px;
     width: 80%;
   }
 
@@ -1162,6 +1175,12 @@ body {
     flex-direction: column;
   }
 
+  .buttons-container-data-range {
+    margin-top: 5px;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
   .cards-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1177,15 +1196,17 @@ body {
 
   .dashboard-carousel-container {
     max-height: 800px;
-  }
-
-  .nav-pills .nav-item {
-    width: 100% !important;
+    max-width: 100%;
   }
 
   .nav.nav-pills {
     flex-direction: column;
+    height: auto;
     width: 80%;
+  }
+
+  .nav-pills .nav-item {
+    width: 100% !important;
   }
 
   .card {
@@ -1218,6 +1239,7 @@ body {
 
   .dashboard-cards-container {
     height: 50vh !important;
+    width: 80vw !important;
   }
 
   .card-container {
@@ -1237,6 +1259,10 @@ body {
   .calendar-container {
     margin: 0;
   }
+
+  .treeview-container {
+    min-height: 100vh;
+  }
 }
 
 @media (min-width: 501px) and (max-width: 1200px) {
@@ -1246,6 +1272,7 @@ body {
   .cards-container,
   .dashboard-carousel-container-main,
   .dashboard-carousel-container-pages-no-title,
+  .dashboard-carousel-container,
   .carousel-chart-container,
   .carousel-chart-container-graphs {
     max-width: 100%;

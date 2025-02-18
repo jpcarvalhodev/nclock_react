@@ -237,6 +237,11 @@ import { NvisitorMoveCard } from './pages/sisnid/nvisitor/NvisitorMoveCard';
 import { NvisitorMoveKiosk } from './pages/sisnid/nvisitor/NvisitorMoveKiosk';
 import { NaccessPresence } from './pages/sisnid/naccess/NaccessPresence';
 import { NaccessDoorOpen } from './pages/sisnid/naccess/NaccessDoorOpen';
+import { NclockAlerts } from './pages/sisnid/nclock/NclockAlerts';
+import { NaccessAlerts } from './pages/sisnid/naccess/NaccessAlerts';
+import { NvisitorAlerts } from './pages/sisnid/nvisitor/NvisitorAlerts';
+import { NviewAlerts } from './pages/sisnid/nview/NviewAlerts';
+import { NledAlerts } from './pages/nidtec/nled/NledAlerts';
 
 // Define a função de rotas com animação
 function AnimatedRoutes() {
@@ -288,6 +293,7 @@ function AnimatedRoutes() {
           <Route path="/nclock/nclockrequests" element={<PageProtection><NclockRequests /></PageProtection>} />
           <Route path="/nclock/nclockall" element={<PageProtection><NclockAll /></PageProtection>} />
           <Route path="/nclock/nclockgraph" element={<PageProtection><NclockGraph /></PageProtection>} />
+          <Route path="/nclock/nclockalerts" element={<PageProtection><NclockAlerts /></PageProtection>} />
 
           <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
           <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />
@@ -295,6 +301,7 @@ function AnimatedRoutes() {
           <Route path="/naccess/naccessaccesses" element={<PageProtection><NaccessAccesses /></PageProtection>} />
           <Route path="/naccess/naccesspresence" element={<PageProtection><NaccessPresence /></PageProtection>} />
           <Route path="/naccess/naccessdooropen" element={<PageProtection><NaccessDoorOpen /></PageProtection>} />
+          <Route path="/naccess/naccessalerts" element={<PageProtection><NaccessAlerts /></PageProtection>} />
 
           <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
           <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />
@@ -302,11 +309,13 @@ function AnimatedRoutes() {
           <Route path="/nvisitor/nvisitorMoveCard" element={<PageProtection><NvisitorMoveCard /></PageProtection>} />
           <Route path="/nvisitor/nvisitorMoveKiosk" element={<PageProtection><NvisitorMoveKiosk /></PageProtection>} />
           <Route path="/nvisitor/nvisitorListMovements" element={<PageProtection><NvisitorListMovements /></PageProtection>} />
+          <Route path="/nvisitor/nvisitoralerts" element={<PageProtection><NvisitorAlerts /></PageProtection>} />
 
           <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
           <Route path="/nview/nviewdashboardlicensed" element={<PageProtection><NviewDashboardLicensed /></PageProtection>} />
           <Route path="/nview/nviewgraph" element={<PageProtection><NviewGraph /></PageProtection>} />
           <Route path="/nview/nviewonlinecameras" element={<PageProtection><NviewOnlineCameras /></PageProtection>} />
+          <Route path="/nview/nviewalerts" element={<PageProtection><NviewAlerts /></PageProtection>} />
 
           <Route path="/ncard/ncarddashboard" element={<PageProtection><NcardDashboard /></PageProtection>} />
           <Route path="/ncard/ncarddashboardlicensed" element={<PageProtection><NcardDashboardLicensed /></PageProtection>} />
@@ -483,6 +492,7 @@ function AnimatedRoutes() {
           <Route path="/nled/nledads" element={<PageProtection><NledAds /></PageProtection>} />
           <Route path="/nled/nledgraph" element={<PageProtection><NledGraph /></PageProtection>} />
           <Route path="/nled/nledadslogs" element={<PageProtection><NledAdsLogs /></PageProtection>} />
+          <Route path="/nled/nledalerts" element={<PageProtection><NledAlerts /></PageProtection>} />
 
           <Route path="/nfire/nfiredashboard" element={<PageProtection><NfireDashboard /></PageProtection>} />
           <Route path="/nfire/nfiredashboardlicensed" element={<PageProtection><NfireDashboardLicensed /></PageProtection>} />

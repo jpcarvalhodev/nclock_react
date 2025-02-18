@@ -260,15 +260,15 @@ export const TimePlans = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -283,15 +283,15 @@ export const TimePlans = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -306,15 +306,15 @@ export const TimePlans = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -369,19 +369,19 @@ export const TimePlans = () => {
           <div className="buttons-container-others">
             <OverlayTrigger
               placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+              delay={0}
+              container={document.body}
+              popperConfig={{
+                strategy: "fixed",
+                modifiers: [
+                  {
+                    name: "preventOverflow",
+                    options: {
+                      boundary: "window",
+                    },
+                  },
+                ],
+              }}
               overlay={<Tooltip className="custom-tooltip">Atualizar</Tooltip>}
             >
               <CustomOutlineButton
@@ -391,19 +391,19 @@ export const TimePlans = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+              delay={0}
+              container={document.body}
+              popperConfig={{
+                strategy: "fixed",
+                modifiers: [
+                  {
+                    name: "preventOverflow",
+                    options: {
+                      boundary: "window",
+                    },
+                  },
+                ],
+              }}
               overlay={<Tooltip className="custom-tooltip">Adicionar</Tooltip>}
             >
               <CustomOutlineButton
@@ -414,19 +414,19 @@ export const TimePlans = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+              delay={0}
+              container={document.body}
+              popperConfig={{
+                strategy: "fixed",
+                modifiers: [
+                  {
+                    name: "preventOverflow",
+                    options: {
+                      boundary: "window",
+                    },
+                  },
+                ],
+              }}
               overlay={<Tooltip className="custom-tooltip">Colunas</Tooltip>}
             >
               <CustomOutlineButton
@@ -436,19 +436,19 @@ export const TimePlans = () => {
             </OverlayTrigger>
             <OverlayTrigger
               placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+              delay={0}
+              container={document.body}
+              popperConfig={{
+                strategy: "fixed",
+                modifiers: [
+                  {
+                    name: "preventOverflow",
+                    options: {
+                      boundary: "window",
+                    },
+                  },
+                ],
+              }}
               overlay={
                 <Tooltip className="custom-tooltip">
                   Apagar Selecionados

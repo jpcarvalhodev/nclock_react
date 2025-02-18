@@ -65,7 +65,7 @@ import sisnidlogo from '../../../assets/img/navbar/navbar/sisnidlogo.webp';
 import { CardContainer } from "../../../components/CardContainer";
 
 // Define o tipo TabName
-type TabName = 'SISNID - Segurança' | 'NIDSOF - Gestão' | 'NIDTEC - Tecnologia' | 'NIDPLACE - Conforto';
+type TabName = 'SISNID-Segurança' | 'NIDSOF-Gestão' | 'NIDTEC-Tecnologia' | 'NIDPLACE-Conforto';
 
 // Define o tipo CardTitle
 type CardTitle = 'Quiosques' | 'Torniquetes' | 'Vigilância' | 'Alarmes' |
@@ -145,7 +145,7 @@ const isValidCardTitle = (title: string): title is CardTitle => {
 
 export const NpowerDashboard = () => {
     const navigate = useNavigate();
-    const [activeKey, setActiveKey] = useState<TabName>('NIDTEC - Tecnologia');
+    const [activeKey, setActiveKey] = useState<TabName>('NIDTEC-Tecnologia');
 
     // Define a função de clique nos cards
     const handleCardClick = (title: string) => {
@@ -164,7 +164,7 @@ export const NpowerDashboard = () => {
     };
 
     const cardData = {
-        'SISNID - Segurança': [
+        'SISNID-Segurança': [
             { title: 'Assiduidade', img: nclock, tab: 'nclock' },
             { title: 'Acessos', img: naccess, tab: 'naccess' },
             { title: 'Torniquetes', img: nvisitor, tab: 'nvisitor' },
@@ -176,7 +176,7 @@ export const NpowerDashboard = () => {
             { title: 'Alarmes', img: nsecur, tab: 'nsecur' },
             { title: 'NSoftwares', img: sisnidlogo }
         ],
-        'NIDSOF - Gestão': [
+        'NIDSOF-Gestão': [
             { title: 'Programação', img: nsoftware, tab: 'nsoftware' },
             { title: 'Sistemas', img: nsystem, tab: 'nsystem' },
             { title: 'Aplicativos', img: napp, tab: 'napp' },
@@ -206,7 +206,7 @@ export const NpowerDashboard = () => {
             { title: 'Ópticas', img: noptics, tab: 'noptics' },
             { title: 'Ourivesarias', img: ngold, tab: 'ngold' },
         ],
-        'NIDTEC - Tecnologia': [
+        'NIDTEC-Tecnologia': [
             { title: 'Inteligência', img: nsmart, tab: 'nsmart' },
             { title: 'Virtual', img: nreality, tab: 'nreality' },
             { title: 'Hologramas', img: nhologram, tab: 'nhologram' },
@@ -218,7 +218,7 @@ export const NpowerDashboard = () => {
             { title: 'Incêndios', img: nfire, tab: 'nfire' },
             { title: 'NSoftwares', img: nidtec, tab: 'nidtec' }
         ],
-        'NIDPLACE - Conforto': [
+        'NIDPLACE-Conforto': [
             { title: 'Mobiliário', img: nfurniture, tab: 'nfurniture' },
             { title: 'Divisórias', img: npartition, tab: 'npartition' },
             { title: 'Design', img: ndecor, tab: 'ndecor' },

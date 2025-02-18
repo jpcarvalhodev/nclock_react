@@ -949,8 +949,12 @@ export const addManualOpenDoor = async (door: Partial<ManualOpenDoor>) => {
     return response.json();
 }
 
-export const fetchAllEventDevice = async () => {
-    const response = await fetchWithAuth(`Zkteco/GetAllEventDevice`);
+export const fetchAllEventDevice = async (startDate?: string, endDate?: string) => {
+    let url = `Zkteco/GetAllEventDevice`;
+    if (startDate && endDate) {
+        url += `?startTime=${startDate}&endTime=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (response.status === 403) {
       if (!hasShown403) {
         toast.error("Você não tem permissão para visualizar o conteúdo desta página");

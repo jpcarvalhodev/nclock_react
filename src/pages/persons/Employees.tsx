@@ -374,7 +374,7 @@ export const Employees = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
             strategy: "fixed",
@@ -397,7 +397,7 @@ export const Employees = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
             strategy: "fixed",
@@ -420,7 +420,7 @@ export const Employees = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
             strategy: "fixed",
@@ -599,7 +599,6 @@ export const Employees = () => {
                   placement="top"
                   delay={0}
                   container={document.body}
-                  
                   popperConfig={{
                     strategy: "fixed",
                     modifiers: [

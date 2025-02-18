@@ -3736,18 +3736,20 @@ export const NavBar = ({ style }: NavBarProps) => {
                     {(!isMobile || visibleGroup === "alertas nclock") && (
                       <div className="btn-group" role="group">
                         <div className="icon-text-informacoes">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/nclock/nclockalerts"
+                            type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nclock/nclockalerts"
+                                ? "current-active"
+                                : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={bell} alt="botão avisos" />
                             </span>
                             <span className="text">Avisos</span>
-                          </Button>
+                          </Link>
                         </div>
                       </div>
                     )}
@@ -4045,10 +4047,9 @@ export const NavBar = ({ style }: NavBarProps) => {
                             /* to="#" */
                             type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#"
-                                ? "current-active"
-                                : ""
-                            }`} disabled
+                              currentRoute === "#" ? "current-active" : ""
+                            }`}
+                            disabled
                           >
                             <span className="icon">
                               <img src={intercom} alt="botão vídeo porteiro" />
@@ -4187,18 +4188,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                     {(!isMobile || visibleGroup === "alertas naccess") && (
                       <div className="btn-group" role="group">
                         <div className="icon-text-pessoas">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/naccess/naccessalerts" type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/naccess/naccessalerts" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={bell} alt="botão avisos" />
                             </span>
                             <span className="text">Avisos</span>
-                          </Button>
+                          </Link>
                         </div>
                       </div>
                     )}
@@ -4571,18 +4571,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                     {(!isMobile || visibleGroup === "alertas nvisitor") && (
                       <div className="btn-group" role="group">
                         <div className="icon-text-pessoas">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/nvisitor/nvisitoralerts" type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nvisitor/nvisitoralerts" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={bell} alt="botão avisos" />
                             </span>
                             <span className="text">Avisos</span>
-                          </Button>
+                          </Link>
                         </div>
                       </div>
                     )}
@@ -6057,18 +6056,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                     {(!isMobile || visibleGroup === "alertas nview") && (
                       <div className="btn-group" role="group">
                         <div className="icon-text-pessoas">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/nview/nviewalerts" type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nview/nviewalerts" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={bell} alt="botão avisos" />
                             </span>
                             <span className="text">Avisos</span>
-                          </Button>
+                          </Link>
                         </div>
                       </div>
                     )}
@@ -16665,18 +16663,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                     {(!isMobile || visibleGroup === "alertas nled") && (
                       <div className="btn-group" role="group">
                         <div className="icon-text-pessoas">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/nled/nledalerts" type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nled/nledalerts" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={bell} alt="botão avisos" />
                             </span>
                             <span className="text">Avisos</span>
-                          </Button>
+                          </Link>
                         </div>
                       </div>
                     )}

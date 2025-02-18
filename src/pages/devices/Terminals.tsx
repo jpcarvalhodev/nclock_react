@@ -564,19 +564,19 @@ export const Terminals = () => {
             return (
               <OverlayTrigger
                 placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                delay={0}
+                container={document.body}
+                popperConfig={{
+                  strategy: "fixed",
+                  modifiers: [
+                    {
+                      name: "preventOverflow",
+                      options: {
+                        boundary: "window",
+                      },
+                    },
+                  ],
+                }}
                 overlay={
                   <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
                 }
@@ -629,19 +629,19 @@ export const Terminals = () => {
         const applyTooltip = (text: string) => (
           <OverlayTrigger
             placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
+            delay={0}
+            container={document.body}
+            popperConfig={{
+              strategy: "fixed",
+              modifiers: [
+                {
+                  name: "preventOverflow",
+                  options: {
+                    boundary: "window",
+                  },
                 },
-              },
-            ],
-          }}
+              ],
+            }}
             overlay={<Tooltip className="custom-tooltip">{text}</Tooltip>}
           >
             <span
@@ -673,6 +673,7 @@ export const Terminals = () => {
         }
       };
       return {
+        id: field.key,
         name: (
           <>
             {field.label}
@@ -685,6 +686,9 @@ export const Terminals = () => {
         ),
         selector: (row) => formatField(row),
         sortable: true,
+        sortFunction: (rowA, rowB) =>
+          new Date(rowB.eventTime).getTime() -
+          new Date(rowA.eventTime).getTime(),
       };
     });
 
@@ -702,19 +706,19 @@ export const Terminals = () => {
         const applyTooltip = (text: string) => (
           <OverlayTrigger
             placement="top"
-                  delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
+            delay={0}
+            container={document.body}
+            popperConfig={{
+              strategy: "fixed",
+              modifiers: [
+                {
+                  name: "preventOverflow",
+                  options: {
+                    boundary: "window",
+                  },
                 },
-              },
-            ],
-          }}
+              ],
+            }}
             overlay={<Tooltip className="custom-tooltip">{text}</Tooltip>}
           >
             <span
@@ -751,6 +755,7 @@ export const Terminals = () => {
         }
       };
       return {
+        id: field.key,
         name: (
           <>
             {field.label}
@@ -763,6 +768,9 @@ export const Terminals = () => {
         ),
         selector: (row) => formatField(row),
         sortable: true,
+        sortFunction: (rowA, rowB) =>
+          new Date(rowB.eventTime).getTime() -
+          new Date(rowA.eventTime).getTime(),
       };
     });
 
@@ -1172,15 +1180,15 @@ export const Terminals = () => {
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -1195,15 +1203,15 @@ export const Terminals = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -1218,15 +1226,15 @@ export const Terminals = () => {
         </OverlayTrigger>
         <OverlayTrigger
           placement="top"
-                  delay={0}
+          delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
+            strategy: "fixed",
             modifiers: [
               {
-                name: 'preventOverflow',
+                name: "preventOverflow",
                 options: {
-                  boundary: 'window',
+                  boundary: "window",
                 },
               },
             ],
@@ -1836,18 +1844,18 @@ export const Terminals = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Atualizar</Tooltip>
                   }
@@ -1860,18 +1868,18 @@ export const Terminals = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Adicionar</Tooltip>
                   }
@@ -1885,18 +1893,18 @@ export const Terminals = () => {
                 <OverlayTrigger
                   placement="top"
                   delay={0}
-          container={document.body}
-          popperConfig={{
-            strategy: 'fixed',
-            modifiers: [
-              {
-                name: 'preventOverflow',
-                options: {
-                  boundary: 'window',
-                },
-              },
-            ],
-          }}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
                   overlay={
                     <Tooltip className="custom-tooltip">Colunas</Tooltip>
                   }
@@ -2006,6 +2014,8 @@ export const Terminals = () => {
                           striped
                           responsive
                           persistTableHead={true}
+                          defaultSortAsc={true}
+                          defaultSortFieldId="eventTime"
                         />
                       )
                     ) : (
@@ -2045,6 +2055,8 @@ export const Terminals = () => {
                           striped
                           responsive
                           persistTableHead={true}
+                          defaultSortAsc={true}
+                          defaultSortFieldId="eventTime"
                         />
                       )
                     ) : (
