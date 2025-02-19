@@ -246,9 +246,6 @@ export const NvisitorListMovements = () => {
     newDate.setDate(newDate.getDate() + 1);
 
     if (newDate > new Date()) {
-      console.error(
-        "Não é possível buscar movimentos para uma data no futuro."
-      );
       return;
     }
 
@@ -486,7 +483,7 @@ export const NvisitorListMovements = () => {
         const value = row[field.key as keyof KioskTransactionCard];
         switch (field.key) {
           case "deviceSN":
-            return devices[0].deviceName || "Sem Dados";
+            return devices[0].deviceName
           case "eventDoorId":
             return row.eventDoorId === 4 ? "Quiosque" : "Torniquete";
           case "eventTime":
@@ -526,7 +523,7 @@ export const NvisitorListMovements = () => {
     const deviceMatch = devices.find(
       (device) => device.serialNumber === transaction.deviceSN
     );
-    const deviceName = deviceMatch?.deviceName || "Sem Dados";
+    const deviceName = deviceMatch?.deviceName;
 
     return {
       ...transaction,
@@ -794,7 +791,7 @@ export const NvisitorListMovements = () => {
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para exibir."
+                    noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive
@@ -1051,7 +1048,7 @@ export const NvisitorListMovements = () => {
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para exibir."
+                    noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive

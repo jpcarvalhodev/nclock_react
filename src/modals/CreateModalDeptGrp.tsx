@@ -574,7 +574,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({
                   defaultSortFieldId={
                     entityType === "department" ? "code" : "name"
                   }
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                 />
               </div>
             </Col>
@@ -599,7 +599,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({
                   selectableRowsNoSelectAll={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="enrollNumber"
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                 />
               </div>
             </Col>

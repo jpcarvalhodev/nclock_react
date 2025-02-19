@@ -453,7 +453,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
                             onSelectedRowsChange={({ selectedRows }) =>
                               setDeviceSelectedRows(selectedRows)
                             }
-                            noDataComponent="Não existem dados disponíveis para exibir."
+                            noDataComponent="Não existem dados disponíveis para mostrar."
                             customStyles={customStyles}
                             striped
                             responsive
@@ -468,7 +468,6 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
                             delay={0}
                             container={document.body}
                             popperConfig={{
-                              strategy: "fixed",
                               modifiers: [
                                 {
                                   name: "preventOverflow",
@@ -496,7 +495,6 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
                             delay={0}
                             container={document.body}
                             popperConfig={{
-                              strategy: "fixed",
                               modifiers: [
                                 {
                                   name: "preventOverflow",
@@ -535,7 +533,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
                             onSelectedRowsChange={({ selectedRows }) =>
                               setSelectedRows(selectedRows)
                             }
-                            noDataComponent="Não existem dados disponíveis para exibir."
+                            noDataComponent="Não existem dados disponíveis para mostrar."
                             clearSelectedRows={clearSelectionToggle}
                             customStyles={customStyles}
                             striped
@@ -551,7 +549,6 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
                             delay={0}
                             container={document.body}
                             popperConfig={{
-                              strategy: "fixed",
                               modifiers: [
                                 {
                                   name: "preventOverflow",
@@ -579,7 +576,6 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
                             delay={0}
                             container={document.body}
                             popperConfig={{
-                              strategy: "fixed",
                               modifiers: [
                                 {
                                   name: "preventOverflow",
@@ -617,7 +613,6 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -640,7 +635,6 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",

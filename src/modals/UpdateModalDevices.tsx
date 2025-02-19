@@ -1113,7 +1113,7 @@ export const UpdateModalDevices = <T extends Entity>({
                           paginationRowsPerPageOptions={[5, 10]}
                           selectableRows
                           onRowDoubleClicked={handleEditDoors}
-                          noDataComponent="Não existem dados disponíveis para exibir."
+                          noDataComponent="Não existem dados disponíveis para mostrar."
                           customStyles={customStyles}
                           striped
                           responsive
@@ -1152,7 +1152,7 @@ export const UpdateModalDevices = <T extends Entity>({
                           paginationRowsPerPageOptions={[5, 10]}
                           selectableRows
                           onRowDoubleClicked={handleEditReaders}
-                          noDataComponent="Não existem dados disponíveis para exibir."
+                          noDataComponent="Não existem dados disponíveis para mostrar."
                           customStyles={customStyles}
                           striped
                           responsive
@@ -1195,7 +1195,7 @@ export const UpdateModalDevices = <T extends Entity>({
                             onRowDoubleClicked={(row) =>
                               handleEditAux(row, "in")
                             }
-                            noDataComponent="Não existem dados disponíveis para exibir."
+                            noDataComponent="Não existem dados disponíveis para mostrar."
                             customStyles={customStyles}
                             striped
                             responsive
@@ -1233,7 +1233,7 @@ export const UpdateModalDevices = <T extends Entity>({
                             onRowDoubleClicked={(row) =>
                               handleEditAux(row, "out")
                             }
-                            noDataComponent="Não existem dados disponíveis para exibir."
+                            noDataComponent="Não existem dados disponíveis para mostrar."
                             customStyles={customStyles}
                             striped
                             responsive
@@ -1319,7 +1319,6 @@ export const UpdateModalDevices = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -1342,7 +1341,6 @@ export const UpdateModalDevices = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",

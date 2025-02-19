@@ -78,7 +78,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({
   useEffect(() => {
     if (open && entity) {
       fetchRecolhas();
-      setFormData({ ...entity });
+      setFormData({ ...entity, dataFimRecolha: new Date().toISOString().slice(0, 16) });
     }
   }, [open, entity]);
 
@@ -467,7 +467,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({
                 />
               </Form.Group>
               <Form.Group controlId="formDataRecolha">
-                <Form.Label>Data da Recolha</Form.Label>
+                <Form.Label>Data da Última Recolha</Form.Label>
                 <OverlayTrigger
                   placement="right"
                   overlay={
@@ -531,7 +531,6 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -554,7 +553,6 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",

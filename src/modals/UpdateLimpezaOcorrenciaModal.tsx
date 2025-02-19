@@ -346,7 +346,6 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -369,7 +368,6 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",

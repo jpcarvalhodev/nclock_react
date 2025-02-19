@@ -44,13 +44,28 @@ interface EmployeeStatus {
   [key: string]: EmployeeAttendanceTimes & { isPresent: boolean };
 }
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+  return `${date.toISOString().substring(0, 10)}T00:00`;
+};
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+  return `${date.toISOString().substring(0, 10)}T23:59`;
+};
+
 // Define a página de presença
 export const NclockPresence = () => {
+  const currentDate = new Date();
+  const pastDate = new Date();
+  pastDate.setDate(currentDate.getDate() - 30);
   const { fetchAllAttendances } = useAttendance();
   const { employees, handleUpdateEmployee } = usePersons();
   const [attendancePresence, setAttendancePresence] = useState<
     EmployeeAttendanceWithPresence[]
   >([]);
+  const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+  const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [filterText, setFilterText] = useState("");
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -112,6 +127,50 @@ export const NclockPresence = () => {
       .catch((error) => {
         console.error("Erro ao tentar buscar os dados:", error);
       });
+  };
+
+  // Função para filtrar as presenças
+  useEffect(() => {
+    const sDate = new Date(startDate);
+    const eDate = new Date(endDate);
+
+    const filtered = attendancePresence.filter((acc) => {
+      const eventDateTime = new Date(acc.eventTime);
+
+      return eventDateTime >= sDate && eventDateTime <= eDate;
+    });
+
+    const finalData = filtered.map((acc) => ({
+      ...acc,
+      isPresent: acc.inOutStatus === 0,
+    }));
+
+    setFilteredAttendances(finalData);
+  }, [startDate, endDate]);
+
+  // Handler para filtrar pela data de hoje
+  const handleTodayPresence = () => {
+    const today = new Date();
+    setStartDate(formatDateToStartOfDay(today));
+    setEndDate(formatDateToEndOfDay(today));
+  };
+
+  // Handler para retroceder um dia a partir do startDate atual
+  const handlePreviousDayPresence = () => {
+    const previousDay = new Date(startDate);
+    previousDay.setDate(previousDay.getDate() - 1);
+
+    setStartDate(formatDateToStartOfDay(previousDay));
+    setEndDate(formatDateToEndOfDay(previousDay));
+  };
+
+  // Handler para avançar um dia a partir do startDate atual
+  const handleNextDayPresence = () => {
+    const nextDay = new Date(startDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    setStartDate(formatDateToStartOfDay(nextDay));
+    setEndDate(formatDateToEndOfDay(nextDay));
   };
 
   // Função para atualizar um funcionário e um cartão
@@ -380,6 +439,14 @@ export const NclockPresence = () => {
     return () => clearTimeout(timeout);
   }, [filteredDataTable]);
 
+  // Função para calcular a quantidade de presentes e ausentes
+  const calculatePresenceCounts = () => {
+    const presentes = filteredDataTable.filter((item) => item.isPresent).length;
+    const ausentes = employees.length - presentes;
+    return { presentes, ausentes };
+  };
+  const { presentes, ausentes } = calculatePresenceCounts();
+
   return (
     <div className="main-container">
       <div className="content-container">
@@ -459,6 +526,125 @@ export const NclockPresence = () => {
                   fields={getSelectedFields()}
                 />
               </div>
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Presenças Hoje</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    iconSize="1.1em"
+                    onClick={handleTodayPresence}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Presenças Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    iconSize="1.1em"
+                    onClick={handlePreviousDayPresence}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Presenças Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    iconSize="1.1em"
+                    onClick={handleNextDayPresence}
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton icon="bi-search" iconSize="1.1em" />
+                </OverlayTrigger>
+              </div>
             </div>
             <div className="content-wrapper">
               <div className="table-css">
@@ -484,7 +670,7 @@ export const NclockPresence = () => {
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para exibir."
+                    noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive
@@ -585,6 +771,125 @@ export const NclockPresence = () => {
                   fields={getSelectedFields()}
                 />
               </div>
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Presenças Hoje</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    iconSize="1.1em"
+                    onClick={handleTodayPresence}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Presenças Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    iconSize="1.1em"
+                    onClick={handlePreviousDayPresence}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Presenças Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    iconSize="1.1em"
+                    onClick={handleNextDayPresence}
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton icon="bi-search" iconSize="1.1em" />
+                </OverlayTrigger>
+              </div>
             </div>
             <div className="content-wrapper">
               <div className="table-css">
@@ -610,7 +915,7 @@ export const NclockPresence = () => {
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para exibir."
+                    noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive
@@ -619,6 +924,11 @@ export const NclockPresence = () => {
                     defaultSortFieldId="attendanceTime"
                   />
                 )}
+              </div>
+              <div style={{ marginLeft: 10 }}>
+                <strong>Presentes: </strong>
+                {presentes} | <strong>Ausentes: </strong>
+                {ausentes}
               </div>
             </div>
           </div>

@@ -113,9 +113,6 @@ export const TerminalCloseOpen = () => {
     newDate.setDate(newDate.getDate() + 1);
 
     if (newDate > new Date()) {
-      console.error(
-        "Não é possível buscar movimentos para uma data no futuro."
-      );
       return;
     }
 
@@ -574,7 +571,7 @@ export const TerminalCloseOpen = () => {
                   selectableRows
                   onSelectedRowsChange={handleDeviceRowSelected}
                   selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive
@@ -824,7 +821,7 @@ export const TerminalCloseOpen = () => {
                   selectableRows
                   onSelectedRowsChange={handleDeviceRowSelected}
                   selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive

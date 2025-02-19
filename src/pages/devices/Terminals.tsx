@@ -60,7 +60,6 @@ import {
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { UpdateModalEmployees } from "../../modals/UpdateModalEmployees";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
-import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -92,6 +91,16 @@ const combinedEmployeeFields = [
   (field, index, self) => index === self.findIndex((f) => f.key === field.key)
 );
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+  return `${date.toISOString().substring(0, 10)}T00:00`;
+};
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+  return `${date.toISOString().substring(0, 10)}T23:59`;
+};
+
 // Define o componente de terminais
 export const Terminals = () => {
   const {
@@ -113,8 +122,8 @@ export const Terminals = () => {
     handleDeleteDevice,
     fetchAllAux,
     fetchAllDoorData,
-    fetchEventsDevice,
     fetchEventsAndTransactionDevice,
+    fetchDeviceActivities,
   } = useTerminals();
   const { handleAddImportedAttendance } = useAttendance();
   const {
@@ -124,6 +133,11 @@ export const Terminals = () => {
     handleImportEmployeeFP,
     handleImportEmployeeFace,
   } = usePersons();
+  const currentDate = new Date();
+  const pastDate = new Date();
+  pastDate.setDate(currentDate.getDate() - 30);
+  const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+  const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [employeesBio, setEmployeesBio] = useState<EmployeeAndCard[]>([]);
   const [employeeCards, setEmployeeCards] = useState<EmployeeAndCard[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -249,41 +263,41 @@ export const Terminals = () => {
     setEmployeeCards(sortedEmployeeCards);
   };
 
-  // Função para buscar todas as atividades de dispositivos, movimentos de dispositivos e utilizadores no terminal
+  // Função para buscar todas as tarefas e movimentos de dispositivos
   useEffect(() => {
-    const fetchActivity = async () => {
+    let interval: NodeJS.Timeout;
+
+    const fetchData = async () => {
       if (selectedTerminal) {
-        setLoadingActivityData(true);
         try {
-          const fetchedActivity = await fetchEventsDevice();
+          setLoadingActivityData(true);
+          const fetchedActivity = await fetchDeviceActivities();
           setTransactions(fetchedActivity);
           setLoadingActivityData(false);
-        } catch (error) {
-          console.error("Erro ao buscar tarefas:", error);
-        }
-      } else {
-        setTransactions([]);
-        setLoadingActivityData(false);
-      }
-    };
-    fetchActivity();
 
-    const fetchMovement = async () => {
-      if (selectedTerminal) {
-        setLoadingMovementData(true);
-        try {
+          setLoadingMovementData(true);
           const fetchedMovement = await fetchEventsAndTransactionDevice();
           setMovements(fetchedMovement);
           setLoadingMovementData(false);
         } catch (error) {
-          console.error("Erro ao buscar movimentos:", error);
+          console.error("Erro ao buscar dados do terminal:", error);
+          setLoadingActivityData(false);
+          setLoadingMovementData(false);
         }
-      } else {
-        setMovements([]);
-        setLoadingMovementData(false);
       }
     };
-    fetchMovement();
+
+    fetchData();
+
+    if (selectedTerminal) {
+      interval = setInterval(fetchData, 10000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [selectedTerminal]);
 
   // Função para adicionar um dispositivo
@@ -616,16 +630,8 @@ export const Terminals = () => {
     });
 
   // Define as colunas de transações
-  const transactionColumns: TableColumn<Activity>[] = activityFields
-    .filter(
-      (field) =>
-        field.key !== "id" &&
-        field.key !== "eventId" &&
-        field.key !== "inOutStatus" &&
-        field.key !== "cardNo" &&
-        field.key !== "eventDoorId"
-    )
-    .map((field) => {
+  const transactionColumns: TableColumn<Activity>[] = activityFields.map(
+    (field) => {
       const formatField = (row: Activity) => {
         const applyTooltip = (text: string) => (
           <OverlayTrigger
@@ -659,8 +665,14 @@ export const Terminals = () => {
         );
 
         switch (field.key) {
-          case "eventTime":
-            return new Date(row[field.key]).toLocaleString() || "";
+          case "createdDate":
+          case "endDate": {
+            const formattedDate = new Date(row[field.key]).toLocaleString();
+            if (formattedDate === "01/01/1970, 01:00:00") {
+              return "";
+            }
+            return applyTooltip(formattedDate);
+          }
           case "deviceSN": {
             const deviceName =
               devices.find((device) => device.serialNumber === row[field.key])
@@ -678,30 +690,27 @@ export const Terminals = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={transactions}
-            />
+            {field.key !== "createdDate" && field.key !== "endDate" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={transactions}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
         sortable: true,
         sortFunction: (rowA, rowB) =>
-          new Date(rowB.eventTime).getTime() -
-          new Date(rowA.eventTime).getTime(),
+          new Date(rowB.createdDate).getTime() -
+          new Date(rowA.createdDate).getTime(),
       };
-    });
+    }
+  );
 
   // Define as colunas de movimentos
   const movementColumns: TableColumn<Movements>[] = movementFields
-    .filter(
-      (field) =>
-        field.key !== "id" &&
-        field.key !== "eventId" &&
-        field.key !== "cardNo" &&
-        field.key !== "nomeResponsavel"
-    )
+    .filter((field) => field.key !== "id" && field.key !== "eventId")
     .map((field) => {
       const formatField = (row: Movements) => {
         const applyTooltip = (text: string) => (
@@ -736,8 +745,13 @@ export const Terminals = () => {
         );
 
         switch (field.key) {
-          case "eventTime":
-            return new Date(row[field.key]).toLocaleString() || "";
+          case "eventTime": {
+            const formattedDate = new Date(row[field.key]).toLocaleString();
+            if (formattedDate === "01/01/1970, 01:00:00") {
+              return "";
+            }
+            return applyTooltip(formattedDate);
+          }
           case "eventDoorId": {
             const doorName =
               door.find((door) => door.doorNo === row[field.key])?.name || "";
@@ -751,6 +765,15 @@ export const Terminals = () => {
           }
           case "eventName":
             return applyTooltip(row[field.key]);
+          case "nomeResponsavel": {
+            const employeeName =
+              employees.find(
+                (employee) =>
+                  row.cardNo &&
+                  employee.employeeCards[0].cardNumber === row.cardNo.toString()
+              )?.shortName || "";
+            return employeeName;
+          }
           default:
             return row[field.key];
         }
@@ -760,11 +783,13 @@ export const Terminals = () => {
         name: (
           <>
             {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={transactions}
-            />
+            {field.key !== "eventTime" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={transactions}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
@@ -1184,7 +1209,6 @@ export const Terminals = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -1207,7 +1231,6 @@ export const Terminals = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -1230,7 +1253,6 @@ export const Terminals = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -1965,7 +1987,7 @@ export const Terminals = () => {
                   clearSelectedRows={clearSelectionToggle}
                   onSelectedRowsChange={handleDeviceRowSelected}
                   selectableRowsHighlight
-                  noDataComponent="Não há dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive
@@ -1989,36 +2011,172 @@ export const Terminals = () => {
                       Tarefas dos Equipamentos
                     </p>
                     {selectedTerminal && selectedDeviceRows.length > 0 ? (
-                      loadingActivityData ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            height: "200px",
-                          }}
-                        >
-                          <CustomSpinner />
+                      <>
+                        <div style={{ display: "flex", marginBottom: 10 }}>
+                          <div className="buttons-container-data-range">
+                            <OverlayTrigger
+                              placement="top"
+                              delay={0}
+                              container={document.body}
+                              popperConfig={{
+                                strategy: "fixed",
+                                modifiers: [
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "window",
+                                    },
+                                  },
+                                ],
+                              }}
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Movimentos Hoje
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi bi-calendar-event"
+                                iconSize="1.1em"
+                              />
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                              placement="top"
+                              delay={0}
+                              container={document.body}
+                              popperConfig={{
+                                strategy: "fixed",
+                                modifiers: [
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "window",
+                                    },
+                                  },
+                                ],
+                              }}
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Movimentos Dia Anterior
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi bi-arrow-left-circle"
+                                iconSize="1.1em"
+                              />
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                              placement="top"
+                              delay={0}
+                              container={document.body}
+                              popperConfig={{
+                                strategy: "fixed",
+                                modifiers: [
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "window",
+                                    },
+                                  },
+                                ],
+                              }}
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Movimentos Dia Seguinte
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi bi-arrow-right-circle"
+                                iconSize="1.1em"
+                                disabled={
+                                  new Date(endDate) >=
+                                  new Date(
+                                    new Date().toISOString().substring(0, 10)
+                                  )
+                                }
+                              />
+                            </OverlayTrigger>
+                          </div>
+                          <div
+                            className="date-range-search"
+                            style={{ margin: 0 }}
+                          >
+                            <input
+                              type="datetime-local"
+                              value={startDate}
+                              onChange={(e) => setStartDate(e.target.value)}
+                              className="search-input"
+                            />
+                            <span> até </span>
+                            <input
+                              type="datetime-local"
+                              value={endDate}
+                              onChange={(e) => setEndDate(e.target.value)}
+                              className="search-input"
+                            />
+                            <OverlayTrigger
+                              placement="top"
+                              delay={0}
+                              container={document.body}
+                              popperConfig={{
+                                strategy: "fixed",
+                                modifiers: [
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "window",
+                                    },
+                                  },
+                                ],
+                              }}
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Buscar
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi-search"
+                                iconSize="1.1em"
+                              />
+                            </OverlayTrigger>
+                          </div>
                         </div>
-                      ) : (
-                        <DataTable
-                          columns={transactionColumns}
-                          data={transactions}
-                          pagination
-                          paginationPerPage={5}
-                          paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                          paginationComponentOptions={paginationOptions}
-                          selectableRows
-                          selectableRowsSingle
-                          noDataComponent="Não há actividades disponíveis para exibir."
-                          customStyles={customStyles}
-                          striped
-                          responsive
-                          persistTableHead={true}
-                          defaultSortAsc={true}
-                          defaultSortFieldId="eventTime"
-                        />
-                      )
+                        {loadingActivityData ? (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              height: "200px",
+                            }}
+                          >
+                            <CustomSpinner />
+                          </div>
+                        ) : (
+                          <DataTable
+                            columns={transactionColumns}
+                            data={transactions}
+                            pagination
+                            paginationPerPage={5}
+                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                            paginationComponentOptions={paginationOptions}
+                            selectableRows
+                            selectableRowsSingle
+                            noDataComponent="Não há actividades disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            responsive
+                            persistTableHead={true}
+                            defaultSortAsc={true}
+                            defaultSortFieldId="createdDate"
+                          />
+                        )}
+                      </>
                     ) : (
                       <p style={{ textAlign: "center" }}>
                         Selecione um equipamento para ver as actividades.
@@ -2030,36 +2188,172 @@ export const Terminals = () => {
                       Movimentos dos Equipamentos
                     </p>
                     {selectedTerminal && selectedDeviceRows.length > 0 ? (
-                      loadingMovementData ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            height: "200px",
-                          }}
-                        >
-                          <CustomSpinner />
+                      <>
+                        <div style={{ display: "flex", marginBottom: 10 }}>
+                          <div className="buttons-container-data-range">
+                            <OverlayTrigger
+                              placement="top"
+                              delay={0}
+                              container={document.body}
+                              popperConfig={{
+                                strategy: "fixed",
+                                modifiers: [
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "window",
+                                    },
+                                  },
+                                ],
+                              }}
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Movimentos Hoje
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi bi-calendar-event"
+                                iconSize="1.1em"
+                              />
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                              placement="top"
+                              delay={0}
+                              container={document.body}
+                              popperConfig={{
+                                strategy: "fixed",
+                                modifiers: [
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "window",
+                                    },
+                                  },
+                                ],
+                              }}
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Movimentos Dia Anterior
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi bi-arrow-left-circle"
+                                iconSize="1.1em"
+                              />
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                              placement="top"
+                              delay={0}
+                              container={document.body}
+                              popperConfig={{
+                                strategy: "fixed",
+                                modifiers: [
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "window",
+                                    },
+                                  },
+                                ],
+                              }}
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Movimentos Dia Seguinte
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi bi-arrow-right-circle"
+                                iconSize="1.1em"
+                                disabled={
+                                  new Date(endDate) >=
+                                  new Date(
+                                    new Date().toISOString().substring(0, 10)
+                                  )
+                                }
+                              />
+                            </OverlayTrigger>
+                          </div>
+                          <div
+                            className="date-range-search"
+                            style={{ margin: 0 }}
+                          >
+                            <input
+                              type="datetime-local"
+                              value={startDate}
+                              onChange={(e) => setStartDate(e.target.value)}
+                              className="search-input"
+                            />
+                            <span> até </span>
+                            <input
+                              type="datetime-local"
+                              value={endDate}
+                              onChange={(e) => setEndDate(e.target.value)}
+                              className="search-input"
+                            />
+                            <OverlayTrigger
+                              placement="top"
+                              delay={0}
+                              container={document.body}
+                              popperConfig={{
+                                strategy: "fixed",
+                                modifiers: [
+                                  {
+                                    name: "preventOverflow",
+                                    options: {
+                                      boundary: "window",
+                                    },
+                                  },
+                                ],
+                              }}
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Buscar
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi-search"
+                                iconSize="1.1em"
+                              />
+                            </OverlayTrigger>
+                          </div>
                         </div>
-                      ) : (
-                        <DataTable
-                          columns={movementColumns}
-                          data={movements}
-                          pagination
-                          paginationPerPage={5}
-                          paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
-                          paginationComponentOptions={paginationOptions}
-                          selectableRows
-                          selectableRowsSingle
-                          noDataComponent="Não há movimentos disponíveis para exibir."
-                          customStyles={customStyles}
-                          striped
-                          responsive
-                          persistTableHead={true}
-                          defaultSortAsc={true}
-                          defaultSortFieldId="eventTime"
-                        />
-                      )
+                        {loadingMovementData ? (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              height: "200px",
+                            }}
+                          >
+                            <CustomSpinner />
+                          </div>
+                        ) : (
+                          <DataTable
+                            columns={movementColumns}
+                            data={movements}
+                            pagination
+                            paginationPerPage={5}
+                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                            paginationComponentOptions={paginationOptions}
+                            selectableRows
+                            selectableRowsSingle
+                            noDataComponent="Não há movimentos disponíveis para exibir."
+                            customStyles={customStyles}
+                            striped
+                            responsive
+                            persistTableHead={true}
+                            defaultSortAsc={true}
+                            defaultSortFieldId="eventTime"
+                          />
+                        )}
+                      </>
                     ) : (
                       <p style={{ textAlign: "center" }}>
                         Selecione um equipamento para ver os movimentos.
@@ -2103,7 +2397,7 @@ export const Terminals = () => {
                               clearSelectedRows={clearSelectionToggle}
                               onSelectedRowsChange={handleUserRowSelected}
                               selectableRowsHighlight
-                              noDataComponent="Não há dados disponíveis para exibir."
+                              noDataComponent="Não existem dados disponíveis para mostrar."
                               customStyles={customStyles}
                               striped
                               responsive
@@ -2252,7 +2546,7 @@ export const Terminals = () => {
                           clearSelectedRows={clearSelectionToggle}
                           onSelectedRowsChange={handleUserRowSelected}
                           selectableRowsHighlight
-                          noDataComponent="Não há dados disponíveis para exibir."
+                          noDataComponent="Não existem dados disponíveis para mostrar."
                           customStyles={customStyles}
                           striped
                           responsive
@@ -2285,7 +2579,7 @@ export const Terminals = () => {
                           clearSelectedRows={clearSelectionToggle}
                           onSelectedRowsChange={handleUserRowSelected}
                           selectableRowsHighlight
-                          noDataComponent="Não há dados disponíveis para exibir."
+                          noDataComponent="Não existem dados disponíveis para mostrar."
                           customStyles={customStyles}
                           striped
                           responsive
@@ -2320,7 +2614,7 @@ export const Terminals = () => {
                       selectableRowsSingle
                       onSelectedRowsChange={handleDeviceRowSelected}
                       selectableRowsHighlight
-                      noDataComponent="Não há dados disponíveis para exibir."
+                      noDataComponent="Não existem dados disponíveis para mostrar."
                       customStyles={customStyles}
                       striped
                       responsive
@@ -2347,6 +2641,7 @@ export const Terminals = () => {
                     marginBottom: 10,
                     padding: 5,
                   }}
+                  className="tabs-buttons-terminal"
                 >
                   <Button
                     variant="outline-primary"
@@ -2488,6 +2783,7 @@ export const Terminals = () => {
                     marginBottom: 10,
                     padding: 5,
                   }}
+                  className="tabs-buttons-terminal"
                 >
                   <Button
                     variant="outline-primary"
@@ -2521,6 +2817,7 @@ export const Terminals = () => {
                     marginBottom: 10,
                     padding: 5,
                   }}
+                  className="tabs-buttons-terminal"
                 >
                   <Button
                     variant="outline-primary"
@@ -2580,6 +2877,7 @@ export const Terminals = () => {
                     marginBottom: 10,
                     padding: 5,
                   }}
+                  className="tabs-buttons-terminal"
                 >
                   <Button
                     variant="outline-primary"
@@ -2625,6 +2923,7 @@ export const Terminals = () => {
                     marginBottom: 10,
                     padding: 5,
                   }}
+                  className="tabs-buttons-terminal"
                 >
                   <Button
                     variant="outline-primary"

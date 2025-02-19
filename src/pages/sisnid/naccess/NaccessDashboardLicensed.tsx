@@ -369,6 +369,7 @@ export const NaccessDashboardLicensed = () => {
                 className="departments-groups-chart-data"
                 data={accessLineChartData}
                 onClick={() => navigate('/naccess/naccessaccesses')}
+                style={{ cursor: "pointer" }}
               />
             </div>
             <div style={{ height: "26rem", maxWidth: "56rem", margin: "auto" }}>
@@ -398,6 +399,7 @@ export const NaccessDashboardLicensed = () => {
               className="departments-groups-chart-data"
               data={presenceBarChartData}
               onClick={() => navigate('/naccess/naccesspresence')}
+              style={{ cursor: "pointer" }}
             />
           </div>
         </div>
@@ -410,13 +412,14 @@ export const NaccessDashboardLicensed = () => {
               className="departments-groups-chart-data"
               data={noPresenceBarChartData}
               onClick={() => navigate('/naccess/naccesspresence')}
+              style={{ cursor: "pointer" }}
             />
           </div>
         </div>
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
             <h2 className="departments-groups-chart-text">
-              Visitantes hoje: {}
+              Total de visitantes hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
@@ -427,12 +430,13 @@ export const NaccessDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
             <h2 className="departments-groups-chart-text">
-              Abertura manual hoje: {}
+              Total de aberturas manuais hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
               data={manualDoorBarChartData}
               onClick={() => navigate('/naccess/naccessdooropen')}
+              style={{ cursor: "pointer" }}
             />
           </div>
         </div>

@@ -3062,23 +3062,6 @@ export const NavBar = ({ style }: NavBarProps) => {
         <div className="user-section mobile-hidden">
           <Button
             onClick={() =>
-              toast.warn("Funcionalidade de favoritos em desenvolvimento")
-            }
-            className="btn btn-light navbar-buttons"
-          >
-            <span
-              className="icon"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img src={favourite} alt="botão favoritos" />
-            </span>
-          </Button>
-          <Button
-            onClick={() =>
               toast.warn("Funcionalidade de mensagens em desenvolvimento")
             }
             className="btn btn-light navbar-buttons"
@@ -3093,6 +3076,23 @@ export const NavBar = ({ style }: NavBarProps) => {
               }}
             >
               <img src={mail} alt="botão mensagens" />
+            </span>
+          </Button>
+          <Button
+            onClick={() =>
+              toast.warn("Funcionalidade de favoritos em desenvolvimento")
+            }
+            className="btn btn-light navbar-buttons"
+          >
+            <span
+              className="icon"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img src={favourite} alt="botão favoritos" />
             </span>
           </Button>
           <Dropdown

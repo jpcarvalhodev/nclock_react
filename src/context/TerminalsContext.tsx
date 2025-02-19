@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from "../api/apiService";
-import { AccessControl, Activity, Alerts, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, KioskTransaction, MBDevice, MBDeviceCloseOpen, Movements, Readers, TimePeriod, TimePlan } from '../types/Types';
+import { AccessControl, Activity, Alerts, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, Events, KioskTransaction, MBDevice, MBDeviceCloseOpen, Movements, Readers, TimePeriod, TimePlan } from '../types/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -62,8 +62,9 @@ export interface DeviceContextType {
     handleDeletePeriodTimePlan: (planoId: string, id: string[]) => Promise<void>;
     fetchReaders: (deviceId: string) => Promise<Readers[]>;
     handleUpdateReaders: (reader: Readers) => Promise<void>;
-    fetchEventsDevice: () => Promise<Activity[]>;
+    fetchEventsDevice: () => Promise<Events[]>;
     fetchEventsAndTransactionDevice: () => Promise<Movements[]>;
+    fetchDeviceActivities: () => Promise<Activity[]>;
 }
 
 // Cria o contexto	
@@ -604,7 +605,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os eventos do dispositivo
-    const fetchEventsDevice = async (): Promise<Activity[]> => {
+    const fetchEventsDevice = async (): Promise<Events[]> => {
         try {
             const data = await apiService.fetchAllEventDevice();
             setEvents(data);
@@ -619,6 +620,17 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const fetchEventsAndTransactionDevice = async (): Promise<Movements[]> => {
         try {
             const data = await apiService.fetchAllEventAndTransactionDevice();
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar eventos:', error);
+        }
+        return [];
+    }
+
+    // Função para buscar todas as atividades do dispositivo
+    const fetchDeviceActivities = async (): Promise<Activity[]> => {
+        try {
+            const data = await apiService.fetchAllDeviceActivities();
             return data;
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
@@ -704,7 +716,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         fetchReaders,
         handleUpdateReaders,
         fetchEventsDevice,
-        fetchEventsAndTransactionDevice
+        fetchEventsAndTransactionDevice,
+        fetchDeviceActivities
     };
 
     return (

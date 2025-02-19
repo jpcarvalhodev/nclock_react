@@ -266,7 +266,7 @@ export const AddEmployeeToPersonFilterModal = <T extends Record<string, any>>({
                 onSelectedRowsChange={handleRowSelected}
                 clearSelectedRows={clearSelectionToggle}
                 selectableRowsHighlight
-                noDataComponent="Não existem dados disponíveis para exibir."
+                noDataComponent="Não existem dados disponíveis para mostrar."
                 customStyles={customStyles}
                 striped
                 responsive
@@ -308,7 +308,7 @@ export const AddEmployeeToPersonFilterModal = <T extends Record<string, any>>({
                 onSelectedRowsChange={handleRowSelected}
                 clearSelectedRows={clearSelectionToggle}
                 selectableRowsHighlight
-                noDataComponent="Não existem dados disponíveis para exibir."
+                noDataComponent="Não existem dados disponíveis para mostrar."
                 customStyles={customStyles}
                 striped
                 responsive

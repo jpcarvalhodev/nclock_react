@@ -1,93 +1,113 @@
 .content-section > div {
-    padding: 10px;
-    box-sizing: border-box;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .button-terminals-users {
-    margin-right: 5px;
-    background-color: transparent;
-    border-color: #000000;
-    color: #000000;
-    height: 100px;
-    width: 130px;
+  margin-right: 5px;
+  background-color: transparent;
+  border-color: #000000;
+  color: #000000;
+  height: 100px;
+  width: 130px;
 }
 
 .button-terminals-users:hover {
-    background-color: #000000;
-    color: #fff;
-    border: none;
+  background-color: #000000;
+  color: #fff;
+  border: none;
 }
 
 .button-terminals-users-track {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    background-color: transparent;
-    border-color: #000000;
-    color: #000000;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  background-color: transparent;
+  border-color: #000000;
+  color: #000000;
 }
 
 .button-terminals-users-track:hover {
-    background-color: #000000;
-    color: #fff;
+  background-color: #000000;
+  color: #fff;
 }
 
 .activityTabContent {
-    background-color: black;
-    font-size: 12px;
-    color: white;
-    border-bottom: 1px solid #ccc;
-    text-align: center;
-    margin-top: 20px;
+  background-color: black;
+  font-size: 12px;
+  color: white;
+  border-bottom: 1px solid #ccc;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .nav-modal {
-    background-color: white;
+  background-color: white;
 }
 
 .nav-modal .nav-link {
-    color: #000000;
+  color: #000000;
 }
 
 .nav-modal .nav-link.active {
-    color: #000000;
+  color: #000000;
 }
 
 .nav-modal .nav-link:hover {
-    color: #000000;
+  color: #000000;
 }
 
-@media (max-width: 500px) {
-    .deviceTabsMobile {
-        flex-direction: column;
-    }
+@media (max-width: 380px) {
+  .button-terminals-users {
+    font-size: 13px !important;
+    margin-top: 5px;
+  }
 
-    .deviceMobile {
-        flex: none !important;
-    }
-
-    .button-terminals-users-track {
-        font-size: 13px !important;
-    }
-
-    .button-terminals-users {
-        font-size: 13px !important;
-    }
+  .tabs-buttons-terminal {
+    display: grid !important;
+    flex-direction: column;
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-@media (min-width: 501px) and (max-width: 1200px){
-    .deviceTabsMobile {
-        flex-direction: column;
-    }
+@media (min-width: 381px) and (max-width: 500px) {
+  .deviceTabsMobile {
+    flex-direction: column;
+  }
 
-    .deviceMobile {
-        flex: none !important;
-    }
+  .deviceMobile {
+    flex: none !important;
+  }
 
-    .button-terminals-users-track {
-        font-size: 15px !important;
-    }
+  .button-terminals-users-track {
+    font-size: 13px !important;
+  }
 
-    .button-terminals-users {
-        font-size: 15px !important;
-    }
+  .button-terminals-users {
+    font-size: 13px !important;
+    margin-top: 5px;
+  }
+
+  .tabs-buttons-terminal {
+    display: grid !important;
+    flex-direction: column;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 501px) and (max-width: 1200px) {
+  .deviceTabsMobile {
+    flex-direction: column;
+  }
+
+  .deviceMobile {
+    flex: none !important;
+  }
+
+  .button-terminals-users-track {
+    font-size: 15px !important;
+  }
+
+  .button-terminals-users {
+    font-size: 15px !important;
+  }
 }

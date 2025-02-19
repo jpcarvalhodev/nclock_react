@@ -135,9 +135,6 @@ export const NkioskPayTerminal = () => {
     newDate.setDate(newDate.getDate() + 1);
 
     if (newDate > new Date()) {
-      console.error(
-        "Não é possível buscar pagamentos para uma data no futuro."
-      );
       return;
     }
 
@@ -624,7 +621,7 @@ export const NkioskPayTerminal = () => {
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
                   selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive
@@ -878,7 +875,7 @@ export const NkioskPayTerminal = () => {
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
                   selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive

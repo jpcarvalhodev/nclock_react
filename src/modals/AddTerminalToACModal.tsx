@@ -260,7 +260,7 @@ export const AddTerminalToACModal = <T extends Record<string, any>>({
               clearSelectedRows={clearSelectionToggle}
               pagination
               paginationComponentOptions={paginationOptions}
-              noDataComponent="Não existem dados disponíveis para exibir."
+              noDataComponent="Não existem dados disponíveis para mostrar."
               customStyles={getCustomStyles()}
               striped
               responsive

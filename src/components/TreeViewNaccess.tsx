@@ -323,7 +323,6 @@ export function TreeViewDataNaccess({
                   delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
             modifiers: [
               {
                 name: 'preventOverflow',

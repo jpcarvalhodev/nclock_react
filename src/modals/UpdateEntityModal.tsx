@@ -476,7 +476,6 @@ export const UpdateEntityModal = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -499,7 +498,6 @@ export const UpdateEntityModal = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",

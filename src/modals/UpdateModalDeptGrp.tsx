@@ -514,7 +514,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({
                       selectableRowsNoSelectAll
                       defaultSortAsc
                       defaultSortFieldId="code"
-                      noDataComponent="Não existem dados disponíveis para exibir."
+                      noDataComponent="Não existem dados disponíveis para mostrar."
                     />
                   </div>
                 </>
@@ -595,7 +595,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({
                   selectableRowsNoSelectAll={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="enrollNumber"
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                 />
               </div>
               <div style={{ display: "flex" }}>
@@ -637,7 +637,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -660,7 +659,6 @@ export const UpdateModalDeptGrp = <T extends Entity>({
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",

@@ -135,9 +135,6 @@ export const NaccessDoorOpen = () => {
     newDate.setDate(newDate.getDate() + 1);
 
     if (newDate > new Date()) {
-      console.error(
-        "Não é possível buscar dados de aberturas manuais para uma data no futuro."
-      );
       return;
     }
 
@@ -636,7 +633,7 @@ export const NaccessDoorOpen = () => {
                   onSelectedRowsChange={handleDeviceRowSelected}
                   selectableRowsHighlight
                   clearSelectedRows={clearSelectionToggle}
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive
@@ -925,7 +922,7 @@ export const NaccessDoorOpen = () => {
                   onSelectedRowsChange={handleDeviceRowSelected}
                   selectableRowsHighlight
                   clearSelectedRows={clearSelectionToggle}
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive

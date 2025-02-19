@@ -199,7 +199,6 @@ export function TreeViewDataNled({ onSelectDevices }: TreeViewDataNledProps) {
                   delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
             modifiers: [
               {
                 name: 'preventOverflow',

@@ -71,7 +71,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <
       fetchRecolhas();
       const username = localStorage.getItem("username") || "";
       if (initialValuesData.deviceID) {
-        setFormData({ ...initialValuesData });
+        setFormData({ ...initialValuesData, dataFimRecolha: new Date() });
       } else {
         setFormData({ ...initialValues, pessoaResponsavel: username });
       }
@@ -463,7 +463,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <
                 />
               </Form.Group>
               <Form.Group controlId="formDataRecolha">
-                <Form.Label>Data de Recolha</Form.Label>
+                <Form.Label>Data da Última Recolha</Form.Label>
                 <OverlayTrigger
                   placement="right"
                   overlay={

@@ -203,7 +203,6 @@ export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
                   delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
             modifiers: [
               {
                 name: 'preventOverflow',

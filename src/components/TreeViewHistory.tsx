@@ -226,7 +226,6 @@ export function TreeViewDataHistory({
                   delay={0}
           container={document.body}
           popperConfig={{
-            strategy: 'fixed',
             modifiers: [
               {
                 name: 'preventOverflow',

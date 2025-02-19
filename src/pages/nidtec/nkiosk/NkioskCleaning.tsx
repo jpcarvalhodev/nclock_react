@@ -152,7 +152,6 @@ export const NkioskCleaning = () => {
     newDate.setDate(newDate.getDate() + 1);
 
     if (newDate > new Date()) {
-      console.error("Não é possível buscar limpezas para uma data no futuro.");
       return;
     }
 
@@ -412,7 +411,6 @@ export const NkioskCleaning = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -435,7 +433,6 @@ export const NkioskCleaning = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -458,7 +455,6 @@ export const NkioskCleaning = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -782,7 +778,7 @@ export const NkioskCleaning = () => {
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
                   selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive
@@ -1080,7 +1076,7 @@ export const NkioskCleaning = () => {
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
                   selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive

@@ -145,7 +145,7 @@ export const AddPeriodToTimePlansModal = <T extends Record<string, any>>({
             selectableRows
             onSelectedRowsChange={handleRowSelected}
             clearSelectedRows={clearSelectionToggle}
-            noDataComponent="Não existem dados disponíveis para exibir."
+            noDataComponent="Não existem dados disponíveis para mostrar."
             customStyles={customStyles}
             striped
             responsive

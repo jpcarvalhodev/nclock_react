@@ -282,7 +282,6 @@ export const Zones = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -305,7 +304,6 @@ export const Zones = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -328,7 +326,6 @@ export const Zones = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -551,7 +548,7 @@ export const Zones = () => {
               expandableRowsComponent={({ data }) =>
                 expandableRowComponent(data)
               }
-              noDataComponent="Não existem dados disponíveis para exibir."
+              noDataComponent="Não existem dados disponíveis para mostrar."
               customStyles={customStyles}
               striped
               responsive

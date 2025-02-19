@@ -381,7 +381,6 @@ export const ExternalEmployees = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -404,7 +403,6 @@ export const ExternalEmployees = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -427,7 +425,6 @@ export const ExternalEmployees = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -659,7 +656,7 @@ export const ExternalEmployees = () => {
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para exibir."
+                    noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive
@@ -866,7 +863,7 @@ export const ExternalEmployees = () => {
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para exibir."
+                    noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive

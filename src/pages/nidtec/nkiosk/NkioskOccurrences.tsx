@@ -151,9 +151,6 @@ export const NkioskOccurrences = () => {
     newDate.setDate(newDate.getDate() + 1);
 
     if (newDate > new Date()) {
-      console.error(
-        "Não é possível buscar ocorrências para uma data no futuro."
-      );
       return;
     }
 
@@ -411,7 +408,6 @@ export const NkioskOccurrences = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -434,7 +430,6 @@ export const NkioskOccurrences = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -457,7 +452,6 @@ export const NkioskOccurrences = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -783,7 +777,7 @@ export const NkioskOccurrences = () => {
                   clearSelectedRows={clearSelectionToggle}
                   onRowDoubleClicked={handleEditOcorrencias}
                   selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive
@@ -1083,7 +1077,7 @@ export const NkioskOccurrences = () => {
                   clearSelectedRows={clearSelectionToggle}
                   onRowDoubleClicked={handleEditOcorrencias}
                   selectableRowsHighlight
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive

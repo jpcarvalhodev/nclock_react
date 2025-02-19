@@ -299,7 +299,6 @@ export const TerminalsMB = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -322,7 +321,6 @@ export const TerminalsMB = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -345,7 +343,6 @@ export const TerminalsMB = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -557,7 +554,7 @@ export const TerminalsMB = () => {
                   clearSelectedRows={clearSelectionToggle}
                   selectableRowsHighlight
                   onRowDoubleClicked={handleEditDevices}
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive
@@ -769,7 +766,7 @@ export const TerminalsMB = () => {
                   clearSelectedRows={clearSelectionToggle}
                   selectableRowsHighlight
                   onRowDoubleClicked={handleEditDevices}
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive

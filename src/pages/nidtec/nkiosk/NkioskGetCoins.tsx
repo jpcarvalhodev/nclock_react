@@ -55,7 +55,7 @@ export const NkioskGetCoins = () => {
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
-    "dataRecolha",
+    "dataFimRecolha",
     "pessoaResponsavel",
     "numeroMoedas",
     "valorTotalRecolhido",
@@ -156,7 +156,6 @@ export const NkioskGetCoins = () => {
     newDate.setDate(newDate.getDate() + 1);
 
     if (newDate > new Date()) {
-      console.error("Não é possível buscar recolhas para uma data no futuro.");
       return;
     }
 
@@ -240,7 +239,7 @@ export const NkioskGetCoins = () => {
   // Função para resetar as colunas
   const resetColumns = () => {
     setSelectedColumns([
-      "dataRecolha",
+      "dataFimRecolha",
       "pessoaResponsavel",
       "numeroMoedas",
       "valorTotalRecolhido",
@@ -387,10 +386,9 @@ export const NkioskGetCoins = () => {
             case "dataFimRecolha":
               return new Date(row.dataFimRecolha).toLocaleString() || "";
             case "deviceID":
-              return (
-                devices.find((device) => device.zktecoDeviceID === row.deviceID)
-                  ?.deviceName || "Sem Dados"
-              );
+              return devices.find(
+                (device) => device.zktecoDeviceID === row.deviceID
+              )?.deviceName;
             case "numeroMoedas":
               return row[field.key] || "0";
             case "numeroMoedasSistema":
@@ -440,7 +438,6 @@ export const NkioskGetCoins = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -463,7 +460,6 @@ export const NkioskGetCoins = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -486,7 +482,6 @@ export const NkioskGetCoins = () => {
           delay={0}
           container={document.body}
           popperConfig={{
-            strategy: "fixed",
             modifiers: [
               {
                 name: "preventOverflow",
@@ -535,7 +530,7 @@ export const NkioskGetCoins = () => {
     const deviceMatch = devices.find(
       (device) => device.zktecoDeviceID === transaction.deviceID
     );
-    const deviceName = deviceMatch?.deviceName || "Sem Dados";
+    const deviceName = deviceMatch?.deviceName;
 
     return {
       ...transaction,
@@ -562,6 +557,12 @@ export const NkioskGetCoins = () => {
     setLoadingReset(false);
     setModalOpen(false);
   };
+
+  // Função para fechar o modal de adicionar
+  const handleCloseModal = () => {
+    setShowAddModal(false);
+    setInitialData({});
+  }
 
   // Função para enviar a abertura manualmente
   const handleResetCoins = async (resetCoin: ResetCoin) => {
@@ -912,7 +913,7 @@ export const NkioskGetCoins = () => {
                   clearSelectedRows={clearSelectionToggle}
                   selectableRowsHighlight
                   onRowDoubleClicked={handleEditRecolhas}
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive
@@ -1251,7 +1252,7 @@ export const NkioskGetCoins = () => {
                   clearSelectedRows={clearSelectionToggle}
                   selectableRowsHighlight
                   onRowDoubleClicked={handleEditRecolhas}
-                  noDataComponent="Não existem dados disponíveis para exibir."
+                  noDataComponent="Não existem dados disponíveis para mostrar."
                   customStyles={customStyles}
                   striped
                   responsive
@@ -1284,7 +1285,7 @@ export const NkioskGetCoins = () => {
       <CreateRecolhaMoedeiroEContadorModal
         title="Nova Recolha do Moedeiro"
         open={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        onClose={handleCloseModal}
         onSave={addRecolhaMoedeiro}
         fields={recolhaMoedeiroEContadorFields}
         initialValuesData={initialData || {}}

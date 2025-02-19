@@ -43,13 +43,28 @@ const convertToISO = (dateString: string) => {
   return `${year}-${month}-${day}T${timePart}`;
 };
 
+// Formata a data para o início do dia às 00:00
+const formatDateToStartOfDay = (date: Date): string => {
+  return `${date.toISOString().substring(0, 10)}T00:00`;
+};
+
+// Formata a data para o final do dia às 23:59
+const formatDateToEndOfDay = (date: Date): string => {
+  return `${date.toISOString().substring(0, 10)}T23:59`;
+};
+
 // Define a página de presença
 export const NaccessPresence = () => {
+  const currentDate = new Date();
+  const pastDate = new Date();
+  pastDate.setDate(currentDate.getDate() - 30);
   const { access, fetchAllAccessesbyDevice } = useAttendance();
   const { employees, handleUpdateEmployee } = usePersons();
   const [accessPresence, setAccessPresence] = useState<
     EmployeeAccessWithPresence[]
   >([]);
+  const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
+  const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [filterText, setFilterText] = useState("");
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -102,17 +117,57 @@ export const NaccessPresence = () => {
     setAccessPresence(attendances);
   };
 
+  // Função para filtrar as presenças
+  useEffect(() => {
+    const sDate = new Date(startDate);
+    const eDate = new Date(endDate);
+
+    const filtered = access.filter((acc) => {
+      const isoDateString = convertToISO(acc.eventTime);
+      const eventDateTime = new Date(isoDateString);
+
+      return eventDateTime >= sDate && eventDateTime <= eDate;
+    });
+
+    const finalData = filtered.map((acc) => ({
+      ...acc,
+      isPresent: acc.inOutStatus === 0,
+    }));
+
+    setAccessPresence(finalData);
+  }, [startDate, endDate]);
+
+  // Handler para filtrar pela data de hoje
+  const handleTodayPresence = () => {
+    const today = new Date();
+    setStartDate(formatDateToStartOfDay(today));
+    setEndDate(formatDateToEndOfDay(today));
+  };
+
+  // Handler para retroceder um dia a partir do startDate atual
+  const handlePreviousDayPresence = () => {
+    const previousDay = new Date(startDate);
+    previousDay.setDate(previousDay.getDate() - 1);
+
+    setStartDate(formatDateToStartOfDay(previousDay));
+    setEndDate(formatDateToEndOfDay(previousDay));
+  };
+
+  // Handler para avançar um dia a partir do startDate atual
+  const handleNextDayPresence = () => {
+    const nextDay = new Date(startDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    setStartDate(formatDateToStartOfDay(nextDay));
+    setEndDate(formatDateToEndOfDay(nextDay));
+  };
+
   // Função para atualizar um funcionário e um cartão
   const updateEmployeeAndCard = async (employee: Employee) => {
     await handleUpdateEmployee(employee);
     refreshAttendance();
     setClearSelectionToggle((prev) => !prev);
   };
-
-  // Busca os movimentos ao carregar a página
-  useEffect(() => {
-    fetchAllAccessesbyDevice();
-  }, []);
 
   // Busca as presenças ao montar o componente
   useEffect(() => {
@@ -225,13 +280,13 @@ export const NaccessPresence = () => {
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
     const employeeDetails = employees.find(
-      (emp) => emp.employeeID === person.employeeId
+      (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {
       setSelectedEmployee(employeeDetails);
       setShowEditModal(true);
     } else {
-      console.error("Funcionário não encontrado:", person.employeeName);
+      console.error("Funcionário não encontrado:", person.nameUser);
     }
   };
 
@@ -243,17 +298,36 @@ export const NaccessPresence = () => {
   // Adicionando as outras colunas
   const otherColumns: TableColumn<Accesses>[] = accessesFields
     .filter((field) => selectedColumns.includes(field.key))
+    .sort((a, b) => {
+      if (a.key === "eventTime") return 1;
+      else if (b.key === "eventTime") return -1;
+      else return 0;
+    })
+    .sort((a, b) => {
+      if (a.key === "nameUser") return -1;
+      else if (b.key === "nameUser") return 1;
+      else return 0;
+    })
     .map((field) => {
-      if (field.key === "employeeName") {
+      if (field.key === "nameUser") {
         return {
           ...field,
-          name: field.label,
+          name: (
+            <>
+              {field.label}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            </>
+          ),
           cell: (row: Accesses) => (
             <div
               style={{ cursor: "pointer" }}
               onClick={() => handleOpenEditModal(row)}
             >
-              {row.employeeName}
+              {row.nameUser}
             </div>
           ),
         };
@@ -336,6 +410,14 @@ export const NaccessPresence = () => {
     return () => clearTimeout(timeout);
   }, [filteredDataTable]);
 
+  // Função para calcular a quantidade de presentes e ausentes
+  const calculatePresenceCounts = () => {
+    const presentes = filteredDataTable.filter((item) => item.isPresent).length;
+    const ausentes = employees.length - presentes;
+    return { presentes, ausentes };
+  };
+  const { presentes, ausentes } = calculatePresenceCounts();
+
   return (
     <div className="main-container">
       <div className="content-container">
@@ -415,6 +497,125 @@ export const NaccessPresence = () => {
                   fields={getSelectedFields()}
                 />
               </div>
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Presenças Hoje</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    iconSize="1.1em"
+                    onClick={handleTodayPresence}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Presenças Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    iconSize="1.1em"
+                    onClick={handlePreviousDayPresence}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Presenças Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    iconSize="1.1em"
+                    onClick={handleNextDayPresence}
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton icon="bi-search" iconSize="1.1em" />
+                </OverlayTrigger>
+              </div>
             </div>
             <div className="content-wrapper">
               <div className="table-css">
@@ -440,7 +641,7 @@ export const NaccessPresence = () => {
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para exibir."
+                    noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive
@@ -541,6 +742,125 @@ export const NaccessPresence = () => {
                   fields={getSelectedFields()}
                 />
               </div>
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Presenças Hoje</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    iconSize="1.1em"
+                    onClick={handleTodayPresence}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Presenças Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    iconSize="1.1em"
+                    onClick={handlePreviousDayPresence}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Presenças Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    iconSize="1.1em"
+                    onClick={handleNextDayPresence}
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton icon="bi-search" iconSize="1.1em" />
+                </OverlayTrigger>
+              </div>
             </div>
             <div className="content-wrapper">
               <div className="table-css">
@@ -566,7 +886,7 @@ export const NaccessPresence = () => {
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para exibir."
+                    noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive
@@ -575,6 +895,11 @@ export const NaccessPresence = () => {
                     defaultSortFieldId="eventTime"
                   />
                 )}
+              </div>
+              <div style={{ marginLeft: 10 }}>
+                <strong>Presentes: </strong>
+                {presentes} | <strong>Ausentes: </strong>
+                {ausentes}
               </div>
             </div>
           </div>

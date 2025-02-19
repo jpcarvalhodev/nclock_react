@@ -180,6 +180,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         const token = localStorage.getItem('token');
         if (token) {
             fetchAllAttendances();
+            fetchAllAccessesbyDevice();
         }
     }, []);
 

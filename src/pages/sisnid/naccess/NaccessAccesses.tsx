@@ -140,7 +140,6 @@ export const NaccessAccesses = () => {
     newDate.setDate(newDate.getDate() + 1);
 
     if (newDate > new Date()) {
-      console.error("Não é possível buscar acessos para uma data no futuro.");
       return;
     }
 
@@ -175,11 +174,6 @@ export const NaccessAccesses = () => {
     refreshAccess();
     setClearSelectionToggle((prev) => !prev);
   };
-
-  // Busca os movimentos ao carregar a página
-  useEffect(() => {
-    fetchAllAccessesbyDevice();
-  }, []);
 
   // Atualiza os movimentos ao mudar a lista de movimentos
   useEffect(() => {
@@ -329,7 +323,16 @@ export const NaccessAccesses = () => {
       if (field.key === "nameUser") {
         return {
           ...field,
-          name: field.label,
+          name: (
+            <>
+              {field.label}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            </>
+          ),
           cell: (row: Accesses) => (
             <div
               style={{ cursor: "pointer" }}
@@ -365,7 +368,6 @@ export const NaccessAccesses = () => {
               >
                 <span
                   style={{
-                    cursor: "pointer",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -398,7 +400,6 @@ export const NaccessAccesses = () => {
               >
                 <span
                   style={{
-                    cursor: "pointer",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -431,7 +432,6 @@ export const NaccessAccesses = () => {
               >
                 <span
                   style={{
-                    cursor: "pointer",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -464,7 +464,6 @@ export const NaccessAccesses = () => {
               >
                 <span
                   style={{
-                    cursor: "pointer",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -549,7 +548,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -574,7 +572,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -599,7 +596,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -639,7 +635,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -666,7 +661,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -693,7 +687,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -739,7 +732,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -800,7 +792,7 @@ export const NaccessAccesses = () => {
                           clearSelectedRows={clearSelectionToggle}
                           selectableRowsHighlight
                           onSelectedRowsChange={handleRowSelected}
-                          noDataComponent="Não existem dados disponíveis para exibir."
+                          noDataComponent="Não existem dados disponíveis para mostrar."
                           customStyles={customStyles}
                           striped
                           responsive
@@ -845,7 +837,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -870,7 +861,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -895,7 +885,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -935,7 +924,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -962,7 +950,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -989,7 +976,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -1035,7 +1021,6 @@ export const NaccessAccesses = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -1096,7 +1081,7 @@ export const NaccessAccesses = () => {
                           clearSelectedRows={clearSelectionToggle}
                           selectableRowsHighlight
                           onSelectedRowsChange={handleRowSelected}
-                          noDataComponent="Não existem dados disponíveis para exibir."
+                          noDataComponent="Não existem dados disponíveis para mostrar."
                           customStyles={customStyles}
                           striped
                           responsive
