@@ -64,7 +64,7 @@ export const TerminalCloseOpen = () => {
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
 
-  // Função para buscar todos os dispositivos multibanco entre datas
+  // Função para buscar todos os fechos entre datas
   const fetchAllDevicesBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllTPCloseOpen(startDate, endDate);
@@ -74,7 +74,7 @@ export const TerminalCloseOpen = () => {
     }
   };
 
-  // Função para buscar os pagamentos dos terminais de hoje
+  // Função para buscar os fechos de hoje
   const fetchCloseOpenToday = async () => {
     const today = new Date();
     const start = formatDateToStartOfDay(today);
@@ -89,7 +89,7 @@ export const TerminalCloseOpen = () => {
     }
   };
 
-  // Função para buscar os pagamentos dos terminais de ontem
+  // Função para buscar os fechos de ontem
   const fetchCloseOpenForPreviousDay = async () => {
     const prevDate = new Date(startDate);
     prevDate.setDate(prevDate.getDate() - 1);
@@ -107,7 +107,7 @@ export const TerminalCloseOpen = () => {
     }
   };
 
-  // Função para buscar os pagamentos dos terminais de amanhã
+  // Função para buscar os fechos de amanhã
   const fetchCloseOpenForNextDay = async () => {
     const newDate = new Date(endDate);
     newDate.setDate(newDate.getDate() + 1);

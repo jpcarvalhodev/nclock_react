@@ -68,13 +68,22 @@ export const CreateRecolhaMoedeiroEContadorModal = <
   // UseEffect para inicializar o formulário
   useEffect(() => {
     if (open) {
-      fetchRecolhas();
       const username = localStorage.getItem("username") || "";
+
       if (initialValuesData.deviceID) {
-        setFormData({ ...initialValuesData, dataFimRecolha: new Date() });
+        setFormData((prev) => ({
+          ...prev,
+          ...initialValuesData,
+          dataFimRecolha: new Date(),
+        }));
       } else {
-        setFormData({ ...initialValues, pessoaResponsavel: username });
+        setFormData((prev) => ({
+          ...prev,
+          ...initialValues,
+          pessoaResponsavel: username,
+        }));
       }
+      fetchRecolhas();
     } else {
       setFormData({});
     }
@@ -463,7 +472,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <
                 />
               </Form.Group>
               <Form.Group controlId="formDataRecolha">
-                <Form.Label>Data da Última Recolha</Form.Label>
+                <Form.Label>Data da Recolha</Form.Label>
                 <OverlayTrigger
                   placement="right"
                   overlay={

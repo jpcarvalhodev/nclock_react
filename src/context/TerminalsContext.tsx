@@ -62,9 +62,13 @@ export interface DeviceContextType {
     handleDeletePeriodTimePlan: (planoId: string, id: string[]) => Promise<void>;
     fetchReaders: (deviceId: string) => Promise<Readers[]>;
     handleUpdateReaders: (reader: Readers) => Promise<void>;
-    fetchEventsDevice: () => Promise<Events[]>;
-    fetchEventsAndTransactionDevice: () => Promise<Movements[]>;
-    fetchDeviceActivities: () => Promise<Activity[]>;
+    fetchEventsDevice: (startDate?: string, endDate?: string) => Promise<Events[]>;
+    fetchEventsAndTransactionDevice: (startDate?: string, endDate?: string) => Promise<Movements[]>;
+    fetchDeviceActivities: (startDate?: string, endDate?: string) => Promise<Activity[]>;
+    refreshIntervalTasks: number;
+    setRefreshIntervalTasks: (interval: number) => void;
+    refreshIntervalMovements: number;
+    setRefreshIntervalMovements: (interval: number) => void;
 }
 
 // Cria o contexto	
@@ -84,6 +88,8 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [cameras, setCameras] = useState<Cameras[]>([]);
     const [timePlans, setTimePlans] = useState<TimePlan[]>([]);
     const [events, setEvents] = useState<Alerts[]>([]);
+    const [refreshIntervalTasks, setRefreshIntervalTasks] = useState<number>(10000);
+    const [refreshIntervalMovements, setRefreshIntervalMovements] = useState<number>(10000);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<Devices[]> => {
@@ -605,9 +611,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os eventos do dispositivo
-    const fetchEventsDevice = async (): Promise<Events[]> => {
+    const fetchEventsDevice = async (startDate?: string, endDate?: string): Promise<Events[]> => {
         try {
-            const data = await apiService.fetchAllEventDevice();
+            const data = await apiService.fetchAllEventDevice(startDate, endDate);
             setEvents(data);
             return data;
         } catch (error) {
@@ -617,9 +623,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os eventos e transações do dispositivo
-    const fetchEventsAndTransactionDevice = async (): Promise<Movements[]> => {
+    const fetchEventsAndTransactionDevice = async (startDate?: string, endDate?: string): Promise<Movements[]> => {
         try {
-            const data = await apiService.fetchAllEventAndTransactionDevice();
+            const data = await apiService.fetchAllEventAndTransactionDevice(startDate, endDate);
             return data;
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
@@ -628,9 +634,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todas as atividades do dispositivo
-    const fetchDeviceActivities = async (): Promise<Activity[]> => {
+    const fetchDeviceActivities = async (startDate?: string, endDate?: string): Promise<Activity[]> => {
         try {
-            const data = await apiService.fetchAllDeviceActivities();
+            const data = await apiService.fetchAllDeviceActivities(startDate, endDate);
             return data;
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
@@ -717,7 +723,11 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleUpdateReaders,
         fetchEventsDevice,
         fetchEventsAndTransactionDevice,
-        fetchDeviceActivities
+        fetchDeviceActivities,
+        refreshIntervalTasks,
+        setRefreshIntervalTasks,
+        refreshIntervalMovements,
+        setRefreshIntervalMovements,
     };
 
     return (

@@ -975,8 +975,12 @@ export const fetchAllEventDevice = async (startDate?: string, endDate?: string) 
     return response.json();
 }
 
-export const fetchAllEventAndTransactionDevice = async () => {
-    const response = await fetchWithAuth(`Zkteco/GetAllEventAndTransactionsDevice`);
+export const fetchAllEventAndTransactionDevice = async (startDate?: string, endDate?: string) => {
+    let url = `Zkteco/GetAllEventAndTransactionsDevice`;
+    if (startDate && endDate) {
+        url += `?startTime=${startDate}&endTime=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (response.status === 403) {
       if (!hasShown403) {
         toast.error("Você não tem permissão para visualizar o conteúdo desta página");
@@ -997,8 +1001,12 @@ export const fetchAllEventAndTransactionDevice = async () => {
     return response.json();
 }
 
-export const fetchAllDeviceActivities = async () => {
-    const response = await fetchWithAuth(`Zkteco/GetAllDeviceActivities`);
+export const fetchAllDeviceActivities = async (startDate?: string, endDate?: string) => {
+    let url = `Zkteco/GetAllDeviceActivities`;
+    if (startDate && endDate) {
+        url += `?startTime=${startDate}&endTime=${endDate}`;
+    }
+    const response = await fetchWithAuth(url);
     if (response.status === 403) {
       if (!hasShown403) {
         toast.error("Você não tem permissão para visualizar o conteúdo desta página");

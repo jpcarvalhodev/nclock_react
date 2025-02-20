@@ -804,7 +804,7 @@ export const TerminalsMB = () => {
                         ) : (
                           <i
                             className="bi bi-power"
-                            style={{ marginRight: 5, fontSize: "1rem" }}
+                            style={{ marginRight: 3, fontSize: "1rem" }}
                           ></i>
                         )}
                         Executar Fecho

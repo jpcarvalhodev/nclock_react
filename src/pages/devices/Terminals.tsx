@@ -124,6 +124,10 @@ export const Terminals = () => {
     fetchAllDoorData,
     fetchEventsAndTransactionDevice,
     fetchDeviceActivities,
+    refreshIntervalTasks,
+    setRefreshIntervalTasks,
+    refreshIntervalMovements,
+    setRefreshIntervalMovements,
   } = useTerminals();
   const { handleAddImportedAttendance } = useAttendance();
   const {
@@ -185,6 +189,7 @@ export const Terminals = () => {
   const [selectedTerminal, setSelectedTerminal] = useState<Devices | null>(
     null
   );
+  const [selectedDevice, setSelectedDevice] = useState<Devices | null>(null);
   const [loadingUser, setLoadingUser] = useState(false);
   const [loadingAllUser, setLoadingAllUser] = useState(false);
   const [loadingSyncAllUser, setLoadingSyncAllUser] = useState(false);
@@ -263,42 +268,256 @@ export const Terminals = () => {
     setEmployeeCards(sortedEmployeeCards);
   };
 
-  // Função para buscar todas as tarefas e movimentos de dispositivos
+  // Função para buscar todas as tarefas de dispositivos
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let intervalTasks: NodeJS.Timeout;
 
-    const fetchData = async () => {
-      if (selectedTerminal) {
-        try {
-          setLoadingActivityData(true);
-          const fetchedActivity = await fetchDeviceActivities();
-          setTransactions(fetchedActivity);
-          setLoadingActivityData(false);
+    const fetchTasks = async () => {
+      if (!selectedTerminal) return;
 
-          setLoadingMovementData(true);
-          const fetchedMovement = await fetchEventsAndTransactionDevice();
-          setMovements(fetchedMovement);
-          setLoadingMovementData(false);
-        } catch (error) {
-          console.error("Erro ao buscar dados do terminal:", error);
-          setLoadingActivityData(false);
-          setLoadingMovementData(false);
-        }
+      try {
+        setLoadingActivityData(true);
+        const fetchedActivity = await fetchDeviceActivities();
+        setTransactions(fetchedActivity);
+        setLoadingActivityData(false);
+      } catch (error) {
+        console.error("Erro ao buscar tarefas:", error);
+        setLoadingActivityData(false);
       }
     };
 
-    fetchData();
+    setStartDate(formatDateToStartOfDay(pastDate));
+    setEndDate(formatDateToEndOfDay(currentDate));
 
-    if (selectedTerminal) {
-      interval = setInterval(fetchData, 10000);
+    fetchTasks();
+
+    if (selectedTerminal && refreshIntervalTasks > 0) {
+      intervalTasks = setInterval(fetchTasks, refreshIntervalTasks);
     }
 
     return () => {
-      if (interval) {
-        clearInterval(interval);
+      if (intervalTasks) clearInterval(intervalTasks);
+    };
+  }, [selectedTerminal, refreshIntervalTasks]);
+
+  // Função para buscar todos os movimentos de dispositivos
+  useEffect(() => {
+    let intervalMovements: NodeJS.Timeout;
+
+    const fetchMovementsData = async () => {
+      if (!selectedTerminal) return;
+
+      try {
+        setLoadingMovementData(true);
+        const fetchedMovement = await fetchEventsAndTransactionDevice();
+        setMovements(fetchedMovement);
+        setLoadingMovementData(false);
+      } catch (error) {
+        console.error("Erro ao buscar movimentos:", error);
+        setLoadingMovementData(false);
       }
     };
-  }, [selectedTerminal]);
+
+    setStartDate(formatDateToStartOfDay(pastDate));
+    setEndDate(formatDateToEndOfDay(currentDate));
+
+    fetchMovementsData();
+
+    if (selectedTerminal && refreshIntervalMovements > 0) {
+      intervalMovements = setInterval(
+        fetchMovementsData,
+        refreshIntervalMovements
+      );
+    }
+
+    return () => {
+      if (intervalMovements) clearInterval(intervalMovements);
+    };
+  }, [selectedTerminal, refreshIntervalMovements]);
+
+  // Função para buscar todas as tarefas entre datas
+  const fetchAllActivityBetweenDates = async () => {
+    if (refreshIntervalTasks > 0) {
+      toast.warn(
+        "A atualização automática está activa. Por favor, desactive-a para buscar tarefas."
+      );
+      return;
+    }
+    try {
+      const data = await fetchDeviceActivities(startDate, endDate);
+      setTransactions(data);
+    } catch (error) {
+      console.error("Erro ao buscar as tarefas:", error);
+    }
+  };
+
+  // Função para buscar as tarefas de hoje
+  const fetchActivityToday = async () => {
+    if (refreshIntervalTasks > 0) {
+      toast.warn(
+        "A atualização automática está activa. Por favor, desactive-a para buscar tarefas."
+      );
+      return;
+    }
+
+    const today = new Date();
+    const start = formatDateToStartOfDay(today);
+    const end = formatDateToEndOfDay(today);
+    try {
+      const data = await fetchDeviceActivities(start, end);
+      setTransactions(data);
+      setStartDate(start);
+      setEndDate(end);
+    } catch (error) {
+      console.error("Erro ao buscar as tarefas de hoje:", error);
+    }
+  };
+
+  // Função para buscar as tarefas de ontem
+  const fetchActivityForPreviousDay = async () => {
+    if (refreshIntervalTasks > 0) {
+      toast.warn(
+        "A atualização automática está activa. Por favor, desactive-a para buscar tarefas."
+      );
+      return;
+    }
+
+    const prevDate = new Date(startDate);
+    prevDate.setDate(prevDate.getDate() - 1);
+
+    const start = formatDateToStartOfDay(prevDate);
+    const end = formatDateToEndOfDay(prevDate);
+
+    try {
+      const data = await fetchDeviceActivities(start, end);
+      setTransactions(data);
+      setStartDate(start);
+      setEndDate(end);
+    } catch (error) {
+      console.error("Erro ao buscar as tarefas do dia anterior:", error);
+    }
+  };
+
+  // Função para buscar as tarefas de amanhã
+  const fetchActivityForNextDay = async () => {
+    if (refreshIntervalTasks > 0) {
+      toast.warn(
+        "A atualização automática está activa. Por favor, desactive-a para buscar tarefas."
+      );
+      return;
+    }
+
+    const newDate = new Date(endDate);
+    newDate.setDate(newDate.getDate() + 1);
+
+    if (newDate > new Date()) {
+      return;
+    }
+
+    const start = formatDateToStartOfDay(newDate);
+    const end = formatDateToEndOfDay(newDate);
+
+    try {
+      const data = await fetchDeviceActivities(start, end);
+      setTransactions(data);
+      setStartDate(start);
+      setEndDate(end);
+    } catch (error) {
+      console.error("Erro ao buscar as tarefas do dia seguinte:", error);
+    }
+  };
+
+  // Função para buscar todos os movimentos entre datas
+  const fetchAllMovementBetweenDates = async () => {
+    if (refreshIntervalMovements > 0) {
+      toast.warn(
+        "A atualização automática está activa. Por favor, desactive-a para buscar movimentos."
+      );
+      return;
+    }
+    try {
+      const data = await fetchEventsAndTransactionDevice(startDate, endDate);
+      setMovements(data);
+    } catch (error) {
+      console.error("Erro ao buscar os movimentos:", error);
+    }
+  };
+
+  // Função para buscar os movimentos de hoje
+  const fetchMovementToday = async () => {
+    if (refreshIntervalMovements > 0) {
+      toast.warn(
+        "A atualização automática está activa. Por favor, desactive-a para buscar movimentos."
+      );
+      return;
+    }
+
+    const today = new Date();
+    const start = formatDateToStartOfDay(today);
+    const end = formatDateToEndOfDay(today);
+    try {
+      const data = await fetchEventsAndTransactionDevice(start, end);
+      setMovements(data);
+      setStartDate(start);
+      setEndDate(end);
+    } catch (error) {
+      console.error("Erro ao buscar os movimentos de hoje:", error);
+    }
+  };
+
+  // Função para buscar os movimentos de ontem
+  const fetchMovementForPreviousDay = async () => {
+    if (refreshIntervalMovements > 0) {
+      toast.warn(
+        "A atualização automática está activa. Por favor, desactive-a para buscar movimentos."
+      );
+      return;
+    }
+
+    const prevDate = new Date(startDate);
+    prevDate.setDate(prevDate.getDate() - 1);
+
+    const start = formatDateToStartOfDay(prevDate);
+    const end = formatDateToEndOfDay(prevDate);
+
+    try {
+      const data = await fetchEventsAndTransactionDevice(start, end);
+      setMovements(data);
+      setStartDate(start);
+      setEndDate(end);
+    } catch (error) {
+      console.error("Erro ao buscar os movimentos do dia anterior:", error);
+    }
+  };
+
+  // Função para buscar os movimentos de amanhã
+  const fetchMovementForNextDay = async () => {
+    if (refreshIntervalMovements > 0) {
+      toast.warn(
+        "A atualização automática está activa. Por favor, desactive-a para buscar movimentos."
+      );
+      return;
+    }
+
+    const newDate = new Date(endDate);
+    newDate.setDate(newDate.getDate() + 1);
+
+    if (newDate > new Date()) {
+      return;
+    }
+
+    const start = formatDateToStartOfDay(newDate);
+    const end = formatDateToEndOfDay(newDate);
+
+    try {
+      const data = await fetchEventsAndTransactionDevice(start, end);
+      setMovements(data);
+      setStartDate(start);
+      setEndDate(end);
+    } catch (error) {
+      console.error("Erro ao buscar os movimentos do dia seguinte:", error);
+    }
+  };
 
   // Função para adicionar um dispositivo
   const addDevice = async (device: Devices) => {
@@ -350,7 +569,10 @@ export const Terminals = () => {
     fetchEmployeesCards();
     fetchAllAux();
     fetchAllDoorData();
+    setStartDate(formatDateToStartOfDay(pastDate));
+    setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
+    setSelectedTerminal(null);
   };
 
   // Função para resetar as colunas
@@ -1123,7 +1345,7 @@ export const Terminals = () => {
 
   // Define a função de abertura do modal de edição dos dispositivos
   const handleEditDevices = (row: Devices) => {
-    setSelectedTerminal(row);
+    setSelectedDevice(row);
     const sortedDevices = devices.sort(
       (a, b) => a.deviceNumber - b.deviceNumber
     );
@@ -1542,6 +1764,7 @@ export const Terminals = () => {
       await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userIds);
       setLoadingSendSelectedUsers(false);
       setClearSelectionToggle((prev) => !prev);
+      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal e pelo menos um utilizador!");
     }
@@ -1555,6 +1778,7 @@ export const Terminals = () => {
       await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userIds);
       setLoadingDeleteSelectedUsers(false);
       setClearSelectionToggle((prev) => !prev);
+      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal e pelo menos um utilizador!");
     }
@@ -1571,6 +1795,7 @@ export const Terminals = () => {
       );
       setLoadingFetchSelectedUsers(false);
       setClearSelectionToggle((prev) => !prev);
+      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal e pelo menos um utilizador!");
     }
@@ -1583,6 +1808,7 @@ export const Terminals = () => {
       await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID);
       setLoadingUser(false);
       setClearSelectionToggle((prev) => !prev);
+      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -1596,6 +1822,7 @@ export const Terminals = () => {
         await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
         setLoadingAllUser(false);
         setClearSelectionToggle((prev) => !prev);
+        setSelectedTerminal(null);
       }, "Quer enviar utilizadores para o terminal marcado?");
     } else {
       toast.warn("Selecione um terminal primeiro!");
@@ -1623,6 +1850,7 @@ export const Terminals = () => {
       await fetchAllKioskTransactionOnDevice(selectedTerminal.zktecoDeviceID);
       setLoadingMovements(false);
       setClearSelectionToggle((prev) => !prev);
+      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -1636,6 +1864,7 @@ export const Terminals = () => {
         await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
         setLoadingDeleteAllUsers(false);
         setClearSelectionToggle((prev) => !prev);
+        ~setSelectedTerminal(null);
       }, "Apagar todos os utilizadores no terminal marcado?");
     } else {
       toast.warn("Selecione um terminal primeiro!");
@@ -1649,6 +1878,7 @@ export const Terminals = () => {
       await restartDevice(selectedTerminal.zktecoDeviceID);
       setLoadingRestartDevice(false);
       setClearSelectionToggle((prev) => !prev);
+      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -1661,6 +1891,7 @@ export const Terminals = () => {
       await sendClockToDevice(selectedTerminal.serialNumber);
       setLoadingSendClock(false);
       setClearSelectionToggle((prev) => !prev);
+      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -1671,6 +1902,7 @@ export const Terminals = () => {
     await openDeviceDoor(sn, doorData);
     setLoadingOpenDoor(false);
     setClearSelectionToggle((prev) => !prev);
+    setSelectedTerminal(null);
   };
 
   // Função para sincronizar a hora
@@ -1680,6 +1912,7 @@ export const Terminals = () => {
       await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
       setLoadingSyncTime(false);
       setClearSelectionToggle((prev) => !prev);
+      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -2012,7 +2245,39 @@ export const Terminals = () => {
                     </p>
                     {selectedTerminal && selectedDeviceRows.length > 0 ? (
                       <>
-                        <div style={{ display: "flex", marginBottom: 10 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginBottom: 10,
+                          }}
+                        >
+                          <div>
+                            <Form.Group
+                              controlId="refreshInterval"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <Form.Label
+                                style={{ marginBottom: 0, marginRight: 5 }}
+                              >
+                                Tempo entre atualizações:
+                              </Form.Label>
+                              <Form.Select
+                                value={refreshIntervalTasks}
+                                onChange={(e) =>
+                                  setRefreshIntervalTasks(
+                                    Number(e.target.value)
+                                  )
+                                }
+                                className="custom-input-height form-control custom-select-font-size w-auto"
+                              >
+                                <option value={0}>Desligar</option>
+                                <option value={10000}>10 segundos</option>
+                                <option value={30000}>30 segundos</option>
+                              </Form.Select>
+                            </Form.Group>
+                          </div>
                           <div className="buttons-container-data-range">
                             <OverlayTrigger
                               placement="top"
@@ -2038,9 +2303,9 @@ export const Terminals = () => {
                               <CustomOutlineButton
                                 icon="bi bi-calendar-event"
                                 iconSize="1.1em"
+                                onClick={fetchActivityToday}
                               />
                             </OverlayTrigger>
-
                             <OverlayTrigger
                               placement="top"
                               delay={0}
@@ -2065,9 +2330,9 @@ export const Terminals = () => {
                               <CustomOutlineButton
                                 icon="bi bi-arrow-left-circle"
                                 iconSize="1.1em"
+                                onClick={fetchActivityForPreviousDay}
                               />
                             </OverlayTrigger>
-
                             <OverlayTrigger
                               placement="top"
                               delay={0}
@@ -2092,12 +2357,7 @@ export const Terminals = () => {
                               <CustomOutlineButton
                                 icon="bi bi-arrow-right-circle"
                                 iconSize="1.1em"
-                                disabled={
-                                  new Date(endDate) >=
-                                  new Date(
-                                    new Date().toISOString().substring(0, 10)
-                                  )
-                                }
+                                onClick={fetchActivityForNextDay}
                               />
                             </OverlayTrigger>
                           </div>
@@ -2142,6 +2402,7 @@ export const Terminals = () => {
                               <CustomOutlineButton
                                 icon="bi-search"
                                 iconSize="1.1em"
+                                onClick={fetchAllActivityBetweenDates}
                               />
                             </OverlayTrigger>
                           </div>
@@ -2189,7 +2450,39 @@ export const Terminals = () => {
                     </p>
                     {selectedTerminal && selectedDeviceRows.length > 0 ? (
                       <>
-                        <div style={{ display: "flex", marginBottom: 10 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginBottom: 10,
+                          }}
+                        >
+                          <div>
+                            <Form.Group
+                              controlId="refreshInterval"
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <Form.Label
+                                style={{ marginBottom: 0, marginRight: 5 }}
+                              >
+                                Tempo entre atualizações:
+                              </Form.Label>
+                              <Form.Select
+                                value={refreshIntervalMovements}
+                                onChange={(e) =>
+                                  setRefreshIntervalMovements(
+                                    Number(e.target.value)
+                                  )
+                                }
+                                className="custom-input-height form-control custom-select-font-size w-auto"
+                              >
+                                <option value={0}>Desligar</option>
+                                <option value={10000}>10 segundos</option>
+                                <option value={30000}>30 segundos</option>
+                              </Form.Select>
+                            </Form.Group>
+                          </div>
                           <div className="buttons-container-data-range">
                             <OverlayTrigger
                               placement="top"
@@ -2215,9 +2508,9 @@ export const Terminals = () => {
                               <CustomOutlineButton
                                 icon="bi bi-calendar-event"
                                 iconSize="1.1em"
+                                onClick={fetchMovementToday}
                               />
                             </OverlayTrigger>
-
                             <OverlayTrigger
                               placement="top"
                               delay={0}
@@ -2242,9 +2535,9 @@ export const Terminals = () => {
                               <CustomOutlineButton
                                 icon="bi bi-arrow-left-circle"
                                 iconSize="1.1em"
+                                onClick={fetchMovementForPreviousDay}
                               />
                             </OverlayTrigger>
-
                             <OverlayTrigger
                               placement="top"
                               delay={0}
@@ -2269,12 +2562,7 @@ export const Terminals = () => {
                               <CustomOutlineButton
                                 icon="bi bi-arrow-right-circle"
                                 iconSize="1.1em"
-                                disabled={
-                                  new Date(endDate) >=
-                                  new Date(
-                                    new Date().toISOString().substring(0, 10)
-                                  )
-                                }
+                                onClick={fetchMovementForNextDay}
                               />
                             </OverlayTrigger>
                           </div>
@@ -2319,6 +2607,7 @@ export const Terminals = () => {
                               <CustomOutlineButton
                                 icon="bi-search"
                                 iconSize="1.1em"
+                                onClick={fetchAllMovementBetweenDates}
                               />
                             </OverlayTrigger>
                           </div>
@@ -2373,7 +2662,7 @@ export const Terminals = () => {
                       eventKey="users-software"
                       title="Utilizadores no software"
                     >
-                      <div style={{ display: "flex" }}>
+                      <div style={{ display: "flex" }} className="user-track-tab-mobile">
                         <div style={{ flex: 5 }}>
                           {userSoftwareLoading ? (
                             <div
@@ -3057,13 +3346,13 @@ export const Terminals = () => {
             fields={deviceFields}
             initialValues={initialData || {}}
           />
-          {selectedTerminal && (
+          {selectedDevice && (
             <UpdateModalDevices
               open={showUpdateModal}
               onClose={() => setShowUpdateModal(false)}
               onDuplicate={handleDuplicate}
               onUpdate={updateDevice}
-              entity={selectedTerminal}
+              entity={selectedDevice}
               fields={deviceFields}
               title="Atualizar Equipamentos"
               onPrev={handlePrevDevice}

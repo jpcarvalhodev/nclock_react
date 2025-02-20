@@ -242,6 +242,8 @@ import { NaccessAlerts } from './pages/sisnid/naccess/NaccessAlerts';
 import { NvisitorAlerts } from './pages/sisnid/nvisitor/NvisitorAlerts';
 import { NviewAlerts } from './pages/sisnid/nview/NviewAlerts';
 import { NledAlerts } from './pages/nidtec/nled/NledAlerts';
+import { NclockAccess } from './pages/sisnid/nclock/NclockAccess';
+import { NclockAccessPresence } from './pages/sisnid/nclock/NclockAccessPresence';
 
 // Define a função de rotas com animação
 function AnimatedRoutes() {
@@ -294,6 +296,8 @@ function AnimatedRoutes() {
           <Route path="/nclock/nclockall" element={<PageProtection><NclockAll /></PageProtection>} />
           <Route path="/nclock/nclockgraph" element={<PageProtection><NclockGraph /></PageProtection>} />
           <Route path="/nclock/nclockalerts" element={<PageProtection><NclockAlerts /></PageProtection>} />
+          <Route path="/nclock/nclockaccess" element={<PageProtection><NclockAccess /></PageProtection>} />
+          <Route path="/nclock/nclockaccesspresence" element={<PageProtection><NclockAccessPresence /></PageProtection>} />
 
           <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
           <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />

@@ -467,7 +467,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({
                 />
               </Form.Group>
               <Form.Group controlId="formDataRecolha">
-                <Form.Label>Data da Última Recolha</Form.Label>
+                <Form.Label>Data da Recolha</Form.Label>
                 <OverlayTrigger
                   placement="right"
                   overlay={

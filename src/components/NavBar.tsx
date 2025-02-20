@@ -3273,24 +3273,22 @@ export const NavBar = ({ style }: NavBarProps) => {
                       visibleGroup === "movimentos acessos nclock") && (
                       <div className="btn-group" role="group">
                         <div className="grid-container-entidades">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/nclock/nclockaccess" type="button"
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nclock/nclockaccess" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={movement} alt="botão acessos" />
                             </span>
                             <span className="text">Acessos</span>
-                          </Button>
-                          <Button
-                            /* to='#' */ type="button"
+                          </Link>
+                          <Link
+                            to='/nclock/nclockaccesspresence' type="button"
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nclock/nclockaccesspresence" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img
@@ -3299,7 +3297,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               />
                             </span>
                             <span className="text">Presenças</span>
-                          </Button>
+                          </Link>
                         </div>
                       </div>
                     )}

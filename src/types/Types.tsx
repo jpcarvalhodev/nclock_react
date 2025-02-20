@@ -142,11 +142,11 @@ export type EmployeeAttendanceTimes = {
   employeeId: string;
   enrollNumber: string;
   employeeName: string;
-  inOutMode: number;
+  inOutMode: number | string;
   workCode: number;
   observation: string;
   type: number;
-  attendanceTime: Date;
+  attendanceTime: Date | string;
 };
 
 export type Devices = {

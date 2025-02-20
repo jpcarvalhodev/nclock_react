@@ -88,9 +88,6 @@ export const NclockRequests = () => {
     string | null
   >(null);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
-    null
-  );
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>({});
   const [initialData, setInitialData] = useState<
@@ -239,12 +236,11 @@ export const NclockRequests = () => {
     } else if (attendanceRequests.length > 0) {
       setFilteredAttendances(attendanceRequests);
     }
-  }, [selectedEmployeeId, selectedEmployeeIds]);
+  }, [attendanceRequests, selectedEmployeeIds]);
 
   // Define a seleção de funcionários
   const handleSelectFromTreeView = (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
-    setSelectedEmployeeId(selectedIds[0]);
   };
 
   // Função para alternar a visibilidade das colunas

@@ -90,7 +90,7 @@ body {
 .nav-container .nsound-tab,
 .nav-container .nhome-tab {
     color: white;
-    height: 34px;
+    height: 35px;
 }
 
 .nav-container .pessoas-tab:hover,
@@ -209,7 +209,7 @@ body {
 .nav-item.active .nav-link.nsound-tab,
 .nav-container .nhome-tab:hover,
 .nav-item.active .nav-link.nhome-tab {
-    border: none;
+    border: 1px solid #000000;
     background-color: white;
     color: #000000;
 }

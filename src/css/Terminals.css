@@ -15,7 +15,7 @@
 .button-terminals-users:hover {
   background-color: #000000;
   color: #fff;
-  border: none;
+  border: 1px solid #000000;
 }
 
 .button-terminals-users-track {
@@ -29,6 +29,7 @@
 .button-terminals-users-track:hover {
   background-color: #000000;
   color: #fff;
+  border: 1px solid #000000;
 }
 
 .activityTabContent {
@@ -57,6 +58,19 @@
 }
 
 @media (max-width: 380px) {
+  .deviceTabsMobile,
+  .user-track-tab-mobile {
+    flex-direction: column;
+  }
+
+  .deviceMobile {
+    flex: none !important;
+  }
+
+  .button-terminals-users-track {
+    font-size: 13px !important;
+  }
+
   .button-terminals-users {
     font-size: 13px !important;
     margin-top: 5px;
@@ -70,7 +84,8 @@
 }
 
 @media (min-width: 381px) and (max-width: 500px) {
-  .deviceTabsMobile {
+  .deviceTabsMobile,
+  .user-track-tab-mobile {
     flex-direction: column;
   }
 

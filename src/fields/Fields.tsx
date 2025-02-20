@@ -811,12 +811,6 @@ export const accessesFields = [
   { key: "cardNo", label: "Cartão", type: "string" },
   { key: "nameUser", label: "Nome", type: "string" },
   { key: "deviceName", label: "Nome do Local", type: "string" },
-  {
-    key: "deviceSN",
-    label: "Serial do Equipamento",
-    type: "string",
-    required: true,
-  },
   { key: "eventDoorId", label: "Porta", type: "number", required: true },
   { key: "eventDoorName", label: "Porta", type: "string" },
   { key: "readerName", label: "Leitor", type: "string" },

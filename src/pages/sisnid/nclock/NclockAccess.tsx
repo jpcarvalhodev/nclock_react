@@ -3,28 +3,26 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 import { toast } from "react-toastify";
 
+import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
-import {
-  employeeAttendanceTimesFields,
-  employeeFields,
-} from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { CreateModalAttendance } from "../../../modals/CreateModalAttendance";
-import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 
 import "../../../css/PagesStyles.css";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Nav, OverlayTrigger, Tab, Tooltip } from "react-bootstrap";
 
 import { useAttendance } from "../../../context/MovementContext";
 
 import { usePersons } from "../../../context/PersonsContext";
+import { CreateModalAccess } from "../../../modals/CreateModalAccess";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
+import { Accesses, Employee } from "../../../types/Types";
+import { accessesFields, employeeFields } from "../../../fields/Fields";
+import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
@@ -44,89 +42,77 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
-// Define a página movimentos
-export const NclockMovement = () => {
-  const {
-    fetchAllAttendances,
-    fetchAllAttendancesBetweenDates,
-    handleAddAttendance,
-  } = useAttendance();
+// Define a página de acessos
+export const NclockAccess = () => {
+  const { access, fetchAllAccessesbyDevice, handleAddAccess } = useAttendance();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
   const { employees, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-  const [attendanceMovement, setAttendanceMovement] = useState<
-    EmployeeAttendanceTimes[]
-  >([]);
-  const [filteredAttendances, setFilteredAttendances] = useState<
-    EmployeeAttendanceTimes[]
-  >([]);
-  const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
+  const [filteredAccess, setFilteredAccess] = useState<Accesses[]>([]);
+  const [showAddAccessModal, setShowAddAccessModal] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
-    "employeeName",
-    "inOutMode",
-    "attendanceTime",
+    "eventTime",
+    "cardNo",
+    "nameUser",
+    "pin",
+    "deviceName",
+    "eventDoorName",
+    "readerName",
+    "eventName",
   ]);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [resetSelection, setResetSelection] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>(
-    []
-  );
+  const [selectedRows, setSelectedRows] = useState<Accesses[]>([]);
   const [filterText, setFilterText] = useState("");
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>({});
-  const [initialData, setInitialData] = useState<
-    Partial<EmployeeAttendanceTimes>
-  >({});
+  const [initialData, setInitialData] = useState<Partial<Accesses>>({});
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
 
-  // Função para buscar todos as assiduidades
-  const fetchMovements = () => {
-    fetchAllAttendances({
-      filterFunc: (data) => data.filter((att) => att.type !== 3),
-      postFetch: (filteredData) => {
-        setAttendanceMovement(filteredData);
-      },
-    });
-  };
-
   // Função para buscar todos as assiduidades entre datas
-  const fetchMovementsBetweenDates = () => {
-    fetchAllAttendancesBetweenDates({
-      filterFunc: (data) => data.filter((att) => att.type !== 3),
-      postFetch: (filteredData) => {
-        setFilteredAttendances(filteredData);
-      },
-    });
+  const fetchAccessesBetweenDates = async () => {
+    try {
+      const data = await apiService.fetchAllAccessesByDevice(
+        undefined,
+        startDate,
+        endDate
+      );
+      setFilteredAccess(data);
+    } catch (error) {
+      console.error("Erro ao buscar acessos entre datas:", error);
+      setFilteredAccess([]);
+    }
   };
 
   // Função para buscar os pagamentos dos terminais de hoje
-  const fetchMovementsToday = async () => {
+  const fetchAccessesToday = async () => {
     const today = new Date();
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
     try {
-      await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type !== 3),
-        postFetch: (filteredData) => {
-          setFilteredAttendances(filteredData);
-          setStartDate(start);
-          setEndDate(end);
-        },
-      });
+      const data = await apiService.fetchAllAccessesByDevice(
+        undefined,
+        start,
+        end
+      );
+      setFilteredAccess(data);
     } catch (error) {
-      console.error("Erro ao buscar movimentos de hoje:", error);
+      console.error("Erro ao buscar acessos hoje:", error);
+      setFilteredAccess([]);
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
   // Função para buscar os pagamentos dos terminais de ontem
-  const fetchMovementsForPreviousDay = async () => {
+  const fetchAccessesForPreviousDay = async () => {
     const prevDate = new Date(startDate);
     prevDate.setDate(prevDate.getDate() - 1);
 
@@ -134,21 +120,22 @@ export const NclockMovement = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type !== 3),
-        postFetch: (filteredData) => {
-          setFilteredAttendances(filteredData);
-          setStartDate(start);
-          setEndDate(end);
-        },
-      });
+      const data = await apiService.fetchAllAccessesByDevice(
+        undefined,
+        start,
+        end
+      );
+      setFilteredAccess(data);
     } catch (error) {
-      console.error("Erro ao buscar movimentos do dia anterior:", error);
+      console.error("Erro ao buscar acessos ontem:", error);
+      setFilteredAccess([]);
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
   // Função para buscar os pagamentos dos terminais de amanhã
-  const fetchMovementsForNextDay = async () => {
+  const fetchAccessesForNextDay = async () => {
     const newDate = new Date(endDate);
     newDate.setDate(newDate.getDate() + 1);
 
@@ -160,37 +147,40 @@ export const NclockMovement = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type !== 3),
-        postFetch: (filteredData) => {
-          setFilteredAttendances(filteredData);
-          setStartDate(start);
-          setEndDate(end);
-        },
-      });
+      const data = await apiService.fetchAllAccessesByDevice(
+        undefined,
+        start,
+        end
+      );
+      setFilteredAccess(data);
     } catch (error) {
-      console.error("Erro ao buscar movimentos do dia seguinte:", error);
+      console.error("Erro ao buscar acessos amanhã:", error);
+      setFilteredAccess([]);
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
-  // Função para adicionar um movimento
-  const addAttendance = async (attendance: EmployeeAttendanceTimes) => {
-    await handleAddAttendance(attendance);
-    refreshAttendance();
+  // Função para adicionar um acesso
+  const addAccess = async (access: Accesses) => {
+    await handleAddAccess(access);
+    refreshAccess();
     setClearSelectionToggle((prev) => !prev);
   };
 
   // Função para atualizar um funcionário e um cartão
   const updateEmployeeAndCard = async (employee: Employee) => {
     await handleUpdateEmployee(employee);
-    refreshAttendance();
+    refreshAccess();
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Busca os movimentos ao carregar a página
+  // Atualiza os movimentos ao mudar a lista de movimentos
   useEffect(() => {
-    fetchMovements();
-  }, []);
+    if (access.length > 0) {
+      setFilteredAccess(access);
+    }
+  }, [access]);
 
   // Atualiza a seleção ao resetar
   useEffect(() => {
@@ -202,14 +192,14 @@ export const NclockMovement = () => {
   // Atualiza a seleção ao mudar o filtro
   useEffect(() => {
     if (selectedEmployeeIds.length > 0) {
-      const newFilteredAttendances = attendanceMovement.filter((att) =>
-        selectedEmployeeIds.includes(att.employeeId)
+      const newFilteredAccess = access.filter((acc) =>
+        selectedEmployeeIds.includes(String(acc.pin))
       );
-      setFilteredAttendances(newFilteredAttendances);
-    } else if (attendanceMovement.length > 0) {
-      setFilteredAttendances(attendanceMovement);
+      setFilteredAccess(newFilteredAccess);
+    } else if (access.length > 0) {
+      setFilteredAccess(access);
     }
-  }, [attendanceMovement, selectedEmployeeIds]);
+  }, [selectedEmployeeIds]);
 
   // Define a seleção de funcionários
   const handleSelectFromTreeView = (selectedIds: string[]) => {
@@ -227,60 +217,61 @@ export const NclockMovement = () => {
 
   // Função para selecionar todas as colunas
   const handleSelectAllColumns = () => {
-    const allColumnKeys = employeeAttendanceTimesFields.map(
-      (field) => field.key
-    );
+    const allColumnKeys = accessesFields.map((field) => field.key);
     setSelectedColumns(allColumnKeys);
   };
 
   // Função para resetar as colunas
   const handleResetColumns = () => {
-    setSelectedColumns(["employeeName", "inOutMode", "attendanceTime"]);
+    setSelectedColumns([
+      "eventTime",
+      "cardNo",
+      "nameUser",
+      "pin",
+      "deviceName",
+      "eventDoorName",
+      "readerName",
+      "eventName",
+    ]);
   };
 
   // Função para atualizar os funcionários
-  const refreshAttendance = () => {
-    fetchMovements();
+  const refreshAccess = () => {
+    fetchAllAccessesbyDevice();
+    setFilteredAccess(access);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
-  };
-
-  // Função para abrir o modal de adição de assiduidade
-  const handleOpenAddAttendanceModal = () => {
-    if (selectedEmployeeIds.length > 0) {
-      setInitialData({
-        ...initialData,
-        selectedEmployeeIds: selectedEmployeeIds[0],
-      });
-      setShowAddAttendanceModal(true);
-    } else {
-      toast.warn("Selecione um funcionário primeiro!");
-    }
   };
 
   // Define a função selecionar uma linha
   const handleRowSelected = (state: {
     allSelected: boolean;
     selectedCount: number;
-    selectedRows: EmployeeAttendanceTimes[];
+    selectedRows: Accesses[];
   }) => {
-    setSelectedRows(state.selectedRows);
+    const sortedSelectedRows = state.selectedRows.sort(
+      (a, b) => Number(a.pin) - Number(b.pin)
+    );
+    setSelectedRows(sortedSelectedRows);
   };
 
-  // Remove o campo de observação, número, nome do funcionário e o tipo
-  const filteredColumns = employeeAttendanceTimesFields.filter(
-    (field) =>
-      field.key !== "observation" &&
-      field.key !== "enrollNumber" &&
-      field.key !== "employeeName" &&
-      field.key !== "type" &&
-      field.key !== "deviceNumber"
-  );
+  // Função para abrir o modal de adição de acesso
+  const handleOpenAddAccessModal = () => {
+    if (selectedEmployeeIds.length > 0) {
+      setInitialData({
+        ...initialData,
+        selectedEmployeeIds: selectedEmployeeIds[0],
+      });
+      setShowAddAccessModal(true);
+    } else {
+      toast.warn("Selecione um funcionário primeiro!");
+    }
+  };
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    return filteredAttendances.filter(
+    return filteredAccess.filter(
       (attendances) =>
         Object.keys(filters).every(
           (key) =>
@@ -307,101 +298,206 @@ export const NclockMovement = () => {
           return false;
         })
     );
-  }, [filteredAttendances, filters, filterText]);
+  }, [filteredAccess, filters, filterText]);
 
   // Função para abrir o modal de edição
-  const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
+  const handleOpenEditModal = (person: Accesses) => {
     const employeeDetails = employees.find(
-      (emp) => emp.employeeID === person.employeeId
+      (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {
       setSelectedEmployee(employeeDetails);
       setShowEditModal(true);
     } else {
-      console.error("Funcionário não encontrado:", person.employeeName);
+      console.error("Funcionário não encontrado:", person.nameUser);
     }
   };
 
   // Define as colunas
-  const columns: TableColumn<EmployeeAttendanceTimes>[] =
-    employeeAttendanceTimesFields
-      .filter((field) => selectedColumns.includes(field.key))
-      .map((field) => {
-        if (field.key === "employeeName") {
-          return {
-            ...field,
-            name: (
-              <>
-                {field.label}
-                <SelectFilter
-                  column={field.key}
-                  setFilters={setFilters}
-                  data={filteredAttendances}
-                />
-              </>
-            ),
-            cell: (row: EmployeeAttendanceTimes) => (
-              <div
-                style={{ cursor: "pointer" }}
-                onClick={() => handleOpenEditModal(row)}
-              >
-                {row.employeeName}
-              </div>
-            ),
-          };
-        }
-        const formatField = (row: EmployeeAttendanceTimes) => {
-          switch (field.key) {
-            case "attendanceTime":
-              return new Date(row.attendanceTime).toLocaleString() || "";
-            case "deviceId":
-              return row.deviceNumber || "";
-            case "inOutMode":
-              if (row.inOutModeDescription) {
-                return row.inOutModeDescription || "";
-              } else {
-                switch (row[field.key]) {
-                  case 0:
-                    return "Entrada";
-                  case 1:
-                    return "Saída";
-                  case 2:
-                    return "Pausa - Entrada";
-                  case 3:
-                    return "Pausa - Saída";
-                  case 4:
-                    return "Hora Extra - Entrada";
-                  case 5:
-                    return "Hora Extra - Saída";
-                  default:
-                    return "";
-                }
-              }
-            default:
-              return row[field.key] || "";
-          }
-        };
+  const columns: TableColumn<Accesses>[] = accessesFields
+    .filter(
+      (field) =>
+        selectedColumns.includes(field.key) && field.key !== "eventDoorId"
+    )
+    .map((field) => {
+      if (field.key === "nameUser") {
         return {
-          id: field.key,
+          ...field,
           name: (
             <>
               {field.label}
-              {field.key !== "attendanceTime" && (
-                <SelectFilter
-                  column={field.key}
-                  setFilters={setFilters}
-                  data={filteredDataTable}
-                />
-              )}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
             </>
           ),
-          selector: (row) => formatField(row),
-          sortable: true,
-          sortFunction: (rowA, rowB) =>
-            new Date(rowB.attendanceTime).getTime() -
-            new Date(rowA.attendanceTime).getTime(),
+          cell: (row: Accesses) => (
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => handleOpenEditModal(row)}
+            >
+              {row.nameUser}
+            </div>
+          ),
         };
-      });
+      }
+      const formatField = (row: Accesses) => {
+        switch (field.key) {
+          case "deviceName":
+            return (
+              <OverlayTrigger
+                placement="top"
+                delay={0}
+                container={document.body}
+                popperConfig={{
+                  strategy: "fixed",
+                  modifiers: [
+                    {
+                      name: "preventOverflow",
+                      options: {
+                        boundary: "window",
+                      },
+                    },
+                  ],
+                }}
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
+              >
+                <span
+                  style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row[field.key]}
+                </span>
+              </OverlayTrigger>
+            );
+          case "eventDoorName":
+            return (
+              <OverlayTrigger
+                placement="top"
+                delay={0}
+                container={document.body}
+                popperConfig={{
+                  strategy: "fixed",
+                  modifiers: [
+                    {
+                      name: "preventOverflow",
+                      options: {
+                        boundary: "window",
+                      },
+                    },
+                  ],
+                }}
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
+              >
+                <span
+                  style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row[field.key]}
+                </span>
+              </OverlayTrigger>
+            );
+          case "readerName":
+            return (
+              <OverlayTrigger
+                placement="top"
+                delay={0}
+                container={document.body}
+                popperConfig={{
+                  strategy: "fixed",
+                  modifiers: [
+                    {
+                      name: "preventOverflow",
+                      options: {
+                        boundary: "window",
+                      },
+                    },
+                  ],
+                }}
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
+              >
+                <span
+                  style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row[field.key]}
+                </span>
+              </OverlayTrigger>
+            );
+          case "eventName":
+            return (
+              <OverlayTrigger
+                placement="top"
+                delay={0}
+                container={document.body}
+                popperConfig={{
+                  strategy: "fixed",
+                  modifiers: [
+                    {
+                      name: "preventOverflow",
+                      options: {
+                        boundary: "window",
+                      },
+                    },
+                  ],
+                }}
+                overlay={
+                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
+                }
+              >
+                <span
+                  style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {row[field.key]}
+                </span>
+              </OverlayTrigger>
+            );
+          default:
+            return row[field.key] || "";
+        }
+      };
+      return {
+        id: field.key,
+        name: (
+          <>
+            {field.label}
+            {field.key !== "eventTime" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
+          </>
+        ),
+        selector: (row) => formatField(row),
+        sortable: true,
+        sortFunction: (rowA, rowB) =>
+          new Date(rowB.eventTime).getTime() -
+          new Date(rowA.eventTime).getTime(),
+      };
+    });
 
   // Define as opções de paginação de EN para PT
   const paginationOptions = {
@@ -411,7 +507,7 @@ export const NclockMovement = () => {
 
   // Função para obter os campos selecionados baseado em selectedColumns
   const getSelectedFields = () => {
-    return employeeAttendanceTimesFields.filter((field) =>
+    return accessesFields.filter((field) =>
       selectedColumns.includes(field.key)
     );
   };
@@ -438,9 +534,9 @@ export const NclockMovement = () => {
         {isMobile && (
           <div className="datatable-container">
             <div className="datatable-title-text">
-              <span>Movimentos</span>
+              <span>Acessos</span>
             </div>
-            <div className="datatable-header">
+            <div className="datatable-header" style={{ marginBottom: 0 }}>
               <div>
                 <SearchBoxContainer
                   onSearch={(value) => setFilterText(value)}
@@ -452,7 +548,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -468,7 +563,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-arrow-clockwise"
-                    onClick={refreshAttendance}
+                    onClick={refreshAccess}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -477,7 +572,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -493,7 +587,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-plus"
-                    onClick={handleOpenAddAttendanceModal}
+                    onClick={handleOpenAddAccessModal}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -502,7 +596,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -542,7 +635,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -560,7 +652,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-calendar-event"
-                    onClick={fetchMovementsToday}
+                    onClick={fetchAccessesToday}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -569,7 +661,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -587,7 +678,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-left-circle"
-                    onClick={fetchMovementsForPreviousDay}
+                    onClick={fetchAccessesForPreviousDay}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -596,7 +687,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -614,7 +704,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-right-circle"
-                    onClick={fetchMovementsForNextDay}
+                    onClick={fetchAccessesForNextDay}
                     iconSize="1.1em"
                     disabled={
                       new Date(endDate) >=
@@ -642,7 +732,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -656,47 +745,67 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-search"
-                    onClick={fetchMovementsBetweenDates}
+                    onClick={fetchAccessesBetweenDates}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
               </div>
             </div>
-            <div className="content-wrapper">
-              <div className="table-css">
-                {loading ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "200px",
-                    }}
+            <Tab.Container defaultActiveKey="movimentos">
+              <Nav
+                variant="tabs"
+                className="nav-modal"
+                style={{ marginTop: 0 }}
+              >
+                <Nav.Item>
+                  <Nav.Link
+                    eventKey="movimentos"
+                    style={{ padding: "0.25rem 0.5rem", fontSize: "0.85rem" }}
                   >
-                    <CustomSpinner />
+                    Movimentos
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+              <Tab.Content>
+                <Tab.Pane eventKey="movimentos">
+                  <div className="content-wrapper">
+                    <div className="table-css">
+                      {loading ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "200px",
+                          }}
+                        >
+                          <CustomSpinner />
+                        </div>
+                      ) : (
+                        <DataTable
+                          columns={columns}
+                          data={filteredDataTable}
+                          pagination
+                          paginationComponentOptions={paginationOptions}
+                          selectableRows
+                          paginationPerPage={20}
+                          clearSelectedRows={clearSelectionToggle}
+                          selectableRowsHighlight
+                          onSelectedRowsChange={handleRowSelected}
+                          noDataComponent="Não existem dados disponíveis para mostrar."
+                          customStyles={customStyles}
+                          striped
+                          responsive
+                          persistTableHead={true}
+                          defaultSortAsc={true}
+                          defaultSortFieldId="eventTime"
+                        />
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <DataTable
-                    columns={columns}
-                    data={filteredDataTable}
-                    pagination
-                    paginationComponentOptions={paginationOptions}
-                    selectableRows
-                    paginationPerPage={20}
-                    clearSelectedRows={clearSelectionToggle}
-                    onSelectedRowsChange={handleRowSelected}
-                    selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para mostrar."
-                    customStyles={customStyles}
-                    striped
-                    responsive
-                    persistTableHead={true}
-                    defaultSortAsc={true}
-                    defaultSortFieldId="attendanceTime"
-                  />
-                )}
-              </div>
-            </div>
+                </Tab.Pane>
+              </Tab.Content>
+            </Tab.Container>
           </div>
         )}
         <Split
@@ -710,13 +819,13 @@ export const NclockMovement = () => {
           dragInterval={1}
         >
           <div className="treeview-container">
-            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+            <TreeViewDataNaccess onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">
-              <span>Movimentos</span>
+              <span>Acessos</span>
             </div>
-            <div className="datatable-header">
+            <div className="datatable-header" style={{ marginBottom: 0 }}>
               <div>
                 <SearchBoxContainer
                   onSearch={(value) => setFilterText(value)}
@@ -728,7 +837,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -744,7 +852,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-arrow-clockwise"
-                    onClick={refreshAttendance}
+                    onClick={refreshAccess}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -753,7 +861,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -769,7 +876,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-plus"
-                    onClick={handleOpenAddAttendanceModal}
+                    onClick={handleOpenAddAccessModal}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -778,7 +885,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -818,7 +924,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -836,7 +941,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-calendar-event"
-                    onClick={fetchMovementsToday}
+                    onClick={fetchAccessesToday}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -845,7 +950,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -863,7 +967,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-left-circle"
-                    onClick={fetchMovementsForPreviousDay}
+                    onClick={fetchAccessesForPreviousDay}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -872,7 +976,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -890,7 +993,7 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-right-circle"
-                    onClick={fetchMovementsForNextDay}
+                    onClick={fetchAccessesForNextDay}
                     iconSize="1.1em"
                     disabled={
                       new Date(endDate) >=
@@ -918,7 +1021,6 @@ export const NclockMovement = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -932,65 +1034,84 @@ export const NclockMovement = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-search"
-                    onClick={fetchMovementsBetweenDates}
+                    onClick={fetchAccessesBetweenDates}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
               </div>
             </div>
-            <div className="content-wrapper">
-              <div className="table-css">
-                {loading ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "200px",
-                    }}
+            <Tab.Container defaultActiveKey="movimentos">
+              <Nav
+                variant="tabs"
+                className="nav-modal"
+                style={{ marginTop: 0 }}
+              >
+                <Nav.Item>
+                  <Nav.Link
+                    eventKey="movimentos"
+                    style={{ padding: "0.25rem 0.5rem", fontSize: "0.85rem" }}
                   >
-                    <CustomSpinner />
+                    Movimentos
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+              <Tab.Content>
+                <Tab.Pane eventKey="movimentos">
+                  <div className="content-wrapper">
+                    <div className="table-css">
+                      {loading ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "200px",
+                          }}
+                        >
+                          <CustomSpinner />
+                        </div>
+                      ) : (
+                        <DataTable
+                          columns={columns}
+                          data={filteredDataTable}
+                          pagination
+                          paginationComponentOptions={paginationOptions}
+                          selectableRows
+                          paginationPerPage={20}
+                          clearSelectedRows={clearSelectionToggle}
+                          selectableRowsHighlight
+                          onSelectedRowsChange={handleRowSelected}
+                          noDataComponent="Não existem dados disponíveis para mostrar."
+                          customStyles={customStyles}
+                          striped
+                          responsive
+                          persistTableHead={true}
+                          defaultSortAsc={true}
+                          defaultSortFieldId="eventTime"
+                        />
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <DataTable
-                    columns={columns}
-                    data={filteredDataTable}
-                    pagination
-                    paginationComponentOptions={paginationOptions}
-                    selectableRows
-                    paginationPerPage={20}
-                    clearSelectedRows={clearSelectionToggle}
-                    onSelectedRowsChange={handleRowSelected}
-                    selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para mostrar."
-                    customStyles={customStyles}
-                    striped
-                    responsive
-                    persistTableHead={true}
-                    defaultSortAsc={true}
-                    defaultSortFieldId="attendanceTime"
-                  />
-                )}
-              </div>
-            </div>
+                </Tab.Pane>
+              </Tab.Content>
+            </Tab.Container>
           </div>
         </Split>
       </div>
-      {showAddAttendanceModal && (
-        <CreateModalAttendance
-          open={showAddAttendanceModal}
-          onClose={() => setShowAddAttendanceModal(false)}
-          onSave={addAttendance}
-          title="Adicionar Assiduidade"
-          fields={employeeAttendanceTimesFields}
+      {showAddAccessModal && (
+        <CreateModalAccess
+          open={showAddAccessModal}
+          onClose={() => setShowAddAccessModal(false)}
+          onSave={addAccess}
+          title="Adicionar Acesso"
+          fields={accessesFields}
           initialValues={initialData}
-          entityType="movimentos"
         />
       )}
       {showColumnSelector && (
         <ColumnSelectorModal
-          columns={filteredColumns.filter(
-            (field) => field.key !== "employeeId"
+          columns={accessesFields.filter(
+            (field) => field.key !== "eventDoorId"
           )}
           selectedColumns={selectedColumns}
           onClose={() => setShowColumnSelector(false)}

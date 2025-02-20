@@ -707,6 +707,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                         paginationComponentOptions={paginationOptions}
                         noDataComponent="Os dados de portas só serão exibidos após adicionar e ativar o dispositivo."
                         customStyles={customStyles}
+                        selectableRows
                         striped
                         responsive
                         persistTableHead={true}
@@ -724,6 +725,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                         paginationComponentOptions={paginationOptions}
                         noDataComponent="Os dados de leitores só serão exibidos após adicionar e ativar o dispositivo."
                         customStyles={customStyles}
+                        selectableRows
                         striped
                         responsive
                         persistTableHead={true}
@@ -741,6 +743,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                         paginationComponentOptions={paginationOptions}
                         noDataComponent="Os dados de auxiliares só serão exibidos após adicionar e ativar o dispositivo."
                         customStyles={customStyles}
+                        selectableRows
                         striped
                         responsive
                         persistTableHead={true}

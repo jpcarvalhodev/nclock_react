@@ -75,47 +75,13 @@ export const NaccessPresence = () => {
     "pin",
   ]);
   const [selectedRows, setSelectedRows] = useState<Accesses[]>([]);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
+  const [selectedEmployeeIds, setselectedEmployeeIds] = useState<string>("");
   const [filteredAccess, setFilteredAccess] = useState<Accesses[]>([]);
   const [filters, setFilters] = useState<Filters>({});
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
-
-  // Função para buscar todos as presenças
-  const fetchPresence = () => {
-    const currentDate = new Date().toLocaleDateString("pt-PT");
-
-    const validAccess = access.filter((acc) => Number(acc.pin) !== 0);
-
-    const employeeStatusMap = validAccess.reduce((accMap, currentAccess) => {
-      const key = currentAccess.pin;
-      const isoDateString = convertToISO(currentAccess.eventTime);
-      const accessDateTime = new Date(isoDateString);
-      const accessDate = accessDateTime.toLocaleDateString("pt-PT");
-      const isAccessToday =
-        accessDate === currentDate && currentAccess.inOutStatus === 0;
-
-      if (!accMap[key]) {
-        accMap[key] = { ...currentAccess, isPresent: isAccessToday };
-      } else {
-        if (isAccessToday) {
-          accMap[key].isPresent = true;
-        }
-        const storedIsoDate = convertToISO(accMap[key].eventTime);
-        const storedAccessDateTime = new Date(storedIsoDate);
-        if (accessDateTime > storedAccessDateTime) {
-          accMap[key].eventTime = currentAccess.eventTime;
-        }
-      }
-      return accMap;
-    }, {} as { [key: string]: EmployeeAccessWithPresence });
-
-    const attendances = Object.values(employeeStatusMap);
-
-    setAccessPresence(attendances);
-  };
 
   // Função para filtrar as presenças
   useEffect(() => {
@@ -126,16 +92,83 @@ export const NaccessPresence = () => {
       const isoDateString = convertToISO(acc.eventTime);
       const eventDateTime = new Date(isoDateString);
 
-      return eventDateTime >= sDate && eventDateTime <= eDate;
+      return (
+        Number(acc.pin) !== 0 &&
+        eventDateTime >= sDate &&
+        eventDateTime <= eDate
+      );
     });
 
-    const finalData = filtered.map((acc) => ({
-      ...acc,
-      isPresent: acc.inOutStatus === 0,
-    }));
+    const latestAccessByPin = new Map<string, Accesses>();
+    filtered.forEach((acc) => {
+      const pinString = String(acc.pin).trim();
+      const existing = latestAccessByPin.get(pinString);
 
-    setAccessPresence(finalData);
-  }, [startDate, endDate]);
+      if (!existing) {
+        latestAccessByPin.set(pinString, acc);
+      } else {
+        const existingDate = new Date(convertToISO(existing.eventTime));
+        const currentDate = new Date(convertToISO(acc.eventTime));
+        if (currentDate > existingDate) {
+          latestAccessByPin.set(pinString, acc);
+        }
+      }
+    });
+
+    const isToday = (date: Date) => {
+      const now = new Date();
+      return (
+        date.getDate() === now.getDate() &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear()
+      );
+    };
+
+    const presenceArray: EmployeeAccessWithPresence[] = Array.from(
+      latestAccessByPin.values()
+    ).map((acc) => {
+      const isoDateString = convertToISO(acc.eventTime);
+      const eventDateTime = new Date(isoDateString);
+
+      const presentToday = acc.inOutStatus === 0 && isToday(eventDateTime);
+
+      return {
+        ...acc,
+        isPresent: presentToday,
+      };
+    });
+
+    const employeesWithoutAccess = employees.filter((emp) => {
+      const enrollString = String(emp.enrollNumber).trim();
+      return !latestAccessByPin.has(enrollString);
+    });
+
+    const absentRecords: EmployeeAccessWithPresence[] =
+      employeesWithoutAccess.map((emp) => {
+        const defaultCardNo =
+          emp.employeeCards?.length > 0 ? emp.employeeCards[0].cardNumber : "";
+
+        return {
+          id: "",
+          cardNo: defaultCardNo,
+          pin: String(emp.enrollNumber).trim(),
+          nameUser: emp.name,
+          eventTime: "",
+          inOutStatus: null,
+          inOutMode: null,
+          deviceSN: "",
+          eventDoorId: "",
+          deviceName: "",
+          eventName: "",
+          eventDoorName: "",
+          readerName: "",
+          isPresent: false,
+        };
+      });
+
+    const combinedData = [...presenceArray, ...absentRecords];
+    setAccessPresence(combinedData);
+  }, [startDate, endDate, access, employees]);
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresence = () => {
@@ -169,32 +202,27 @@ export const NaccessPresence = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Busca as presenças ao montar o componente
-  useEffect(() => {
-    fetchPresence();
-  }, [access]);
-
   // Função para atualizar os dados da tabela
   const refreshAttendance = () => {
-    fetchPresence();
+    fetchAllAccessesbyDevice();
     setClearSelectionToggle((prev) => !prev);
   };
 
   // Atualiza a seleção ao mudar o filtro
   useEffect(() => {
-    if (selectedEmployeeId && selectedEmployeeId.length > 0) {
+    if (selectedEmployeeIds && selectedEmployeeIds.length > 0) {
       const newFilteredAccess = accessPresence.filter((att) =>
-        selectedEmployeeId.includes(String(att.pin))
+        selectedEmployeeIds.includes(String(att.pin))
       );
       setFilteredAccess(newFilteredAccess);
     } else {
       setFilteredAccess(accessPresence);
     }
-  }, [selectedEmployeeId, accessPresence]);
+  }, [selectedEmployeeIds, accessPresence]);
 
   // Define a seleção de funcionários
   const handleSelectFromTreeView = (selectedIds: string[]) => {
-    setSelectedEmployeeId(selectedIds[0] || "");
+    setselectedEmployeeIds(selectedIds[0] || "");
   };
 
   // Função para alternar a visibilidade das colunas
