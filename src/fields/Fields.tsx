@@ -86,7 +86,7 @@ export const externalEntityTypeFields = [
   { label: "Ordem", key: "order", type: "number", required: true },
   { label: "Nome", key: "name", type: "string", required: true },
   {
-    label: "Data de Inserção",
+    label: "Data",
     key: "dateInserted",
     type: "datetime-local",
     required: true,
@@ -123,7 +123,7 @@ export const zoneFields = [
 export const employeeAttendanceTimesFields = [
   {
     key: "attendanceTime",
-    label: "Data e Hora de Presença",
+    label: "Data",
     type: "datetime-local",
     required: true,
   },
@@ -243,7 +243,7 @@ export const adsFields = [
 ];
 
 export const transactionFields = [
-  { key: "eventTime", label: "Hora do Evento", type: "Date" },
+  { key: "eventTime", label: "Data", type: "Date" },
   { key: "cardNo", label: "Nº do Cartão", type: "number" },
   { key: "eventName", label: "Nome do Evento", type: "string" },
   { key: "eventId", label: "Evento", type: "number" },
@@ -260,7 +260,7 @@ export const transactionMBFields = [
   { key: "clientTicket", label: "Ticket do Cliente", type: "string" },
   { key: "merchantTicket", label: "Ticket do Comerciante", type: "string" },
   { key: "email", label: "Email", type: "string" },
-  { key: "timestamp", label: "Data e Hora", type: "Date" },
+  { key: "timestamp", label: "Data", type: "Date" },
   { key: "tpId", label: "Terminal", type: "string" },
   { key: "deviceSN", label: "Nome do Local", type: "string" },
 ];
@@ -272,7 +272,7 @@ export const transactionCardFields = [
   { key: "nameUser", label: "Nome do Utilizador", type: "string" },
   { key: "eventName", label: "Nome do Evento", type: "string" },
   { key: "deviceSN", label: "Nome do Local", type: "string" },
-  { key: "eventTime", label: "Hora do Evento", type: "Date" },
+  { key: "eventTime", label: "Data", type: "Date" },
 ];
 
 export const registerFields = [
@@ -700,7 +700,7 @@ export const recolhaMoedeiroEContadorFields = [
 ];
 
 export const manualOpenDoorFields = [
-  { key: "createdDate", label: "Data de Criação", type: "date" },
+  { key: "createdDate", label: "Data", type: "date" },
   { key: "nomeResponsavel", label: "Nome do Utilizador", type: "string" },
   { key: "nomeEvento", label: "Nome do Evento", type: "string" },
   { key: "observacoes", label: "Observações", type: "string" },
@@ -709,7 +709,7 @@ export const manualOpenDoorFields = [
 ];
 
 export const limpezasEOcorrenciasFields = [
-  { key: "dataCreate", label: "Data de Criação", type: "date" },
+  { key: "dataCreate", label: "Data", type: "date" },
   {
     key: "responsavel",
     label: "Nome do Utilizador",
@@ -721,7 +721,7 @@ export const limpezasEOcorrenciasFields = [
 ];
 
 export const logsFields = [
-  { key: "createdDate", label: "Data de Criação", type: "date" },
+  { key: "createdDate", label: "Data", type: "date" },
   { key: "userName", label: "Nome do Utilizador", type: "string" },
   { key: "description", label: "Descrição", type: "string" },
 ];
@@ -774,7 +774,7 @@ export const resetFields = [
 ];
 
 export const counterFields = [
-  { key: "eventTime", label: "Hora do Evento", type: "Date" },
+  { key: "eventTime", label: "Data", type: "Date" },
   { key: "pin", label: "Nº do Utilizador", type: "number" },
   { key: "nameUser", label: "Nome do Utilizador", type: "string" },
   { key: "deviceSN", label: "Nome do Local", type: "string" },
@@ -788,7 +788,7 @@ export const licenseKey = [
 ];
 
 export const newTransactionCardFields = [
-  { key: "eventTime", label: "Hora do Evento", type: "Date" },
+  { key: "eventTime", label: "Data", type: "Date" },
   { key: "pin", label: "Nº do Utilizador", type: "number" },
   { key: "cardNo", label: "Nº do Cartão", type: "number" },
   { key: "deviceSN", label: "Nome do Local", type: "string" },
@@ -806,7 +806,7 @@ export const timePlanFields = [
 ];
 
 export const accessesFields = [
-  { key: "eventTime", label: "Horário", type: "string" },
+  { key: "eventTime", label: "Data", type: "string" },
   { key: "pin", label: "Número", type: "string" },
   { key: "cardNo", label: "Cartão", type: "string" },
   { key: "nameUser", label: "Nome", type: "string" },
@@ -825,7 +825,7 @@ export const readersFields = [
 ];
 
 export const eventsFields = [
-  { key: "eventTime", label: "Hora do Evento", type: "Date" },
+  { key: "eventTime", label: "Data", type: "Date" },
   { key: "cardNo", label: "Nº do Cartão", type: "number" },
   { key: "eventName", label: "Nome do Evento", type: "string" },
   { key: "eventId", label: "Evento", type: "number" },
@@ -835,17 +835,14 @@ export const eventsFields = [
 ];
 
 export const movementFields = [
-  { key: "eventTime", label: "Hora do Movimento", type: "Date" },
-  { key: "cardNo", label: "Nº do Cartão", type: "number" },
-  { key: "nomeResponsavel", label: "Nome do Utilizador", type: "string" },
-  { key: "eventName", label: "Nome do Movimento", type: "string" },
-  { key: "eventId", label: "Evento", type: "number" },
-  { key: "eventDoorId", label: "Porta", type: "number" },
-  { key: "deviceSN", label: "Nome do Local", type: "string" },
+  { key: "CreatedDate", label: "Data", type: "Date" },
+  { key: "Tipo", label: "Tipo", type: "string" },
+  { key: "Message", label: "Mensagem", type: "string" },
+  { key: "DeviceSN", label: "Nome do Local", type: "string" },
 ];
 
 export const alertsFields = [
-  { key: "eventTime", label: "Hora do Evento", type: "Date" },
+  { key: "eventTime", label: "Data", type: "Date" },
   { key: "eventName", label: "Nome do Evento", type: "string" },
   { key: "deviceSN", label: "Serial do Local", type: "string" },
   { key: "name", label: "Porta/Auxiliar", type: "string" },

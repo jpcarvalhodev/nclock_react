@@ -450,7 +450,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
                             pagination
                             paginationComponentOptions={paginationOptions}
                             paginationPerPage={20}
-                            paginationRowsPerPageOptions={[20, 30, 50]}
+                            paginationRowsPerPageOptions={[20, 50]}
                             selectableRows
                             onRowDoubleClicked={handleEditTerminal}
                             onSelectedRowsChange={({ selectedRows }) =>

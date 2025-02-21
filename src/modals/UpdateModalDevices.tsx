@@ -1149,7 +1149,7 @@ export const UpdateModalDevices = <T extends Entity>({
                           pagination
                           paginationComponentOptions={paginationOptions}
                           paginationPerPage={10}
-                          paginationRowsPerPageOptions={[5, 10]}
+                          paginationRowsPerPageOptions={[10, 20]}
                           selectableRows
                           onRowDoubleClicked={handleEditReaders}
                           noDataComponent="Não existem dados disponíveis para mostrar."

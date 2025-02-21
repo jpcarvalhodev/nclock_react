@@ -517,6 +517,7 @@ export const Types = () => {
               pagination
               paginationComponentOptions={paginationOptions}
               paginationPerPage={20}
+              paginationRowsPerPageOptions={[20, 50]}
               selectableRows
               onSelectedRowsChange={handleRowSelected}
               clearSelectedRows={clearSelectionToggle}

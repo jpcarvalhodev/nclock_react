@@ -487,6 +487,7 @@ export const AccessControls = () => {
               pagination
               paginationComponentOptions={paginationOptions}
               paginationPerPage={20}
+              paginationRowsPerPageOptions={[20, 50]}
               onRowDoubleClicked={handleEditAccessControl}
               selectableRows
               onSelectedRowsChange={handleRowSelected}

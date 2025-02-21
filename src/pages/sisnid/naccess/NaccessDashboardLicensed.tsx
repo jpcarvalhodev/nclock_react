@@ -64,7 +64,7 @@ const messages = {
 export const NaccessDashboardLicensed = () => {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
-  const { access, fetchAllAccessesbyDevice } = useAttendance();
+  const { access } = useAttendance();
   const { manualOpenDoor } = useKiosk();
   const { employees } = usePersons();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -90,11 +90,6 @@ export const NaccessDashboardLicensed = () => {
       labels: [],
       datasets: [],
     });
-
-  // Busca os acessos ao carregar a página
-  useEffect(() => {
-    fetchAllAccessesbyDevice();
-  }, []);
 
   // Função para definir os eventos do calendário
   useEffect(() => {

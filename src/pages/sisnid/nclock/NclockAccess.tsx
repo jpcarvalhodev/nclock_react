@@ -44,7 +44,12 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a página de acessos
 export const NclockAccess = () => {
-  const { access, fetchAllAccessesbyDevice, handleAddAccess } = useAttendance();
+  const {
+    access,
+    totalPages,
+    fetchAllAccessesbyDevice,
+    handleAddAccess,
+  } = useAttendance();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -75,6 +80,30 @@ export const NclockAccess = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(20);
+  const [totalRows, setTotalRows] = useState(0);
+
+  // Função para buscar os dados da paginação
+  const fetchPaginationAccesses = async (pageNo: string, perPage: string) => {
+    setLoading(true);
+    try {
+      const data = await apiService.fetchAllAccessesByDevice(
+        undefined,
+        undefined,
+        undefined,
+        pageNo,
+        perPage
+      );
+      setFilteredAccess(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar acessos paginados:", error);
+      setFilteredAccess([]);
+      setLoading(false);
+    }
+  };
 
   // Função para buscar todos as assiduidades entre datas
   const fetchAccessesBetweenDates = async () => {
@@ -182,6 +211,11 @@ export const NclockAccess = () => {
     }
   }, [access]);
 
+  // Busca os dados se a paginação mudar
+  useEffect(() => {
+    fetchPaginationAccesses(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
+
   // Atualiza a seleção ao resetar
   useEffect(() => {
     if (resetSelection) {
@@ -200,6 +234,17 @@ export const NclockAccess = () => {
       setFilteredAccess(access);
     }
   }, [selectedEmployeeIds]);
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
+  };
 
   // Define a seleção de funcionários
   const handleSelectFromTreeView = (selectedIds: string[]) => {
@@ -788,7 +833,7 @@ export const NclockAccess = () => {
                           pagination
                           paginationComponentOptions={paginationOptions}
                           selectableRows
-                          paginationPerPage={20}
+                          paginationRowsPerPageOptions={[20, 50]}
                           clearSelectedRows={clearSelectionToggle}
                           selectableRowsHighlight
                           onSelectedRowsChange={handleRowSelected}
@@ -799,6 +844,29 @@ export const NclockAccess = () => {
                           persistTableHead={true}
                           defaultSortAsc={true}
                           defaultSortFieldId="eventTime"
+                          paginationIconFirstPage={
+                            <span
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handlePageChange(1)}
+                            >
+                              <i className="bi bi-chevron-double-left" />
+                            </span>
+                          }
+                          paginationIconLastPage={
+                            <span
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handlePageChange(totalPages)}
+                            >
+                              <i className="bi bi-chevron-double-right" />
+                            </span>
+                          }
+                          progressPending={loading}
+                          onChangePage={handlePageChange}
+                          onChangeRowsPerPage={handleRowsPerPageChange}
+                          paginationServer
+                          paginationTotalRows={totalRows}
+                          paginationDefaultPage={currentPage}
+                          paginationPerPage={perPage}
                         />
                       )}
                     </div>
@@ -1077,7 +1145,7 @@ export const NclockAccess = () => {
                           pagination
                           paginationComponentOptions={paginationOptions}
                           selectableRows
-                          paginationPerPage={20}
+                          paginationRowsPerPageOptions={[20, 50]}
                           clearSelectedRows={clearSelectionToggle}
                           selectableRowsHighlight
                           onSelectedRowsChange={handleRowSelected}
@@ -1088,6 +1156,29 @@ export const NclockAccess = () => {
                           persistTableHead={true}
                           defaultSortAsc={true}
                           defaultSortFieldId="eventTime"
+                          paginationIconFirstPage={
+                            <span
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handlePageChange(1)}
+                            >
+                              <i className="bi bi-chevron-double-left" />
+                            </span>
+                          }
+                          paginationIconLastPage={
+                            <span
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handlePageChange(totalPages)}
+                            >
+                              <i className="bi bi-chevron-double-right" />
+                            </span>
+                          }
+                          progressPending={loading}
+                          onChangePage={handlePageChange}
+                          onChangeRowsPerPage={handleRowsPerPageChange}
+                          paginationServer
+                          paginationTotalRows={totalRows}
+                          paginationDefaultPage={currentPage}
+                          paginationPerPage={perPage}
                         />
                       )}
                     </div>

@@ -235,8 +235,8 @@ export const UpdateTimePlansModal = <T extends Record<string, any>>({
                     data={tableData}
                     pagination
                     paginationComponentOptions={paginationOptions}
-                    paginationPerPage={10}
-                    paginationRowsPerPageOptions={[5, 10]}
+                    paginationPerPage={20}
+                    paginationRowsPerPageOptions={[20, 50]}
                     selectableRows
                     onSelectedRowsChange={({ selectedRows }) =>
                       setSelectedRows(selectedRows)

@@ -181,6 +181,7 @@ export const NledAdsLogs = () => {
               pagination
               paginationComponentOptions={paginationOptions}
               paginationPerPage={20}
+              paginationRowsPerPageOptions={[20, 50]}
               noDataComponent="Não existem dados disponíveis para mostrar."
               customStyles={customStyles}
               striped

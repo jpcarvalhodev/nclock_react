@@ -820,6 +820,7 @@ export const NclockRequests = () => {
                     paginationComponentOptions={paginationOptions}
                     selectableRows
                     paginationPerPage={20}
+                    paginationRowsPerPageOptions={[20, 50]}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
@@ -1098,6 +1099,7 @@ export const NclockRequests = () => {
                     paginationComponentOptions={paginationOptions}
                     selectableRows
                     paginationPerPage={20}
+                    paginationRowsPerPageOptions={[20, 50]}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight

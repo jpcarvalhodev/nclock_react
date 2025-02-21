@@ -773,6 +773,7 @@ export const NkioskCleaning = () => {
                   pagination
                   paginationComponentOptions={paginationOptions}
                   paginationPerPage={20}
+                  paginationRowsPerPageOptions={[20, 50]}
                   onRowDoubleClicked={handleEditLimpezas}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -1071,6 +1072,7 @@ export const NkioskCleaning = () => {
                   pagination
                   paginationComponentOptions={paginationOptions}
                   paginationPerPage={20}
+                  paginationRowsPerPageOptions={[20, 50]}
                   onRowDoubleClicked={handleEditLimpezas}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}

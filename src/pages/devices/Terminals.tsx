@@ -300,40 +300,44 @@ export const Terminals = () => {
     };
   }, [selectedTerminal, refreshIntervalTasks]);
 
-  // Função para buscar todos os movimentos de dispositivos
+  // Função para buscar todos os movimentos de dispositivos via websocket
   useEffect(() => {
-    let intervalMovements: NodeJS.Timeout;
+    if (!selectedTerminal) return;
 
-    const fetchMovementsData = async () => {
-      if (!selectedTerminal) return;
+    let socket: WebSocket;
 
+    setLoadingMovementData(true);
+    socket = new WebSocket("ws://localhost:5000/ws");
+
+    socket.onopen = () => {
+      console.log("Conexão WebSocket aberta.");
+      setLoadingMovementData(false);
+    };
+
+    socket.onmessage = (event) => {
       try {
-        setLoadingMovementData(true);
-        const fetchedMovement = await fetchEventsAndTransactionDevice();
-        setMovements(fetchedMovement);
-        setLoadingMovementData(false);
+        const data = JSON.parse(event.data);
+        setMovements((prevMovements) => [data, ...prevMovements]);
       } catch (error) {
-        console.error("Erro ao buscar movimentos:", error);
-        setLoadingMovementData(false);
+        console.error("Erro ao processar mensagem WebSocket:", error);
       }
     };
 
-    setStartDate(formatDateToStartOfDay(pastDate));
-    setEndDate(formatDateToEndOfDay(currentDate));
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      setLoadingMovementData(false);
+    };
 
-    fetchMovementsData();
-
-    if (selectedTerminal && refreshIntervalMovements > 0) {
-      intervalMovements = setInterval(
-        fetchMovementsData,
-        refreshIntervalMovements
-      );
-    }
+    socket.onclose = () => {
+      console.log("Conexão WebSocket fechada.");
+    };
 
     return () => {
-      if (intervalMovements) clearInterval(intervalMovements);
+      if (socket) {
+        socket.close();
+      }
     };
-  }, [selectedTerminal, refreshIntervalMovements]);
+  }, [selectedTerminal]);
 
   // Função para buscar todas as tarefas entre datas
   const fetchAllActivityBetweenDates = async () => {
@@ -902,6 +906,8 @@ export const Terminals = () => {
             return applyTooltip(deviceName);
           }
           case "eventName":
+          case "respName":
+          case "estado":
             return applyTooltip(row[field.key]);
           default:
             return row[field.key];
@@ -931,9 +937,8 @@ export const Terminals = () => {
   );
 
   // Define as colunas de movimentos
-  const movementColumns: TableColumn<Movements>[] = movementFields
-    .filter((field) => field.key !== "id" && field.key !== "eventId")
-    .map((field) => {
+  const movementColumns: TableColumn<Movements>[] = movementFields.map(
+    (field) => {
       const formatField = (row: Movements) => {
         const applyTooltip = (text: string) => (
           <OverlayTrigger
@@ -967,35 +972,22 @@ export const Terminals = () => {
         );
 
         switch (field.key) {
-          case "eventTime": {
+          case "CreatedDate": {
             const formattedDate = new Date(row[field.key]).toLocaleString();
             if (formattedDate === "01/01/1970, 01:00:00") {
               return "";
             }
             return applyTooltip(formattedDate);
           }
-          case "eventDoorId": {
-            const doorName =
-              door.find((door) => door.doorNo === row[field.key])?.name || "";
-            return applyTooltip(doorName);
-          }
-          case "deviceSN": {
+          case "DeviceSN": {
             const deviceName =
               devices.find((device) => device.serialNumber === row[field.key])
                 ?.deviceName || "";
             return applyTooltip(deviceName);
           }
-          case "eventName":
+          case "Message":
+          case "Tipo":
             return applyTooltip(row[field.key]);
-          case "nomeResponsavel": {
-            const employeeName =
-              employees.find(
-                (employee) =>
-                  row.cardNo &&
-                  employee.employeeCards[0].cardNumber === row.cardNo.toString()
-              )?.shortName || "";
-            return employeeName;
-          }
           default:
             return row[field.key];
         }
@@ -1005,7 +997,7 @@ export const Terminals = () => {
         name: (
           <>
             {field.label}
-            {field.key !== "eventTime" && (
+            {field.key !== "CreatedDate" && (
               <SelectFilter
                 column={field.key}
                 setFilters={setFilters}
@@ -1017,10 +1009,11 @@ export const Terminals = () => {
         selector: (row) => formatField(row),
         sortable: true,
         sortFunction: (rowA, rowB) =>
-          new Date(rowB.eventTime).getTime() -
-          new Date(rowA.eventTime).getTime(),
+          new Date(rowB.createdDate).getTime() -
+          new Date(rowA.createdDate).getTime(),
       };
-    });
+    }
+  );
 
   // Filtra os dados da tabela de estado de dispositivos
   const filteredStateDataTable = useMemo(() => {
@@ -1764,7 +1757,6 @@ export const Terminals = () => {
       await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, userIds);
       setLoadingSendSelectedUsers(false);
       setClearSelectionToggle((prev) => !prev);
-      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal e pelo menos um utilizador!");
     }
@@ -1778,7 +1770,6 @@ export const Terminals = () => {
       await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, userIds);
       setLoadingDeleteSelectedUsers(false);
       setClearSelectionToggle((prev) => !prev);
-      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal e pelo menos um utilizador!");
     }
@@ -1795,7 +1786,6 @@ export const Terminals = () => {
       );
       setLoadingFetchSelectedUsers(false);
       setClearSelectionToggle((prev) => !prev);
-      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal e pelo menos um utilizador!");
     }
@@ -1808,7 +1798,6 @@ export const Terminals = () => {
       await saveAllEmployeesOnDeviceToDB(selectedTerminal.zktecoDeviceID);
       setLoadingUser(false);
       setClearSelectionToggle((prev) => !prev);
-      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -1822,7 +1811,6 @@ export const Terminals = () => {
         await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
         setLoadingAllUser(false);
         setClearSelectionToggle((prev) => !prev);
-        setSelectedTerminal(null);
       }, "Quer enviar utilizadores para o terminal marcado?");
     } else {
       toast.warn("Selecione um terminal primeiro!");
@@ -1837,7 +1825,6 @@ export const Terminals = () => {
       await sendAllEmployeesToDevice(selectedTerminal.zktecoDeviceID, null);
       setLoadingSyncAllUser(false);
       setClearSelectionToggle((prev) => !prev);
-      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -1850,7 +1837,6 @@ export const Terminals = () => {
       await fetchAllKioskTransactionOnDevice(selectedTerminal.zktecoDeviceID);
       setLoadingMovements(false);
       setClearSelectionToggle((prev) => !prev);
-      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -1864,7 +1850,6 @@ export const Terminals = () => {
         await deleteAllUsersOnDevice(selectedTerminal.zktecoDeviceID, null);
         setLoadingDeleteAllUsers(false);
         setClearSelectionToggle((prev) => !prev);
-        ~setSelectedTerminal(null);
       }, "Apagar todos os utilizadores no terminal marcado?");
     } else {
       toast.warn("Selecione um terminal primeiro!");
@@ -1878,7 +1863,6 @@ export const Terminals = () => {
       await restartDevice(selectedTerminal.zktecoDeviceID);
       setLoadingRestartDevice(false);
       setClearSelectionToggle((prev) => !prev);
-      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -1891,7 +1875,6 @@ export const Terminals = () => {
       await sendClockToDevice(selectedTerminal.serialNumber);
       setLoadingSendClock(false);
       setClearSelectionToggle((prev) => !prev);
-      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -1902,7 +1885,6 @@ export const Terminals = () => {
     await openDeviceDoor(sn, doorData);
     setLoadingOpenDoor(false);
     setClearSelectionToggle((prev) => !prev);
-    setSelectedTerminal(null);
   };
 
   // Função para sincronizar a hora
@@ -1912,7 +1894,6 @@ export const Terminals = () => {
       await syncTimeManuallyToDevice(selectedTerminal.zktecoDeviceID);
       setLoadingSyncTime(false);
       setClearSelectionToggle((prev) => !prev);
-      setSelectedTerminal(null);
     } else {
       toast.warn("Selecione um terminal primeiro!");
     }
@@ -2213,11 +2194,10 @@ export const Terminals = () => {
                   onRowDoubleClicked={handleEditDevices}
                   pagination
                   paginationPerPage={20}
-                  paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                  paginationRowsPerPageOptions={[20, 50]}
                   paginationComponentOptions={paginationOptions}
                   selectableRows
                   selectableRowsSingle
-                  clearSelectedRows={clearSelectionToggle}
                   onSelectedRowsChange={handleDeviceRowSelected}
                   selectableRowsHighlight
                   noDataComponent="Não existem dados disponíveis para mostrar."
@@ -2424,7 +2404,7 @@ export const Terminals = () => {
                             data={transactions}
                             pagination
                             paginationPerPage={5}
-                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                            paginationRowsPerPageOptions={[5, 10]}
                             paginationComponentOptions={paginationOptions}
                             selectableRows
                             selectableRowsSingle
@@ -2450,168 +2430,6 @@ export const Terminals = () => {
                     </p>
                     {selectedTerminal && selectedDeviceRows.length > 0 ? (
                       <>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            marginBottom: 10,
-                          }}
-                        >
-                          <div>
-                            <Form.Group
-                              controlId="refreshInterval"
-                              style={{ display: "flex", alignItems: "center" }}
-                            >
-                              <Form.Label
-                                style={{ marginBottom: 0, marginRight: 5 }}
-                              >
-                                Tempo entre atualizações:
-                              </Form.Label>
-                              <Form.Select
-                                value={refreshIntervalMovements}
-                                onChange={(e) =>
-                                  setRefreshIntervalMovements(
-                                    Number(e.target.value)
-                                  )
-                                }
-                                className="custom-input-height form-control custom-select-font-size w-auto"
-                              >
-                                <option value={0}>Desligar</option>
-                                <option value={10000}>10 segundos</option>
-                                <option value={30000}>30 segundos</option>
-                              </Form.Select>
-                            </Form.Group>
-                          </div>
-                          <div className="buttons-container-data-range">
-                            <OverlayTrigger
-                              placement="top"
-                              delay={0}
-                              container={document.body}
-                              popperConfig={{
-                                strategy: "fixed",
-                                modifiers: [
-                                  {
-                                    name: "preventOverflow",
-                                    options: {
-                                      boundary: "window",
-                                    },
-                                  },
-                                ],
-                              }}
-                              overlay={
-                                <Tooltip className="custom-tooltip">
-                                  Movimentos Hoje
-                                </Tooltip>
-                              }
-                            >
-                              <CustomOutlineButton
-                                icon="bi bi-calendar-event"
-                                iconSize="1.1em"
-                                onClick={fetchMovementToday}
-                              />
-                            </OverlayTrigger>
-                            <OverlayTrigger
-                              placement="top"
-                              delay={0}
-                              container={document.body}
-                              popperConfig={{
-                                strategy: "fixed",
-                                modifiers: [
-                                  {
-                                    name: "preventOverflow",
-                                    options: {
-                                      boundary: "window",
-                                    },
-                                  },
-                                ],
-                              }}
-                              overlay={
-                                <Tooltip className="custom-tooltip">
-                                  Movimentos Dia Anterior
-                                </Tooltip>
-                              }
-                            >
-                              <CustomOutlineButton
-                                icon="bi bi-arrow-left-circle"
-                                iconSize="1.1em"
-                                onClick={fetchMovementForPreviousDay}
-                              />
-                            </OverlayTrigger>
-                            <OverlayTrigger
-                              placement="top"
-                              delay={0}
-                              container={document.body}
-                              popperConfig={{
-                                strategy: "fixed",
-                                modifiers: [
-                                  {
-                                    name: "preventOverflow",
-                                    options: {
-                                      boundary: "window",
-                                    },
-                                  },
-                                ],
-                              }}
-                              overlay={
-                                <Tooltip className="custom-tooltip">
-                                  Movimentos Dia Seguinte
-                                </Tooltip>
-                              }
-                            >
-                              <CustomOutlineButton
-                                icon="bi bi-arrow-right-circle"
-                                iconSize="1.1em"
-                                onClick={fetchMovementForNextDay}
-                              />
-                            </OverlayTrigger>
-                          </div>
-                          <div
-                            className="date-range-search"
-                            style={{ margin: 0 }}
-                          >
-                            <input
-                              type="datetime-local"
-                              value={startDate}
-                              onChange={(e) => setStartDate(e.target.value)}
-                              className="search-input"
-                            />
-                            <span> até </span>
-                            <input
-                              type="datetime-local"
-                              value={endDate}
-                              onChange={(e) => setEndDate(e.target.value)}
-                              className="search-input"
-                            />
-                            <OverlayTrigger
-                              placement="top"
-                              delay={0}
-                              container={document.body}
-                              popperConfig={{
-                                strategy: "fixed",
-                                modifiers: [
-                                  {
-                                    name: "preventOverflow",
-                                    options: {
-                                      boundary: "window",
-                                    },
-                                  },
-                                ],
-                              }}
-                              overlay={
-                                <Tooltip className="custom-tooltip">
-                                  Buscar
-                                </Tooltip>
-                              }
-                            >
-                              <CustomOutlineButton
-                                icon="bi-search"
-                                iconSize="1.1em"
-                                onClick={fetchAllMovementBetweenDates}
-                              />
-                            </OverlayTrigger>
-                          </div>
-                        </div>
                         {loadingMovementData ? (
                           <div
                             style={{
@@ -2629,7 +2447,7 @@ export const Terminals = () => {
                             data={movements}
                             pagination
                             paginationPerPage={5}
-                            paginationRowsPerPageOptions={[5, 10, 15, 20, 25]}
+                            paginationRowsPerPageOptions={[5, 10]}
                             paginationComponentOptions={paginationOptions}
                             selectableRows
                             selectableRowsSingle
@@ -2639,7 +2457,7 @@ export const Terminals = () => {
                             responsive
                             persistTableHead={true}
                             defaultSortAsc={true}
-                            defaultSortFieldId="eventTime"
+                            defaultSortFieldId="createdDate"
                           />
                         )}
                       </>
@@ -2662,7 +2480,10 @@ export const Terminals = () => {
                       eventKey="users-software"
                       title="Utilizadores no software"
                     >
-                      <div style={{ display: "flex" }} className="user-track-tab-mobile">
+                      <div
+                        style={{ display: "flex" }}
+                        className="user-track-tab-mobile"
+                      >
                         <div style={{ flex: 5 }}>
                           {userSoftwareLoading ? (
                             <div
@@ -2681,6 +2502,7 @@ export const Terminals = () => {
                               data={filteredUsersInSoftware}
                               pagination
                               paginationPerPage={20}
+                              paginationRowsPerPageOptions={[20, 50]}
                               paginationComponentOptions={paginationOptions}
                               selectableRows
                               clearSelectedRows={clearSelectionToggle}
@@ -2793,6 +2615,7 @@ export const Terminals = () => {
                           data={filteredUsersInTerminal}
                           pagination
                           paginationPerPage={20}
+                          paginationRowsPerPageOptions={[20, 50]}
                           paginationComponentOptions={paginationOptions}
                           selectableRows
                           clearSelectedRows={clearSelectionToggle}
@@ -2830,6 +2653,7 @@ export const Terminals = () => {
                           data={filteredBioDataTable}
                           pagination
                           paginationPerPage={20}
+                          paginationRowsPerPageOptions={[20, 50]}
                           paginationComponentOptions={paginationOptions}
                           selectableRows
                           clearSelectedRows={clearSelectionToggle}
@@ -2863,6 +2687,7 @@ export const Terminals = () => {
                           data={filteredCardDataTable}
                           pagination
                           paginationPerPage={20}
+                          paginationRowsPerPageOptions={[20, 50]}
                           paginationComponentOptions={paginationOptions}
                           selectableRows
                           clearSelectedRows={clearSelectionToggle}
@@ -2898,6 +2723,7 @@ export const Terminals = () => {
                       data={filteredStateDataTable}
                       pagination
                       paginationPerPage={20}
+                      paginationRowsPerPageOptions={[20, 50]}
                       paginationComponentOptions={paginationOptions}
                       selectableRows
                       selectableRowsSingle
@@ -3377,8 +3203,6 @@ export const Terminals = () => {
               onClose={() => {
                 setShowDoorModal(false);
                 setLoadingOpenDoor(false);
-                setSelectedTerminal(null);
-                setSelectedDeviceRows([]);
               }}
               onSave={(data) => handleOpenDoor(data.serialNumber, data)}
               entity={selectedTerminal}

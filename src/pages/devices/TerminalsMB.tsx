@@ -549,6 +549,7 @@ export const TerminalsMB = () => {
                   pagination
                   paginationComponentOptions={paginationOptions}
                   paginationPerPage={20}
+                  paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleDeviceRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -761,6 +762,7 @@ export const TerminalsMB = () => {
                   pagination
                   paginationComponentOptions={paginationOptions}
                   paginationPerPage={20}
+                  paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleDeviceRowSelected}
                   clearSelectedRows={clearSelectionToggle}

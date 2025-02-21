@@ -555,6 +555,7 @@ export const ExternalEntities = () => {
               data={filteredDataTable}
               onRowDoubleClicked={handleEditExternalEntity}
               paginationPerPage={20}
+              paginationRowsPerPageOptions={[20, 50]}
               pagination
               paginationComponentOptions={paginationOptions}
               selectableRows

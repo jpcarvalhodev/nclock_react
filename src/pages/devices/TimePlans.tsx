@@ -490,6 +490,7 @@ export const TimePlans = () => {
               pagination
               paginationComponentOptions={paginationOptions}
               paginationPerPage={20}
+              paginationRowsPerPageOptions={[20, 50]}
               onRowDoubleClicked={handleEditTimePlan}
               selectableRows
               onSelectedRowsChange={handleRowSelected}

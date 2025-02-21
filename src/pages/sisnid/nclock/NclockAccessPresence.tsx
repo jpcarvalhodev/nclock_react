@@ -666,6 +666,7 @@ export const NclockAccessPresence = () => {
                     paginationComponentOptions={paginationOptions}
                     selectableRows
                     paginationPerPage={20}
+                    paginationRowsPerPageOptions={[20, 50]}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
@@ -911,6 +912,7 @@ export const NclockAccessPresence = () => {
                     paginationComponentOptions={paginationOptions}
                     selectableRows
                     paginationPerPage={20}
+                    paginationRowsPerPageOptions={[20, 50]}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight

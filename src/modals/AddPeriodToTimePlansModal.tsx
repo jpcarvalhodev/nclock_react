@@ -140,8 +140,8 @@ export const AddPeriodToTimePlansModal = <T extends Record<string, any>>({
             data={period}
             pagination
             paginationComponentOptions={paginationOptions}
-            paginationPerPage={10}
-            paginationRowsPerPageOptions={[5, 10]}
+            paginationPerPage={20}
+            paginationRowsPerPageOptions={[20, 50]}
             selectableRows
             onSelectedRowsChange={handleRowSelected}
             clearSelectedRows={clearSelectionToggle}

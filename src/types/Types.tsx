@@ -809,13 +809,10 @@ export type Events = {
 export type Movements = {
   [key: string]: any;
   id: string;
-  eventTime: Date;
-  cardNo: number;
-  eventName: string;
-  eventId: number;
-  eventDoorId: number;
-  deviceSN: string;
-  nomeResponsavel: string;
+  CreatedDate: Date;
+  Tipo: string;
+  Message: string
+  DeviceSN: string;
 };
 
 export type Alerts = {

@@ -694,6 +694,7 @@ export const NledAds = () => {
                     paginationComponentOptions={paginationOptions}
                     clearSelectedRows={clearSelectionToggle}
                     paginationPerPage={20}
+                    paginationRowsPerPageOptions={[20, 50]}
                     selectableRows
                     onSelectedRowsChange={handleRowSelected}
                     noDataComponent="Não existem dados disponíveis para mostrar."
@@ -966,6 +967,7 @@ export const NledAds = () => {
                     paginationComponentOptions={paginationOptions}
                     clearSelectedRows={clearSelectionToggle}
                     paginationPerPage={20}
+                    paginationRowsPerPageOptions={[20, 50]}
                     selectableRows
                     onSelectedRowsChange={handleRowSelected}
                     noDataComponent="Não existem dados disponíveis para mostrar."

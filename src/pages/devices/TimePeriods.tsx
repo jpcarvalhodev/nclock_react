@@ -584,6 +584,7 @@ export const TimePeriods = () => {
                   pagination
                   paginationComponentOptions={paginationOptions}
                   paginationPerPage={20}
+                  paginationRowsPerPageOptions={[20, 50]}
                   clearSelectedRows={clearSelectionToggle}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -756,6 +757,7 @@ export const TimePeriods = () => {
                   pagination
                   paginationComponentOptions={paginationOptions}
                   paginationPerPage={20}
+                  paginationRowsPerPageOptions={[20, 50]}
                   clearSelectedRows={clearSelectionToggle}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
