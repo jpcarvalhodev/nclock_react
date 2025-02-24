@@ -512,6 +512,10 @@ body {
   max-height: 79vh;
 }
 
+.treeview-container-full-height {
+  max-height: 100vh;
+}
+
 .datatable-title-text {
   font-size: 20px;
   color: #000000;

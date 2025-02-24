@@ -58,7 +58,7 @@ export const NclockAccessPresence = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { access, fetchAllAccessesbyDevice } = useAttendance();
+  const { accessForGraph, fetchAllAccessesbyDevice } = useAttendance();
   const { employees, handleUpdateEmployee } = usePersons();
   const [accessPresence, setAccessPresence] = useState<
     EmployeeAccessWithPresence[]
@@ -82,13 +82,14 @@ export const NclockAccessPresence = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [perPage, setPerPage] = useState(20);
 
   // Função para filtrar as presenças
   useEffect(() => {
     const sDate = new Date(startDate);
     const eDate = new Date(endDate);
 
-    const filtered = access.filter((acc) => {
+    const filtered = accessForGraph.filter((acc) => {
       const isoDateString = convertToISO(acc.eventTime);
       const eventDateTime = new Date(isoDateString);
 
@@ -168,7 +169,7 @@ export const NclockAccessPresence = () => {
 
     const combinedData = [...presenceArray, ...absentRecords];
     setAccessPresence(combinedData);
-  }, [startDate, endDate, access, employees]);
+  }, [startDate, endDate, accessForGraph, employees]);
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresence = () => {
@@ -665,8 +666,11 @@ export const NclockAccessPresence = () => {
                     pagination
                     paginationComponentOptions={paginationOptions}
                     selectableRows
-                    paginationPerPage={20}
+                    paginationPerPage={perPage}
                     paginationRowsPerPageOptions={[20, 50]}
+                    onChangeRowsPerPage={(newPerPage, page) => {
+                      setPerPage(newPerPage);
+                    }}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
@@ -693,7 +697,7 @@ export const NclockAccessPresence = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className="treeview-container">
+          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
             <TreeViewDataNaccess onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
@@ -911,8 +915,11 @@ export const NclockAccessPresence = () => {
                     pagination
                     paginationComponentOptions={paginationOptions}
                     selectableRows
-                    paginationPerPage={20}
+                    paginationPerPage={perPage}
                     paginationRowsPerPageOptions={[20, 50]}
+                    onChangeRowsPerPage={(newPerPage, page) => {
+                      setPerPage(newPerPage);
+                    }}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight

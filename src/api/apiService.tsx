@@ -272,7 +272,7 @@ export const fetchAllData = async () => {
   return { departments, groups, employees };
 };
 
-export const fetchAllEmployees = async () => {
+export const fetchAllEmployeesNoPagination = async () => {
   const response = await fetchWithAuth(`Employees/GetAllEmployees`);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -296,8 +296,109 @@ export const fetchAllEmployees = async () => {
   return response.json();
 };
 
-export const fetchAllEmployeesWithDisabled = async () => {
+export const fetchAllEmployees = async (pageNo?: string, pageSize?: string) => {
+  const params: string[] = [];
+
+  if (pageNo) {
+    params.push(`pageNumber=${pageNo}`);
+  }
+
+  if (pageSize) {
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `Employees/GetAllEmployeesPagination`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
+  const response = await fetchWithAuth(url);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    toast.error(errorData.message);
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const fetchAllEmployeesWithDisabledNoPagination = async () => {
   const response = await fetchWithAuth(`Employees/GetDisabledEmployees`);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const fetchAllEmployeesWithDisabled = async (
+  pageNo?: string,
+  pageSize?: string
+) => {
+  const params: string[] = [];
+
+  if (pageNo) {
+    params.push(`pageNumber=${pageNo}`);
+  }
+
+  if (pageSize) {
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `Employees/GetDisabledEmployeesPagination`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
+  const response = await fetchWithAuth(url);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    toast.error(errorData.message);
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const fetchEmployeesById = async (id: string[]) => {
+  const response = await fetchWithAuth(`Employees/GetEmployeesByIds`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(id),
+  });
   if (response.status === 403) {
     if (!hasShown403) {
       toast.error(
@@ -1151,12 +1252,27 @@ export const addManualOpenDoor = async (door: Partial<ManualOpenDoor>) => {
 
 export const fetchAllEventDevice = async (
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
 ) => {
-  let url = `Zkteco/GetAllEventDevice`;
+  const params: string[] = [];
+
   if (startDate && endDate) {
-    url += `?startTime=${startDate}&endTime=${endDate}`;
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
   }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `Zkteco/GetAllEventDevice`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -1169,12 +1285,7 @@ export const fetchAllEventDevice = async (
   }
   if (!response.ok) {
     const errorData = await response.json();
-    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
-    if (message) {
-      toast.error(message);
-    } else {
-      toast.error(errorData.message || errorData.error);
-    }
+    toast.error(errorData.message);
     throw new Error();
   }
   return response.json();
@@ -1182,12 +1293,27 @@ export const fetchAllEventDevice = async (
 
 export const fetchAllEventAndTransactionDevice = async (
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
 ) => {
-  let url = `Zkteco/GetAllEventAndTransactionsDevice`;
+  const params: string[] = [];
+
   if (startDate && endDate) {
-    url += `?startTime=${startDate}&endTime=${endDate}`;
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
   }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `Zkteco/GetAllEventAndTransactionsDevice`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -1200,12 +1326,7 @@ export const fetchAllEventAndTransactionDevice = async (
   }
   if (!response.ok) {
     const errorData = await response.json();
-    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
-    if (message) {
-      toast.error(message);
-    } else {
-      toast.error(errorData.message || errorData.error);
-    }
+    toast.error(errorData.message);
     throw new Error();
   }
   return response.json();
@@ -1213,12 +1334,27 @@ export const fetchAllEventAndTransactionDevice = async (
 
 export const fetchAllDeviceActivities = async (
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
 ) => {
-  let url = `Zkteco/GetAllDeviceActivities`;
+  const params: string[] = [];
+
   if (startDate && endDate) {
-    url += `?startTime=${startDate}&endTime=${endDate}`;
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
   }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `Zkteco/GetAllDeviceActivities`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -1231,12 +1367,7 @@ export const fetchAllDeviceActivities = async (
   }
   if (!response.ok) {
     const errorData = await response.json();
-    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
-    if (message) {
-      toast.error(message);
-    } else {
-      toast.error(errorData.message || errorData.error);
-    }
+    toast.error(errorData.message);
     throw new Error();
   }
   return response.json();
@@ -4762,6 +4893,45 @@ export const importEmployees = async (employees: FormData) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE ACESSOS/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+export const fetchAllAccessesByDeviceNoPagination = async (
+  deviceSN?: string,
+  startDate?: string,
+  endDate?: string
+) => {
+  const params: string[] = [];
+
+  if (deviceSN) {
+    params.push(`deviceSNList=${deviceSN}`);
+  }
+
+  if (startDate && endDate) {
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
+  }
+
+  let url = `AccPlanoAcesso/GetTransactionsByDeviceSN`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
+  const response = await fetchWithAuth(url);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    toast.error(errorData.message);
+    throw new Error();
+  }
+  return response.json();
+};
+
 export const fetchAllAccessesByDevice = async (
   deviceSN?: string,
   startDate?: string,
@@ -4785,7 +4955,7 @@ export const fetchAllAccessesByDevice = async (
     params.push(`pageSize=${pageSize}`);
   }
 
-  let url = `AccPlanoAcesso/GetTransactionsByDeviceSN`;
+  let url = `AccPlanoAcesso/GetTransactionsByDeviceSNPagination`;
   if (params.length > 0) {
     url += `?${params.join("&")}`;
   }

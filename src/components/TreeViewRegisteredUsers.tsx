@@ -116,29 +116,32 @@ export function TreeViewDataUsers({ onSelectDevices }: TreeViewDataUsersProps) {
       setLoading(false);
     }, 1000);
 
-    if (filteredItems.length > 0) {
+    if (itemsMap.size > 0) {
       clearTimeout(timeout);
       setLoading(false);
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredItems]);
+  }, [memoizedTreeItems]);
 
   // Função para lidar com a expansão dos itens
   const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
     setExpandedIds(nodeIds);
   };
 
+  // Mapeia os itens para um Map
+  const itemsMap = useMemo(() => {
+    const map = new Map<string, TreeViewBaseItem>();
+    function mapItemsRecursively(item: TreeViewBaseItem) {
+      map.set(item.id, item);
+      item.children?.forEach(mapItemsRecursively);
+    }
+    items.forEach(mapItemsRecursively);
+    return map;
+  }, [items]);
+
   // Função para lidar com a mudança de seleção dos itens
   const handleSelectedItemsChange = (e: SyntheticEvent, itemIds: string[]) => {
-    const itemsMap = new Map<string, TreeViewBaseItem>();
-
-    function mapItemsRecursively(item: TreeViewBaseItem) {
-      itemsMap.set(item.id, item);
-      item.children?.forEach((child) => mapItemsRecursively(child));
-    }
-    items.forEach((item) => mapItemsRecursively(item));
-
     const newSelectedIds = new Set(itemIds);
     const previouslySelectedIds = new Set(selectedDevicesIds);
 

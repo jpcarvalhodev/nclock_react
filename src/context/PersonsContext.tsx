@@ -21,7 +21,9 @@ interface DataStateExternalEntities {
 // Define o tipo de contexto
 export interface PersonsContextType {
     employees: Employee[];
+    employeesNoPagination: Employee[];
     disabledEmployees: Employee[];
+    disabledEmployeesNoPagination: Employee[];
     departments: Department[];
     setDepartments: (departments: Department[]) => void;
     groups: Group[];
@@ -30,10 +32,15 @@ export interface PersonsContextType {
     data: DataState;
     setData: (data: DataState) => void;
     setEmployees: (employees: Employee[]) => void;
+    setEmployeesNoPagination: (employees: Employee[]) => void;
     setDisabledEmployees: (employees: Employee[]) => void;
+    setDisabledEmployeesNoPagination: (employees: Employee[]) => void;
     fetchAllData: (entity?: string) => Promise<void>;
     fetchAllEmployees: (options?: FetchOptions) => Promise<Employee[]>;
+    fetchAllEmployeesNoPagination: (options?: FetchOptions) => Promise<Employee[]>;
     fetchAllDisabledEmployees: (options?: FetchOptions) => Promise<Employee[]>;
+    fetchAllDisabledEmployeesNoPagination: (options?: FetchOptions) => Promise<Employee[]>;
+    fetchEmployeesById: (employeeID: string[]) => Promise<Employee[]>;
     fetchAllCardData: () => Promise<EmployeeCard[]>;
     fetchAllRegisteredUsers: () => Promise<void>;
     handleAddUsers: (user: FormData) => Promise<void>;
@@ -80,6 +87,7 @@ export interface PersonsContextType {
     handleAddZone: (zone: Zone) => Promise<void>;
     handleUpdateZone: (zone: Zone) => Promise<void>;
     handleDeleteZone: (zoneID: string[]) => Promise<void>;
+    totalPages: number;
 }
 
 // Expandindo as opções de busca
@@ -94,7 +102,9 @@ export const PersonsContext = createContext<PersonsContextType | undefined>(unde
 // Provedor do contexto
 export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [employeesNoPagination, setEmployeesNoPagination] = useState<Employee[]>([]);
     const [disabledEmployees, setDisabledEmployees] = useState<Employee[]>([]);
+    const [disabledEmployeesNoPagination, setDisabledEmployeesNoPagination] = useState<Employee[]>([]);
     const [employeesFP, setEmployeesFP] = useState<EmployeeFP[]>([]);
     const [employeesFace, setEmployeesFace] = useState<EmployeeFace[]>([]);
     const [employeeCards, setEmployeeCards] = useState<EmployeeCard[]>([]);
@@ -106,6 +116,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const [externalEntityTypes, setexternalEntityTypes] = useState<ExternalEntityTypes[]>([]);
     const [professions, setProfessions] = useState<Profession[]>([]);
     const [zones, setZones] = useState<Zone[]>([]);
+    const [totalPages, setTotalPages] = useState(0);
     const [data, setData] = useState<DataState>({
         departments: [],
         groups: [],
@@ -123,7 +134,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             let newData: DataState = {
                 departments: allData?.departments,
                 groups: allData?.groups,
-                employees: allData?.employees,
+                employees: allData?.employees.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber)
             };
             if (entity === 'employees') {
                 newData.employees = allData?.employees.filter((emp: Employee) => emp.type === 'Funcionário');
@@ -144,10 +155,10 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
-    // Função para buscar todos os funcionários
-    const fetchAllEmployees = useCallback(async (options?: FetchOptions): Promise<Employee[]> => {
+    // Função para buscar todos os funcionários sem paginação
+    const fetchAllEmployeesNoPagination = useCallback(async (options?: FetchOptions): Promise<Employee[]> => {
         try {
-            let data = await apiService.fetchAllEmployees();
+            let data = await apiService.fetchAllEmployeesNoPagination();
 
             const sortedData = data.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber);
 
@@ -156,8 +167,30 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             }
             if (options?.postFetch) {
                 options.postFetch(data);
+            }
+            setEmployeesNoPagination(sortedData);
+            return sortedData;
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+            return [];
+        }
+    }, []);
+
+    // Função para buscar todos os funcionários com paginação
+    const fetchAllEmployees = useCallback(async (options?: FetchOptions, pageNo?: string, pageSize?: string): Promise<Employee[]> => {
+        try {
+            let data = await apiService.fetchAllEmployees(pageNo, pageSize);
+
+            const sortedData = data.data.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber);
+
+            if (options?.filterFunc) {
+                data = options.filterFunc(data.data);
+            }
+            if (options?.postFetch) {
+                options.postFetch(data.data);
             }
             setEmployees(sortedData);
+            setTotalPages(data.totalPages);
             return sortedData;
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
@@ -165,10 +198,10 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
-    // Função para buscar todos os funcionários incluindo desativados
-    const fetchAllDisabledEmployees = useCallback(async (options?: FetchOptions): Promise<Employee[]> => {
+    // Função para buscar todos os funcionários incluindo desativados sem paginação
+    const fetchAllDisabledEmployeesNoPagination = useCallback(async (options?: FetchOptions): Promise<Employee[]> => {
         try {
-            let data = await apiService.fetchAllEmployeesWithDisabled();
+            let data = await apiService.fetchAllEmployeesWithDisabledNoPagination();
 
             const sortedData = data.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber);
 
@@ -178,13 +211,46 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             if (options?.postFetch) {
                 options.postFetch(data);
             }
-            setDisabledEmployees(sortedData);
+            setDisabledEmployeesNoPagination(sortedData);
             return sortedData;
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
             return [];
         }
     }, []);
+
+    // Função para buscar todos os funcionários incluindo desativados com paginação
+    const fetchAllDisabledEmployees = useCallback(async (options?: FetchOptions, pageNo?: string, pageSize?: string): Promise<Employee[]> => {
+        try {
+            let data = await apiService.fetchAllEmployeesWithDisabled(pageNo, pageSize);
+
+            const sortedData = data.data.sort((a: { enrollNumber: number; }, b: { enrollNumber: number; }) => a.enrollNumber - b.enrollNumber);
+
+            if (options?.filterFunc) {
+                data = options.filterFunc(data.data);
+            }
+            if (options?.postFetch) {
+                options.postFetch(data.data);
+            }
+            setDisabledEmployees(sortedData);
+            setTotalPages(data.totalPages);
+            return sortedData;
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+            return [];
+        }
+    }, []);
+
+    // Função para buscar funcionários por ID
+    const fetchEmployeesById = async (employeeID: string[]): Promise<Employee[]> => {
+        try {
+            const data = await apiService.fetchEmployeesById(employeeID);
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+        }
+        return [];
+    }
 
     // Função para buscar todos os departamentos
     const fetchAllDepartments = async (): Promise<Department[]> => {
@@ -753,6 +819,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         if (token) {
             fetchAllData();
             fetchAllEmployees();
+            fetchAllEmployeesNoPagination();
+            fetchAllDisabledEmployees();
+            fetchAllDisabledEmployeesNoPagination();
             fetchAllCardData();
             fetchAllRegisteredUsers();
             fetchAllDepartments();
@@ -767,7 +836,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     // Define o valor do contexto
     const contextValue: PersonsContextType = {
         employees,
+        employeesNoPagination,
         disabledEmployees,
+        disabledEmployeesNoPagination,
         departments,
         setDepartments,
         groups,
@@ -776,10 +847,15 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         data,
         setData,
         setEmployees,
+        setEmployeesNoPagination,
         setDisabledEmployees,
+        setDisabledEmployeesNoPagination,
         fetchAllData,
         fetchAllEmployees,
+        fetchAllEmployeesNoPagination,
         fetchAllDisabledEmployees,
+        fetchAllDisabledEmployeesNoPagination,
+        fetchEmployeesById,
         fetchAllCardData,
         fetchAllRegisteredUsers,
         handleAddUsers,
@@ -826,6 +902,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         handleAddZone,
         handleUpdateZone,
         handleDeleteZone,
+        totalPages,
     };
 
     return (

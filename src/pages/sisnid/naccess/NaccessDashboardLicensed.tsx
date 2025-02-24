@@ -64,7 +64,7 @@ const messages = {
 export const NaccessDashboardLicensed = () => {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
-  const { access } = useAttendance();
+  const { accessForGraph } = useAttendance();
   const { manualOpenDoor } = useKiosk();
   const { employees } = usePersons();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -93,14 +93,14 @@ export const NaccessDashboardLicensed = () => {
 
   // Função para definir os eventos do calendário
   useEffect(() => {
-    if (!access || access.length === 0) {
+    if (!accessForGraph || accessForGraph.length === 0) {
       setEvents([]);
       return;
     }
 
     const groupedMap = new Map<string, { date: Date; doorName: string }>();
 
-    for (const item of access) {
+    for (const item of accessForGraph) {
       if (!item.eventTime) continue;
       const date = parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date(), {
         locale: pt,
@@ -136,7 +136,7 @@ export const NaccessDashboardLicensed = () => {
     }
 
     setEvents(newEvents);
-  }, [access]);
+  }, [accessForGraph]);
 
   // Função para renderizar os eventos no calendário
   const MyEvent = ({ event }: MyEventProps) => {
@@ -168,7 +168,7 @@ export const NaccessDashboardLicensed = () => {
 
   // Atualiza os dados do gráfico com base nos acessos anuais
   useEffect(() => {
-    const groupedAccess = groupByMonth(access);
+    const groupedAccess = groupByMonth(accessForGraph);
 
     const dataPerMonth = new Array(12).fill(0);
 
@@ -209,13 +209,13 @@ export const NaccessDashboardLicensed = () => {
     };
 
     setAccessLineChartData(newLineData);
-  }, [access]);
+  }, [accessForGraph]);
 
   // Define os dados do gráfico de linha para as presenças de hoje
   useEffect(() => {
     const today = format(new Date(), "dd/MM/yyyy", { locale: pt });
 
-    const todayAccesses = access.filter((item) => {
+    const todayAccesses = accessForGraph.filter((item) => {
       if (!item.eventTime) return false;
       const eventDate = format(
         parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date()),
@@ -238,13 +238,13 @@ export const NaccessDashboardLicensed = () => {
       ],
     };
     setPresenceBarChartData(chartData);
-  }, [access]);
+  }, [accessForGraph]);
 
   // Define os dados do gráfico de linha para as ausências de hoje
   useEffect(() => {
     const today = format(new Date(), "dd/MM/yyyy", { locale: pt });
 
-    const todayAccesses = access.filter((item) => {
+    const todayAccesses = accessForGraph.filter((item) => {
       if (!item.eventTime) return false;
       const eventDate = format(
         parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date()),
@@ -274,7 +274,7 @@ export const NaccessDashboardLicensed = () => {
     };
 
     setNoPresenceBarChartData(chartData);
-  }, [access, employees]);
+  }, [accessForGraph, employees]);
 
   // Define os dados do gráfico de linha para os visitantes de hoje
   useEffect(() => {

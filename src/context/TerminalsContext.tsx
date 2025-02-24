@@ -67,8 +67,9 @@ export interface DeviceContextType {
     fetchDeviceActivities: (startDate?: string, endDate?: string) => Promise<Activity[]>;
     refreshIntervalTasks: number;
     setRefreshIntervalTasks: (interval: number) => void;
-    refreshIntervalMovements: number;
-    setRefreshIntervalMovements: (interval: number) => void;
+    totalMovementPages: number;
+    totalMovementRows: number;
+    totalEventPages: number;
 }
 
 // Cria o contexto	
@@ -89,7 +90,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [timePlans, setTimePlans] = useState<TimePlan[]>([]);
     const [events, setEvents] = useState<Alerts[]>([]);
     const [refreshIntervalTasks, setRefreshIntervalTasks] = useState<number>(10000);
-    const [refreshIntervalMovements, setRefreshIntervalMovements] = useState<number>(10000);
+    const [totalMovementPages, setTotalMovementPages] = useState<number>(1);
+    const [totalMovementRows, setTotalMovementRows] = useState<number>(0);
+    const [totalEventPages, setTotalEventPages] = useState<number>(1);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<Devices[]> => {
@@ -611,11 +614,12 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os eventos do dispositivo
-    const fetchEventsDevice = async (startDate?: string, endDate?: string): Promise<Events[]> => {
+    const fetchEventsDevice = async (startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Events[]> => {
         try {
-            const data = await apiService.fetchAllEventDevice(startDate, endDate);
-            setEvents(data);
-            return data;
+            const data = await apiService.fetchAllEventDevice(startDate, endDate, pageNo, pageSize);
+            setEvents(data.data);
+            setTotalEventPages(data.totalPages);
+            return data.data;
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
         }
@@ -623,10 +627,10 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os eventos e transações do dispositivo
-    const fetchEventsAndTransactionDevice = async (startDate?: string, endDate?: string): Promise<Movements[]> => {
+    const fetchEventsAndTransactionDevice = async (startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Movements[]> => {
         try {
-            const data = await apiService.fetchAllEventAndTransactionDevice(startDate, endDate);
-            return data;
+            const data = await apiService.fetchAllEventAndTransactionDevice(startDate, endDate, pageNo, pageSize);
+            return data.data;
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
         }
@@ -634,10 +638,12 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todas as atividades do dispositivo
-    const fetchDeviceActivities = async (startDate?: string, endDate?: string): Promise<Activity[]> => {
+    const fetchDeviceActivities = async (startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Activity[]> => {
         try {
-            const data = await apiService.fetchAllDeviceActivities(startDate, endDate);
-            return data;
+            const data = await apiService.fetchAllDeviceActivities(startDate, endDate, pageNo, pageSize);
+            setTotalMovementPages(data.totalPages);
+            setTotalMovementRows(data.totalRows);
+            return data.data;
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
         }
@@ -660,6 +666,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchCameras();
             fetchEventsDevice();
             fetchEventsAndTransactionDevice();
+            fetchDeviceActivities();
         }
     }, []);
 
@@ -726,8 +733,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         fetchDeviceActivities,
         refreshIntervalTasks,
         setRefreshIntervalTasks,
-        refreshIntervalMovements,
-        setRefreshIntervalMovements,
+        totalMovementPages,
+        totalMovementRows,
+        totalEventPages
     };
 
     return (

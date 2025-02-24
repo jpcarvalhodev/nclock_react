@@ -52,6 +52,7 @@ export const LoginLogs = () => {
   const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [perPage, setPerPage] = useState(20);
 
   // Função para buscar os logs entre datas
   const fetchLogsBetweenDates = async () => {
@@ -512,8 +513,11 @@ export const LoginLogs = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
+                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -540,7 +544,11 @@ export const LoginLogs = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className="treeview-container">
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
             <TreeViewDataLogin onSelectDevices={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
@@ -758,8 +766,11 @@ export const LoginLogs = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
+                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}

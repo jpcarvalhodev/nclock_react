@@ -86,6 +86,7 @@ export const NkioskMoveCard = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [perPage, setPerPage] = useState(20);
   const eventDoorId = "3";
 
   // Função para adicionar um novo movimento de cartão
@@ -798,8 +799,11 @@ export const NkioskMoveCard = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
+                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -830,7 +834,7 @@ export const NkioskMoveCard = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className="treeview-container">
+          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
             <TreeViewDataNkioskMove
               onSelectDevices={handleSelectFromTreeView}
             />
@@ -1103,8 +1107,11 @@ export const NkioskMoveCard = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
+                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}

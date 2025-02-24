@@ -75,6 +75,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [showIpValidationErrors, setShowIpValidationErrors] = useState(false);
+  const [activeTab, setActiveTab] = useState<string | null>(null);
 
   // Atualiza o estado do componente ao abrir o modal
   useEffect(() => {
@@ -229,6 +230,16 @@ export const CreateModalDevices = <T extends Record<string, any>>({
       model: deviceOption ? deviceOption.label : "",
       sPhoto: deviceOption?.img || no_image,
     }));
+
+    if (selected) {
+      if (selected === "Newland U1000") {
+        setActiveTab("multibanco");
+      } else {
+        setActiveTab("ac/as");
+      }
+    } else {
+      setActiveTab(null);
+    }
   };
 
   // Função para lidar com a mudança de valor
@@ -339,6 +350,8 @@ export const CreateModalDevices = <T extends Record<string, any>>({
     { value: "SISNID-PROFACEX-TD", label: "SISNID-PROFACEX-TD", img: profacex },
     { value: "SpeedFace-RFID-TD", label: "SpeedFace-RFID-TD", img: rfid_td },
     { value: "Speedface-V5L-TD-1", label: "Speedface-V5L-TD-1", img: v5l_td },
+    { value: "", label: "------------------Multibanco------------------" },
+    { value: "Newland U1000", label: "Newland U1000" },
   ];
 
   return (
@@ -354,407 +367,543 @@ export const CreateModalDevices = <T extends Record<string, any>>({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-body-scrollable">
-        <Row>
-          <Col md={3}>
-            <Form.Group controlId="formDeviceName">
-              <Form.Label>
-                Nome<span style={{ color: "red" }}> *</span>
-              </Form.Label>
-              <OverlayTrigger
-                placement="right"
-                overlay={
-                  <Tooltip id="tooltip-deviceName">Campo obrigatório</Tooltip>
-                }
-              >
-                <Form.Control
-                  type="text"
-                  name="deviceName"
-                  value={formData["deviceName"] || ""}
-                  onChange={handleChange}
-                  className={`custom-input-height form-control custom-select-font-size ${
-                    showValidationErrors ? "error-border" : ""
-                  }`}
-                  maxLength={50}
-                ></Form.Control>
-              </OverlayTrigger>
-              {errors["deviceName"] && (
-                <div style={{ color: "red", fontSize: "small" }}>
-                  {errors["deviceName"]}
-                </div>
-              )}
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group controlId="formModel">
-              <Form.Label>Modelo</Form.Label>
-              <Form.Select
-                name="model"
-                value={selectedDevice}
-                onChange={handleDeviceChange}
-                className="custom-input-height custom-select-font-size select-dropdown"
-              >
-                <option value="">Selecione</option>
-                {deviceOptions.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                    disabled={option.value === ""}
-                  >
-                    {option.label}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group controlId="formDeviceNumber">
-              <Form.Label>
-                Número<span style={{ color: "red" }}> *</span>
-              </Form.Label>
-              <OverlayTrigger
-                placement="right"
-                overlay={
-                  <Tooltip id="tooltip-deviceNumber">Campo obrigatório</Tooltip>
-                }
-              >
-                <Form.Control
-                  type="number"
-                  className={`custom-input-height form-control custom-select-font-size ${
-                    showValidationErrors ? "error-border" : ""
-                  }`}
-                  value={formData.deviceNumber || ""}
-                  onChange={handleChange}
-                  name="deviceNumber"
-                />
-              </OverlayTrigger>
-              {errors["deviceNumber"] && (
-                <div style={{ color: "red", fontSize: "small" }}>
-                  {errors["deviceNumber"]}
-                </div>
-              )}
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={4}>
-            <Tab.Container defaultActiveKey="terminal">
-              <Nav variant="tabs" className="nav-modal">
-                <Nav.Item>
-                  <Nav.Link eventKey="terminal">Equipamentos</Nav.Link>
-                </Nav.Item>
-              </Nav>
-              <Tab.Content>
-                <Tab.Pane eventKey="terminal">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      <Col className="img-modal">
-                        <img
-                          src={deviceImage || no_image}
-                          alt="Imagem do dispositivo"
-                          style={{
-                            width: 128,
-                            height: 128,
-                            cursor: "pointer",
-                            marginBottom: 30,
-                            objectFit: "cover",
-                            borderRadius: "25%",
-                          }}
-                          onClick={triggerFileSelectPopup}
-                        />
-                        <div>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            style={{ display: "none" }}
-                            onChange={handleImageChange}
-                            ref={fileInputRef}
-                          />
-                        </div>
-                        <Form.Group
-                          controlId="formEnabled"
-                          className="d-flex align-items-center mb-3"
+        <Col md={3}>
+          <Form.Group controlId="formModel">
+            <Form.Label>Modelo</Form.Label>
+            <Form.Select
+              name="model"
+              value={selectedDevice}
+              onChange={handleDeviceChange}
+              className="custom-input-height custom-select-font-size select-dropdown"
+            >
+              <option value="">Selecione</option>
+              {deviceOptions.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                  disabled={option.value === ""}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+        </Col>
+        {activeTab && (
+          <Tab.Container
+            activeKey={activeTab}
+            onSelect={(k) => setActiveTab(k)}
+          >
+            <Nav variant="tabs" className="nav-modal">
+              <Nav.Item>
+                <Nav.Link eventKey="ac/as">Acesso/Assiduidade</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="multibanco">Multibanco</Nav.Link>
+              </Nav.Item>
+            </Nav>
+            <Tab.Content>
+              <Tab.Pane eventKey="ac/as">
+                <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                  <Row>
+                    <Col md={3}>
+                      <Form.Group controlId="formDeviceName">
+                        <Form.Label>
+                          Nome<span style={{ color: "red" }}> *</span>
+                        </Form.Label>
+                        <OverlayTrigger
+                          placement="right"
+                          overlay={
+                            <Tooltip id="tooltip-deviceName">
+                              Campo obrigatório
+                            </Tooltip>
+                          }
                         >
-                          <Form.Label
-                            className="mb-0 me-2 flex-shrink-0"
-                            style={{ lineHeight: "32px" }}
-                          >
-                            Activo
-                          </Form.Label>
-                          <Form.Check
-                            type="switch"
-                            id="custom-switch-enabled"
-                            checked={formData.enabled === true}
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                enabled: e.target.checked,
-                              }))
-                            }
-                            className="ms-auto"
-                            label=""
-                            name="enabled"
+                          <Form.Control
+                            type="text"
+                            name="deviceName"
+                            value={formData["deviceName"] || ""}
+                            onChange={handleChange}
+                            className={`custom-input-height form-control custom-select-font-size ${
+                              showValidationErrors ? "error-border" : ""
+                            }`}
+                            maxLength={50}
+                          ></Form.Control>
+                        </OverlayTrigger>
+                        {errors["deviceName"] && (
+                          <div style={{ color: "red", fontSize: "small" }}>
+                            {errors["deviceName"]}
+                          </div>
+                        )}
+                      </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                      <Form.Group controlId="formModel">
+                        <Form.Label>Modelo</Form.Label>
+                        <Form.Select
+                          name="model"
+                          value={selectedDevice}
+                          onChange={handleDeviceChange}
+                          className="custom-input-height custom-select-font-size select-dropdown"
+                        >
+                          <option value="">Selecione</option>
+                          {deviceOptions.map((option) => (
+                            <option
+                              key={option.value}
+                              value={option.value}
+                              disabled={option.value === ""}
+                            >
+                              {option.label}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                      <Form.Group controlId="formDeviceNumber">
+                        <Form.Label>
+                          Número<span style={{ color: "red" }}> *</span>
+                        </Form.Label>
+                        <OverlayTrigger
+                          placement="right"
+                          overlay={
+                            <Tooltip id="tooltip-deviceNumber">
+                              Campo obrigatório
+                            </Tooltip>
+                          }
+                        >
+                          <Form.Control
+                            type="number"
+                            className={`custom-input-height form-control custom-select-font-size ${
+                              showValidationErrors ? "error-border" : ""
+                            }`}
+                            value={formData.deviceNumber || ""}
+                            onChange={handleChange}
+                            name="deviceNumber"
                           />
+                        </OverlayTrigger>
+                        {errors["deviceNumber"] && (
+                          <div style={{ color: "red", fontSize: "small" }}>
+                            {errors["deviceNumber"]}
+                          </div>
+                        )}
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={4}>
+                      <Tab.Container defaultActiveKey="terminal">
+                        <Nav variant="tabs" className="nav-modal">
+                          <Nav.Item>
+                            <Nav.Link eventKey="terminal">
+                              Equipamentos
+                            </Nav.Link>
+                          </Nav.Item>
+                        </Nav>
+                        <Tab.Content>
+                          <Tab.Pane eventKey="terminal">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                <Col className="img-modal">
+                                  <img
+                                    src={deviceImage || no_image}
+                                    alt="Imagem do dispositivo"
+                                    style={{
+                                      width: 128,
+                                      height: 128,
+                                      cursor: "pointer",
+                                      marginBottom: 30,
+                                      objectFit: "cover",
+                                      borderRadius: "25%",
+                                    }}
+                                    onClick={triggerFileSelectPopup}
+                                  />
+                                  <div>
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      style={{ display: "none" }}
+                                      onChange={handleImageChange}
+                                      ref={fileInputRef}
+                                    />
+                                  </div>
+                                  <Form.Group
+                                    controlId="formEnabled"
+                                    className="d-flex align-items-center mb-3"
+                                  >
+                                    <Form.Label
+                                      className="mb-0 me-2 flex-shrink-0"
+                                      style={{ lineHeight: "32px" }}
+                                    >
+                                      Activo
+                                    </Form.Label>
+                                    <Form.Check
+                                      type="switch"
+                                      id="custom-switch-enabled"
+                                      checked={formData.enabled === true}
+                                      onChange={(e) =>
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          enabled: e.target.checked,
+                                        }))
+                                      }
+                                      className="ms-auto"
+                                      label=""
+                                      name="enabled"
+                                    />
+                                  </Form.Group>
+                                  <div
+                                    style={{
+                                      backgroundColor: "#d1d1d1",
+                                      padding: "10px",
+                                      borderRadius: "5px",
+                                      marginTop: "20px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <p style={{ margin: "0" }}>
+                                      As funcionalidades indicadas dependem da
+                                      compatibilidade do equipamento.
+                                    </p>
+                                  </div>
+                                </Col>
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                        </Tab.Content>
+                      </Tab.Container>
+                    </Col>
+                    <Col md={8}>
+                      <Tab.Container defaultActiveKey="comunicacao">
+                        <Nav variant="tabs" className="nav-modal">
+                          <Nav.Item>
+                            <Nav.Link eventKey="comunicacao">
+                              Modo de Comunicação
+                            </Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link eventKey="informacao">
+                              Informação
+                            </Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link eventKey="portas">Portas</Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link eventKey="leitores">Leitores</Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link eventKey="auxiliares">
+                              Auxiliares
+                            </Nav.Link>
+                          </Nav.Item>
+                        </Nav>
+                        <Tab.Content>
+                          <Tab.Pane eventKey="comunicacao">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                <Col md={12}>
+                                  <Row>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formIpAddress">
+                                        <Form.Label>IP</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="ipAddress"
+                                          value={formData["ipAddress"] || ""}
+                                          onChange={handleChange}
+                                          isInvalid={
+                                            showIpValidationErrors &&
+                                            !validateIPAddress(
+                                              formData["ipAddress"] || ""
+                                            )
+                                          }
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formPort">
+                                        <Form.Label>Porta</Form.Label>
+                                        <Form.Control
+                                          type="number"
+                                          name="port"
+                                          value={formData["port"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formCode">
+                                        <Form.Label>Código</Form.Label>
+                                        <Form.Control
+                                          type="number"
+                                          className="custom-input-height custom-select-font-size"
+                                          value={formData.code || ""}
+                                          onChange={handleChange}
+                                          name="code"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formDeviceProtocol">
+                                        <Form.Label>Protocolo</Form.Label>
+                                        <Form.Select
+                                          name="deviceProtocol"
+                                          value={
+                                            formData["deviceProtocol"] || ""
+                                          }
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        >
+                                          <option value="">Selecione</option>
+                                          <option value="1">Standalone</option>
+                                          <option value="2">Pull</option>
+                                          <option value="3">Push</option>
+                                        </Form.Select>
+                                      </Form.Group>
+                                    </Col>
+                                  </Row>
+                                </Col>
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                          <Tab.Pane eventKey="informacao">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                <Col md={12}>
+                                  <Row>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formPlatform">
+                                        <Form.Label>Plataforma</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="platform"
+                                          value={formData["platform"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                      <Form.Group controlId="formProductTime">
+                                        <Form.Label>Data do Produto</Form.Label>
+                                        <Form.Control
+                                          type="date"
+                                          name="productTime"
+                                          value={formData["productTime"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formFirmware">
+                                        <Form.Label>Firmware</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="firmware"
+                                          value={formData["firmware"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                      <Form.Group controlId="formProducter">
+                                        <Form.Label>Fabricante</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="producter"
+                                          value={formData["producter"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formMacAddress">
+                                        <Form.Label>MAC</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="macAddress"
+                                          value={formData["macAddress"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                      <Form.Group controlId="formDeviceType">
+                                        <Form.Label>Tipo</Form.Label>
+                                        <Form.Select
+                                          name="deviceType"
+                                          value={formData["deviceType"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        >
+                                          <option value="">Selecione</option>
+                                          <option value="1">Assiduidade</option>
+                                          <option value="2">
+                                            Controle de Acesso
+                                          </option>
+                                        </Form.Select>
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formSerialNumber">
+                                        <Form.Label>Número de Série</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="serialNumber"
+                                          value={formData["serialNumber"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                  </Row>
+                                </Col>
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                          <Tab.Pane eventKey="portas">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                <DataTable
+                                  columns={columns}
+                                  data={filteredDataTable}
+                                  pagination
+                                  paginationComponentOptions={paginationOptions}
+                                  noDataComponent="Os dados de portas só serão exibidos após adicionar e ativar o dispositivo."
+                                  customStyles={customStyles}
+                                  selectableRows
+                                  striped
+                                  responsive
+                                  persistTableHead={true}
+                                />
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                          <Tab.Pane eventKey="leitores">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                <DataTable
+                                  columns={columns}
+                                  data={filteredDataTable}
+                                  pagination
+                                  paginationComponentOptions={paginationOptions}
+                                  noDataComponent="Os dados de leitores só serão exibidos após adicionar e ativar o dispositivo."
+                                  customStyles={customStyles}
+                                  selectableRows
+                                  striped
+                                  responsive
+                                  persistTableHead={true}
+                                />
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                          <Tab.Pane eventKey="auxiliares">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                <DataTable
+                                  columns={columns}
+                                  data={filteredDataTable}
+                                  pagination
+                                  paginationComponentOptions={paginationOptions}
+                                  noDataComponent="Os dados de auxiliares só serão exibidos após adicionar e ativar o dispositivo."
+                                  customStyles={customStyles}
+                                  selectableRows
+                                  striped
+                                  responsive
+                                  persistTableHead={true}
+                                />
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                        </Tab.Content>
+                      </Tab.Container>
+                    </Col>
+                  </Row>
+                </Form>
+              </Tab.Pane>
+            </Tab.Content>
+            <Tab.Content>
+              <Tab.Pane eventKey="multibanco">
+                <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                  <Row>
+                    {[
+                      {
+                        key: "nomeQuiosque",
+                        label: "Nome do Terminal",
+                        type: "string",
+                        required: true,
+                      },
+                      { key: "modelo", label: "Modelo", type: "string" },
+                      {
+                        key: "timeReboot",
+                        label: "Tempo de Reinício",
+                        type: "string",
+                      },
+                    ].map((field) => (
+                      <Col md={3} key={field.key}>
+                        <Form.Group controlId={`form${field.key}`}>
+                          {field.required ? (
+                            <OverlayTrigger
+                              placement="right"
+                              overlay={
+                                <Tooltip id={`tooltip-${field.key}`}>
+                                  Campo obrigatório
+                                </Tooltip>
+                              }
+                            >
+                              <Form.Label>
+                                {field.label}{" "}
+                                <span
+                                  style={{ color: "red", marginLeft: "5px" }}
+                                >
+                                  *
+                                </span>
+                              </Form.Label>
+                            </OverlayTrigger>
+                          ) : (
+                            <Form.Label>{field.label}</Form.Label>
+                          )}
+                          {field.key === "modelo" ? (
+                            <Form.Control
+                              as="select"
+                              name={field.key}
+                              value={formData[field.key] || ""}
+                              onChange={handleChange}
+                              className="custom-input-height custom-select-font-size"
+                            >
+                              <option value="">Selecione...</option>
+                              {deviceOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </Form.Control>
+                          ) : (
+                            <Form.Control
+                              type={field.type === "number" ? "number" : "text"}
+                              value={formData[field.key] || ""}
+                              onChange={handleChange}
+                              name={field.key}
+                              className={`custom-input-height custom-select-font-size ${
+                                showValidationErrors ? "error-border" : ""
+                              }`}
+                            />
+                          )}
+                          {errors[field.key] && (
+                            <Form.Text className="text-danger">
+                              {errors[field.key]}
+                            </Form.Text>
+                          )}
                         </Form.Group>
-                        <div
-                          style={{
-                            backgroundColor: "#d1d1d1",
-                            padding: "10px",
-                            borderRadius: "5px",
-                            marginTop: "20px",
-                            textAlign: "center",
-                          }}
-                        >
-                          <p style={{ margin: "0" }}>
-                            As funcionalidades indicadas dependem da
-                            compatibilidade do equipamento.
-                          </p>
-                        </div>
                       </Col>
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-              </Tab.Content>
-            </Tab.Container>
-          </Col>
-          <Col md={8}>
-            <Tab.Container defaultActiveKey="comunicacao">
-              <Nav variant="tabs" className="nav-modal">
-                <Nav.Item>
-                  <Nav.Link eventKey="comunicacao">
-                    Modo de Comunicação
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="informacao">Informação</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="portas">Portas</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="leitores">Leitores</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="auxiliares">Auxiliares</Nav.Link>
-                </Nav.Item>
-              </Nav>
-              <Tab.Content>
-                <Tab.Pane eventKey="comunicacao">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      <Col md={12}>
-                        <Row>
-                          <Col md={3}>
-                            <Form.Group controlId="formIpAddress">
-                              <Form.Label>IP</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="ipAddress"
-                                value={formData["ipAddress"] || ""}
-                                onChange={handleChange}
-                                isInvalid={
-                                  showIpValidationErrors &&
-                                  !validateIPAddress(
-                                    formData["ipAddress"] || ""
-                                  )
-                                }
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formPort">
-                              <Form.Label>Porta</Form.Label>
-                              <Form.Control
-                                type="number"
-                                name="port"
-                                value={formData["port"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formCode">
-                              <Form.Label>Código</Form.Label>
-                              <Form.Control
-                                type="number"
-                                className="custom-input-height custom-select-font-size"
-                                value={formData.code || ""}
-                                onChange={handleChange}
-                                name="code"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formDeviceProtocol">
-                              <Form.Label>Protocolo</Form.Label>
-                              <Form.Select
-                                name="deviceProtocol"
-                                value={formData["deviceProtocol"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              >
-                                <option value="">Selecione</option>
-                                <option value="1">Standalone</option>
-                                <option value="2">Pull</option>
-                                <option value="3">Push</option>
-                              </Form.Select>
-                            </Form.Group>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-                <Tab.Pane eventKey="informacao">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      <Col md={12}>
-                        <Row>
-                          <Col md={3}>
-                            <Form.Group controlId="formPlatform">
-                              <Form.Label>Plataforma</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="platform"
-                                value={formData["platform"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                            <Form.Group controlId="formProductTime">
-                              <Form.Label>Data do Produto</Form.Label>
-                              <Form.Control
-                                type="date"
-                                name="productTime"
-                                value={formData["productTime"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formFirmware">
-                              <Form.Label>Firmware</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="firmware"
-                                value={formData["firmware"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                            <Form.Group controlId="formProducter">
-                              <Form.Label>Fabricante</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="producter"
-                                value={formData["producter"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formMacAddress">
-                              <Form.Label>MAC</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="macAddress"
-                                value={formData["macAddress"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                            <Form.Group controlId="formDeviceType">
-                              <Form.Label>Tipo</Form.Label>
-                              <Form.Select
-                                name="deviceType"
-                                value={formData["deviceType"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              >
-                                <option value="">Selecione</option>
-                                <option value="1">Assiduidade</option>
-                                <option value="2">Controle de Acesso</option>
-                              </Form.Select>
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formSerialNumber">
-                              <Form.Label>Número de Série</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="serialNumber"
-                                value={formData["serialNumber"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-                <Tab.Pane eventKey="portas">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        noDataComponent="Os dados de portas só serão exibidos após adicionar e ativar o dispositivo."
-                        customStyles={customStyles}
-                        selectableRows
-                        striped
-                        responsive
-                        persistTableHead={true}
-                      />
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-                <Tab.Pane eventKey="leitores">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        noDataComponent="Os dados de leitores só serão exibidos após adicionar e ativar o dispositivo."
-                        customStyles={customStyles}
-                        selectableRows
-                        striped
-                        responsive
-                        persistTableHead={true}
-                      />
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-                <Tab.Pane eventKey="auxiliares">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      <DataTable
-                        columns={columns}
-                        data={filteredDataTable}
-                        pagination
-                        paginationComponentOptions={paginationOptions}
-                        noDataComponent="Os dados de auxiliares só serão exibidos após adicionar e ativar o dispositivo."
-                        customStyles={customStyles}
-                        selectableRows
-                        striped
-                        responsive
-                        persistTableHead={true}
-                      />
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-              </Tab.Content>
-            </Tab.Container>
-          </Col>
-        </Row>
+                    ))}
+                  </Row>
+                </Form>
+              </Tab.Pane>
+            </Tab.Content>
+          </Tab.Container>
+        )}
       </Modal.Body>
       <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
         <Button

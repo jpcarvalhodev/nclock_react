@@ -39,9 +39,9 @@ export const Login = () => {
   const { fetchAds } = useAds();
   const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
-  const { fetchAllAttendances, fetchAllAccessesbyDevice } = useAttendance();
-  const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones } = usePersons();
-  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans, fetchCameras, fetchEventsDevice, fetchEventsAndTransactionDevice } = useTerminals();
+  const { fetchAllAttendances, fetchAllAccessesByDeviceNoPagination, fetchAllAccessesbyDevice } = useAttendance();
+  const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones, fetchAllDisabledEmployees, fetchAllEmployeesNoPagination, fetchAllDisabledEmployeesNoPagination } = usePersons();
+  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans, fetchCameras, fetchEventsDevice, fetchEventsAndTransactionDevice, fetchDeviceActivities } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks } = useKiosk();
   const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
@@ -198,6 +198,9 @@ export const Login = () => {
             fetchAllDevices(),
             fetchAllData(),
             fetchAllEmployees(),
+            fetchAllDisabledEmployees(),
+            fetchAllEmployeesNoPagination(),
+            fetchAllDisabledEmployeesNoPagination(),
             fetchAllDepartments(),
             fetchAllGroups(),
             fetchAllRegisteredUsers(),
@@ -211,6 +214,7 @@ export const Login = () => {
             fetchAllLoginLogs(),
             fetchAllHistoryLogs(),
             fetchAllAttendances(),
+            fetchAllAccessesByDeviceNoPagination(),
             fetchAllAccessesbyDevice(),
             fetchAllMBDevices(),
             fetchAccessControl(),
@@ -235,7 +239,8 @@ export const Login = () => {
             fetchAllTasks(),
             fetchCameras(),
             fetchEventsDevice(),
-            fetchEventsAndTransactionDevice()
+            fetchEventsAndTransactionDevice(),
+            fetchDeviceActivities(),
           ]);
           setLoading(false);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);

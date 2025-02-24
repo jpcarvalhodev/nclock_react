@@ -77,6 +77,7 @@ export const NkioskListMovements = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [perPage, setPerPage] = useState(20);
   const eventDoorId = "3";
   const eventDoorId2 = "4";
 
@@ -792,8 +793,11 @@ export const NkioskListMovements = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
+                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -824,7 +828,7 @@ export const NkioskListMovements = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className="treeview-container">
+          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
             <TreeViewDataNkioskMove
               onSelectDevices={handleSelectFromTreeView}
             />
@@ -1048,8 +1052,11 @@ export const NkioskListMovements = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
+                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}

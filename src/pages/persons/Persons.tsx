@@ -5,6 +5,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 
 import Split from "react-split";
+import * as apiService from "../../api/apiService";
 import { CustomOutlineButton } from "../../components/CustomOutlineButton";
 import { customStyles } from "../../components/CustomStylesDataTable";
 import { ExpandedComponentEmpZoneExtEnt } from "../../components/ExpandedComponentEmpZoneExtEnt";
@@ -36,9 +37,11 @@ export const Persons = () => {
     disabledEmployees,
     data,
     fetchAllDisabledEmployees,
+    fetchEmployeesById,
     handleAddEmployee,
     handleUpdateEmployee,
     handleDeleteEmployee,
+    totalPages,
   } = usePersons();
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [filterText, setFilterText] = useState("");
@@ -66,14 +69,23 @@ export const Persons = () => {
   const [currentEmployeeIndex, setCurrentEmployeeIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(20);
+  const [totalRows, setTotalRows] = useState(0);
 
-  // Define a função de busca dos funcionários
-  const fetchEmployees = () => {
-    fetchAllDisabledEmployees({
-      postFetch: (filteredData) => {
-        setFilteredEmployees(filteredData);
-      },
-    });
+  // Função para buscar os dados da paginação
+  const fetchPaginationPersons = async (pageNo: string, perPage: string) => {
+    try {
+      const data = await apiService.fetchAllEmployeesWithDisabled(
+        pageNo,
+        perPage
+      );
+      setFilteredEmployees(data.data);
+      setTotalRows(data.totalRecords);
+    } catch (error) {
+      console.error("Erro ao buscar funcionários paginados:", error);
+      setFilteredEmployees([]);
+    }
   };
 
   // Função para adicionar um funcionário e um cartão
@@ -99,12 +111,19 @@ export const Persons = () => {
 
   // Busca os funcionários
   useEffect(() => {
-    fetchEmployees();
+    fetchAllDisabledEmployees();
   }, []);
+
+  // Busca os funcionários paginados ao mudar a página
+  useEffect(() => {
+    fetchPaginationPersons(currentPage.toString(), perPage.toString());
+  }, [currentPage, perPage]);
 
   // Atualiza os funcionários
   const refreshEmployees = () => {
-    fetchEmployees();
+    fetchAllDisabledEmployees();
+    setCurrentPage(1);
+    setPerPage(20);
     setClearSelectionToggle((prev) => !prev);
   };
 
@@ -129,8 +148,30 @@ export const Persons = () => {
   }, [disabledEmployees, selectedEmployeeIds]);
 
   // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
+
+    const missingIds = selectedIds.filter(
+      (id) => !disabledEmployees.some((emp) => emp.employeeID === id)
+    );
+
+    if (missingIds.length > 0) {
+      setLoading(true);
+      try {
+        const foundEmployees = await fetchEmployeesById(missingIds);
+        setFilteredEmployees((prev) => {
+          const existingIds = new Set(prev.map((emp) => emp.employeeID));
+          const uniqueEmployees = foundEmployees.filter(
+            (emp) => !existingIds.has(emp.employeeID)
+          );
+          return [...prev, ...uniqueEmployees];
+        });
+      } catch (error) {
+        console.error("Erro ao buscar funcionários por ID:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   // Define a abertura do modal de apagar funcionário
@@ -195,6 +236,17 @@ export const Persons = () => {
 
     setShowDeleteModal(false);
     deleteSelectedEmployees(employeeIds);
+  };
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
   };
 
   // Seleciona o funcionário anterior
@@ -602,7 +654,6 @@ export const Persons = () => {
                     onRowDoubleClicked={handleEditEmployee}
                     pagination
                     paginationComponentOptions={paginationOptions}
-                    paginationPerPage={20}
                     paginationRowsPerPageOptions={[20, 50, 100]}
                     expandableRows
                     expandableRowsComponent={({ data }) =>
@@ -619,6 +670,29 @@ export const Persons = () => {
                     persistTableHead={true}
                     defaultSortAsc={true}
                     defaultSortFieldId="enrollNumber"
+                    paginationIconFirstPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(1)}
+                      >
+                        <i className="bi bi-chevron-double-left" />
+                      </span>
+                    }
+                    paginationIconLastPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(totalPages)}
+                      >
+                        <i className="bi bi-chevron-double-right" />
+                      </span>
+                    }
+                    progressPending={loading}
+                    onChangePage={handlePageChange}
+                    onChangeRowsPerPage={handleRowsPerPageChange}
+                    paginationServer
+                    paginationTotalRows={totalRows}
+                    paginationDefaultPage={currentPage}
+                    paginationPerPage={perPage}
                   />
                 )}
               </div>
@@ -635,7 +709,7 @@ export const Persons = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className="treeview-container">
+          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
             <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
@@ -784,7 +858,6 @@ export const Persons = () => {
                     onRowDoubleClicked={handleEditEmployee}
                     pagination
                     paginationComponentOptions={paginationOptions}
-                    paginationPerPage={20}
                     paginationRowsPerPageOptions={[20, 50, 100]}
                     expandableRows
                     expandableRowsComponent={({ data }) =>
@@ -801,6 +874,29 @@ export const Persons = () => {
                     persistTableHead={true}
                     defaultSortAsc={true}
                     defaultSortFieldId="enrollNumber"
+                    paginationIconFirstPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(1)}
+                      >
+                        <i className="bi bi-chevron-double-left" />
+                      </span>
+                    }
+                    paginationIconLastPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(totalPages)}
+                      >
+                        <i className="bi bi-chevron-double-right" />
+                      </span>
+                    }
+                    progressPending={loading}
+                    onChangePage={handlePageChange}
+                    onChangeRowsPerPage={handleRowsPerPageChange}
+                    paginationServer
+                    paginationTotalRows={totalRows}
+                    paginationDefaultPage={currentPage}
+                    paginationPerPage={perPage}
                   />
                 )}
               </div>

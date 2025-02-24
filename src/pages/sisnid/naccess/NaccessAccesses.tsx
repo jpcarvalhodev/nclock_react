@@ -886,7 +886,7 @@ export const NaccessAccesses = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className="treeview-container">
+          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
             <TreeViewDataNaccess onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">

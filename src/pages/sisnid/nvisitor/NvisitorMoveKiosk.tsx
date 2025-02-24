@@ -46,6 +46,7 @@ export const NvisitorMoveKiosk = () => {
     "eventTime",
     "nameUser",
     "pin",
+    "cardNo",
     "eventDoorId",
     "eventName",
     "deviceSN",
@@ -63,6 +64,7 @@ export const NvisitorMoveKiosk = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [perPage, setPerPage] = useState(20);
   const eventDoorId = "4";
 
   // Função para buscar os movimentos de quiosque entre datas
@@ -232,11 +234,6 @@ export const NvisitorMoveKiosk = () => {
     window.location.reload();
   };
 
-  // Busca os movimentos de quiosque ao carregar a página
-  useEffect(() => {
-    fetchAllMoveKiosk();
-  }, []);
-
   // Função para atualizar os movimentos de quiosque
   const refreshMoveKiosk = () => {
     fetchAllMoveKiosk();
@@ -281,6 +278,7 @@ export const NvisitorMoveKiosk = () => {
       "eventTime",
       "nameUser",
       "pin",
+      "cardNo",
       "eventDoorId",
       "eventName",
       "deviceSN",
@@ -329,20 +327,21 @@ export const NvisitorMoveKiosk = () => {
                   .toLowerCase()
                   .includes(filters[key].toLowerCase()))
           ) &&
-          Object.values(moveKiosks).some((value) => {
-            if (value == null) {
-              return false;
-            } else if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+          Object.entries(moveKiosks).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
+            return false;
           })
       )
       .sort(
@@ -354,7 +353,7 @@ export const NvisitorMoveKiosk = () => {
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: KioskTransactionCard) => {
     const employeeDetails = employees.find(
-      (emp) => emp.name === person.nameUser
+      (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {
       setSelectedEmployee(employeeDetails);
@@ -374,7 +373,16 @@ export const NvisitorMoveKiosk = () => {
       if (field.key === "nameUser") {
         return {
           ...field,
-          name: field.label,
+          name: (
+            <>
+              {field.label}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            </>
+          ),
           cell: (row: KioskTransactionCard) => (
             <div
               style={{ cursor: "pointer" }}
@@ -429,7 +437,7 @@ export const NvisitorMoveKiosk = () => {
     const deviceMatch = devices.find(
       (device) => device.serialNumber === transaction.deviceSN
     );
-    const deviceName = deviceMatch?.deviceName;
+    const deviceName = deviceMatch?.deviceName || "";
 
     return {
       ...transaction,
@@ -692,8 +700,11 @@ export const NvisitorMoveKiosk = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
+                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -724,7 +735,7 @@ export const NvisitorMoveKiosk = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className="treeview-container">
+          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
             <TreeViewDataNkioskMove
               onSelectDevices={handleSelectFromTreeView}
             />
@@ -948,8 +959,11 @@ export const NvisitorMoveKiosk = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
+                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}

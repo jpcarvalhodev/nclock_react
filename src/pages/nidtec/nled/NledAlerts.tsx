@@ -31,7 +31,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 };
 
 export const NledAlerts = () => {
-  const { events, setEvents, fetchEventsDevice } = useTerminals();
+  const { events, setEvents, fetchEventsDevice, totalEventPages } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -52,6 +52,29 @@ export const NledAlerts = () => {
   const [filteredDevices, setFilteredDevices] = useState<Alerts[]>([]);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(20);
+  const [totalRows, setTotalRows] = useState(0);
+
+  // Função para buscar os dados da paginação
+  const fetchPaginationAlerts = async (pageNo: string, perPage: string) => {
+    setLoading(true);
+    try {
+      const data = await apiService.fetchAllEventDevice(
+        undefined,
+        undefined,
+        pageNo,
+        perPage
+      );
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar acessos paginados:", error);
+      setFilteredDevices([]);
+      setLoading(false);
+    }
+  };
 
   // Função para buscar os alertas entre datas
   const fetchAlertsBetweenDates = async () => {
@@ -134,6 +157,11 @@ export const NledAlerts = () => {
     }
   };
 
+  // Busca os dados se a paginação mudar
+  useEffect(() => {
+    fetchPaginationAlerts(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
+
   // Função para atualizar os alertas
   const refreshTasks = () => {
     fetchEventsDevice();
@@ -153,6 +181,17 @@ export const NledAlerts = () => {
       setFilteredDevices(events);
     }
   }, [selectedDevicesIds, events]);
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
+  };
 
   // Função para selecionar as colunas
   const toggleColumn = (columnName: string) => {
@@ -507,7 +546,6 @@ export const NledAlerts = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
                   paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -520,6 +558,29 @@ export const NledAlerts = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalEventPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>
@@ -753,7 +814,6 @@ export const NledAlerts = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
                   paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -766,6 +826,29 @@ export const NledAlerts = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalEventPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>

@@ -15,19 +15,22 @@ import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 
 import { usePersons } from "../../../context/PersonsContext";
-import {
-  TerminalsProvider,
-  useTerminals,
-} from "../../../context/TerminalsContext";
+import { useTerminals } from "../../../context/TerminalsContext";
 import {
   auxOutFields,
   employeeFields,
+  newTransactionCardFields,
   transactionCardFields,
 } from "../../../fields/Fields";
 import { AuxOutModal } from "../../../modals/AuxOutModal";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { CreateModalNewCard } from "../../../modals/CreateModalNewCard";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
-import { Employee, KioskTransactionCard } from "../../../types/Types";
+import {
+  Employee,
+  KioskTransactionCard,
+  NewTransactionCard,
+} from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
@@ -54,13 +57,15 @@ export const NvisitorMoveCard = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { moveCard, setMoveCard, fetchAllMoveCard } = useKiosk();
+  const { moveCard, setMoveCard, fetchAllMoveCard, handleAddNewMoveCard } =
+    useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "eventTime",
     "nameUser",
     "pin",
+    "cardNo",
     "eventDoorId",
     "eventName",
     "deviceSN",
@@ -78,9 +83,16 @@ export const NvisitorMoveCard = () => {
   const [loadingAuxOut, setLoadingAuxOut] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+  const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [perPage, setPerPage] = useState(20);
   const eventDoorId = "3";
+
+  // Função para adicionar um novo movimento de cartão
+  const addNewCard = async (newCard: NewTransactionCard) => {
+    await handleAddNewMoveCard(newCard);
+  };
 
   // Função para buscar os movimentos dos cartões entre datas
   const fetchMovementCardBetweenDates = async () => {
@@ -109,7 +121,10 @@ export const NvisitorMoveCard = () => {
 
       setMoveCard(combinedData);
     } catch (error) {
-      console.error("Erro ao buscar os dados de movimentos de cartões:", error);
+      console.error(
+        "Erro ao buscar os dados de movimentos de cartões hoje:",
+        error
+      );
       setMoveCard([]);
     }
   };
@@ -247,13 +262,8 @@ export const NvisitorMoveCard = () => {
   // Função para atualizar um funcionário e um cartão
   const updateEmployeeAndCard = async (employee: Employee) => {
     await handleUpdateEmployee(employee);
-    window.location.reload();
+    refreshMoveCard();
   };
-
-  // Busca os movimentos dos cartões ao carregar a página
-  useEffect(() => {
-    fetchAllMoveCard();
-  }, []);
 
   // Função para atualizar as publicidades
   const refreshMoveCard = () => {
@@ -312,6 +322,7 @@ export const NvisitorMoveCard = () => {
       "eventTime",
       "nameUser",
       "pin",
+      "cardNo",
       "eventDoorId",
       "eventName",
       "deviceSN",
@@ -360,20 +371,21 @@ export const NvisitorMoveCard = () => {
                   .toLowerCase()
                   .includes(filters[key].toLowerCase()))
           ) &&
-          Object.values(moveCards).some((value) => {
-            if (value == null) {
-              return false;
-            } else if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+          Object.entries(moveCards).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
+            return false;
           })
       )
       .sort(
@@ -385,7 +397,7 @@ export const NvisitorMoveCard = () => {
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: KioskTransactionCard) => {
     const employeeDetails = employees.find(
-      (emp) => emp.name === person.nameUser
+      (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {
       setSelectedEmployee(employeeDetails);
@@ -405,7 +417,16 @@ export const NvisitorMoveCard = () => {
       if (field.key === "nameUser") {
         return {
           ...field,
-          name: field.label,
+          name: (
+            <>
+              {field.label}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            </>
+          ),
           cell: (row: KioskTransactionCard) => (
             <div
               style={{ cursor: "pointer" }}
@@ -460,7 +481,7 @@ export const NvisitorMoveCard = () => {
     const deviceMatch = devices.find(
       (device) => device.serialNumber === transaction.deviceSN
     );
-    const deviceName = deviceMatch?.deviceName;
+    const deviceName = deviceMatch?.deviceName || "";
 
     return {
       ...transaction,
@@ -507,597 +528,650 @@ export const NvisitorMoveCard = () => {
   }, [filteredDataTable]);
 
   return (
-    <TerminalsProvider>
-      <div className="main-container">
-        <div className="content-container">
-          {isMobile && (
-            <div className="datatable-container">
-              <div className="datatable-title-text">
-                <span>Movimentos do Torniquete</span>
+    <div className="main-container">
+      <div className="content-container">
+        {isMobile && (
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span>Movimentos do Torniquete</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
               </div>
-              <div className="datatable-header">
-                <div>
-                  <SearchBoxContainer
-                    onSearch={(value) => setFilterText(value)}
+              <div className="buttons-container-others">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshMoveCard}
                   />
-                </div>
-                <div className="buttons-container-others">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
                         },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Atualizar</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-arrow-clockwise"
-                      onClick={refreshMoveCard}
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Colunas</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-eye"
-                      onClick={() => setOpenColumnSelector(true)}
-                    />
-                  </OverlayTrigger>
-                  <ExportButton
-                    allData={moveCardWithNames}
-                    selectedData={
-                      selectedRows.length > 0
-                        ? selectedRowsWithNames
-                        : moveCardWithNames
-                    }
-                    fields={getSelectedFields()}
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Adicionar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-plus"
+                    onClick={() => setShowAddModal(true)}
+                    iconSize="1.1em"
                   />
-                  <PrintButton
-                    data={
-                      selectedRows.length > 0
-                        ? selectedRowsWithNames
-                        : moveCardWithNames
-                    }
-                    fields={getSelectedFields()}
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setOpenColumnSelector(true)}
                   />
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
+                </OverlayTrigger>
+                <ExportButton
+                  allData={moveCardWithNames}
+                  selectedData={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : moveCardWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : moveCardWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
                         },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Braço</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-bar-down"
-                      onClick={openAuxOutModal}
-                    />
-                  </OverlayTrigger>
-                </div>
-                <div className="buttons-container-data-range">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Torniquete Hoje
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-calendar-event"
-                      onClick={fetchCardMovementsToday}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Torniquete Dia Anterior
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-left-circle"
-                      onClick={fetchCardMovementsForPreviousDay}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Torniquete Dia Seguinte
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-right-circle"
-                      onClick={fetchCardMovementsForNextDay}
-                      iconSize="1.1em"
-                      disabled={
-                        new Date(endDate) >=
-                        new Date(new Date().toISOString().substring(0, 10))
-                      }
-                    />
-                  </OverlayTrigger>
-                </div>
-                <div className="date-range-search">
-                  <input
-                    type="datetime-local"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="search-input"
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Braço</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-bar-down"
+                    onClick={openAuxOutModal}
                   />
-                  <span> até </span>
-                  <input
-                    type="datetime-local"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="search-input"
-                  />
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Buscar</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-search"
-                      onClick={fetchMovementCardBetweenDates}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                </div>
+                </OverlayTrigger>
               </div>
-              <div className="table-css">
-                {loading ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "200px",
-                    }}
-                  >
-                    <CustomSpinner />
-                  </div>
-                ) : (
-                  <DataTable
-                    columns={columns}
-                    data={filteredDataTable}
-                    pagination
-                    paginationComponentOptions={paginationOptions}
-                    paginationPerPage={20}
-                    paginationRowsPerPageOptions={[20, 50]}
-                    selectableRows
-                    onSelectedRowsChange={handleRowSelected}
-                    clearSelectedRows={clearSelectionToggle}
-                    selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para mostrar."
-                    customStyles={customStyles}
-                    striped
-                    responsive
-                    persistTableHead={true}
-                    defaultSortAsc={true}
-                    defaultSortFieldId="eventTime"
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Torniquete Hoje
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    onClick={fetchCardMovementsToday}
+                    iconSize="1.1em"
                   />
-                )}
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Torniquete Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    onClick={fetchCardMovementsForPreviousDay}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Torniquete Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    onClick={fetchCardMovementsForNextDay}
+                    iconSize="1.1em"
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
               </div>
-              <div style={{ marginLeft: 10, marginTop: -5 }}>
-                <strong>Movimentos do Torniquete: </strong>
-                {totalAmount}
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi-search"
+                    onClick={fetchMovementCardBetweenDates}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
               </div>
             </div>
-          )}
-          <Split
-            className="split"
-            sizes={[15, 85]}
-            minSize={100}
-            expandToMin={true}
-            gutterSize={15}
-            gutterAlign="center"
-            snapOffset={0}
-            dragInterval={1}
-          >
-            <div className="treeview-container">
-              <TreeViewDataNkioskMove
-                onSelectDevices={handleSelectFromTreeView}
-              />
+            <div className="table-css">
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={perPage}
+                  paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para mostrar."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="eventTime"
+                />
+              )}
             </div>
-            <div className="datatable-container">
-              <div className="datatable-title-text">
-                <span>Movimentos do Torniquete</span>
+            <div style={{ marginLeft: 10, marginTop: -5 }}>
+              <strong>Movimentos do Torniquete: </strong>
+              {totalAmount}
+            </div>
+          </div>
+        )}
+        <Split
+          className="split"
+          sizes={[15, 85]}
+          minSize={100}
+          expandToMin={true}
+          gutterSize={15}
+          gutterAlign="center"
+          snapOffset={0}
+          dragInterval={1}
+        >
+          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+            <TreeViewDataNkioskMove
+              onSelectDevices={handleSelectFromTreeView}
+            />
+          </div>
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span>Movimentos do Torniquete</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
               </div>
-              <div className="datatable-header">
-                <div>
-                  <SearchBoxContainer
-                    onSearch={(value) => setFilterText(value)}
+              <div className="buttons-container-others">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshMoveCard}
                   />
-                </div>
-                <div className="buttons-container-others">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
                         },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Atualizar</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-arrow-clockwise"
-                      onClick={refreshMoveCard}
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Colunas</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-eye"
-                      onClick={() => setOpenColumnSelector(true)}
-                    />
-                  </OverlayTrigger>
-                  <ExportButton
-                    allData={moveCardWithNames}
-                    selectedData={
-                      selectedRows.length > 0
-                        ? selectedRowsWithNames
-                        : moveCardWithNames
-                    }
-                    fields={getSelectedFields()}
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Adicionar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-plus"
+                    onClick={() => setShowAddModal(true)}
+                    iconSize="1.1em"
                   />
-                  <PrintButton
-                    data={
-                      selectedRows.length > 0
-                        ? selectedRowsWithNames
-                        : moveCardWithNames
-                    }
-                    fields={getSelectedFields()}
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setOpenColumnSelector(true)}
                   />
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
+                </OverlayTrigger>
+                <ExportButton
+                  allData={moveCardWithNames}
+                  selectedData={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : moveCardWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : moveCardWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
                         },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Braço</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-bar-down"
-                      onClick={openAuxOutModal}
-                    />
-                  </OverlayTrigger>
-                </div>
-                <div className="buttons-container-data-range">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Torniquete Hoje
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-calendar-event"
-                      onClick={fetchCardMovementsToday}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Torniquete Dia Anterior
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-left-circle"
-                      onClick={fetchCardMovementsForPreviousDay}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Torniquete Dia Seguinte
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-right-circle"
-                      onClick={fetchCardMovementsForNextDay}
-                      iconSize="1.1em"
-                      disabled={
-                        new Date(endDate) >=
-                        new Date(new Date().toISOString().substring(0, 10))
-                      }
-                    />
-                  </OverlayTrigger>
-                </div>
-                <div className="date-range-search">
-                  <input
-                    type="datetime-local"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="search-input"
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Braço</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-bar-down"
+                    onClick={openAuxOutModal}
                   />
-                  <span> até </span>
-                  <input
-                    type="datetime-local"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="search-input"
-                  />
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Buscar</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-search"
-                      onClick={fetchMovementCardBetweenDates}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                </div>
+                </OverlayTrigger>
               </div>
-              <div className="table-css">
-                {loading ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "200px",
-                    }}
-                  >
-                    <CustomSpinner />
-                  </div>
-                ) : (
-                  <DataTable
-                    columns={columns}
-                    data={filteredDataTable}
-                    pagination
-                    paginationComponentOptions={paginationOptions}
-                    paginationPerPage={20}
-                    paginationRowsPerPageOptions={[20, 50]}
-                    selectableRows
-                    onSelectedRowsChange={handleRowSelected}
-                    clearSelectedRows={clearSelectionToggle}
-                    selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para mostrar."
-                    customStyles={customStyles}
-                    striped
-                    responsive
-                    persistTableHead={true}
-                    defaultSortAsc={true}
-                    defaultSortFieldId="eventTime"
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Torniquete Hoje
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    onClick={fetchCardMovementsToday}
+                    iconSize="1.1em"
                   />
-                )}
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Torniquete Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    onClick={fetchCardMovementsForPreviousDay}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Torniquete Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    onClick={fetchCardMovementsForNextDay}
+                    iconSize="1.1em"
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
               </div>
-              <div style={{ marginLeft: 10, marginTop: -5 }}>
-                <strong>Movimentos do Torniquete: </strong>
-                {totalAmount}
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi-search"
+                    onClick={fetchMovementCardBetweenDates}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
               </div>
             </div>
-          </Split>
-        </div>
-        {openColumnSelector && (
-          <ColumnSelectorModal
-            columns={transactionCardFields}
-            selectedColumns={selectedColumns}
-            onClose={() => setOpenColumnSelector(false)}
-            onColumnToggle={toggleColumn}
-            onResetColumns={resetColumns}
-            onSelectAllColumns={onSelectAllColumns}
-          />
-        )}
-        {loadingAuxOut && (
-          <AuxOutModal
-            title="Escolha a Auxiliar para Abrir"
-            open={showAuxOutModal}
-            onClose={() => {
-              setShowAuxOutModal(false);
-              setLoadingAuxOut(false);
-            }}
-            onSave={handleOpenAuxOut}
-            fields={auxOutFields}
-          />
-        )}
-        {selectedEmployee && (
-          <UpdateModalEmployees
-            open={showEditModal}
-            onClose={() => setShowEditModal(false)}
-            onUpdate={updateEmployeeAndCard}
-            entity={selectedEmployee}
-            fields={employeeFields}
-            title="Atualizar Funcionário"
-          />
-        )}
+            <div className="table-css">
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={perPage}
+                  paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para mostrar."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="eventTime"
+                />
+              )}
+            </div>
+            <div style={{ marginLeft: 10, marginTop: -5 }}>
+              <strong>Movimentos do Torniquete: </strong>
+              {totalAmount}
+            </div>
+          </div>
+        </Split>
       </div>
-    </TerminalsProvider>
+      {openColumnSelector && (
+        <ColumnSelectorModal
+          columns={transactionCardFields}
+          selectedColumns={selectedColumns}
+          onClose={() => setOpenColumnSelector(false)}
+          onColumnToggle={toggleColumn}
+          onResetColumns={resetColumns}
+          onSelectAllColumns={onSelectAllColumns}
+        />
+      )}
+      <CreateModalNewCard
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={addNewCard}
+        fields={newTransactionCardFields}
+        title="Adicionar Picagem Manual"
+      />
+      {loadingAuxOut && (
+        <AuxOutModal
+          title="Escolha a Auxiliar para Abrir"
+          open={showAuxOutModal}
+          onClose={() => {
+            setShowAuxOutModal(false);
+            setLoadingAuxOut(false);
+          }}
+          onSave={handleOpenAuxOut}
+          fields={auxOutFields}
+        />
+      )}
+      {selectedEmployee && (
+        <UpdateModalEmployees
+          open={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={updateEmployeeAndCard}
+          entity={selectedEmployee}
+          fields={employeeFields}
+          title="Atualizar Funcionário"
+        />
+      )}
+    </div>
   );
 };

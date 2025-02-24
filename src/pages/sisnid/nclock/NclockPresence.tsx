@@ -81,6 +81,7 @@ export const NclockPresence = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [perPage, setPerPage] = useState(20);
 
   // Função para filtrar as presenças
   useEffect(() => {
@@ -683,8 +684,11 @@ export const NclockPresence = () => {
                     pagination
                     paginationComponentOptions={paginationOptions}
                     selectableRows
-                    paginationPerPage={20}
+                    paginationPerPage={perPage}
                     paginationRowsPerPageOptions={[20, 50]}
+                    onChangeRowsPerPage={(newPerPage, page) => {
+                      setPerPage(newPerPage);
+                    }}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
@@ -711,7 +715,7 @@ export const NclockPresence = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className="treeview-container">
+          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
             <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
@@ -929,8 +933,11 @@ export const NclockPresence = () => {
                     pagination
                     paginationComponentOptions={paginationOptions}
                     selectableRows
-                    paginationPerPage={20}
+                    paginationPerPage={perPage}
                     paginationRowsPerPageOptions={[20, 50]}
+                    onChangeRowsPerPage={(newPerPage, page) => {
+                      setPerPage(newPerPage);
+                    }}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight

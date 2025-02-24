@@ -14,10 +14,7 @@ import { TreeViewDataNkioskMove } from "../../../components/TreeViewNkioskMove";
 import { useKiosk } from "../../../context/KioskContext";
 
 import { usePersons } from "../../../context/PersonsContext";
-import {
-  TerminalsProvider,
-  useTerminals,
-} from "../../../context/TerminalsContext";
+import { useTerminals } from "../../../context/TerminalsContext";
 import { employeeFields, transactionCardFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
@@ -62,6 +59,7 @@ export const NvisitorListMovements = () => {
     "eventTime",
     "nameUser",
     "pin",
+    "cardNo",
     "eventDoorId",
     "eventName",
     "deviceSN",
@@ -79,6 +77,7 @@ export const NvisitorListMovements = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [perPage, setPerPage] = useState(20);
   const eventDoorId = "3";
   const eventDoorId2 = "4";
 
@@ -100,7 +99,7 @@ export const NvisitorListMovements = () => {
       const promisesMovementCard = devices.map((device) =>
         apiService.fetchKioskTransactionsByCardAndDeviceSN(
           eventDoorId,
-          device.deviceSN,
+          device.serialNumber,
           startDate,
           endDate
         )
@@ -109,7 +108,7 @@ export const NvisitorListMovements = () => {
       const promisesMovementKiosk = devices.map((device) =>
         apiService.fetchKioskTransactionsByCardAndDeviceSN(
           eventDoorId2,
-          device.deviceSN,
+          device.serialNumber,
           startDate,
           endDate
         )
@@ -125,8 +124,7 @@ export const NvisitorListMovements = () => {
         .filter((data) => Array.isArray(data) && data.length > 0)
         .flat();
 
-      setListMovementCard(validDataCard);
-      setListMovementKiosk(validDataKiosk);
+      setTotalMovements([...validDataCard, ...validDataKiosk]);
     } catch (error) {
       console.error("Erro ao buscar os dados de listagem de movimentos", error);
       setListMovementCard([]);
@@ -303,7 +301,6 @@ export const NvisitorListMovements = () => {
   // Função para atualizar um funcionário e um cartão
   const updateEmployeeAndCard = async (employee: Employee) => {
     await handleUpdateEmployee(employee);
-    window.location.reload();
   };
 
   // Unifica os dados de movimentos de cartão e porteiro
@@ -314,8 +311,6 @@ export const NvisitorListMovements = () => {
 
   // Atualiza a lista de movimentos ao montar o componente
   useEffect(() => {
-    fetchAllMoveCard();
-    fetchAllMoveKiosk();
     settingVariables();
     mergeMovementData();
   }, []);
@@ -365,6 +360,7 @@ export const NvisitorListMovements = () => {
       "eventTime",
       "nameUser",
       "pin",
+      "cardNo",
       "eventDoorId",
       "eventName",
       "deviceSN",
@@ -404,34 +400,35 @@ export const NvisitorListMovements = () => {
   const filteredDataTable = useMemo(() => {
     return filteredDevices
       .filter(
-        (listMovement) =>
+        (moveCards) =>
           Object.keys(filters).every(
             (key) =>
               filters[key] === "" ||
-              (listMovement[key] != null &&
-                String(listMovement[key])
+              (moveCards[key] != null &&
+                String(moveCards[key])
                   .toLowerCase()
                   .includes(filters[key].toLowerCase()))
           ) &&
-          Object.values(listMovement).some((value) => {
-            if (value == null) {
-              return false;
-            } else if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+          Object.entries(moveCards).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
+            return false;
           })
       )
       .sort(
         (a, b) =>
-          new Date(b.eventTime).getTime() - new Date(a.dataRecolha).getTime()
+          new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
   }, [filteredDevices, filters, filterText]);
 
@@ -449,7 +446,7 @@ export const NvisitorListMovements = () => {
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: KioskTransactionCard) => {
     const employeeDetails = employees.find(
-      (emp) => emp.name === person.nameUser
+      (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {
       setSelectedEmployee(employeeDetails);
@@ -459,6 +456,7 @@ export const NvisitorListMovements = () => {
     }
   };
 
+  // Define as colunas da tabela
   const columns: TableColumn<KioskTransactionCard>[] = combinedMovements
     .filter((field) => selectedColumns.includes(field.key))
     .sort((a, b) =>
@@ -468,7 +466,16 @@ export const NvisitorListMovements = () => {
       if (field.key === "nameUser") {
         return {
           ...field,
-          name: field.label,
+          name: (
+            <>
+              {field.label}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            </>
+          ),
           cell: (row: KioskTransactionCard) => (
             <div
               style={{ cursor: "pointer" }}
@@ -483,7 +490,10 @@ export const NvisitorListMovements = () => {
         const value = row[field.key as keyof KioskTransactionCard];
         switch (field.key) {
           case "deviceSN":
-            return devices[0].deviceName
+            return (
+              devices.find((device) => device.serialNumber === row.deviceSN)
+                ?.deviceName || ""
+            );
           case "eventDoorId":
             return row.eventDoorId === 4 ? "Quiosque" : "Torniquete";
           case "eventTime":
@@ -523,7 +533,7 @@ export const NvisitorListMovements = () => {
     const deviceMatch = devices.find(
       (device) => device.serialNumber === transaction.deviceSN
     );
-    const deviceName = deviceMatch?.deviceName;
+    const deviceName = deviceMatch?.deviceName || "";
 
     return {
       ...transaction,
@@ -561,533 +571,533 @@ export const NvisitorListMovements = () => {
   }, [filteredDataTable]);
 
   return (
-    <TerminalsProvider>
-      <div className="main-container">
-        <div className="content-container">
-          {isMobile && (
-            <div className="datatable-container">
-              <div className="datatable-title-text">
-                <span>Listagem de Movimentos</span>
+    <div className="main-container">
+      <div className="content-container">
+        {isMobile && (
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span>Movimentos Totais</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
               </div>
-              <div className="datatable-header">
-                <div>
-                  <SearchBoxContainer
-                    onSearch={(value) => setFilterText(value)}
+              <div className="buttons-container-others">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshListMovements}
                   />
-                </div>
-                <div className="buttons-container-others">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
                         },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Atualizar</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-arrow-clockwise"
-                      onClick={refreshListMovements}
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Colunas</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-eye"
-                      onClick={() => setOpenColumnSelector(true)}
-                    />
-                  </OverlayTrigger>
-                  <ExportButton
-                    allData={listMoveWithNames}
-                    selectedData={
-                      selectedRows.length > 0
-                        ? selectedRowsWithNames
-                        : listMoveWithNames
-                    }
-                    fields={getSelectedFields()}
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setOpenColumnSelector(true)}
                   />
-                  <PrintButton
-                    data={
-                      selectedRows.length > 0
-                        ? selectedRowsWithNames
-                        : listMoveWithNames
-                    }
-                    fields={getSelectedFields()}
-                  />
-                </div>
-                <div className="buttons-container-data-range">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Total Hoje</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-calendar-event"
-                      onClick={fetchTotalMovementsToday}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Total Dia Anterior
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-left-circle"
-                      onClick={fetchTotalMovementsForPreviousDay}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Total Dia Seguinte
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-right-circle"
-                      onClick={fetchTotalMovementsForNextDay}
-                      iconSize="1.1em"
-                      disabled={
-                        new Date(endDate) >=
-                        new Date(new Date().toISOString().substring(0, 10))
-                      }
-                    />
-                  </OverlayTrigger>
-                </div>
-                <div className="date-range-search">
-                  <input
-                    type="datetime-local"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="search-input"
-                  />
-                  <span> até </span>
-                  <input
-                    type="datetime-local"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="search-input"
-                  />
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Buscar</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-search"
-                      onClick={fetchMovementCardBetweenDates}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                </div>
+                </OverlayTrigger>
+                <ExportButton
+                  allData={listMoveWithNames}
+                  selectedData={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : listMoveWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : listMoveWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
               </div>
-              <div className="table-css">
-                {loading ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "200px",
-                    }}
-                  >
-                    <CustomSpinner />
-                  </div>
-                ) : (
-                  <DataTable
-                    columns={columns}
-                    data={filteredDataTable}
-                    pagination
-                    paginationComponentOptions={paginationOptions}
-                    paginationPerPage={20}
-                    paginationRowsPerPageOptions={[20, 50]}
-                    selectableRows
-                    onSelectedRowsChange={handleRowSelected}
-                    clearSelectedRows={clearSelectionToggle}
-                    selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para mostrar."
-                    customStyles={customStyles}
-                    striped
-                    responsive
-                    persistTableHead={true}
-                    defaultSortAsc={true}
-                    defaultSortFieldId="eventTime"
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Total Hoje</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    onClick={fetchTotalMovementsToday}
+                    iconSize="1.1em"
                   />
-                )}
-                <div style={{ marginLeft: 10, marginTop: -5 }}>
-                  <strong>Movimentos Totais: </strong>
-                  {totalAmount}
-                </div>
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Total Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    onClick={fetchTotalMovementsForPreviousDay}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Total Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    onClick={fetchTotalMovementsForNextDay}
+                    iconSize="1.1em"
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi-search"
+                    onClick={fetchMovementCardBetweenDates}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
               </div>
             </div>
-          )}
-          <Split
-            className="split"
-            sizes={[15, 85]}
-            minSize={100}
-            expandToMin={true}
-            gutterSize={15}
-            gutterAlign="center"
-            snapOffset={0}
-            dragInterval={1}
-          >
-            <div className="treeview-container">
-              <TreeViewDataNkioskMove
-                onSelectDevices={handleSelectFromTreeView}
-              />
-            </div>
-            <div className="datatable-container">
-              <div className="datatable-title-text">
-                <span>Listagem de Movimentos</span>
-              </div>
-              <div className="datatable-header">
-                <div>
-                  <SearchBoxContainer
-                    onSearch={(value) => setFilterText(value)}
-                  />
+            <div className="table-css">
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
                 </div>
-                <div className="buttons-container-others">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Atualizar</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-arrow-clockwise"
-                      onClick={refreshListMovements}
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Colunas</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-eye"
-                      onClick={() => setOpenColumnSelector(true)}
-                    />
-                  </OverlayTrigger>
-                  <ExportButton
-                    allData={listMoveWithNames}
-                    selectedData={
-                      selectedRows.length > 0
-                        ? selectedRowsWithNames
-                        : listMoveWithNames
-                    }
-                    fields={getSelectedFields()}
-                  />
-                  <PrintButton
-                    data={
-                      selectedRows.length > 0
-                        ? selectedRowsWithNames
-                        : listMoveWithNames
-                    }
-                    fields={getSelectedFields()}
-                  />
-                </div>
-                <div className="buttons-container-data-range">
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Total Hoje</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-calendar-event"
-                      onClick={fetchTotalMovementsToday}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Total Dia Anterior
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-left-circle"
-                      onClick={fetchTotalMovementsForPreviousDay}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">
-                        Total Dia Seguinte
-                      </Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi bi-arrow-right-circle"
-                      onClick={fetchTotalMovementsForNextDay}
-                      iconSize="1.1em"
-                      disabled={
-                        new Date(endDate) >=
-                        new Date(new Date().toISOString().substring(0, 10))
-                      }
-                    />
-                  </OverlayTrigger>
-                </div>
-                <div className="date-range-search">
-                  <input
-                    type="datetime-local"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="search-input"
-                  />
-                  <span> até </span>
-                  <input
-                    type="datetime-local"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="search-input"
-                  />
-                  <OverlayTrigger
-                    placement="top"
-                    delay={0}
-                    container={document.body}
-                    popperConfig={{
-                      strategy: "fixed",
-                      modifiers: [
-                        {
-                          name: "preventOverflow",
-                          options: {
-                            boundary: "window",
-                          },
-                        },
-                      ],
-                    }}
-                    overlay={
-                      <Tooltip className="custom-tooltip">Buscar</Tooltip>
-                    }
-                  >
-                    <CustomOutlineButton
-                      icon="bi-search"
-                      onClick={fetchMovementCardBetweenDates}
-                      iconSize="1.1em"
-                    />
-                  </OverlayTrigger>
-                </div>
-              </div>
-              <div className="table-css">
-                {loading ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      height: "200px",
-                    }}
-                  >
-                    <CustomSpinner />
-                  </div>
-                ) : (
-                  <DataTable
-                    columns={columns}
-                    data={filteredDataTable}
-                    pagination
-                    paginationComponentOptions={paginationOptions}
-                    paginationPerPage={20}
-                    paginationRowsPerPageOptions={[20, 50]}
-                    selectableRows
-                    onSelectedRowsChange={handleRowSelected}
-                    clearSelectedRows={clearSelectionToggle}
-                    selectableRowsHighlight
-                    noDataComponent="Não existem dados disponíveis para mostrar."
-                    customStyles={customStyles}
-                    striped
-                    responsive
-                    persistTableHead={true}
-                    defaultSortAsc={true}
-                    defaultSortFieldId="eventTime"
-                  />
-                )}
-                <div style={{ marginLeft: 10, marginTop: -5 }}>
-                  <strong>Movimentos Totais: </strong>
-                  {totalAmount}
-                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={perPage}
+                  paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para mostrar."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="eventTime"
+                />
+              )}
+              <div style={{ marginLeft: 10, marginTop: -5 }}>
+                <strong>Movimentos Totais: </strong>
+                {totalAmount}
               </div>
             </div>
-          </Split>
-        </div>
-        {openColumnSelector && (
-          <ColumnSelectorModal
-            columns={combinedMovements}
-            selectedColumns={selectedColumns}
-            onClose={() => setOpenColumnSelector(false)}
-            onColumnToggle={toggleColumn}
-            onResetColumns={resetColumns}
-            onSelectAllColumns={onSelectAllColumns}
-          />
+          </div>
         )}
-        {selectedEmployee && (
-          <UpdateModalEmployees
-            open={showEditModal}
-            onClose={() => setShowEditModal(false)}
-            onUpdate={updateEmployeeAndCard}
-            entity={selectedEmployee}
-            fields={employeeFields}
-            title="Atualizar Funcionário"
-          />
-        )}
+        <Split
+          className="split"
+          sizes={[15, 85]}
+          minSize={100}
+          expandToMin={true}
+          gutterSize={15}
+          gutterAlign="center"
+          snapOffset={0}
+          dragInterval={1}
+        >
+          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+            <TreeViewDataNkioskMove
+              onSelectDevices={handleSelectFromTreeView}
+            />
+          </div>
+          <div className="datatable-container">
+            <div className="datatable-title-text">
+              <span>Movimentos Totais</span>
+            </div>
+            <div className="datatable-header">
+              <div>
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
+                />
+              </div>
+              <div className="buttons-container-others">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Atualizar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-arrow-clockwise"
+                    onClick={refreshListMovements}
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Colunas</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi-eye"
+                    onClick={() => setOpenColumnSelector(true)}
+                  />
+                </OverlayTrigger>
+                <ExportButton
+                  allData={listMoveWithNames}
+                  selectedData={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : listMoveWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+                <PrintButton
+                  data={
+                    selectedRows.length > 0
+                      ? selectedRowsWithNames
+                      : listMoveWithNames
+                  }
+                  fields={getSelectedFields()}
+                />
+              </div>
+              <div className="buttons-container-data-range">
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Total Hoje</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    onClick={fetchTotalMovementsToday}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Total Dia Anterior
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-left-circle"
+                    onClick={fetchTotalMovementsForPreviousDay}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Total Dia Seguinte
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-arrow-right-circle"
+                    onClick={fetchTotalMovementsForNextDay}
+                    iconSize="1.1em"
+                    disabled={
+                      new Date(endDate) >=
+                      new Date(new Date().toISOString().substring(0, 10))
+                    }
+                  />
+                </OverlayTrigger>
+              </div>
+              <div className="date-range-search">
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="search-input"
+                />
+                <span> até </span>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="search-input"
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={<Tooltip className="custom-tooltip">Buscar</Tooltip>}
+                >
+                  <CustomOutlineButton
+                    icon="bi-search"
+                    onClick={fetchMovementCardBetweenDates}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+              </div>
+            </div>
+            <div className="table-css">
+              {loading ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "200px",
+                  }}
+                >
+                  <CustomSpinner />
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={filteredDataTable}
+                  pagination
+                  paginationComponentOptions={paginationOptions}
+                  paginationPerPage={perPage}
+                  paginationRowsPerPageOptions={[20, 50]}
+                  onChangeRowsPerPage={(newPerPage, page) => {
+                    setPerPage(newPerPage);
+                  }}
+                  selectableRows
+                  onSelectedRowsChange={handleRowSelected}
+                  clearSelectedRows={clearSelectionToggle}
+                  selectableRowsHighlight
+                  noDataComponent="Não existem dados disponíveis para mostrar."
+                  customStyles={customStyles}
+                  striped
+                  responsive
+                  persistTableHead={true}
+                  defaultSortAsc={true}
+                  defaultSortFieldId="eventTime"
+                />
+              )}
+              <div style={{ marginLeft: 10, marginTop: -5 }}>
+                <strong>Movimentos Totais: </strong>
+                {totalAmount}
+              </div>
+            </div>
+          </div>
+        </Split>
       </div>
-    </TerminalsProvider>
+      {openColumnSelector && (
+        <ColumnSelectorModal
+          columns={combinedMovements}
+          selectedColumns={selectedColumns}
+          onClose={() => setOpenColumnSelector(false)}
+          onColumnToggle={toggleColumn}
+          onResetColumns={resetColumns}
+          onSelectAllColumns={onSelectAllColumns}
+        />
+      )}
+      {selectedEmployee && (
+        <UpdateModalEmployees
+          open={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={updateEmployeeAndCard}
+          entity={selectedEmployee}
+          fields={employeeFields}
+          title="Atualizar Funcionário"
+        />
+      )}
+    </div>
   );
 };
