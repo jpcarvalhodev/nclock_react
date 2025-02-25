@@ -54,7 +54,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
   onPrev,
 }: Props<T>) => {
   const { devices, door } = useTerminals();
-  const { employees, handleUpdateEmployee } = usePersons();
+  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const [formData, setFormData] = useState<T>({ ...entity });
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEmployeeAddModal, setShowEmployeeAddModal] = useState(false);
@@ -94,7 +94,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
         ) ?? [];
       setDevicesTableData(loadedDevices);
       const loadedEmployees = entity.employees
-        .map((emp: Employee) => employees.find((e) => e.employeeID === emp.id))
+        .map((emp: Employee) => employeesNoPagination.find((e) => e.employeeID === emp.id))
         .filter((emp: Employee) => emp !== undefined) as Employee[];
       setEmployeeTableData(loadedEmployees);
     } else {
@@ -262,7 +262,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Employee) => {
-    const employeeDetails = employees.find((emp) => emp.name === person.name);
+    const employeeDetails = employeesNoPagination.find((emp) => emp.name === person.name);
     if (employeeDetails) {
       setSelectedEmployee(employeeDetails);
       setShowEditModal(true);

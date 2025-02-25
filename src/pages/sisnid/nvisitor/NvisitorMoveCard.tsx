@@ -52,7 +52,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 };
 
 export const NvisitorMoveCard = () => {
-  const { employees, handleUpdateEmployee } = usePersons();
+  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const { devices } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();
@@ -291,7 +291,7 @@ export const NvisitorMoveCard = () => {
     if (selectedDevicesIds.length > 0) {
       const employeeShortNames = selectedDevicesIds
         .map((employeeId) => {
-          const employee = employees.find(
+          const employee = employeesNoPagination.find(
             (emp) => emp.employeeID === employeeId
           );
           return employee ? employee.shortName : null;
@@ -360,6 +360,9 @@ export const NvisitorMoveCard = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(filteredDevices)) {
+      return [];
+    }
     return filteredDevices
       .filter(
         (moveCards) =>
@@ -396,7 +399,7 @@ export const NvisitorMoveCard = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: KioskTransactionCard) => {
-    const employeeDetails = employees.find(
+    const employeeDetails = employeesNoPagination.find(
       (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {

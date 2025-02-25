@@ -59,7 +59,7 @@ export const NclockAccessPresence = () => {
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
   const { accessForGraph, fetchAllAccessesbyDevice } = useAttendance();
-  const { employees, handleUpdateEmployee } = usePersons();
+  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const [accessPresence, setAccessPresence] = useState<
     EmployeeAccessWithPresence[]
   >([]);
@@ -139,7 +139,7 @@ export const NclockAccessPresence = () => {
       };
     });
 
-    const employeesWithoutAccess = employees.filter((emp) => {
+    const employeesWithoutAccess = employeesNoPagination.filter((emp) => {
       const enrollString = String(emp.enrollNumber).trim();
       return !latestAccessByPin.has(enrollString);
     });
@@ -169,7 +169,7 @@ export const NclockAccessPresence = () => {
 
     const combinedData = [...presenceArray, ...absentRecords];
     setAccessPresence(combinedData);
-  }, [startDate, endDate, accessForGraph, employees]);
+  }, [startDate, endDate, accessForGraph, employeesNoPagination]);
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresence = () => {
@@ -277,6 +277,9 @@ export const NclockAccessPresence = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(filteredAccess)) {
+      return [];
+    }
     return filteredAccess.filter(
       (attendances) =>
         Object.keys(filters).every(
@@ -308,7 +311,7 @@ export const NclockAccessPresence = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
-    const employeeDetails = employees.find(
+    const employeeDetails = employeesNoPagination.find(
       (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {
@@ -442,7 +445,7 @@ export const NclockAccessPresence = () => {
   // Função para calcular a quantidade de presentes e ausentes
   const calculatePresenceCounts = () => {
     const presentes = filteredDataTable.filter((item) => item.isPresent).length;
-    const ausentes = employees.length - presentes;
+    const ausentes = employeesNoPagination.length - presentes;
     return { presentes, ausentes };
   };
   const { presentes, ausentes } = calculatePresenceCounts();

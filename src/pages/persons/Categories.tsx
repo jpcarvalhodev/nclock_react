@@ -19,6 +19,7 @@ import { UpdateModalCatProfTypes } from "../../modals/UpdateModalCatProfTypes";
 import { Category } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
+import { ca } from "date-fns/locale";
 
 // Define a interface para os filtros
 interface Filters {
@@ -201,6 +202,9 @@ export const Categories = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(categories)) {
+      return [];
+    }
     return categories
       .filter(
         (category) =>

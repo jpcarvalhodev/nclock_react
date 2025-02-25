@@ -55,7 +55,7 @@ export const NclockPresence = () => {
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
   const { fetchAllAttendances } = useAttendance();
-  const { employees, handleUpdateEmployee } = usePersons();
+  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const [attendancePresence, setAttendancePresence] = useState<
     EmployeeAttendanceWithPresence[]
   >([]);
@@ -132,7 +132,7 @@ export const NclockPresence = () => {
           };
         });
 
-        const employeesWithoutAttendance = employees.filter(
+        const employeesWithoutAttendance = employeesNoPagination.filter(
           (emp) => !latestByEmployee.has(emp.employeeID)
         );
 
@@ -163,7 +163,7 @@ export const NclockPresence = () => {
       .catch((error) => {
         console.error("Erro ao tentar buscar os dados:", error);
       });
-  }, [startDate, endDate, employees]);
+  }, [startDate, endDate, employeesNoPagination]);
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresence = () => {
@@ -286,6 +286,9 @@ export const NclockPresence = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(filteredAttendances)) {
+      return [];
+    }
     return filteredAttendances.filter(
       (attendances) =>
         Object.keys(filters).every(
@@ -317,7 +320,7 @@ export const NclockPresence = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
-    const employeeDetails = employees.find(
+    const employeeDetails = employeesNoPagination.find(
       (emp) => emp.employeeID === person.employeeId
     );
     if (employeeDetails) {
@@ -460,7 +463,7 @@ export const NclockPresence = () => {
   // Função para calcular a quantidade de presentes e ausentes
   const calculatePresenceCounts = () => {
     const presentes = filteredDataTable.filter((item) => item.isPresent).length;
-    const ausentes = employees.length - presentes;
+    const ausentes = employeesNoPagination.length - presentes;
     return { presentes, ausentes };
   };
   const { presentes, ausentes } = calculatePresenceCounts();

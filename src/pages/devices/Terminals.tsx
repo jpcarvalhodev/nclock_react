@@ -40,6 +40,7 @@ import {
   employeeCardFields,
   employeeFields,
   employeesOnDeviceFields,
+  mbDeviceFields,
   movementFields,
 } from "../../fields/Fields";
 import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
@@ -49,12 +50,14 @@ import { DoorModal } from "../../modals/DoorModal";
 import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
 import {
   Activity,
+  AllDevices,
   Devices,
   DoorDevice,
   Employee,
   EmployeeAndCard,
   EmployeeCard,
   EmployeesOnDevice,
+  MBDevice,
   Movements,
 } from "../../types/Types";
 import { CustomSpinner } from "../../components/CustomSpinner";
@@ -127,11 +130,17 @@ export const Terminals = () => {
     refreshIntervalTasks,
     setRefreshIntervalTasks,
     totalMovementPages,
-    totalMovementRows
+    totalMovementRows,
+    mbDevices,
+    fetchAllMBDevices,
+    restartMBDevice,
+    handleAddMBDevice,
+    handleUpdateMBDevice,
+    handleDeleteMBDevice,
   } = useTerminals();
   const { handleAddImportedAttendance } = useAttendance();
   const {
-    employees,
+    employeesNoPagination,
     handleUpdateEmployee,
     handleImportEmployeeCard,
     handleImportEmployeeFP,
@@ -146,7 +155,9 @@ export const Terminals = () => {
   const [employeeCards, setEmployeeCards] = useState<EmployeeAndCard[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [initialData, setInitialData] = useState<Partial<Devices> | null>(null);
+  const [initialData, setInitialData] = useState<Partial<AllDevices> | null>(
+    null
+  );
   const [mainTabKey, setMainTabKey] = useState("tasks");
   const [userTrackTabKey, setUserTrackTabKey] = useState("users-software");
   const [userTabKey, setUserTabKey] = useState("users");
@@ -154,9 +165,12 @@ export const Terminals = () => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "deviceNumber",
     "deviceName",
+    "nomeQuiosque",
     "model",
+    "modelo",
     "ipAddress",
     "status",
+    "estadoTerminal",
     "enabled",
   ]);
   const [selectedUserColums, setSelectedUserColumns] = useState<string[]>([
@@ -179,17 +193,21 @@ export const Terminals = () => {
   ]);
   const [selectedDeviceToDelete, setSelectedDeviceToDelete] =
     useState<string>("");
+  const [selectedDeviceMBToDelete, setSelectedDeviceMBToDelete] =
+    useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [resetSelection, setResetSelection] = useState(false);
-  const [selectedDeviceRows, setSelectedDeviceRows] = useState<Devices[]>([]);
+  const [selectedDeviceRows, setSelectedDeviceRows] = useState<AllDevices[]>(
+    []
+  );
   const [selectedUserRows, setSelectedUserRows] = useState<EmployeeAndCard[]>(
     []
   );
-  const [selectedTerminal, setSelectedTerminal] = useState<Devices | null>(
+  const [selectedTerminal, setSelectedTerminal] = useState<AllDevices | null>(
     null
   );
-  const [selectedDevice, setSelectedDevice] = useState<Devices | null>(null);
+  const [selectedDevice, setSelectedDevice] = useState<AllDevices | null>(null);
   const [loadingUser, setLoadingUser] = useState(false);
   const [loadingAllUser, setLoadingAllUser] = useState(false);
   const [loadingSyncAllUser, setLoadingSyncAllUser] = useState(false);
@@ -240,10 +258,12 @@ export const Terminals = () => {
   const [cardLoading, setCardLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
+  const [loadingTurnOffDevice, setLoadingTurnOffDevice] = useState(false);
+  const [showDeleteMBModal, setShowDeleteMBModal] = useState(false);
 
   // Função para buscar todos as biometrias
   const fetchEmployeesBio = () => {
-    const filteredEmployeesBio = employees.filter(
+    const filteredEmployeesBio = employeesNoPagination.filter(
       (employee) =>
         employee.statusFprint === true || employee.statusFace === true
     );
@@ -257,7 +277,7 @@ export const Terminals = () => {
 
   // Função para buscar todos os cartões
   const fetchEmployeesCards = () => {
-    const filteredEmployeesWithCards = employees.filter(
+    const filteredEmployeesWithCards = employeesNoPagination.filter(
       (employee) => employee.employeeCards.length > 0
     );
     const sortedEmployeeCards = filteredEmployeesWithCards
@@ -434,7 +454,7 @@ export const Terminals = () => {
   };
 
   // Função para adicionar um dispositivo
-  const addDevice = async (device: Devices) => {
+  const addDevice = async (device: AllDevices) => {
     await handleAddDevice(device);
     refreshAll();
     setClearSelectionToggle((prev) => !prev);
@@ -442,7 +462,7 @@ export const Terminals = () => {
   };
 
   // Função para atualizar um dispositivo
-  const updateDevice = async (device: Devices) => {
+  const updateDevice = async (device: AllDevices) => {
     await handleUpdateDevice(device);
     refreshAll();
     setClearSelectionToggle((prev) => !prev);
@@ -457,6 +477,27 @@ export const Terminals = () => {
     }
   };
 
+  // Função para adicionar um dispositivo multibanco
+  const addMBDevice = async (device: MBDevice) => {
+    await handleAddMBDevice(device);
+    refreshAll();
+    setClearSelectionToggle((prev) => !prev);
+  };
+
+  // Função para atualizar um dispositivo multibanco
+  const updateMBDevice = async (device: MBDevice) => {
+    await handleUpdateMBDevice(device);
+    refreshAll();
+    setClearSelectionToggle((prev) => !prev);
+  };
+
+  // Função para apagar um dispositivo multibanco
+  const deleteMBDevice = async (id: string) => {
+    await handleDeleteMBDevice(id);
+    refreshAll();
+    setClearSelectionToggle((prev) => !prev);
+  };
+
   // Função para atualizar um funcionário e um cartão
   const updateEmployeeAndCard = async (employee: Employee) => {
     await handleUpdateEmployee(employee);
@@ -467,7 +508,7 @@ export const Terminals = () => {
   useEffect(() => {
     fetchEmployeesBio();
     fetchEmployeesCards();
-  }, [employees]);
+  }, [employeesNoPagination]);
 
   // Atualiza a seleção ao resetar
   useEffect(() => {
@@ -494,6 +535,7 @@ export const Terminals = () => {
     fetchEmployeesCards();
     fetchAllAux();
     fetchAllDoorData();
+    fetchAllMBDevices();
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -549,7 +591,7 @@ export const Terminals = () => {
   const handleDeviceRowSelected = (state: {
     allSelected: boolean;
     selectedCount: number;
-    selectedRows: Devices[];
+    selectedRows: AllDevices[];
   }) => {
     const sortedDevices = devices.sort(
       (a, b) => a.deviceNumber - b.deviceNumber
@@ -578,12 +620,12 @@ export const Terminals = () => {
 
   // Filtra os utilizadores no dispositivo
   const filteredUsersInSoftware = useMemo(() => {
-    if (employees) {
-      return employees;
+    if (employeesNoPagination) {
+      return employeesNoPagination;
     } else {
       return [];
     }
-  }, [employees]);
+  }, [employeesNoPagination]);
 
   // Define as colunas de funcionário no dispositivo
   const employeeOnDeviceColumns: TableColumn<EmployeesOnDevice>[] =
@@ -617,7 +659,9 @@ export const Terminals = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeAndCard) => {
-    const employeeDetails = employees.find((emp) => emp.name === person.name);
+    const employeeDetails = employeesNoPagination.find(
+      (emp) => emp.name === person.name
+    );
     if (employeeDetails) {
       setSelectedEmployee(employeeDetails);
       setShowEditModal(true);
@@ -641,6 +685,9 @@ export const Terminals = () => {
 
   // Filtra os dados da tabela de dispositivos
   const filteredDeviceDataTable = useMemo(() => {
+    if (!Array.isArray(devices)) {
+      return [];
+    }
     return devices.filter(
       (device) =>
         Object.keys(filters).every(
@@ -670,95 +717,190 @@ export const Terminals = () => {
     );
   }, [devices, filters, filterText]);
 
+  // Ordena os dispositivos por nome com a mesclagem
+  const sortedDevices = [...devices].sort((a, b) => {
+    const nameA = (a.deviceName || a.nomeQuiosque || "").toLowerCase();
+    const nameB = (b.deviceName || b.nomeQuiosque || "").toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+
   // Seleciona a entidade anterior
   const handleNextDevice = () => {
-    const sortedDevices = devices.sort(
-      (a, b) => a.deviceNumber - b.deviceNumber
-    );
     if (currentDeviceIndex < sortedDevices.length - 1) {
       setCurrentDeviceIndex(currentDeviceIndex + 1);
-      setSelectedTerminal(sortedDevices[currentDeviceIndex + 1]);
+      setSelectedDevice(sortedDevices[currentDeviceIndex + 1]);
     }
   };
 
   // Seleciona a entidade seguinte
   const handlePrevDevice = () => {
-    const sortedDevices = devices.sort(
-      (a, b) => a.deviceNumber - b.deviceNumber
-    );
     if (currentDeviceIndex > 0) {
       setCurrentDeviceIndex(currentDeviceIndex - 1);
-      setSelectedTerminal(sortedDevices[currentDeviceIndex - 1]);
+      setSelectedDevice(sortedDevices[currentDeviceIndex - 1]);
     }
   };
 
-  // Define as colunas de dispositivos
-  const deviceColumns: TableColumn<Devices>[] = deviceFields
-    .filter((field) => selectedColumns.includes(field.key))
-    .filter((field) => !excludedColumns.includes(field.key))
+  // Junta os campos de dispositivos e de multibanco
+  const allDeviceFields = [...deviceFields, ...mbDeviceFields];
+
+  // Define as chaves que serão mescladas
+  const mergedKeys = [
+    "deviceName",
+    "nomeQuiosque",
+    "model",
+    "modelo",
+    "status",
+    "estadoTerminal",
+  ];
+
+  // Cria as colunas mescladas se pelo menos uma das chaves estiver selecionada
+  const mergedColumns: TableColumn<AllDevices>[] = [];
+
+  if (
+    selectedColumns.some(
+      (key) => key === "deviceName" || key === "nomeQuiosque"
+    )
+  ) {
+    mergedColumns.push({
+      id: "name",
+      name: (
+        <>
+          Nome
+          <SelectFilter
+            column="deviceName"
+            setFilters={setFilters}
+            data={filteredDeviceDataTable}
+          />
+        </>
+      ),
+      selector: (row) => row.deviceName || row.nomeQuiosque || "",
+      sortable: true,
+      cell: (row) => (
+        <OverlayTrigger
+          placement="top"
+          delay={0}
+          container={document.body}
+          popperConfig={{
+            strategy: "fixed",
+            modifiers: [
+              { name: "preventOverflow", options: { boundary: "window" } },
+            ],
+          }}
+          overlay={
+            <Tooltip className="custom-tooltip">
+              {row.deviceName || row.nomeQuiosque || ""}
+            </Tooltip>
+          }
+        >
+          <span
+            style={{
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {row.deviceName || row.nomeQuiosque || ""}
+          </span>
+        </OverlayTrigger>
+      ),
+    });
+  }
+
+  if (selectedColumns.some((key) => key === "model" || key === "modelo")) {
+    mergedColumns.push({
+      id: "model",
+      name: (
+        <>
+          Modelo
+          <SelectFilter
+            column="model"
+            setFilters={setFilters}
+            data={filteredDeviceDataTable}
+          />
+        </>
+      ),
+      selector: (row) => row.model || row.modelo || "",
+      sortable: true,
+    });
+  }
+
+  if (
+    selectedColumns.some((key) => key === "status" || key === "estadoTerminal")
+  ) {
+    mergedColumns.push({
+      id: "status",
+      name: (
+        <>
+          Estado
+          <SelectFilter
+            column="status"
+            setFilters={setFilters}
+            data={filteredDeviceDataTable}
+          />
+        </>
+      ),
+      selector: (row) => {
+        const statusVal =
+          row.status !== undefined ? row.status : row.estadoTerminal;
+        return statusVal ? "Online" : "Offline";
+      },
+      sortable: true,
+      cell: (row) => {
+        const statusVal =
+          row.status !== undefined ? row.status : row.estadoTerminal;
+        return (
+          <div
+            style={{
+              height: "10px",
+              width: "10px",
+              backgroundColor: statusVal ? "green" : "red",
+              borderRadius: "50%",
+              display: "inline-block",
+            }}
+            title={statusVal ? "Online" : "Offline"}
+          />
+        );
+      },
+    });
+  }
+
+  // Filtra os outros campos que foram selecionados, mas que não fazem parte dos campos mesclados
+  const otherColumns: TableColumn<AllDevices>[] = allDeviceFields
+    .filter(
+      (field) =>
+        selectedColumns.includes(field.key) &&
+        !excludedColumns.includes(field.key)
+    )
+    .filter((field) => !mergedKeys.includes(field.key))
     .map((field) => {
-      const formatField = (row: Devices) => {
+      const formatField = (row: AllDevices) => {
         switch (field.key) {
           case "code":
             return row.code === 0 ? "" : row.code;
           case "machineNumber":
-            return row.code === 0 ? "" : row.machineNumber;
+            return row.machineNumber || "";
           case "cardNumber":
             return row.cardNumber === 0 ? "" : row.cardNumber;
           case "productTime":
-            return new Date(row.productTime).toLocaleString() || "";
-          case "status":
-            return (
-              <div
-                style={{
-                  height: "10px",
-                  width: "10px",
-                  backgroundColor: row.status ? "green" : "red",
-                  borderRadius: "50%",
-                  display: "inline-block",
-                }}
-                title={row.status ? "Online" : "Offline"}
-              />
-            );
+            return row.productTime
+              ? new Date(row.productTime).toLocaleString()
+              : "";
+          case "timeReboot":
+            return row.timeReboot === "00:00:00"
+              ? "Sem tempo de reinício"
+              : row.timeReboot;
           case "enabled":
-            return row.enabled ? "Activo" : "Inactivo";
-          case "deviceName":
-            return (
-              <OverlayTrigger
-                placement="top"
-                delay={0}
-                container={document.body}
-                popperConfig={{
-                  strategy: "fixed",
-                  modifiers: [
-                    {
-                      name: "preventOverflow",
-                      options: {
-                        boundary: "window",
-                      },
-                    },
-                  ],
-                }}
-                overlay={
-                  <Tooltip className="custom-tooltip">{row[field.key]}</Tooltip>
-                }
-              >
-                <span
-                  style={{
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {row[field.key]}
-                </span>
-              </OverlayTrigger>
-            );
+            return row.enabled === undefined
+              ? ""
+              : row.enabled
+              ? "Activo"
+              : "Inactivo";
           default:
-            return row[field.key];
+            return row[field.key] || "";
         }
       };
+
       return {
         id: field.key,
         name: (
@@ -775,6 +917,12 @@ export const Terminals = () => {
         sortable: true,
       };
     });
+
+  // Combine as colunas mescladas e as demais
+  const deviceColumns: TableColumn<AllDevices>[] = [
+    ...mergedColumns,
+    ...otherColumns,
+  ];
 
   // Define as colunas de transações
   const transactionColumns: TableColumn<Activity>[] = activityFields.map(
@@ -938,6 +1086,9 @@ export const Terminals = () => {
 
   // Filtra os dados da tabela de estado de dispositivos
   const filteredStateDataTable = useMemo(() => {
+    if (!Array.isArray(devices)) {
+      return [];
+    }
     return devices.filter((device) =>
       Object.keys(filters).every(
         (key) =>
@@ -947,7 +1098,7 @@ export const Terminals = () => {
   }, [devices]);
 
   // Define as colunas de estado de dispositivos
-  const stateColumns: TableColumn<Devices>[] = deviceFields
+  const stateColumns: TableColumn<AllDevices>[] = deviceFields
     .filter(
       (field) =>
         excludedColumns.includes(field.key) || field.key === "deviceName"
@@ -1122,6 +1273,9 @@ export const Terminals = () => {
 
   // Define os dados da tabela de biometria
   const filteredBioDataTable = useMemo(() => {
+    if (!Array.isArray(employeesBio)) {
+      return [];
+    }
     return employeesBio.filter((employee) =>
       Object.keys(filters).every(
         (key) =>
@@ -1185,6 +1339,9 @@ export const Terminals = () => {
 
   // Filtra os dados da tabela de cartões
   const filteredCardDataTable = useMemo(() => {
+    if (!Array.isArray(employeeCards)) {
+      return [];
+    }
     return employeeCards.filter((employee) =>
       Object.keys(filters).every(
         (key) =>
@@ -1258,7 +1415,7 @@ export const Terminals = () => {
   };
 
   // Define a função de abertura do modal de edição dos dispositivos
-  const handleEditDevices = (row: Devices) => {
+  const handleEditDevices = (row: AllDevices) => {
     setSelectedDevice(row);
     const sortedDevices = devices.sort(
       (a, b) => a.deviceNumber - b.deviceNumber
@@ -1271,13 +1428,18 @@ export const Terminals = () => {
   };
 
   // Define a função de abertura do modal de exclusão dos dispositivos
-  const handleOpenDeleteModal = async (zktecoDeviceID: string) => {
-    setSelectedDeviceToDelete(zktecoDeviceID);
-    setShowDeleteModal(true);
+  const handleOpenDeleteModal = (device: AllDevices) => {
+    if (device.zktecoDeviceID) {
+      setSelectedDeviceToDelete(device.zktecoDeviceID);
+      setShowDeleteModal(true);
+    } else if (device.id) {
+      setSelectedDeviceMBToDelete(device.id);
+      setShowDeleteMBModal(true);
+    }
   };
 
   // Função que manipula a duplicação
-  const handleDuplicate = (devices: Partial<Devices>) => {
+  const handleDuplicate = (devices: Partial<AllDevices>) => {
     setInitialData({
       ...devices,
       deviceNumber: devices.deviceNumber ? devices.deviceNumber + 1 : 1,
@@ -1336,9 +1498,9 @@ export const Terminals = () => {
   };
 
   // Define as colunas de ação de dispositivos
-  const devicesActionColumn: TableColumn<Devices> = {
+  const devicesActionColumn: TableColumn<AllDevices> = {
     name: "Ações",
-    cell: (row: Devices) => (
+    cell: (row: AllDevices) => (
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
@@ -1403,12 +1565,12 @@ export const Terminals = () => {
           <CustomOutlineButton
             className="action-button"
             icon="bi bi-trash-fill"
-            onClick={() => handleOpenDeleteModal(row.zktecoDeviceID)}
+            onClick={() => handleOpenDeleteModal(row)}
           />
         </OverlayTrigger>
       </div>
     ),
-    selector: (row: Devices) => row.employeeID,
+    selector: (row: AllDevices) => row.zktecoDeviceID,
     ignoreRowClick: true,
   };
 
@@ -1779,13 +1941,36 @@ export const Terminals = () => {
 
   // Função para reiniciar o dispositivo
   const handleRestartDevice = async () => {
-    if (selectedTerminal) {
+    if (selectedTerminal?.zktecoDeviceID) {
       setLoadingRestartDevice(true);
       await restartDevice(selectedTerminal.zktecoDeviceID);
       setLoadingRestartDevice(false);
       setClearSelectionToggle((prev) => !prev);
+    } else if (selectedTerminal?.id) {
+      setLoadingRestartDevice(true);
+      const tpId = selectedTerminal.id;
+      const type = 1;
+      const status = 0;
+      const mbDevice = { tpId, type, status };
+      await restartMBDevice(mbDevice);
+      setLoadingRestartDevice(false);
     } else {
-      toast.warn("Selecione um terminal primeiro!");
+      toast.error("Selecione um terminal primeiro!");
+    }
+  };
+
+  // Função para desligar o dispositivo multibanco
+  const handleTurnOffDevice = async () => {
+    if (selectedTerminal) {
+      setLoadingTurnOffDevice(true);
+      const tpId = selectedTerminal.id;
+      const type = 2;
+      const status = 0;
+      const mbDevice = { tpId, type, status };
+      await restartMBDevice(mbDevice);
+      setLoadingTurnOffDevice(false);
+    } else {
+      toast.error("Selecione um terminal multibanco primeiro!");
     }
   };
 
@@ -1793,7 +1978,11 @@ export const Terminals = () => {
   const handleSendClock = async () => {
     if (selectedTerminal) {
       setLoadingSendClock(true);
-      await sendClockToDevice(selectedTerminal.serialNumber);
+      if (selectedTerminal?.serialNumber) {
+        await sendClockToDevice(selectedTerminal.serialNumber);
+      } else {
+        console.error("Serial number is undefined");
+      }
       setLoadingSendClock(false);
       setClearSelectionToggle((prev) => !prev);
     } else {
@@ -2123,7 +2312,7 @@ export const Terminals = () => {
                 responsive
                 persistTableHead={true}
                 defaultSortAsc={true}
-                defaultSortFieldId="deviceNumber"
+                defaultSortFieldId="name"
               />
             )}
           </div>
@@ -2338,7 +2527,9 @@ export const Terminals = () => {
                           paginationIconLastPage={
                             <span
                               style={{ cursor: "pointer" }}
-                              onClick={() => handlePageChange(totalMovementPages)}
+                              onClick={() =>
+                                handlePageChange(totalMovementPages)
+                              }
                             >
                               <i className="bi bi-chevron-double-right" />
                             </span>
@@ -2855,7 +3046,29 @@ export const Terminals = () => {
                       style={{ marginRight: 5, fontSize: "1rem" }}
                     ></i>
                   )}
-                  Reiniciar
+                  Reiniciar Terminal
+                </Button>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  className="button-terminals-users"
+                  onClick={handleTurnOffDevice}
+                >
+                  {loadingTurnOffDevice ? (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <i
+                      className="bi bi-power"
+                      style={{ marginRight: 5, fontSize: "1rem" }}
+                    ></i>
+                  )}
+                  Executar Fecho
                 </Button>
               </div>
             </Tab>
@@ -3091,7 +3304,12 @@ export const Terminals = () => {
         </div>
         {showColumnSelector && (
           <ColumnSelectorModal
-            columns={deviceFields}
+            columns={allDeviceFields.filter(
+              (field) =>
+                field.key !== "estadoTerminal" &&
+                field.key !== "modelo" &&
+                field.key !== "nomeQuiosque"
+            )}
             selectedColumns={selectedColumns}
             onClose={() => setShowColumnSelector(false)}
             onColumnToggle={handleColumnToggle}
@@ -3103,8 +3321,9 @@ export const Terminals = () => {
           title="Adicionar Equipamentos"
           open={showAddModal}
           onClose={() => setShowAddModal(false)}
-          onSave={addDevice}
-          fields={deviceFields}
+          onDeviceSave={addDevice}
+          onMBSave={addMBDevice}
+          fields={allDeviceFields}
           initialValues={initialData || {}}
         />
         {selectedDevice && (
@@ -3112,9 +3331,13 @@ export const Terminals = () => {
             open={showUpdateModal}
             onClose={() => setShowUpdateModal(false)}
             onDuplicate={handleDuplicate}
-            onUpdate={updateDevice}
-            entity={selectedDevice}
-            fields={deviceFields}
+            onDeviceUpdate={updateDevice}
+            onMBUpdate={updateMBDevice}
+            entity={{
+              ...selectedDevice,
+              id: selectedDevice?.zktecoDeviceID || selectedDevice?.id,
+            }}
+            fields={allDeviceFields}
             title="Atualizar Equipamentos"
             onPrev={handlePrevDevice}
             onNext={handleNextDevice}
@@ -3128,7 +3351,16 @@ export const Terminals = () => {
             onClose={() => setShowDeleteModal(false)}
             onDelete={deleteDevice}
             entityId={selectedDeviceToDelete}
-            message={<>Apagar todos os terminais selecionados?</>}
+            message={<>Apagar o terminal selecionado?</>}
+          />
+        )}
+        {showDeleteMBModal && (
+          <DeleteModal
+            open={showDeleteMBModal}
+            onClose={() => setShowDeleteMBModal(false)}
+            onDelete={deleteMBDevice}
+            entityId={selectedDeviceMBToDelete}
+            message={<>Apagar o terminal multibanco selecionado?</>}
           />
         )}
         {selectedTerminal && (
@@ -3139,8 +3371,13 @@ export const Terminals = () => {
               setShowDoorModal(false);
               setLoadingOpenDoor(false);
             }}
-            onSave={(data) => handleOpenDoor(data.serialNumber, data)}
-            entity={selectedTerminal}
+            onSave={(data) =>
+              data.serialNumber && handleOpenDoor(data.serialNumber, data)
+            }
+            entity={{
+              ...selectedTerminal,
+              id: selectedTerminal?.zktecoDeviceID || "",
+            }}
             fields={doorFields}
           />
         )}

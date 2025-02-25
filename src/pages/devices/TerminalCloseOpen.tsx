@@ -200,6 +200,9 @@ export const TerminalCloseOpen = () => {
 
   // Filtra os dados da tabela de dispositivos
   const filteredDeviceDataTable = useMemo(() => {
+    if (!Array.isArray(filteredDevices)) {
+      return [];
+    }
     return filteredDevices.filter(
       (device) =>
         Object.keys(filters).every(

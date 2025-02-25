@@ -238,6 +238,9 @@ export const NledAlerts = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(filteredDevices)) {
+      return [];
+    }
     return filteredDevices
       .filter(
         (getCoin) =>

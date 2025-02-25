@@ -53,7 +53,7 @@ export const NclockAccess = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { employees, handleUpdateEmployee } = usePersons();
+  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [filteredAccess, setFilteredAccess] = useState<Accesses[]>([]);
@@ -316,6 +316,9 @@ export const NclockAccess = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(filteredAccess)) {
+      return [];
+    }
     return filteredAccess.filter(
       (attendances) =>
         Object.keys(filters).every(
@@ -347,7 +350,7 @@ export const NclockAccess = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
-    const employeeDetails = employees.find(
+    const employeeDetails = employeesNoPagination.find(
       (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {

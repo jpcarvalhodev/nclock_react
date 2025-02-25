@@ -54,7 +54,7 @@ export const NclockMovement = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { employees, handleUpdateEmployee } = usePersons();
+  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [attendanceMovement, setAttendanceMovement] = useState<
@@ -281,6 +281,9 @@ export const NclockMovement = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(filteredAttendances)) {
+      return [];
+    }
     return filteredAttendances.filter(
       (attendances) =>
         Object.keys(filters).every(
@@ -312,7 +315,7 @@ export const NclockMovement = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
-    const employeeDetails = employees.find(
+    const employeeDetails = employeesNoPagination.find(
       (emp) => emp.employeeID === person.employeeId
     );
     if (employeeDetails) {

@@ -197,6 +197,9 @@ export const Zones = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(zones)) {
+      return [];
+    }
     return zones.filter(
       (zone) =>
         Object.keys(filters).every(

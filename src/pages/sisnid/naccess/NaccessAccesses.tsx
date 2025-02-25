@@ -53,7 +53,7 @@ export const NaccessAccesses = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { employees, handleUpdateEmployee } = usePersons();
+  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [filteredAccess, setFilteredAccess] = useState<Accesses[]>([]);
@@ -105,7 +105,7 @@ export const NaccessAccesses = () => {
     }
   };
 
-  // Função para buscar todos as assiduidades entre datas
+  // Função para buscar todos os acessos entre datas
   const fetchAccessesBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllAccessesByDevice(
@@ -120,7 +120,7 @@ export const NaccessAccesses = () => {
     }
   };
 
-  // Função para buscar os pagamentos dos terminais de hoje
+  // Função para buscar os acessos de hoje
   const fetchAccessesToday = async () => {
     const today = new Date();
     const start = formatDateToStartOfDay(today);
@@ -140,7 +140,7 @@ export const NaccessAccesses = () => {
     setEndDate(end);
   };
 
-  // Função para buscar os pagamentos dos terminais de ontem
+  // Função para buscar os acessos de ontem
   const fetchAccessesForPreviousDay = async () => {
     const prevDate = new Date(startDate);
     prevDate.setDate(prevDate.getDate() - 1);
@@ -163,7 +163,7 @@ export const NaccessAccesses = () => {
     setEndDate(end);
   };
 
-  // Função para buscar os pagamentos dos terminais de amanhã
+  // Função para buscar os acessos de amanhã
   const fetchAccessesForNextDay = async () => {
     const newDate = new Date(endDate);
     newDate.setDate(newDate.getDate() + 1);
@@ -316,6 +316,9 @@ export const NaccessAccesses = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(filteredAccess)) {
+      return [];
+    }
     return filteredAccess.filter(
       (attendances) =>
         Object.keys(filters).every(
@@ -347,7 +350,7 @@ export const NaccessAccesses = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
-    const employeeDetails = employees.find(
+    const employeeDetails = employeesNoPagination.find(
       (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {

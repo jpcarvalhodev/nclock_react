@@ -155,7 +155,6 @@ export const AccessControls = () => {
 
   // Define a função de duplicar funcionários
   const handleDuplicate = (data: Partial<AccessControl>) => {
-    console.log(data);
     setInitialData({ ...data, nome: "" });
     setShowAddModal(true);
     setSelectedAccessControl(null);
@@ -192,6 +191,9 @@ export const AccessControls = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(accessControl)) {
+      return [];
+    }
     return accessControl.filter(
       (accessControls) =>
         Object.keys(filters).every(

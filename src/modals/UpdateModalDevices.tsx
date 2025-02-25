@@ -34,7 +34,7 @@ import {
   doorsFields,
   readersFields,
 } from "../fields/Fields";
-import { Auxiliaries, Doors, Readers } from "../types/Types";
+import { Auxiliaries, Devices, Doors, MBDevice, Readers } from "../types/Types";
 
 import { UpdateModalAux } from "./UpdateModalAux";
 import { UpdateModalDoor } from "./UpdateModalDoor";
@@ -62,7 +62,8 @@ interface UpdateModalProps<T extends Entity> {
   open: boolean;
   onClose: () => void;
   onDuplicate: (entity: Partial<T>) => void;
-  onUpdate: (entity: T) => Promise<void>;
+  onDeviceUpdate: (entity: Devices) => Promise<void>;
+  onMBUpdate: (entity: MBDevice) => Promise<void>;
   entity: T;
   fields: Field[];
   title: string;
@@ -76,7 +77,8 @@ export const UpdateModalDevices = <T extends Entity>({
   open,
   onClose,
   onDuplicate,
-  onUpdate,
+  onDeviceUpdate,
+  onMBUpdate,
   entity,
   fields,
   title,
@@ -127,16 +129,22 @@ export const UpdateModalDevices = <T extends Entity>({
   const [filteredReaders, setFilteredReaders] = useState<Readers[]>([]);
   const [showReaderUpdateModal, setShowReaderUpdateModal] = useState(false);
   const [currentReaderIndex, setCurrentReaderIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState<string | null>(null);
 
   // UseEffect para atualizar o estado do formulário
   useEffect(() => {
     if (open && entity) {
+      if (entity.model === "Newland U1000" || entity.modelo === "Newland U1000") {
+        setActiveTab("multibanco");
+      } else {
+        setActiveTab("ac/as");
+      }
       fetchDoors();
       fetchAllReaders();
       fetchAuxiliaries();
       setFormData({ ...entity } as T);
       const matchedDevice = deviceOptions.find(
-        (option) => option.label === entity.model
+        (option) => option.label === (entity.model || entity.modelo)
       );
       if (matchedDevice) {
         setSelectedDevice(matchedDevice.value);
@@ -156,11 +164,63 @@ export const UpdateModalDevices = <T extends Entity>({
     }
   }, [open, entity]);
 
+  // Define os campos ativos
+  const activeFields = activeTab === "multibanco"
+  ? [
+      { key: "nomeQuiosque", label: "Nome do Terminal", type: "string", required: true },
+      { key: "modelo", label: "Modelo", type: "string" },
+      { key: "timeReboot", label: "Tempo de Reinício", type: "string", required: false }
+    ]
+  : [
+    { key: "deviceNumber", label: "Número", type: "number", required: true },
+    { key: "deviceName", label: "Nome", type: "string", required: true },
+    { key: "status", label: "Estado", type: "boolean" },
+    { key: "model", label: "Modelo", type: "string" },
+    { key: "ipAddress", label: "Endereço IP", type: "string" },
+    { key: "port", label: "Porta", type: "number" },
+    { key: "sPhoto", label: "Foto", type: "string" },
+    { key: "code", label: "Código", type: "number" },
+    { key: "platform", label: "Platforma", type: "string" },
+    { key: "firmware", label: "Firmware", type: "string" },
+    { key: "macAddress", label: "Endereço MAC", type: "string" },
+    { key: "serialNumber", label: "Nº Serial", type: "string" },
+    { key: "readerCount", label: "Contagem no Leitor", type: "number" },
+    { key: "auxInCount", label: "Contagem de Entrada", type: "number" },
+    { key: "auxOutCount", label: "Contagem de Saída", type: "number" },
+    {
+      key: "maxUserCount",
+      label: "Contagem Máxima de Utilizadores",
+      type: "number",
+    },
+    {
+      key: "maxAttLogCount",
+      label: "Contagem Máxima de Atualizações de Log",
+      type: "number",
+    },
+    {
+      key: "maxFingerCount",
+      label: "Contagem Máxima de Digitais",
+      type: "number",
+    },
+    {
+      key: "maxUserFingerCount",
+      label: "Contagem Máxima de Digitais de Utilizadores",
+      type: "number",
+    },
+    { key: "faceAlg", label: "Algoritmo Facial", type: "number" },
+    { key: "fpAlg", label: "Algoritmo de Digitais", type: "number" },
+    { key: "productTime", label: "Tempo de Produção", type: "Date" },
+    { key: "producter", label: "Produtor", type: "string" },
+    { key: "deviceProtocol", label: "Protocolo", type: "number" },
+    { key: "deviceType", label: "Tipo", type: "number" },
+    { key: "enabled", label: "Activo", type: "boolean" },
+  ];
+
   // UseEffect para validar o formulário
   useEffect(() => {
     const newErrors: Record<string, boolean> = {};
 
-    const isValid = fields.every((field) => {
+    const isValid = activeFields.every((field) => {
       const fieldValue = formData[field.key];
       let valid = true;
 
@@ -342,6 +402,16 @@ export const UpdateModalDevices = <T extends Entity>({
       model: deviceOption ? deviceOption.label : "",
       photo: deviceOption?.img || "",
     }));
+
+    if (selected) {
+      if (selected === "Newland U1000") {
+        setActiveTab("multibanco");
+      } else {
+        setActiveTab("ac/as");
+      }
+    } else {
+      setActiveTab(null);
+    }
   };
 
   // Função para lidar com a mudança de valor
@@ -712,12 +782,16 @@ export const UpdateModalDevices = <T extends Entity>({
 
   // Define a função para enviar
   const handleSubmit = async () => {
-    await onUpdate(formData);
+    if (activeTab === "multibanco") {
+      onMBUpdate(formData as unknown as MBDevice);
+    } else {
+      onDeviceUpdate(formData as unknown as Devices);
+    }
   };
 
   // Opções de dispositivos
   const deviceOptions = [
-    { value: "", label: "------------Acessos/Assiduidade------------" },
+    { value: "ac", label: "------------Acessos/Assiduidade------------" },
     { value: "Nface-204_SISNID-1", label: "Nface-204_SISNID-1", img: nface },
     { value: "SISNID-C3-100", label: "SISNID-C3-100", img: c3_100 },
     { value: "SISNID-C3-200", label: "SISNID-C3-200", img: c3_200 },
@@ -728,6 +802,8 @@ export const UpdateModalDevices = <T extends Entity>({
     { value: "SISNID-PROFACEX-TD", label: "SISNID-PROFACEX-TD", img: profacex },
     { value: "SpeedFace-RFID-TD", label: "SpeedFace-RFID-TD", img: rfid_td },
     { value: "Speedface-V5L-TD-1", label: "Speedface-V5L-TD-1", img: v5l_td },
+    { value: "mb", label: "------------------Multibanco------------------" },
+    { value: "Newland U1000", label: "Newland U1000" },
   ];
 
   return (
@@ -743,513 +819,651 @@ export const UpdateModalDevices = <T extends Entity>({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-body-scrollable">
-        <Row>
-          <Col md={3}>
-            <Form.Group controlId="formDeviceName">
-              <Form.Label>
-                Nome<span style={{ color: "red" }}> *</span>
-              </Form.Label>
-              <OverlayTrigger
-                placement="right"
-                overlay={
-                  <Tooltip id="tooltip-deviceName">Campo obrigatório</Tooltip>
-                }
-              >
-                <Form.Control
-                  type="text"
-                  name="deviceName"
-                  value={formData["deviceName"] || ""}
-                  onChange={handleChange}
-                  className={`custom-input-height form-control custom-select-font-size ${
-                    showValidationErrors ? "error-border" : ""
-                  }`}
-                  maxLength={50}
-                ></Form.Control>
-              </OverlayTrigger>
-              {errors["deviceName"] && (
-                <div style={{ color: "red", fontSize: "small" }}>
-                  {errors["deviceName"]}
-                </div>
-              )}
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group controlId="formModel">
-              <Form.Label>Modelo</Form.Label>
-              <Form.Select
-                name="model"
-                value={selectedDevice}
-                onChange={handleDeviceChange}
-                className="custom-input-height custom-select-font-size"
-              >
-                <option value="">Selecione</option>
-                {deviceOptions.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                    disabled={option.value === ""}
-                  >
-                    {option.label}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group controlId="formDeviceNumber">
-              <Form.Label>
-                Número<span style={{ color: "red" }}> *</span>
-              </Form.Label>
-              <OverlayTrigger
-                placement="right"
-                overlay={
-                  <Tooltip id="tooltip-deviceNumber">Campo obrigatório</Tooltip>
-                }
-              >
-                <Form.Control
-                  type="number"
-                  className={`custom-input-height form-control custom-select-font-size ${
-                    showValidationErrors ? "error-border" : ""
-                  }`}
-                  value={formData.deviceNumber || ""}
-                  onChange={handleChange}
-                  name="deviceNumber"
-                />
-              </OverlayTrigger>
-              {errors["deviceNumber"] && (
-                <div style={{ color: "red", fontSize: "small" }}>
-                  {errors["deviceNumber"]}
-                </div>
-              )}
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={4}>
-            <Tab.Container defaultActiveKey="terminal">
-              <Nav variant="tabs" className="nav-modal">
-                <Nav.Item>
-                  <Nav.Link eventKey="terminal">Equipamentos</Nav.Link>
-                </Nav.Item>
-              </Nav>
-              <Tab.Content>
-                <Tab.Pane eventKey="terminal">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      <Col className="img-modal">
-                        <img
-                          src={deviceImage || no_image}
-                          alt="Imagem do dispositivo"
-                          style={{
-                            width: 128,
-                            height: 128,
-                            cursor: "pointer",
-                            marginBottom: 30,
-                            objectFit: "cover",
-                            borderRadius: "25%",
-                          }}
-                          onClick={triggerFileSelectPopup}
-                        />
-                        <div>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            style={{ display: "none" }}
-                            onChange={handleImageChange}
-                            ref={fileInputRef}
-                          />
-                        </div>
-                        <Form.Group
-                          controlId="formEnabled"
-                          className="d-flex align-items-center mb-3"
+        <Col md={3}>
+          <Form.Group controlId="formModel">
+            <Form.Label>Modelo</Form.Label>
+            <Form.Select
+              name="model"
+              value={selectedDevice}
+              onChange={handleDeviceChange}
+              className="custom-input-height custom-select-font-size select-dropdown"
+            >
+              <option value="">Selecione</option>
+              {deviceOptions.map((option) => (
+                <option
+                  key={option.value}
+                  value={option.value}
+                  disabled={option.value === ""}
+                >
+                  {option.label}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+        </Col>
+        {activeTab && (
+          <Tab.Container
+            activeKey={activeTab}
+            onSelect={(k) => setActiveTab(k)}
+          >
+            <Nav variant="tabs" className="nav-modal">
+              <Nav.Item>
+                <Nav.Link eventKey="ac/as" disabled>
+                  Acesso/Assiduidade
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="multibanco" disabled>
+                  Multibanco
+                </Nav.Link>
+              </Nav.Item>
+            </Nav>
+            <Tab.Content>
+              <Tab.Pane eventKey="ac/as">
+                <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                  <Row>
+                    <Col md={3}>
+                      <Form.Group controlId="formDeviceName">
+                        <Form.Label>
+                          Nome<span style={{ color: "red" }}> *</span>
+                        </Form.Label>
+                        <OverlayTrigger
+                          placement="right"
+                          overlay={
+                            <Tooltip id="tooltip-deviceName">
+                              Campo obrigatório
+                            </Tooltip>
+                          }
                         >
-                          <Form.Label
-                            className="mb-0 me-2 flex-shrink-0"
-                            style={{ lineHeight: "32px" }}
-                          >
-                            Activo
-                          </Form.Label>
-                          <Form.Check
-                            type="switch"
-                            id="custom-switch-enabled"
-                            checked={formData.enabled === true}
-                            onChange={(e) =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                enabled: e.target.checked,
-                              }))
-                            }
-                            className="ms-auto"
-                            label=""
-                            name="enabled"
+                          <Form.Control
+                            type="text"
+                            name="deviceName"
+                            value={formData["deviceName"] || ""}
+                            onChange={handleChange}
+                            className={`custom-input-height form-control custom-select-font-size ${
+                              showValidationErrors ? "error-border" : ""
+                            }`}
+                            maxLength={50}
+                          ></Form.Control>
+                        </OverlayTrigger>
+                        {errors["deviceName"] && (
+                          <div style={{ color: "red", fontSize: "small" }}>
+                            {errors["deviceName"]}
+                          </div>
+                        )}
+                      </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                      <Form.Group controlId="formModel">
+                        <Form.Label>Modelo</Form.Label>
+                        <Form.Control
+                          name="model"
+                          value={selectedDevice}
+                          className="custom-input-height custom-select-font-size"
+                          readOnly
+                        >
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                    <Col md={3}>
+                      <Form.Group controlId="formDeviceNumber">
+                        <Form.Label>
+                          Número<span style={{ color: "red" }}> *</span>
+                        </Form.Label>
+                        <OverlayTrigger
+                          placement="right"
+                          overlay={
+                            <Tooltip id="tooltip-deviceNumber">
+                              Campo obrigatório
+                            </Tooltip>
+                          }
+                        >
+                          <Form.Control
+                            type="number"
+                            className={`custom-input-height form-control custom-select-font-size ${
+                              showValidationErrors ? "error-border" : ""
+                            }`}
+                            value={formData.deviceNumber || ""}
+                            onChange={handleChange}
+                            name="deviceNumber"
                           />
+                        </OverlayTrigger>
+                        {errors["deviceNumber"] && (
+                          <div style={{ color: "red", fontSize: "small" }}>
+                            {errors["deviceNumber"]}
+                          </div>
+                        )}
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={4}>
+                      <Tab.Container defaultActiveKey="terminal">
+                        <Nav variant="tabs" className="nav-modal">
+                          <Nav.Item>
+                            <Nav.Link eventKey="terminal">
+                              Equipamentos
+                            </Nav.Link>
+                          </Nav.Item>
+                        </Nav>
+                        <Tab.Content>
+                          <Tab.Pane eventKey="terminal">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                <Col className="img-modal">
+                                  <img
+                                    src={deviceImage || no_image}
+                                    alt="Imagem do dispositivo"
+                                    style={{
+                                      width: 128,
+                                      height: 128,
+                                      cursor: "pointer",
+                                      marginBottom: 30,
+                                      objectFit: "cover",
+                                      borderRadius: "25%",
+                                    }}
+                                    onClick={triggerFileSelectPopup}
+                                  />
+                                  <div>
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      style={{ display: "none" }}
+                                      onChange={handleImageChange}
+                                      ref={fileInputRef}
+                                    />
+                                  </div>
+                                  <Form.Group
+                                    controlId="formEnabled"
+                                    className="d-flex align-items-center mb-3"
+                                  >
+                                    <Form.Label
+                                      className="mb-0 me-2 flex-shrink-0"
+                                      style={{ lineHeight: "32px" }}
+                                    >
+                                      Activo
+                                    </Form.Label>
+                                    <Form.Check
+                                      type="switch"
+                                      id="custom-switch-enabled"
+                                      checked={formData.enabled === true}
+                                      onChange={(e) =>
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          enabled: e.target.checked,
+                                        }))
+                                      }
+                                      className="ms-auto"
+                                      label=""
+                                      name="enabled"
+                                    />
+                                  </Form.Group>
+                                  <div
+                                    style={{
+                                      backgroundColor: "#d1d1d1",
+                                      padding: "10px",
+                                      borderRadius: "5px",
+                                      marginTop: "20px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <p style={{ margin: "0" }}>
+                                      As funcionalidades indicadas dependem da
+                                      compatibilidade do equipamento.
+                                    </p>
+                                  </div>
+                                </Col>
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                        </Tab.Content>
+                      </Tab.Container>
+                    </Col>
+                    <Col md={8}>
+                      <Tab.Container defaultActiveKey="comunicacao">
+                        <Nav variant="tabs" className="nav-modal">
+                          <Nav.Item>
+                            <Nav.Link eventKey="comunicacao">
+                              Modo de Comunicação
+                            </Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link eventKey="informacao">
+                              Informação
+                            </Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link eventKey="portas">Portas</Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link eventKey="leitores">Leitores</Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link eventKey="auxiliares">
+                              Auxiliares
+                            </Nav.Link>
+                          </Nav.Item>
+                        </Nav>
+                        <Tab.Content>
+                          <Tab.Pane eventKey="comunicacao">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                <Col md={12}>
+                                  <Row>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formIpAddress">
+                                        <Form.Label>IP</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="ipAddress"
+                                          value={formData["ipAddress"] || ""}
+                                          onChange={handleChange}
+                                          isInvalid={
+                                            showIpValidationErrors &&
+                                            !validateIPAddress(
+                                              formData["ipAddress"] || ""
+                                            )
+                                          }
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formPort">
+                                        <Form.Label>Porta</Form.Label>
+                                        <Form.Control
+                                          type="number"
+                                          name="port"
+                                          value={formData["port"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formCode">
+                                        <Form.Label>Código</Form.Label>
+                                        <Form.Control
+                                          type="number"
+                                          className="custom-input-height custom-select-font-size"
+                                          value={formData.code || ""}
+                                          onChange={handleChange}
+                                          name="code"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formDeviceProtocol">
+                                        <Form.Label>Protocolo</Form.Label>
+                                        <Form.Select
+                                          name="deviceProtocol"
+                                          value={
+                                            formData["deviceProtocol"] || ""
+                                          }
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        >
+                                          <option value="">Selecione</option>
+                                          <option value="1">Standalone</option>
+                                          <option value="2">Pull</option>
+                                          <option value="3">Push</option>
+                                        </Form.Select>
+                                      </Form.Group>
+                                    </Col>
+                                  </Row>
+                                </Col>
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                          <Tab.Pane eventKey="informacao">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                <Col md={12}>
+                                  <Row>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formPlatform">
+                                        <Form.Label>Plataforma</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="platform"
+                                          value={formData["platform"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                      <Form.Group controlId="formProductTime">
+                                        <Form.Label>Data do Produto</Form.Label>
+                                        <Form.Control
+                                          type="date"
+                                          name="productTime"
+                                          value={formData["productTime"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formFirmware">
+                                        <Form.Label>Firmware</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="firmware"
+                                          value={formData["firmware"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                      <Form.Group controlId="formProducter">
+                                        <Form.Label>Fabricante</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="producter"
+                                          value={formData["producter"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formMacAddress">
+                                        <Form.Label>MAC</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="macAddress"
+                                          value={formData["macAddress"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                      <Form.Group controlId="formDeviceType">
+                                        <Form.Label>Tipo</Form.Label>
+                                        <Form.Select
+                                          name="deviceType"
+                                          value={formData["deviceType"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        >
+                                          <option value="">Selecione</option>
+                                          <option value="1">Assiduidade</option>
+                                          <option value="2">
+                                            Controle de Acesso
+                                          </option>
+                                        </Form.Select>
+                                      </Form.Group>
+                                    </Col>
+                                    <Col md={3}>
+                                      <Form.Group controlId="formSerialNumber">
+                                        <Form.Label>Número de Série</Form.Label>
+                                        <Form.Control
+                                          type="string"
+                                          name="serialNumber"
+                                          value={formData["serialNumber"] || ""}
+                                          onChange={handleChange}
+                                          className="custom-input-height custom-select-font-size"
+                                        />
+                                      </Form.Group>
+                                    </Col>
+                                  </Row>
+                                </Col>
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                          <Tab.Pane eventKey="portas">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                {loadingDoorData ? (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      height: "100px",
+                                    }}
+                                  >
+                                    <Spinner
+                                      style={{ width: 50, height: 50 }}
+                                      animation="border"
+                                    />
+                                  </div>
+                                ) : (
+                                  <DataTable
+                                    columns={columns}
+                                    data={filteredDataTable}
+                                    pagination
+                                    paginationComponentOptions={
+                                      paginationOptions
+                                    }
+                                    paginationPerPage={5}
+                                    paginationRowsPerPageOptions={[5, 10]}
+                                    selectableRows
+                                    onRowDoubleClicked={handleEditDoors}
+                                    noDataComponent="Não existem dados disponíveis para mostrar."
+                                    customStyles={customStyles}
+                                    striped
+                                    responsive
+                                    persistTableHead={true}
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="doorNo"
+                                  />
+                                )}
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                          <Tab.Pane eventKey="leitores">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row>
+                                {loadingReaderData ? (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      height: "100px",
+                                    }}
+                                  >
+                                    <Spinner
+                                      style={{ width: 50, height: 50 }}
+                                      animation="border"
+                                    />
+                                  </div>
+                                ) : (
+                                  <DataTable
+                                    columns={readerColumns}
+                                    data={filteredReaderDataTable}
+                                    pagination
+                                    paginationComponentOptions={
+                                      paginationOptions
+                                    }
+                                    paginationPerPage={10}
+                                    paginationRowsPerPageOptions={[10, 20]}
+                                    selectableRows
+                                    onRowDoubleClicked={handleEditReaders}
+                                    noDataComponent="Não existem dados disponíveis para mostrar."
+                                    customStyles={customStyles}
+                                    striped
+                                    responsive
+                                    persistTableHead={true}
+                                    defaultSortAsc={true}
+                                    defaultSortFieldId="doorNo"
+                                  />
+                                )}
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                          <Tab.Pane eventKey="auxiliares">
+                            <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                              <Row
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <Col>
+                                  <h6>Entradas</h6>
+                                  {loadingAuxInData ? (
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        height: "100px",
+                                      }}
+                                    >
+                                      <Spinner
+                                        style={{ width: 50, height: 50 }}
+                                        animation="border"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <DataTable
+                                      columns={auxColumns}
+                                      data={auxIn}
+                                      pagination
+                                      paginationComponentOptions={
+                                        paginationOptions
+                                      }
+                                      paginationPerPage={5}
+                                      paginationRowsPerPageOptions={[5, 10]}
+                                      selectableRows
+                                      onRowDoubleClicked={(row) =>
+                                        handleEditAux(row, "in")
+                                      }
+                                      noDataComponent="Não existem dados disponíveis para mostrar."
+                                      customStyles={customStyles}
+                                      striped
+                                      responsive
+                                      persistTableHead={true}
+                                      defaultSortAsc={true}
+                                      defaultSortFieldId="auxNo"
+                                    />
+                                  )}
+                                </Col>
+                                <Col>
+                                  <h6>Saídas</h6>
+                                  {loadingAuxOutData ? (
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        height: "100px",
+                                      }}
+                                    >
+                                      <Spinner
+                                        style={{ width: 50, height: 50 }}
+                                        animation="border"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <DataTable
+                                      columns={auxColumns}
+                                      data={auxOut}
+                                      pagination
+                                      paginationComponentOptions={
+                                        paginationOptions
+                                      }
+                                      paginationPerPage={5}
+                                      paginationRowsPerPageOptions={[5, 10]}
+                                      selectableRows
+                                      onRowDoubleClicked={(row) =>
+                                        handleEditAux(row, "out")
+                                      }
+                                      noDataComponent="Não existem dados disponíveis para mostrar."
+                                      customStyles={customStyles}
+                                      striped
+                                      responsive
+                                      persistTableHead={true}
+                                      defaultSortAsc={true}
+                                      defaultSortFieldId="auxNo"
+                                    />
+                                  )}
+                                </Col>
+                              </Row>
+                            </Form>
+                          </Tab.Pane>
+                        </Tab.Content>
+                      </Tab.Container>
+                    </Col>
+                  </Row>
+                </Form>
+              </Tab.Pane>
+            </Tab.Content>
+            <Tab.Content>
+              <Tab.Pane eventKey="multibanco">
+                <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                  <Row>
+                    {[
+                      {
+                        key: "nomeQuiosque",
+                        label: "Nome do Terminal",
+                        type: "string",
+                        required: true,
+                      },
+                      { key: "modelo", label: "Modelo", type: "string" },
+                      {
+                        key: "timeReboot",
+                        label: "Tempo de Reinício",
+                        type: "string",
+                        required: false
+                      },
+                    ].map((field) => (
+                      <Col md={3} key={field.key}>
+                        <Form.Group controlId={`form${field.key}`}>
+                          {field.required ? (
+                            <OverlayTrigger
+                              placement="right"
+                              overlay={
+                                <Tooltip id={`tooltip-${field.key}`}>
+                                  Campo obrigatório
+                                </Tooltip>
+                              }
+                            >
+                              <Form.Label>
+                                {field.label}{" "}
+                                <span
+                                  style={{ color: "red", marginLeft: "5px" }}
+                                >
+                                  *
+                                </span>
+                              </Form.Label>
+                            </OverlayTrigger>
+                          ) : (
+                            <Form.Label>{field.label}</Form.Label>
+                          )}
+                          {field.key === "modelo" ? (
+                            <Form.Control
+                              name={field.key}
+                              value={formData[field.key] || ""}
+                              onChange={handleChange}
+                              className="custom-input-height custom-select-font-size"
+                              readOnly
+                            >
+                            </Form.Control>
+                          ) : (
+                            <Form.Control
+                              type={field.type === "number" ? "number" : "text"}
+                              value={formData[field.key] || ""}
+                              onChange={handleChange}
+                              name={field.key}
+                              className={`custom-input-height custom-select-font-size ${
+                                showValidationErrors ? "error-border" : ""
+                              }`}
+                            />
+                          )}
+                          {errors[field.key] && (
+                            <Form.Text className="text-danger">
+                              {errors[field.key]}
+                            </Form.Text>
+                          )}
                         </Form.Group>
-                        <div
-                          style={{
-                            backgroundColor: "#d1d1d1",
-                            padding: "10px",
-                            borderRadius: "5px",
-                            marginTop: "20px",
-                            textAlign: "center",
-                          }}
-                        >
-                          <p style={{ margin: "0" }}>
-                            As funcionalidades indicadas dependem da
-                            compatibilidade do equipamento.
-                          </p>
-                        </div>
                       </Col>
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-              </Tab.Content>
-            </Tab.Container>
-          </Col>
-          <Col md={8}>
-            <Tab.Container defaultActiveKey="comunicacao">
-              <Nav variant="tabs" className="nav-modal">
-                <Nav.Item>
-                  <Nav.Link eventKey="comunicacao">
-                    Modo de Comunicação
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="informacao">Informação</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="portas">Portas</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="leitores">Leitores</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="auxiliares">Auxiliares</Nav.Link>
-                </Nav.Item>
-              </Nav>
-              <Tab.Content>
-                <Tab.Pane eventKey="comunicacao">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      <Col md={12}>
-                        <Row>
-                          <Col md={3}>
-                            <Form.Group controlId="formIpAddress">
-                              <Form.Label>IP</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="ipAddress"
-                                value={formData["ipAddress"] || ""}
-                                onChange={handleChange}
-                                isInvalid={
-                                  showIpValidationErrors &&
-                                  !validateIPAddress(
-                                    formData["ipAddress"] || ""
-                                  )
-                                }
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formPort">
-                              <Form.Label>Porta</Form.Label>
-                              <Form.Control
-                                type="number"
-                                name="port"
-                                value={formData["port"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formCode">
-                              <Form.Label>Código</Form.Label>
-                              <Form.Control
-                                type="number"
-                                className="custom-input-height custom-select-font-size"
-                                value={formData.code || ""}
-                                onChange={handleChange}
-                                name="code"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formDeviceProtocol">
-                              <Form.Label>Protocolo</Form.Label>
-                              <Form.Select
-                                name="deviceProtocol"
-                                value={formData["deviceProtocol"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              >
-                                <option value="">Selecione</option>
-                                <option value="1">Standalone</option>
-                                <option value="2">Pull</option>
-                                <option value="3">Push</option>
-                              </Form.Select>
-                            </Form.Group>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-                <Tab.Pane eventKey="informacao">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      <Col md={12}>
-                        <Row>
-                          <Col md={3}>
-                            <Form.Group controlId="formPlatform">
-                              <Form.Label>Plataforma</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="platform"
-                                value={formData["platform"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                            <Form.Group controlId="formProductTime">
-                              <Form.Label>Data do Produto</Form.Label>
-                              <Form.Control
-                                type="date"
-                                name="productTime"
-                                value={formData["productTime"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formFirmware">
-                              <Form.Label>Firmware</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="firmware"
-                                value={formData["firmware"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                            <Form.Group controlId="formProducter">
-                              <Form.Label>Fabricante</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="producter"
-                                value={formData["producter"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formMacAddress">
-                              <Form.Label>MAC</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="macAddress"
-                                value={formData["macAddress"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                            <Form.Group controlId="formDeviceType">
-                              <Form.Label>Tipo</Form.Label>
-                              <Form.Select
-                                name="deviceType"
-                                value={formData["deviceType"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              >
-                                <option value="">Selecione</option>
-                                <option value="1">Assiduidade</option>
-                                <option value="2">Controle de Acesso</option>
-                              </Form.Select>
-                            </Form.Group>
-                          </Col>
-                          <Col md={3}>
-                            <Form.Group controlId="formSerialNumber">
-                              <Form.Label>Número de Série</Form.Label>
-                              <Form.Control
-                                type="string"
-                                name="serialNumber"
-                                value={formData["serialNumber"] || ""}
-                                onChange={handleChange}
-                                className="custom-input-height custom-select-font-size"
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-                <Tab.Pane eventKey="portas">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      {loadingDoorData ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            height: "100px",
-                          }}
-                        >
-                          <Spinner
-                            style={{ width: 50, height: 50 }}
-                            animation="border"
-                          />
-                        </div>
-                      ) : (
-                        <DataTable
-                          columns={columns}
-                          data={filteredDataTable}
-                          pagination
-                          paginationComponentOptions={paginationOptions}
-                          paginationPerPage={5}
-                          paginationRowsPerPageOptions={[5, 10]}
-                          selectableRows
-                          onRowDoubleClicked={handleEditDoors}
-                          noDataComponent="Não existem dados disponíveis para mostrar."
-                          customStyles={customStyles}
-                          striped
-                          responsive
-                          persistTableHead={true}
-                          defaultSortAsc={true}
-                          defaultSortFieldId="doorNo"
-                        />
-                      )}
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-                <Tab.Pane eventKey="leitores">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row>
-                      {loadingReaderData ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            height: "100px",
-                          }}
-                        >
-                          <Spinner
-                            style={{ width: 50, height: 50 }}
-                            animation="border"
-                          />
-                        </div>
-                      ) : (
-                        <DataTable
-                          columns={readerColumns}
-                          data={filteredReaderDataTable}
-                          pagination
-                          paginationComponentOptions={paginationOptions}
-                          paginationPerPage={10}
-                          paginationRowsPerPageOptions={[10, 20]}
-                          selectableRows
-                          onRowDoubleClicked={handleEditReaders}
-                          noDataComponent="Não existem dados disponíveis para mostrar."
-                          customStyles={customStyles}
-                          striped
-                          responsive
-                          persistTableHead={true}
-                          defaultSortAsc={true}
-                          defaultSortFieldId="doorNo"
-                        />
-                      )}
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-                <Tab.Pane eventKey="auxiliares">
-                  <Form style={{ marginTop: 10, marginBottom: 10 }}>
-                    <Row style={{ display: "flex", flexDirection: "column" }}>
-                      <Col>
-                        <h6>Entradas</h6>
-                        {loadingAuxInData ? (
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              height: "100px",
-                            }}
-                          >
-                            <Spinner
-                              style={{ width: 50, height: 50 }}
-                              animation="border"
-                            />
-                          </div>
-                        ) : (
-                          <DataTable
-                            columns={auxColumns}
-                            data={auxIn}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={5}
-                            paginationRowsPerPageOptions={[5, 10]}
-                            selectableRows
-                            onRowDoubleClicked={(row) =>
-                              handleEditAux(row, "in")
-                            }
-                            noDataComponent="Não existem dados disponíveis para mostrar."
-                            customStyles={customStyles}
-                            striped
-                            responsive
-                            persistTableHead={true}
-                            defaultSortAsc={true}
-                            defaultSortFieldId="auxNo"
-                          />
-                        )}
-                      </Col>
-                      <Col>
-                        <h6>Saídas</h6>
-                        {loadingAuxOutData ? (
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              height: "100px",
-                            }}
-                          >
-                            <Spinner
-                              style={{ width: 50, height: 50 }}
-                              animation="border"
-                            />
-                          </div>
-                        ) : (
-                          <DataTable
-                            columns={auxColumns}
-                            data={auxOut}
-                            pagination
-                            paginationComponentOptions={paginationOptions}
-                            paginationPerPage={5}
-                            paginationRowsPerPageOptions={[5, 10]}
-                            selectableRows
-                            onRowDoubleClicked={(row) =>
-                              handleEditAux(row, "out")
-                            }
-                            noDataComponent="Não existem dados disponíveis para mostrar."
-                            customStyles={customStyles}
-                            striped
-                            responsive
-                            persistTableHead={true}
-                            defaultSortAsc={true}
-                            defaultSortFieldId="auxNo"
-                          />
-                        )}
-                      </Col>
-                    </Row>
-                  </Form>
-                </Tab.Pane>
-              </Tab.Content>
-            </Tab.Container>
-          </Col>
-        </Row>
+                    ))}
+                  </Row>
+                </Form>
+              </Tab.Pane>
+            </Tab.Content>
+          </Tab.Container>
+        )}
       </Modal.Body>
       {selectedDoor && (
         <UpdateModalDoor

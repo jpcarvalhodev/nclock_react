@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from "../api/apiService";
-import { AccessControl, Activity, Alerts, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, Events, KioskTransaction, MBDevice, MBDeviceCloseOpen, Movements, Readers, TimePeriod, TimePlan } from '../types/Types';
+import { AccessControl, Activity, Alerts, AllDevices, Auxiliaries, AuxOut, Cameras, Devices, DoorDevice, Doors, EmployeesOnDevice, Events, KioskTransaction, MBDevice, MBDeviceCloseOpen, Movements, Readers, TimePeriod, TimePlan } from '../types/Types';
 
 // Define o tipo de contexto
 export interface DeviceContextType {
@@ -17,7 +17,7 @@ export interface DeviceContextType {
     cameras: Cameras[];
     events: Alerts[];
     setEvents: (events: Alerts[]) => void;
-    fetchAllDevices: () => Promise<Devices[]>;
+    fetchAllDevices: () => Promise<AllDevices[]>;
     fetchAllEmployeeDevices: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllKioskTransactionOnDevice: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
@@ -35,8 +35,8 @@ export interface DeviceContextType {
     restartDevice: (device: Devices) => Promise<void>;
     restartMBDevice: (mbDevice: Partial<MBDevice>) => Promise<void>;
     sendClockToDevice: (serialNumber: string, timeZoneId?: string) => Promise<void>;
-    handleAddDevice: (device: Devices) => Promise<void>;
-    handleUpdateDevice: (device: Devices) => Promise<void>;
+    handleAddDevice: (device: AllDevices) => Promise<void>;
+    handleUpdateDevice: (device: AllDevices) => Promise<void>;
     handleDeleteDevice: (zktecoDeviceID: string) => Promise<void>;
     handleAddMBDevice: (device: MBDevice) => Promise<void>;
     handleUpdateMBDevice: (device: MBDevice) => Promise<void>;
@@ -95,10 +95,11 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [totalEventPages, setTotalEventPages] = useState<number>(1);
 
     // Função para buscar todos os dispositivos
-    const fetchAllDevices = async (): Promise<Devices[]> => {
+    const fetchAllDevices = async (): Promise<AllDevices[]> => {
         try {
             const data = await apiService.fetchAllDevices();
-            setDevices(data);
+            const dataMb = await apiService.fetchAllMBDevices();
+            setDevices([...data, ...dataMb]);
             return data;
         } catch (error) {
             console.error('Erro ao buscar dispositivos:', error);
@@ -297,7 +298,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Define a função de adição de dispositivos
-    const handleAddDevice = async (device: Devices) => {
+    const handleAddDevice = async (device: AllDevices) => {
         try {
             const deviceData = await apiService.addDevice(device);
             setDevices([...devices, deviceData]);
@@ -311,7 +312,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Atualiza um funcionário
-    const handleUpdateDevice = async (device: Devices) => {
+    const handleUpdateDevice = async (device: AllDevices) => {
         try {
             const updatedDevice = await apiService.updateDevice(device);
             const updatedDevices = devices.map(d => d.zktecoDeviceID === updatedDevice.zktecoDeviceID ? updatedDevice : d);

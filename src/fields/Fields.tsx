@@ -859,3 +859,26 @@ export const activityFields = [
   { key: "estado", label: "Estado", type: "string" },
   { key: "deviceSN", label: "Nome do Local", type: "string" },
 ];
+
+export const employeeVisitorFields = [
+  { key: "dataInicio", label: "Data de Início", type: "date" },
+  { key: "dataFim", label: "Data do Fim", type: "date" },
+  { key: "dataSaida", label: "Data de Saída", type: "date" },
+  { key: "idVisitante", label: "Visitante", type: "string" },
+  { key: "idPessoa", label: "Visitado", type: "string" },
+  { key: "idEntidadeExternas", label: "Entidade Externa", type: "string" },
+  { key: "estado", label: "Estado", type: "number" },
+  { key: "idInserido", label: "Inserido Por", type: "string" },
+  { key: "obs", label: "Observações", type: "string" },
+  { key: "idViatura", label: "Viatura", type: "string" },
+  { key: "reboque", label: "Reboque", type: "string" },
+  { key: "refDoc", label: "Referência/Documento", type: "string" },
+  { key: "visitanteNif", label: "NIF Visitante", type: "string" },
+  { key: "visitanteCartaoEU", label: "Cartão EU Visitante", type: "string" },
+  { key: "visitantePassaporte", label: "Passaporte Visitante", type: "string" },
+  { key: "visitanteContacto", label: "Contacto Visitante", type: "string" },
+  { key: "empresaNome", label: "Nome Empresa", type: "string" },
+  { key: "empresaNif", label: "NIF Empresa", type: "string" },
+  { key: "visitanteMotivo", label: "Motivo da Visita", type: "string" },
+  { key: "created_at", label: "Data de Criação", type: "date" },
+];

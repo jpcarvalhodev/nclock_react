@@ -61,7 +61,6 @@ export const Types = () => {
   const addExternalEntityTypes = async (
     externalEntityType: ExternalEntityTypes
   ) => {
-    console.log(externalEntityType);
     await handleAddExternalEntityTypes(externalEntityType);
     setClearSelectionToggle((prev) => !prev);
   };
@@ -193,6 +192,9 @@ export const Types = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(dataEE.externalEntityTypes)) {
+      return [];
+    }
     return dataEE.externalEntityTypes
       .filter(
         (externalEntityType) =>

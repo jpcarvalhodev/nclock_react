@@ -45,7 +45,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
   initialValuesData,
 }: Props<T>) => {
   const { devices, door } = useTerminals();
-  const { employees, handleUpdateEmployee } = usePersons();
+  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const [formData, setFormData] = useState<T>(
     (initialValuesData as T) || ({} as T, { activo: true })
   );
@@ -261,7 +261,7 @@ export const CreateAccessControlModal = <T extends Record<string, any>>({
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Employee) => {
-    const employeeDetails = employees.find((emp) => emp.name === person.name);
+    const employeeDetails = employeesNoPagination.find((emp) => emp.name === person.name);
     if (employeeDetails) {
       setSelectedEmployee(employeeDetails);
       setShowEditModal(true);

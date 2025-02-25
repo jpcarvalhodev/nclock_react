@@ -2,7 +2,7 @@ import { ReactNode, createContext, useCallback, useContext, useEffect, useState 
 import { toast } from 'react-toastify';
 
 import * as apiService from "../api/apiService";
-import { Category, Department, Employee, EmployeeCard, EmployeeFP, EmployeeFace, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, Zone } from '../types/Types';
+import { Category, Department, Employee, EmployeeCard, EmployeeFP, EmployeeFace, EmployeeVisitor, ExternalEntity, ExternalEntityTypes, Group, Profession, Register, Zone } from '../types/Types';
 
 // Define a interface para o estado de dados
 interface DataState {
@@ -88,6 +88,11 @@ export interface PersonsContextType {
     handleUpdateZone: (zone: Zone) => Promise<void>;
     handleDeleteZone: (zoneID: string[]) => Promise<void>;
     totalPages: number;
+    employeeVisitor: EmployeeVisitor[];
+    fetchEmployeeVisitor: () => Promise<EmployeeVisitor[]>;
+    handleAddEmployeeVisitor: (employeeVisitor: EmployeeVisitor) => Promise<void>;
+    handleUpdateEmployeeVisitor: (employeeVisitor: EmployeeVisitor) => Promise<void>;
+    handleDeleteEmployeeVisitor: (employeeVisitorID: string[]) => Promise<void>;
 }
 
 // Expandindo as opções de busca
@@ -105,6 +110,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const [employeesNoPagination, setEmployeesNoPagination] = useState<Employee[]>([]);
     const [disabledEmployees, setDisabledEmployees] = useState<Employee[]>([]);
     const [disabledEmployeesNoPagination, setDisabledEmployeesNoPagination] = useState<Employee[]>([]);
+    const [employeeVisitor, setEmployeeVisitor] = useState<EmployeeVisitor[]>([]);
     const [employeesFP, setEmployeesFP] = useState<EmployeeFP[]>([]);
     const [employeesFace, setEmployeesFace] = useState<EmployeeFace[]>([]);
     const [employeeCards, setEmployeeCards] = useState<EmployeeCard[]>([]);
@@ -813,6 +819,57 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    // Define a função para buscar os visitantes
+    const fetchEmployeeVisitor = async (): Promise<EmployeeVisitor[]> => {
+        try {
+            const data = await apiService.fetchAllEmployeeVisitors();
+            setEmployeeVisitor(data.data);
+            setTotalPages(data.totalPages);
+            return data.data;
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+        }
+        return [];
+    }
+
+    // Define a função de adição de visitantes
+    const handleAddEmployeeVisitor = async (visitor: EmployeeVisitor) => {
+        try {
+            const visitorData = await apiService.addEmployeeVisitor(visitor);
+            setEmployeeVisitor([...employeeVisitor, visitorData]);
+            toast.success(visitorData.message || 'Visitante adicionado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao adicionar novo visitante:', error);
+        } finally {
+            fetchEmployeeVisitor();
+        }
+    };
+
+    // Define a função de atualização de visitantes
+    const handleUpdateEmployeeVisitor = async (visitor: EmployeeVisitor) => {
+        try {
+            const updatedEmployeeVisitor = await apiService.updateEmployeeVisitor(visitor);
+            setEmployeeVisitor(prevEmployees => prevEmployees.map(emp => emp.id === updatedEmployeeVisitor.id ? updatedEmployeeVisitor : emp));
+            toast.success(updatedEmployeeVisitor.message || 'Visitante atualizado com sucesso');
+        } catch (error) {
+            console.error('Erro ao atualizar visitante:', error);
+        } finally {
+            fetchEmployeeVisitor();
+        }
+    };
+
+    // Define a função de apagar visitantes
+    const handleDeleteEmployeeVisitor = async (id: string[]) => {
+        try {
+            const deleteEmployeeVisitor = await apiService.deleteEmployeeVisitor(id);
+            toast.success(deleteEmployeeVisitor.message || 'Visitante apagado com sucesso!')
+        } catch (error) {
+            console.error('Erro ao apagar visitante:', error);
+        } finally {
+            fetchEmployeeVisitor();
+        }
+    };
+
     // Executa a função de busca de dados inicial
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -830,6 +887,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllExternalEntitiesData();
             fetchAllProfessions();
             fetchAllZones();
+            fetchEmployeeVisitor();
         }
     }, []);
 
@@ -903,6 +961,11 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         handleUpdateZone,
         handleDeleteZone,
         totalPages,
+        employeeVisitor,
+        fetchEmployeeVisitor,
+        handleAddEmployeeVisitor,
+        handleUpdateEmployeeVisitor,
+        handleDeleteEmployeeVisitor
     };
 
     return (

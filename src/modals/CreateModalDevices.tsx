@@ -28,7 +28,7 @@ import { customStyles } from "../components/CustomStylesDataTable";
 import { SelectFilter } from "../components/SelectFilter";
 import { useTerminals } from "../context/TerminalsContext";
 import { doorsFields } from "../fields/Fields";
-import { Devices, Doors } from "../types/Types";
+import { Devices, Doors, MBDevice } from "../types/Types";
 
 // Define a interface para as propriedades do componente FieldConfig
 interface FieldConfig {
@@ -46,7 +46,8 @@ interface Props<T> {
   title: string;
   open: boolean;
   onClose: () => void;
-  onSave: (data: T) => void;
+  onDeviceSave: (data: Devices) => void;
+  onMBSave: (data: MBDevice) => void;
   fields: FieldConfig[];
   initialValues: Partial<T>;
 }
@@ -55,14 +56,14 @@ export const CreateModalDevices = <T extends Record<string, any>>({
   title,
   open,
   onClose,
-  onSave,
+  onDeviceSave,
+  onMBSave,
   fields,
   initialValues,
 }: Props<T>) => {
   const { devices } = useTerminals();
   const [formData, setFormData] = useState<Partial<T>>({
     ...initialValues,
-    enabled: true,
   });
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [isFormValid, setIsFormValid] = useState(false);
@@ -88,11 +89,63 @@ export const CreateModalDevices = <T extends Record<string, any>>({
     }
   }, [initialValues]);
 
+  // Define os campos ativos
+  const activeFields = activeTab === "multibanco"
+  ? [
+      { key: "nomeQuiosque", label: "Nome do Terminal", type: "string", required: true },
+      { key: "modelo", label: "Modelo", type: "string" },
+      { key: "timeReboot", label: "Tempo de Reinício", type: "string", required: false }
+    ]
+  : [
+    { key: "deviceNumber", label: "Número", type: "number", required: true },
+    { key: "deviceName", label: "Nome", type: "string", required: true },
+    { key: "status", label: "Estado", type: "boolean" },
+    { key: "model", label: "Modelo", type: "string" },
+    { key: "ipAddress", label: "Endereço IP", type: "string" },
+    { key: "port", label: "Porta", type: "number" },
+    { key: "sPhoto", label: "Foto", type: "string" },
+    { key: "code", label: "Código", type: "number" },
+    { key: "platform", label: "Platforma", type: "string" },
+    { key: "firmware", label: "Firmware", type: "string" },
+    { key: "macAddress", label: "Endereço MAC", type: "string" },
+    { key: "serialNumber", label: "Nº Serial", type: "string" },
+    { key: "readerCount", label: "Contagem no Leitor", type: "number" },
+    { key: "auxInCount", label: "Contagem de Entrada", type: "number" },
+    { key: "auxOutCount", label: "Contagem de Saída", type: "number" },
+    {
+      key: "maxUserCount",
+      label: "Contagem Máxima de Utilizadores",
+      type: "number",
+    },
+    {
+      key: "maxAttLogCount",
+      label: "Contagem Máxima de Atualizações de Log",
+      type: "number",
+    },
+    {
+      key: "maxFingerCount",
+      label: "Contagem Máxima de Digitais",
+      type: "number",
+    },
+    {
+      key: "maxUserFingerCount",
+      label: "Contagem Máxima de Digitais de Utilizadores",
+      type: "number",
+    },
+    { key: "faceAlg", label: "Algoritmo Facial", type: "number" },
+    { key: "fpAlg", label: "Algoritmo de Digitais", type: "number" },
+    { key: "productTime", label: "Tempo de Produção", type: "Date" },
+    { key: "producter", label: "Produtor", type: "string" },
+    { key: "deviceProtocol", label: "Protocolo", type: "number" },
+    { key: "deviceType", label: "Tipo", type: "number" },
+    { key: "enabled", label: "Activo", type: "boolean" },
+  ];
+
   // UseEffect para validar o formulário
   useEffect(() => {
     const newErrors: Record<string, boolean> = {};
 
-    const isValid = fields.every((field) => {
+    const isValid = activeFields.every((field) => {
       const fieldValue = formData[field.key];
       let valid = true;
 
@@ -137,19 +190,13 @@ export const CreateModalDevices = <T extends Record<string, any>>({
     const fetchDevicesAndSetNextNumber = async () => {
       try {
         if (devices && devices.length > 0) {
-          const maxNumber = devices.reduce(
-            (max: number, device: Devices) =>
-              Math.max(max, device.deviceNumber),
-            0
-          );
+          const deviceNumbers = devices.map((device) => device.deviceNumber || 0);
+          const maxNumber = Math.max(...deviceNumbers);
           const nextDeviceNumber = maxNumber + 1;
-
-          if (!initialValues.deviceNumber) {
-            setFormData((prevState) => ({
-              ...prevState,
-              deviceNumber: nextDeviceNumber,
-            }));
-          }
+          setFormData((prevState) => ({
+            ...prevState,
+            deviceNumber: nextDeviceNumber,
+          }));
         } else {
           setFormData((prevState) => ({
             ...prevState,
@@ -166,7 +213,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
     if (open) {
       fetchDevicesAndSetNextNumber();
     }
-  }, [open, initialValues]);
+  }, [open, devices]);  
 
   // Função para lidar com a mudança da imagem
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -228,6 +275,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
     setFormData((prevFormData) => ({
       ...prevFormData,
       model: deviceOption ? deviceOption.label : "",
+      modelo: deviceOption ? deviceOption.label : "",
       sPhoto: deviceOption?.img || no_image,
     }));
 
@@ -328,18 +376,25 @@ export const CreateModalDevices = <T extends Record<string, any>>({
     setDeviceImage(null);
     setShowIpValidationErrors(false);
     setShowValidationErrors(false);
+    setActiveTab(null);
     onClose();
   };
 
   // Função para lidar com o salvamento
   const handleSave = () => {
-    onSave(formData as T);
+    if (activeTab === "multibanco") {
+      const { sPhoto, deviceNumber, enabled, model, ...dataToSend } = formData;
+      onMBSave({ ...dataToSend, estadoTerminal: 0 } as unknown as MBDevice);
+    } else {
+      const { modelo, ...dataToSend } = formData;
+      onDeviceSave(dataToSend as unknown as Devices);
+    }
     handleClose();
   };
 
   // Opções de dispositivos
   const deviceOptions = [
-    { value: "", label: "------------Acessos/Assiduidade------------" },
+    { value: "ac", label: "------------Acessos/Assiduidade------------" },
     { value: "Nface-204_SISNID-1", label: "Nface-204_SISNID-1", img: nface },
     { value: "SISNID-C3-100", label: "SISNID-C3-100", img: c3_100 },
     { value: "SISNID-C3-200", label: "SISNID-C3-200", img: c3_200 },
@@ -350,7 +405,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
     { value: "SISNID-PROFACEX-TD", label: "SISNID-PROFACEX-TD", img: profacex },
     { value: "SpeedFace-RFID-TD", label: "SpeedFace-RFID-TD", img: rfid_td },
     { value: "Speedface-V5L-TD-1", label: "Speedface-V5L-TD-1", img: v5l_td },
-    { value: "", label: "------------------Multibanco------------------" },
+    { value: "mb", label: "------------------Multibanco------------------" },
     { value: "Newland U1000", label: "Newland U1000" },
   ];
 
@@ -396,10 +451,14 @@ export const CreateModalDevices = <T extends Record<string, any>>({
           >
             <Nav variant="tabs" className="nav-modal">
               <Nav.Item>
-                <Nav.Link eventKey="ac/as">Acesso/Assiduidade</Nav.Link>
+                <Nav.Link eventKey="ac/as" disabled>
+                  Acesso/Assiduidade
+                </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="multibanco">Multibanco</Nav.Link>
+                <Nav.Link eventKey="multibanco" disabled>
+                  Multibanco
+                </Nav.Link>
               </Nav.Item>
             </Nav>
             <Tab.Content>
@@ -440,23 +499,13 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                     <Col md={3}>
                       <Form.Group controlId="formModel">
                         <Form.Label>Modelo</Form.Label>
-                        <Form.Select
+                        <Form.Control
                           name="model"
                           value={selectedDevice}
-                          onChange={handleDeviceChange}
                           className="custom-input-height custom-select-font-size select-dropdown"
+                          readOnly
                         >
-                          <option value="">Selecione</option>
-                          {deviceOptions.map((option) => (
-                            <option
-                              key={option.value}
-                              value={option.value}
-                              disabled={option.value === ""}
-                            >
-                              {option.label}
-                            </option>
-                          ))}
-                        </Form.Select>
+                        </Form.Control>
                       </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -839,6 +888,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                         key: "timeReboot",
                         label: "Tempo de Reinício",
                         type: "string",
+                        required: false
                       },
                     ].map((field) => (
                       <Col md={3} key={field.key}>
@@ -866,18 +916,12 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                           )}
                           {field.key === "modelo" ? (
                             <Form.Control
-                              as="select"
                               name={field.key}
                               value={formData[field.key] || ""}
                               onChange={handleChange}
                               className="custom-input-height custom-select-font-size"
+                              readOnly
                             >
-                              <option value="">Selecione...</option>
-                              {deviceOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
                             </Form.Control>
                           ) : (
                             <Form.Control

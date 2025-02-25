@@ -30,7 +30,6 @@ import users from "../assets/img/navbar/configuracao/users.png";
 import accessControls from "../assets/img/navbar/dispositivos/accessControls.png";
 import camera from "../assets/img/navbar/dispositivos/camera.png";
 import terminal from "../assets/img/navbar/dispositivos/terminal.png";
-import terminalmb from "../assets/img/navbar/dispositivos/terminalmb.png";
 import timePlan from "../assets/img/navbar/dispositivos/timePlan.png";
 import home from "../assets/img/navbar/home.png";
 import controlPanel from "../assets/img/navbar/naccess/controlPanel.png";
@@ -521,7 +520,7 @@ export const NavBar = ({ style }: NavBarProps) => {
     useLicense();
   const { devices, accessControl, period, mbCloseOpen } = useTerminals();
   const {
-    employees,
+    employeesNoPagination,
     departments,
     groups,
     registeredUsers,
@@ -2090,7 +2089,7 @@ export const NavBar = ({ style }: NavBarProps) => {
 
   // Mapeamento de chaves para dados e campos de cada menu
   const menuConfig: MenuConfig = {
-    geral_pessoas: { data: employees, fields: employeeFields },
+    geral_pessoas: { data: employeesNoPagination, fields: employeeFields },
     geral_departamentos: { data: departments, fields: departmentFields },
     geral_grupos: { data: groups, fields: groupFields },
     geral_categorias: { data: categories, fields: categoryFields },
@@ -3999,18 +3998,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/naccess/naccessvisitors" type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/naccess/naccessvisitors" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={visitorAccess} alt="botão visitantes" />
                             </span>
                             <span className="text">Visitantes</span>
-                          </Button>
+                          </Link>
                         </div>
                         <div>
                           <Button
@@ -19758,25 +19756,6 @@ export const NavBar = ({ style }: NavBarProps) => {
                             <img src={terminal} alt="botão terminais" />
                           </span>
                           <span className="text">Equipamentos</span>
-                        </Link>
-                      </div>
-                      <div className="icon-text-pessoas">
-                        <Link
-                          to="/devices/terminalsmb"
-                          type="button"
-                          className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                            currentRoute === "/devices/terminalsmb"
-                              ? "current-active"
-                              : ""
-                          }`}
-                        >
-                          <span className="icon">
-                            <img
-                              src={terminalmb}
-                              alt="botão terminais multibanco"
-                            />
-                          </span>
-                          <span className="text">Multibanco</span>
                         </Link>
                       </div>
                       <div className="icon-text-pessoas">

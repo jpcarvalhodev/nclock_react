@@ -178,6 +178,9 @@ export const ExternalEntities = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(dataEE.externalEntity)) {
+      return [];
+    }
     return dataEE.externalEntity.filter(
       (externalEntity) =>
         Object.keys(filters).every(

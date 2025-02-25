@@ -81,6 +81,9 @@ export const NledAdsLogs = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(logs)) {
+      return [];
+    }
     return logs.filter(
       (log) =>
         Object.keys(filters).every(

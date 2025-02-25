@@ -1,27 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
+import * as apiService from "../../../api/apiService";
 import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
 import { customStyles } from "../../../components/CustomStylesDataTable";
 import { ExportButton } from "../../../components/ExportButton";
-
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { TreeViewDataNled } from "../../../components/TreeViewNled";
-import { useAds } from "../../../context/AdsContext";
-
-import { useTerminals } from "../../../context/TerminalsContext";
-import { adsFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
-import { CreateModalAds } from "../../../modals/CreateModalAds";
-import { DeleteModal } from "../../../modals/DeleteModal";
-import { UpdateModalAds } from "../../../modals/UpdateModalAds";
-import { Ads } from "../../../types/Types";
+
+import "../../../css/PagesStyles.css";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+
+import { usePersons } from "../../../context/PersonsContext";
+import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
+
+import { Employee, EmployeeVisitor } from "../../../types/Types";
+import { employeeFields, employeeVisitorFields } from "../../../fields/Fields";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { TreeViewNaccessVisitorsData } from "../../../components/TreeViewNaccessVisitors";
+import { DeleteModal } from "../../../modals/DeleteModal";
+
+// Define a interface para os filtros
+interface Filters {
+  [key: string]: string;
+}
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -33,68 +39,118 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
-export const NledAds = () => {
+// Define a página de acessos
+export const NaccessVisitor = () => {
+  const {
+    employeesNoPagination,
+    employeeVisitor,
+    totalPages,
+    fetchEmployeeVisitor,
+    handleAddEmployeeVisitor,
+    handleUpdateEmployeeVisitor,
+    handleDeleteEmployeeVisitor,
+    handleUpdateEmployee,
+  } = usePersons();
   const currentDate = new Date();
   const pastDate = new Date();
-  pastDate.setDate(currentDate.getDate() - 365);
-  const { devices } = useTerminals();
-  const {
-    ads,
-    setAds,
-    fetchAds,
-    handleAddAds,
-    handleUpdateAds,
-    handleDeleteAds,
-  } = useAds();
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [openColumnSelector, setOpenColumnSelector] = useState(false);
-  const [selectedColumns, setSelectedColumns] = useState<string[]>([
-    "createDate",
-    "nomeArquivo",
-    "tipoArquivo",
-    "creador",
-    "dataFim",
-  ]);
-  const [selectedAds, setSelectedAds] = useState<Ads | null>(null);
-  const [selectedAdsForDelete, setSelectedAdsForDelete] = useState<
-    string | null
-  >(null);
-  const [filters, setFilters] = useState<Record<string, string>>({});
-  const [filterText, setFilterText] = useState("");
-  const [initialData, setInitialData] = useState<Partial<Ads>>({});
-  const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<Ads[]>([]);
-  const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
+  pastDate.setDate(currentDate.getDate() - 30);
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-  const [selectedRows, setSelectedRows] = useState<Ads[]>([]);
+  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeVisitor[]>(
+    []
+  );
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([
+    "estado",
+    "dataInicio",
+    "dataFim",
+    "dataSaida",
+    "idVisitante",
+    "idPessoa",
+  ]);
+  const [showColumnSelector, setShowColumnSelector] = useState(false);
+  const [resetSelection, setResetSelection] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<EmployeeVisitor[]>([]);
+  const [filterText, setFilterText] = useState("");
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+  const [filters, setFilters] = useState<Filters>({});
+  const [initialData, setInitialData] = useState<Partial<EmployeeVisitor>>({});
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
+  const [selectedEmployeeVisitor, setSelectedEmployeeVisitor] =
+    useState<EmployeeVisitor | null>(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedVisitorForDelete, setSelectedVisitorForDelete] = useState<
+    any | null
+  >(null);
+  const [currentVisitorIndex, setCurrentVisitorIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(20);
+  const [totalRows, setTotalRows] = useState(0);
 
-  // Função para buscar os ads de hoje
-  const fetchAdsToday = async () => {
+  // Função para buscar os dados da paginação
+  const fetchPaginationEmployeeVisitor = async (
+    pageNo: string,
+    perPage: string
+  ) => {
+    setLoading(true);
+    try {
+      const data = await apiService.fetchAllEmployeeVisitors(
+        undefined,
+        undefined,
+        pageNo,
+        perPage
+      );
+      setFilteredEmployees(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar visitantes paginados:", error);
+      setFilteredEmployees([]);
+      setLoading(false);
+    }
+  };
+
+  // Função para buscar todos os visitantes entre datas
+  const fetchVisitorsBetweenDates = async () => {
+    try {
+      const data = await apiService.fetchAllEmployeeVisitors(
+        startDate,
+        endDate
+      );
+      setFilteredEmployees(data.data);
+    } catch (error) {
+      console.error("Erro ao buscar visitantes entre datas:", error);
+      setFilteredEmployees([]);
+    }
+  };
+
+  // Função para buscar os visitantes de hoje
+  const fetchVisitorsToday = async () => {
     const today = new Date();
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
     try {
-      const data = await fetchAds(start, end);
-      if (Array.isArray(data)) {
-        setAds(data);
-      } else {
-        setAds([]);
-      }
-      setStartDate(start);
-      setEndDate(end);
+      const data = await apiService.fetchAllEmployeeVisitors(
+        undefined,
+        start,
+        end
+      );
+      setFilteredEmployees(data.data);
     } catch (error) {
-      console.error("Erro ao buscar os dados de ads hoje:", error);
+      console.error("Erro ao buscar visitantes hoje:", error);
+      setFilteredEmployees([]);
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
-  // Função para buscar os ads de ontem
-  const fetchAdsForPreviousDay = async () => {
+  // Função para buscar os visitantes de ontem
+  const fetchVisitorsForPreviousDay = async () => {
     const prevDate = new Date(startDate);
     prevDate.setDate(prevDate.getDate() - 1);
 
@@ -102,21 +158,18 @@ export const NledAds = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      const data = await fetchAds(start, end);
-      if (Array.isArray(data)) {
-        setAds(data);
-      } else {
-        setAds([]);
-      }
-      setStartDate(start);
-      setEndDate(end);
+      const data = await apiService.fetchAllEmployeeVisitors(start, end);
+      setFilteredEmployees(data.data);
     } catch (error) {
-      console.error("Erro ao buscar os dados de ads ontem:", error);
+      console.error("Erro ao buscar visitantes ontem:", error);
+      setFilteredEmployees([]);
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
-  // Função para buscar os ads de amanhã
-  const fetchAdsForNextDay = async () => {
+  // Função para buscar os visitantes de amanhã
+  const fetchVisitorsForNextDay = async () => {
     const newDate = new Date(endDate);
     newDate.setDate(newDate.getDate() + 1);
 
@@ -128,168 +181,144 @@ export const NledAds = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      const data = await fetchAds(start, end);
-      if (Array.isArray(data)) {
-        setAds(data);
-      } else {
-        setAds([]);
-      }
-      setStartDate(start);
-      setEndDate(end);
+      const data = await apiService.fetchAllEmployeeVisitors(start, end);
+      setFilteredEmployees(data);
     } catch (error) {
-      console.error("Erro ao buscar os dados de ads amanhã:", error);
+      console.error("Erro ao buscar visitantes amanhã:", error);
+      setFilteredEmployees([]);
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
-  // Função para adicionar uma publicidade
-  const addAds = async (ads: FormData) => {
-    await handleAddAds(ads);
-  };
-
-  // Função para atualizar uma publicidade
-  const updateAds = async (ads: Ads, ad: FormData) => {
-    await handleUpdateAds(ads, ad);
-  };
-
-  // Função para atualizar as publicidades
-  const refreshAds = () => {
-    fetchAds();
-    setStartDate(formatDateToStartOfDay(pastDate));
-    setEndDate(formatDateToEndOfDay(currentDate));
+  // Função para adicionar um visitante
+  const addVisitor = async (visitor: EmployeeVisitor) => {
+    await handleAddEmployeeVisitor(visitor);
+    refreshVisitor();
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const filterDevices = ads.filter((ad) =>
-        selectedDevicesIds.includes(ad.deviceSN)
-      );
-      setFilteredDevices(filterDevices);
-    } else {
-      setFilteredDevices(ads);
-    }
-  }, [selectedDevicesIds, ads, devices]);
-
-  // Atualiza o índice selecionado
-  useEffect(() => {
-    if (selectedAds && selectedAds.length > 0) {
-      const sortedAds = ads.sort((a, b) =>
-        a.createDate.toString().localeCompare(b.createDate.toString())
-      );
-      const adsIndex = sortedAds.findIndex((ad) => ad.id === selectedAds[0].id);
-      setCurrentAdsIndex(adsIndex);
-    }
-  }, [selectedAds, ads]);
-
-  // Função para editar uma publicidade
-  const handleEditAds = (ads: Ads) => {
-    setSelectedAds(ads);
-    setShowUpdateModal(true);
-  };
-
-  // Fecha o modal de edição de publicidade
-  const handleCloseUpdateModal = () => {
-    setShowUpdateModal(false);
-    setSelectedAds(null);
+  // Função para atualizar um visitante
+  const updateVisitor = async (visitor: EmployeeVisitor) => {
+    await handleUpdateEmployeeVisitor(visitor);
+    refreshVisitor();
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Função para abrir o modal de apagar publicidade
-  const handleOpenDeleteModal = (id: string) => {
-    setSelectedAdsForDelete(id);
-    setShowDeleteModal(true);
+  // Função para deletar visitantes sequencialmente
+  const deleteVisitor = async (employeeIds: string[]) => {
+    await handleDeleteEmployeeVisitor(employeeIds);
+    refreshVisitor();
+    setClearSelectionToggle((prev) => !prev);
   };
 
-  // Função para selecionar as colunas
-  const toggleColumn = (columnName: string) => {
-    if (selectedColumns.includes(columnName)) {
-      setSelectedColumns(selectedColumns.filter((col) => col !== columnName));
-    } else {
-      setSelectedColumns([...selectedColumns, columnName]);
+  // Função para atualizar um funcionário e um cartão
+  const updateEmployeeAndCard = async (employee: Employee) => {
+    await handleUpdateEmployee(employee);
+    refreshVisitor();
+    setClearSelectionToggle((prev) => !prev);
+  };
+
+  // Busca os dados se a paginação mudar
+  useEffect(() => {
+    fetchPaginationEmployeeVisitor(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
+
+  // Atualiza a seleção ao resetar
+  useEffect(() => {
+    if (resetSelection) {
+      setResetSelection(false);
     }
+  }, [resetSelection]);
+
+  // Atualiza a seleção ao mudar o filtro
+  useEffect(() => {
+    if (selectedEmployeeIds.length > 0) {
+      const newFilteredAccess = employeeVisitor.filter((emp) =>
+        selectedEmployeeIds.includes(emp.idVisitante)
+      );
+      setFilteredEmployees(newFilteredAccess);
+    } else {
+      setFilteredEmployees(employeeVisitor);
+    }
+  }, [selectedEmployeeIds]);
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
-  // Função para resetar as colunas
-  const resetColumns = () => {
-    setSelectedColumns([
-      "createDate",
-      "nomeArquivo",
-      "tipoArquivo",
-      "creador",
-      "dataFim",
-    ]);
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
+  };
+
+  // Define a seleção de funcionários
+  const handleSelectFromTreeView = (selectedIds: string[]) => {
+    setSelectedEmployeeIds(selectedIds);
+  };
+
+  // Função para alternar a visibilidade das colunas
+  const handleColumnToggle = (columnKey: string) => {
+    if (selectedColumns.includes(columnKey)) {
+      setSelectedColumns(selectedColumns.filter((key) => key !== columnKey));
+    } else {
+      setSelectedColumns([...selectedColumns, columnKey]);
+    }
   };
 
   // Função para selecionar todas as colunas
-  const onSelectAllColumns = (allColumnKeys: string[]) => {
+  const handleSelectAllColumns = () => {
+    const allColumnKeys = employeeVisitorFields.map((field) => field.key);
     setSelectedColumns(allColumnKeys);
   };
 
-  // Opções de paginação da tabela com troca de EN para PT
-  const paginationOptions = {
-    rowsPerPageText: "Linhas por página",
-    rangeSeparatorText: "de",
+  // Função para resetar as colunas
+  const handleResetColumns = () => {
+    setSelectedColumns([
+      "estado",
+      "dataInicio",
+      "dataFim",
+      "dataSaida",
+      "idVisitante",
+      "idPessoa",
+    ]);
   };
 
-  // Define os dados iniciais do modal de adicionar publicidade
-  const handleDuplicate = (entity: Partial<Ads>) => {
-    setInitialData(entity);
-    setShowAddModal(true);
-    setSelectedAds(null);
-    setShowUpdateModal(false);
-  };
-
-  // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
-    setSelectedDevicesIds(selectedIds);
-  };
-
-  // Seleciona a publicidade anterior
-  const handleNextAds = () => {
-    if (currentAdsIndex < ads.length - 1) {
-      setCurrentAdsIndex(currentAdsIndex + 1);
-      setSelectedAds(ads[currentAdsIndex + 1]);
-    }
-  };
-
-  // Seleciona a publicidade seguinte
-  const handlePrevAds = () => {
-    if (currentAdsIndex > 0) {
-      setCurrentAdsIndex(currentAdsIndex - 1);
-      setSelectedAds(ads[currentAdsIndex - 1]);
-    }
+  // Função para atualizar os visitantes
+  const refreshVisitor = () => {
+    fetchEmployeeVisitor();
+    setStartDate(formatDateToStartOfDay(pastDate));
+    setEndDate(formatDateToEndOfDay(currentDate));
+    setClearSelectionToggle((prev) => !prev);
   };
 
   // Define a função selecionar uma linha
   const handleRowSelected = (state: {
     allSelected: boolean;
     selectedCount: number;
-    selectedRows: Ads[];
+    selectedRows: EmployeeVisitor[];
   }) => {
-    const sortedSelectedRows = state.selectedRows.sort(
-      (a, b) =>
-        new Date(b.createDate).getTime() - new Date(a.createDate).getTime()
-    );
-    setSelectedRows(sortedSelectedRows);
+    setSelectedRows(state.selectedRows);
   };
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(filteredEmployees)) {
       return [];
     }
-    return filteredDevices.filter(
-      (ad: Ads) =>
+    return filteredEmployees.filter(
+      (emp) =>
         Object.keys(filters).every(
           (key) =>
             filters[key] === "" ||
-            (ad[key] != null &&
-              String(ad[key])
+            (emp[key] != null &&
+              String(emp[key])
                 .toLowerCase()
                 .includes(filters[key].toLowerCase()))
         ) &&
-        Object.entries(ad).some(([key, value]) => {
+        Object.entries(emp).some(([key, value]) => {
           if (selectedColumns.includes(key) && value != null) {
             if (value instanceof Date) {
               return value
@@ -306,26 +335,148 @@ export const NledAds = () => {
           return false;
         })
     );
-  }, [filteredDevices, filters, filterText]);
+  }, [filteredEmployees, filters, filterText]);
 
-  // Define as colunas da tabela
-  const columns: TableColumn<Ads>[] = adsFields
-    .filter((field) => selectedColumns.includes(field.key))
-    .map((field) => {
-      const formatField = (row: Ads) => {
+  // Função para abrir o modal de edição
+  const handleOpenEditModal = (person: EmployeeVisitor) => {
+    const employeeDetails = employeesNoPagination.find(
+      (emp) =>
+        emp.employeeID === person.idVisitante ||
+        emp.employeeID === person.idPessoa
+    );
+
+    if (employeeDetails) {
+      setSelectedEmployee(employeeDetails);
+      setShowEditModal(true);
+    } else {
+      console.error("Funcionário não encontrado");
+    }
+  };
+
+  // Define os dados iniciais ao duplicar
+  const handleDuplicate = (entity: Partial<EmployeeVisitor>) => {
+    setInitialData(entity);
+    setShowAddModal(true);
+    setSelectedEmployeeVisitor(null);
+    setShowUpdateModal(false);
+  };
+
+  // Função para editar um visitante
+  const handleEditCategory = (visitor: EmployeeVisitor) => {
+    setSelectedEmployeeVisitor(visitor);
+    const sortedVisitors = employeeVisitor.sort(
+      (a, b) =>
+        new Date(a.dataInicio).getTime() - new Date(b.dataInicio).getTime()
+    );
+    const categoryIndex = sortedVisitors.findIndex(
+      (emp) => emp.id === visitor.id
+    );
+    setCurrentVisitorIndex(categoryIndex);
+    setShowUpdateModal(true);
+  };
+
+  // Função para abrir o modal de apagar visitante
+  const handleOpenDeleteModal = (id: string) => {
+    setSelectedVisitorForDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  // Função para deletar vários visitantes
+  const handleSelectedVisitorToDelete = () => {
+    const visitorIds = Array.from(new Set(selectedRows.map((emp) => emp.id)));
+    setSelectedVisitorForDelete(visitorIds);
+    setShowDeleteModal(true);
+  };
+
+  // Configurando a função onDelete para iniciar o processo de exclusão
+  const startDeletionProcess = () => {
+    let visitorIds;
+
+    if (Array.isArray(selectedVisitorForDelete)) {
+      visitorIds = selectedVisitorForDelete;
+    } else if (selectedVisitorForDelete) {
+      visitorIds = [selectedVisitorForDelete];
+    } else {
+      visitorIds = Array.from(new Set(selectedRows.map((emp) => emp.id)));
+    }
+
+    setShowDeleteModal(false);
+    deleteVisitor(visitorIds);
+  };
+
+  // Define as colunas
+  const columns: TableColumn<EmployeeVisitor>[] = employeeVisitorFields.map(
+    (field) => {
+      if (field.key === "idVisitante") {
+        return {
+          ...field,
+          name: (
+            <>
+              {field.label}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            </>
+          ),
+          cell: (row: EmployeeVisitor) => (
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => handleOpenEditModal(row)}
+            >
+              {row.idVisitante}
+            </div>
+          ),
+        };
+      }
+      if (field.key === "idPessoa") {
+        return {
+          ...field,
+          name: (
+            <>
+              {field.label}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            </>
+          ),
+          cell: (row: EmployeeVisitor) => (
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => handleOpenEditModal(row)}
+            >
+              {row.idPessoa}
+            </div>
+          ),
+        };
+      }
+      const formatField = (row: EmployeeVisitor) => {
         switch (field.key) {
-          case "tipoArquivo":
-            return row[field.key] === 1 ? "Imagem" : "Vídeo";
-          case "createDate":
-            return new Date(row[field.key]).toLocaleString() || "";
-          case "updateDate":
-            return new Date(row[field.key]).toLocaleString() || "";
+          case "dataInicio":
           case "dataFim":
-            if (row[field.key] === null) {
-              return "";
-            } else {
-              return new Date(row[field.key]).toLocaleString();
+          case "dataSaida":
+            return new Date(row[field.key]).toLocaleString();
+          case "estado":
+            switch (row[field.key]) {
+              case 0:
+                return "Pronto para Iniciar";
+              case 1:
+                return "Em Andamento";
+              case 2:
+                return "Terminado";
+              default:
+                return row[field.key] || "";
             }
+          case "idVisitante":
+          case "idPessoa":
+            return (
+              employeesNoPagination.find(
+                (emp) => emp.employeeID === row[field.key]
+              )?.name || ""
+            );
           default:
             return row[field.key] || "";
         }
@@ -335,26 +486,34 @@ export const NledAds = () => {
         name: (
           <>
             {field.label}
-            {field.key !== "createDate" &&
-              field.key !== "updateDate" &&
-              field.key !== "dataFim" && (
-                <SelectFilter
-                  column={field.key}
-                  setFilters={setFilters}
-                  data={filteredDataTable}
-                />
-              )}
+            {field.key !== "dataInicio" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
           </>
         ),
         selector: (row) => formatField(row),
         sortable: true,
+        sortFunction: (rowA, rowB) =>
+          new Date(rowB.dataInicio).getTime() -
+          new Date(rowA.dataInicio).getTime(),
       };
-    });
+    }
+  );
+
+  // Define as opções de paginação de EN para PT
+  const paginationOptions = {
+    rowsPerPageText: "Linhas por página",
+    rangeSeparatorText: "de",
+  };
 
   // Define a coluna de ações
-  const actionColumn: TableColumn<Ads> = {
+  const actionColumn: TableColumn<EmployeeVisitor> = {
     name: "Ações",
-    cell: (row: Ads) => (
+    cell: (row: EmployeeVisitor) => (
       <div style={{ display: "flex" }}>
         <OverlayTrigger
           placement="top"
@@ -397,7 +556,7 @@ export const NledAds = () => {
           <CustomOutlineButton
             className="action-button"
             icon="bi bi-pencil-fill"
-            onClick={() => handleEditAds(row)}
+            onClick={() => handleEditCategory(row)}
           />
         </OverlayTrigger>
         <OverlayTrigger
@@ -424,13 +583,15 @@ export const NledAds = () => {
         </OverlayTrigger>
       </div>
     ),
-    selector: (row: Ads) => row.id,
+    selector: (row: EmployeeVisitor) => row.id,
     ignoreRowClick: true,
   };
 
   // Função para obter os campos selecionados baseado em selectedColumns
   const getSelectedFields = () => {
-    return adsFields.filter((field) => selectedColumns.includes(field.key));
+    return employeeVisitorFields.filter((field) =>
+      selectedColumns.includes(field.key)
+    );
   };
 
   // Controla o loading da tabela
@@ -450,26 +611,25 @@ export const NledAds = () => {
   }, [filteredDataTable]);
 
   return (
-    <div className="dashboard-container">
+    <div className="main-container">
       <div className="content-container">
         {isMobile && (
           <div className="datatable-container">
             <div className="datatable-title-text">
-              <span>Publicidade</span>
+              <span>Visitantes</span>
             </div>
-            <div className="datatable-header">
+            <div className="datatable-header" style={{ marginBottom: 0 }}>
               <div>
                 <SearchBoxContainer
                   onSearch={(value) => setFilterText(value)}
                 />
               </div>
-              <div className="buttons-container-others">
+              <div className="buttons-container">
                 <OverlayTrigger
                   placement="top"
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -485,7 +645,8 @@ export const NledAds = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-arrow-clockwise"
-                    onClick={refreshAds}
+                    onClick={refreshVisitor}
+                    iconSize="1.1em"
                   />
                 </OverlayTrigger>
                 <OverlayTrigger
@@ -493,7 +654,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -518,7 +678,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -534,7 +693,35 @@ export const NledAds = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-eye"
-                    onClick={() => setOpenColumnSelector(true)}
+                    onClick={() => setShowColumnSelector(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Apagar Selecionados
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-trash-fill"
+                    onClick={handleSelectedVisitorToDelete}
+                    iconSize="1.1em"
                   />
                 </OverlayTrigger>
                 <ExportButton
@@ -557,32 +744,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
-                    modifiers: [
-                      {
-                        name: "preventOverflow",
-                        options: {
-                          boundary: "window",
-                        },
-                      },
-                    ],
-                  }}
-                  overlay={
-                    <Tooltip className="custom-tooltip">Ads Hoje</Tooltip>
-                  }
-                >
-                  <CustomOutlineButton
-                    icon="bi bi-calendar-event"
-                    onClick={fetchAdsToday}
-                    iconSize="1.1em"
-                  />
-                </OverlayTrigger>
-                <OverlayTrigger
-                  placement="top"
-                  delay={0}
-                  container={document.body}
-                  popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -594,13 +755,39 @@ export const NledAds = () => {
                   }}
                   overlay={
                     <Tooltip className="custom-tooltip">
-                      Ads Dia Anterior
+                      Movimentos Hoje
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    onClick={fetchVisitorsToday}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Movimentos Dia Anterior
                     </Tooltip>
                   }
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-left-circle"
-                    onClick={fetchAdsForPreviousDay}
+                    onClick={fetchVisitorsForPreviousDay}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -609,7 +796,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -621,13 +807,13 @@ export const NledAds = () => {
                   }}
                   overlay={
                     <Tooltip className="custom-tooltip">
-                      Ads Dia Seguinte
+                      Movimentos Dia Seguinte
                     </Tooltip>
                   }
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-right-circle"
-                    onClick={fetchAdsForNextDay}
+                    onClick={fetchVisitorsForNextDay}
                     iconSize="1.1em"
                     disabled={
                       new Date(endDate) >=
@@ -655,7 +841,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -669,7 +854,7 @@ export const NledAds = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-search"
-                    onClick={() => fetchAds(startDate, endDate)}
+                    onClick={fetchVisitorsBetweenDates}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -692,21 +877,43 @@ export const NledAds = () => {
                   <DataTable
                     columns={[...columns, actionColumn]}
                     data={filteredDataTable}
-                    onRowDoubleClicked={handleEditAds}
                     pagination
                     paginationComponentOptions={paginationOptions}
-                    clearSelectedRows={clearSelectionToggle}
-                    paginationPerPage={20}
-                    paginationRowsPerPageOptions={[20, 50]}
                     selectableRows
+                    paginationRowsPerPageOptions={[20, 50]}
+                    clearSelectedRows={clearSelectionToggle}
+                    selectableRowsHighlight
                     onSelectedRowsChange={handleRowSelected}
                     noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive
                     persistTableHead={true}
-                    defaultSortAsc={false}
-                    defaultSortFieldId="nomeArquivo"
+                    defaultSortAsc={true}
+                    defaultSortFieldId="dataInicio"
+                    paginationIconFirstPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(1)}
+                      >
+                        <i className="bi bi-chevron-double-left" />
+                      </span>
+                    }
+                    paginationIconLastPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(totalPages)}
+                      >
+                        <i className="bi bi-chevron-double-right" />
+                      </span>
+                    }
+                    progressPending={loading}
+                    onChangePage={handlePageChange}
+                    onChangeRowsPerPage={handleRowsPerPageChange}
+                    paginationServer
+                    paginationTotalRows={totalRows}
+                    paginationDefaultPage={currentPage}
+                    paginationPerPage={perPage}
                   />
                 )}
               </div>
@@ -723,26 +930,31 @@ export const NledAds = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className="treeview-container">
-            <TreeViewDataNled onSelectDevices={handleSelectFromTreeView} />
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
+            <TreeViewNaccessVisitorsData
+              onSelectEmployees={handleSelectFromTreeView}
+            />
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">
-              <span>Publicidade</span>
+              <span>Visitantes</span>
             </div>
-            <div className="datatable-header">
+            <div className="datatable-header" style={{ marginBottom: 0 }}>
               <div>
                 <SearchBoxContainer
                   onSearch={(value) => setFilterText(value)}
                 />
               </div>
-              <div className="buttons-container-others">
+              <div className="buttons-container">
                 <OverlayTrigger
                   placement="top"
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -758,7 +970,8 @@ export const NledAds = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-arrow-clockwise"
-                    onClick={refreshAds}
+                    onClick={refreshVisitor}
+                    iconSize="1.1em"
                   />
                 </OverlayTrigger>
                 <OverlayTrigger
@@ -766,7 +979,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -791,7 +1003,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -807,7 +1018,35 @@ export const NledAds = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-eye"
-                    onClick={() => setOpenColumnSelector(true)}
+                    onClick={() => setShowColumnSelector(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Apagar Selecionados
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-trash-fill"
+                    onClick={handleSelectedVisitorToDelete}
+                    iconSize="1.1em"
                   />
                 </OverlayTrigger>
                 <ExportButton
@@ -830,32 +1069,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
-                    modifiers: [
-                      {
-                        name: "preventOverflow",
-                        options: {
-                          boundary: "window",
-                        },
-                      },
-                    ],
-                  }}
-                  overlay={
-                    <Tooltip className="custom-tooltip">Ads Hoje</Tooltip>
-                  }
-                >
-                  <CustomOutlineButton
-                    icon="bi bi-calendar-event"
-                    onClick={fetchAdsToday}
-                    iconSize="1.1em"
-                  />
-                </OverlayTrigger>
-                <OverlayTrigger
-                  placement="top"
-                  delay={0}
-                  container={document.body}
-                  popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -867,13 +1080,39 @@ export const NledAds = () => {
                   }}
                   overlay={
                     <Tooltip className="custom-tooltip">
-                      Ads Dia Anterior
+                      Movimentos Hoje
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-calendar-event"
+                    onClick={fetchVisitorsToday}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Movimentos Dia Anterior
                     </Tooltip>
                   }
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-left-circle"
-                    onClick={fetchAdsForPreviousDay}
+                    onClick={fetchVisitorsForPreviousDay}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -882,7 +1121,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -894,13 +1132,13 @@ export const NledAds = () => {
                   }}
                   overlay={
                     <Tooltip className="custom-tooltip">
-                      Ads Dia Seguinte
+                      Movimentos Dia Seguinte
                     </Tooltip>
                   }
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-right-circle"
-                    onClick={fetchAdsForNextDay}
+                    onClick={fetchVisitorsForNextDay}
                     iconSize="1.1em"
                     disabled={
                       new Date(endDate) >=
@@ -928,7 +1166,6 @@ export const NledAds = () => {
                   delay={0}
                   container={document.body}
                   popperConfig={{
-                    strategy: "fixed",
                     modifiers: [
                       {
                         name: "preventOverflow",
@@ -942,7 +1179,7 @@ export const NledAds = () => {
                 >
                   <CustomOutlineButton
                     icon="bi-search"
-                    onClick={() => fetchAds(startDate, endDate)}
+                    onClick={fetchVisitorsBetweenDates}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -965,21 +1202,43 @@ export const NledAds = () => {
                   <DataTable
                     columns={[...columns, actionColumn]}
                     data={filteredDataTable}
-                    onRowDoubleClicked={handleEditAds}
                     pagination
                     paginationComponentOptions={paginationOptions}
-                    clearSelectedRows={clearSelectionToggle}
-                    paginationPerPage={20}
-                    paginationRowsPerPageOptions={[20, 50]}
                     selectableRows
+                    paginationRowsPerPageOptions={[20, 50]}
+                    clearSelectedRows={clearSelectionToggle}
+                    selectableRowsHighlight
                     onSelectedRowsChange={handleRowSelected}
                     noDataComponent="Não existem dados disponíveis para mostrar."
                     customStyles={customStyles}
                     striped
                     responsive
                     persistTableHead={true}
-                    defaultSortAsc={false}
-                    defaultSortFieldId="nomeArquivo"
+                    defaultSortAsc={true}
+                    defaultSortFieldId="dataInicio"
+                    paginationIconFirstPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(1)}
+                      >
+                        <i className="bi bi-chevron-double-left" />
+                      </span>
+                    }
+                    paginationIconLastPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(totalPages)}
+                      >
+                        <i className="bi bi-chevron-double-right" />
+                      </span>
+                    }
+                    progressPending={loading}
+                    onChangePage={handlePageChange}
+                    onChangeRowsPerPage={handleRowsPerPageChange}
+                    paginationServer
+                    paginationTotalRows={totalRows}
+                    paginationDefaultPage={currentPage}
+                    paginationPerPage={perPage}
                   />
                 )}
               </div>
@@ -987,49 +1246,31 @@ export const NledAds = () => {
           </div>
         </Split>
       </div>
-      {openColumnSelector && (
+      {showColumnSelector && (
         <ColumnSelectorModal
-          columns={adsFields}
+          columns={employeeVisitorFields}
           selectedColumns={selectedColumns}
-          onClose={() => setOpenColumnSelector(false)}
-          onColumnToggle={toggleColumn}
-          onResetColumns={resetColumns}
-          onSelectAllColumns={onSelectAllColumns}
+          onClose={() => setShowColumnSelector(false)}
+          onColumnToggle={handleColumnToggle}
+          onResetColumns={handleResetColumns}
+          onSelectAllColumns={handleSelectAllColumns}
         />
       )}
-      <CreateModalAds
-        title="Publicidades"
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSave={addAds}
-        fields={adsFields}
-        initialValues={initialData || {}}
-        entities="all"
-      />
-      {selectedAds && (
-        <UpdateModalAds
-          open={showUpdateModal}
-          onClose={handleCloseUpdateModal}
-          onUpdate={(entity) => updateAds(selectedAds, entity as FormData)}
-          entity={selectedAds}
-          fields={adsFields}
-          onDuplicate={handleDuplicate}
-          title="Publicidades"
-          entities="all"
-          onPrev={handleNextAds}
-          onNext={handlePrevAds}
-          canMoveNext={currentAdsIndex > 0}
-          canMovePrev={currentAdsIndex < ads.length - 1}
+      {selectedEmployee && (
+        <UpdateModalEmployees
+          open={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={updateEmployeeAndCard}
+          entity={selectedEmployee}
+          fields={employeeFields}
+          title="Atualizar Funcionário"
         />
       )}
       <DeleteModal
         open={showDeleteModal}
-        onClose={() => {
-          setShowDeleteModal(false);
-          setClearSelectionToggle((prev) => !prev);
-        }}
-        onDelete={handleDeleteAds}
-        entityId={selectedAdsForDelete}
+        onClose={() => setShowDeleteModal(false)}
+        onDelete={startDeletionProcess}
+        entityId={selectedVisitorForDelete}
       />
     </div>
   );

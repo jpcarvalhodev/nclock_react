@@ -65,7 +65,7 @@ export function TreeViewDataNkioskMove({
   onSelectDevices,
 }: TreeViewDataNkioskProps) {
   const { devices, fetchAllDevices } = useTerminals();
-  const { employees } = usePersons();
+  const { employeesNoPagination } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -84,7 +84,7 @@ export function TreeViewDataNkioskMove({
         children: [],
       }));
 
-    const buildUserTree = employees
+    const buildUserTree = employeesNoPagination
       .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
       .map((employee) => ({
         id: employee.employeeID || "Sem ID",
@@ -111,7 +111,7 @@ export function TreeViewDataNkioskMove({
       },
     ];
     return treeItems;
-  }, [devices, employees]);
+  }, [devices, employeesNoPagination]);
 
   // Atualiza os itens da árvore
   useEffect(() => {

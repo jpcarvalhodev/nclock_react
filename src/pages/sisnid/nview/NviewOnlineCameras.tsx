@@ -203,6 +203,9 @@ export const NviewOnlineCameras = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(cameras)) {
+      return [];
+    }
     return cameras.filter(
       (getCoin) =>
         Object.keys(filters).every(

@@ -27,7 +27,6 @@ import { Dashboard } from './pages/Dashboard';
 import { AccessControls } from './pages/devices/AccessControls';
 import { TerminalCloseOpen } from './pages/devices/TerminalCloseOpen';
 import { Terminals } from './pages/devices/Terminals';
-import { TerminalsMB } from './pages/devices/TerminalsMB';
 import { TimePeriods } from './pages/devices/TimePeriods';
 import { TimePlans } from './pages/devices/TimePlans';
 import { NotFound } from './pages/errors/NotFound';
@@ -244,6 +243,7 @@ import { NviewAlerts } from './pages/sisnid/nview/NviewAlerts';
 import { NledAlerts } from './pages/nidtec/nled/NledAlerts';
 import { NclockAccess } from './pages/sisnid/nclock/NclockAccess';
 import { NclockAccessPresence } from './pages/sisnid/nclock/NclockAccessPresence';
+import { NaccessVisitor } from './pages/sisnid/naccess/NaccessVisitor';
 
 // Define a função de rotas com animação
 function AnimatedRoutes() {
@@ -277,7 +277,6 @@ function AnimatedRoutes() {
           <Route path="/persons/types" element={<PageProtection><Types /></PageProtection>} />
 
           <Route path="/devices/terminals" element={<PageProtection><Terminals /></PageProtection>} />
-          <Route path="/devices/terminalsmb" element={<PageProtection><TerminalsMB /></PageProtection>} />
           <Route path="/devices/terminalcloseopen" element={<PageProtection><TerminalCloseOpen /></PageProtection>} />
           <Route path="/devices/accesscontrols" element={<PageProtection><AccessControls /></PageProtection>} />
           <Route path="/devices/timeperiods" element={<PageProtection><TimePeriods /></PageProtection>} />
@@ -306,6 +305,7 @@ function AnimatedRoutes() {
           <Route path="/naccess/naccesspresence" element={<PageProtection><NaccessPresence /></PageProtection>} />
           <Route path="/naccess/naccessdooropen" element={<PageProtection><NaccessDoorOpen /></PageProtection>} />
           <Route path="/naccess/naccessalerts" element={<PageProtection><NaccessAlerts /></PageProtection>} />
+          <Route path="/naccess/naccessvisitors" element={<PageProtection><NaccessVisitor /></PageProtection>} />
 
           <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
           <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />

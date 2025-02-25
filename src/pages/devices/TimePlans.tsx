@@ -195,6 +195,9 @@ export const TimePlans = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(timePlans)) {
+      return [];
+    }
     return timePlans
       .filter(
         (timePlan) =>

@@ -277,6 +277,9 @@ export const User = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(filteredEmployees)) {
+      return [];
+    }
     return filteredEmployees.filter(
       (employee) =>
         Object.keys(filters).every(

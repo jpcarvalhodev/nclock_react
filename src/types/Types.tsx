@@ -837,3 +837,45 @@ export type Activity = {
   createdDate: Date;
   endDate: Date;
 };
+
+export type EmployeeVisitor = {
+  [key: string]: any;
+  id: string;
+  idVisitante: string;
+  idPessoa: string;
+  idEntidadeExternas: string;
+  dataInicio: Date;
+  dataFim: Date;
+  dataSaida: Date;
+  estado: number;
+  idInserido: string;
+  obs: string;
+  idViatura: string;
+  reboque: string;
+  dataSaidaFecho: Date;
+  refDoc: string;
+  visitanteNome: string;
+  visitanteNif: string;
+  visitanteCartaoEU: string;
+  visitantePassaporte: string;
+  visitanteContacto: string;
+  empresaNome: string;
+  empresaNif: string;
+  idVisitanteMotivo: string;
+  visitanteMotivo: string;
+  idPai: string;
+  created_at: Date;
+  rem: boolean;
+  companions: EmployeeVisitorCompanion[];
+  companionEmployeeIds: string[];
+};
+
+export type EmployeeVisitorCompanion = {
+  [key: string]: any;
+  id: string;
+  employeeVisitanteId: string;
+  employeeVisitante: string;
+  employeeId: string;
+};
+
+export type AllDevices = Partial<Devices> & Partial<MBDevice>;

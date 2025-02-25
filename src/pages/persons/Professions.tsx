@@ -183,6 +183,9 @@ export const Professions = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(professions)) {
+      return [];
+    }
     return professions
       .filter(
         (profession) =>

@@ -158,6 +158,9 @@ export const TimePeriods = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(filteredPeriods)) {
+      return [];
+    }
     return filteredPeriods.filter(
       (getCoin) =>
         Object.keys(filters).every(

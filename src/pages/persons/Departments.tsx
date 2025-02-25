@@ -180,6 +180,9 @@ export const Departments = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(departments)) {
+      return [];
+    }
     return departments.filter(
       (department) =>
         Object.keys(filters).every(

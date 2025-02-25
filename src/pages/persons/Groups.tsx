@@ -199,6 +199,9 @@ export const Groups = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
+    if (!Array.isArray(groups)) {
+      return [];
+    }
     return groups.filter(
       (group) =>
         Object.keys(filters).every(

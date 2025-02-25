@@ -177,35 +177,36 @@ export const Entities = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    return Array.isArray(entities)
-      ? entities.filter(
-          (user) =>
-            Object.keys(filters).every(
-              (key) =>
-                filters[key] === "" ||
-                (user[key] != null &&
-                  String(user[key])
-                    .toLowerCase()
-                    .includes(filters[key].toLowerCase()))
-            ) &&
-            Object.entries(user).some(([key, value]) => {
-              if (selectedColumns.includes(key) && value != null) {
-                if (value instanceof Date) {
-                  return value
-                    .toLocaleString()
-                    .toLowerCase()
-                    .includes(filterText.toLowerCase());
-                } else {
-                  return value
-                    .toString()
-                    .toLowerCase()
-                    .includes(filterText.toLowerCase());
-                }
-              }
-              return false;
-            })
-        )
-      : [];
+    if (!Array.isArray(entities)) {
+      return [];
+    }
+    return entities.filter(
+      (user) =>
+        Object.keys(filters).every(
+          (key) =>
+            filters[key] === "" ||
+            (user[key] != null &&
+              String(user[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase()))
+        ) &&
+        Object.entries(user).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
+          }
+          return false;
+        })
+    );
   }, [entities, filters, filterText]);
 
   // Define as colunas excluídas

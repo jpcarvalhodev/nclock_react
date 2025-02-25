@@ -6,6 +6,7 @@ import {
   AccessControl,
   Accesses,
   Ads,
+  AllDevices,
   Auxiliaries,
   BackupDB,
   Cameras,
@@ -20,6 +21,7 @@ import {
   EmployeeCard,
   EmployeeFP,
   EmployeeFace,
+  EmployeeVisitor,
   ExternalEntity,
   ExternalEntityTypes,
   Group,
@@ -600,6 +602,167 @@ export const employeeImportCard = async (
   return response.json();
 };
 
+export const fetchAllEmployeeVisitors = async (
+  startDate?: string,
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
+) => {
+  const params: string[] = [];
+
+  if (startDate && endDate) {
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
+  }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `Employees/GetAllEmployeeVisitors`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
+  const response = await fetchWithAuth(url);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const fetchEmployeeVisitorById = async (id: string[]) => {
+  const response = await fetchWithAuth(`Employees/GetEmployeeVisitorById`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(id),
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const addEmployeeVisitor = async (employee: EmployeeVisitor) => {
+  const response = await fetchWithAuth(`Employees/CreateEmployeeVisitor`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(employee),
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    toast.error(errorData.error);
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const updateEmployeeVisitor = async (employee: EmployeeVisitor) => {
+  const response = await fetchWithAuth(`Employees/UpdateEmployeeVisitor`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(employee),
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const deleteEmployeeVisitor = async (employeeID: string[]) => {
+  const response = await fetchWithAuth(`Employees/DeleteEmployeeVisitor`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(employeeID),
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DO CONTEXTO DOS TERMINAIS/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const fetchAllDevices = async () => {
@@ -1003,7 +1166,7 @@ export const deleteAllUsersOnDevice = async (
   return response.json();
 };
 
-export const addDevice = async (device: Devices) => {
+export const addDevice = async (device: AllDevices) => {
   const response = await fetchWithAuth(`Zkteco/CreateDevice`, {
     method: "POST",
     headers: {
@@ -1030,7 +1193,7 @@ export const addDevice = async (device: Devices) => {
   return response.json();
 };
 
-export const updateDevice = async (device: Devices) => {
+export const updateDevice = async (device: AllDevices) => {
   const response = await fetchWithAuth(
     `Zkteco/UpdateDevice/${device.zktecoDeviceID}`,
     {
