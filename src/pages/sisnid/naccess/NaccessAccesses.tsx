@@ -26,6 +26,7 @@ import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { useKiosk } from "../../../context/KioskContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -50,6 +51,7 @@ export const NaccessAccesses = () => {
     fetchAllAccessesbyDevice,
     handleAddAccess,
   } = useAttendance();
+  const { fetchAllKioskTransactionByEnrollNumber } = useKiosk();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -247,8 +249,30 @@ export const NaccessAccesses = () => {
   };
 
   // Define a seleção de funcionários
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
+
+    const missingIds = selectedIds.filter(
+      (id) => !filteredAccess.some((emp) => emp.pin === id)
+    );
+
+    if (missingIds.length > 0) {
+      setLoading(true);
+      try {
+        const foundEmployees = await fetchAllKioskTransactionByEnrollNumber(missingIds);
+        setFilteredAccess((prev) => {
+          const existingIds = new Set(prev.map((emp) => emp.pin));
+          const uniqueEmployees = foundEmployees.filter(
+            (emp) => !existingIds.has(emp.pin)
+          );
+          return [...prev, ...uniqueEmployees];
+        });
+      } catch (error) {
+        console.error("Erro ao buscar funcionários por número:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   // Função para alternar a visibilidade das colunas

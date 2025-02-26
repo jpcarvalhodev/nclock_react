@@ -39,8 +39,8 @@ export const Login = () => {
   const { fetchAds } = useAds();
   const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
-  const { fetchAllAttendances, fetchAllAccessesByDeviceNoPagination, fetchAllAccessesbyDevice } = useAttendance();
-  const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones, fetchAllDisabledEmployees, fetchAllEmployeesNoPagination, fetchAllDisabledEmployeesNoPagination, fetchEmployeeVisitor } = usePersons();
+  const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice } = useAttendance();
+  const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones, fetchAllDisabledEmployees, fetchAllEmployeesNoPagination, fetchAllDisabledEmployeesNoPagination, fetchEmployeeVisitor, fetchVisitorsMotive } = usePersons();
   const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans, fetchCameras, fetchEventsDevice, fetchEventsAndTransactionDevice, fetchDeviceActivities } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks } = useKiosk();
   const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
@@ -202,6 +202,7 @@ export const Login = () => {
             fetchAllEmployeesNoPagination(),
             fetchAllDisabledEmployeesNoPagination(),
             fetchEmployeeVisitor(),
+            fetchVisitorsMotive(),
             fetchAllDepartments(),
             fetchAllGroups(),
             fetchAllRegisteredUsers(),
@@ -215,7 +216,7 @@ export const Login = () => {
             fetchAllLoginLogs(),
             fetchAllHistoryLogs(),
             fetchAllAttendances(),
-            fetchAllAccessesByDeviceNoPagination(),
+            fetchAllInitialAccessesbyDevice(),
             fetchAllAccessesbyDevice(),
             fetchAllMBDevices(),
             fetchAccessControl(),

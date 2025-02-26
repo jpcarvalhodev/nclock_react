@@ -884,12 +884,6 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                         required: true,
                       },
                       { key: "modelo", label: "Modelo", type: "string" },
-                      {
-                        key: "timeReboot",
-                        label: "Tempo de Reinício",
-                        type: "string",
-                        required: false
-                      },
                     ].map((field) => (
                       <Col md={3} key={field.key}>
                         <Form.Group controlId={`form${field.key}`}>

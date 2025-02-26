@@ -4011,18 +4011,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                           </Link>
                         </div>
                         <div>
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/naccess/naccessmotive" type="button"
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/naccess/naccessmotive" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={motives} alt="botão motivos" />
                             </span>
                             <span className="text">Motivos</span>
-                          </Button>
+                          </Link>
                         </div>
                       </div>
                     )}

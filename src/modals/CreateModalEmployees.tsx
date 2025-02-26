@@ -905,15 +905,15 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
               <Form style={{ marginTop: 10, marginBottom: 10 }}>
                 <Row>
                   {[
-                    { key: "bInumber", label: "Número de BI", type: "string" },
+                    { key: "bInumber", label: "Cartão EU", type: "string" },
                     {
                       key: "bIissuance",
-                      label: "Emissão de BI",
+                      label: "Emissão do Cartão",
                       type: "datetime-local",
                     },
                     {
                       key: "biValidity",
-                      label: "Validade de BI",
+                      label: "Validade do Cartão",
                       type: "datetime-local",
                     },
                     {

@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import * as apiService from '../api/apiService';
 import { LoadingModal } from '../modals/LoadingModal';
 import { BackupDB, Entity, Logs } from '../types/Types';
+import { set } from 'date-fns';
 
 // Função para baixar o arquivo usando um URL fornecido
 const downloadFile = async (url: string) => {
@@ -33,6 +34,8 @@ export interface EntityContextType {
     exportBackupDB: (backup: BackupDB) => void;
     importBackupDB: (backup: FormData) => void;
     importEmployees: (employees: FormData) => void;
+    totalLoginPages: number;
+    totalHistoryPages: number;
 }
 
 // Cria o contexto
@@ -46,6 +49,8 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const [loadingExportBackup, setLoadingExportBackup] = useState(false);
     const [loadingImportBackup, setLoadingImportBackup] = useState(false);
     const [loadingImportEmployees, setLoadingImportEmployees] = useState(false);
+    const [totalLoginPages, setTotalLoginPages] = useState(1);
+    const [totalHistoryPages, setTotalHistoryPages] = useState(1);
 
     // Função para buscar todas as entidades
     const fetchAllEntity = async (): Promise<Entity[]> => {
@@ -99,28 +104,22 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar os logs de login
-    const fetchAllLoginLogs = async () => {
+    const fetchAllLoginLogs = async (pageNo?: "1", pageSize?: "20") => {
         try {
-            const data = await apiService.fetchAllLoginLogs();
-            if (Array.isArray(data)) {
-                setLoginLogs(data);
-            } else {
-                setLoginLogs([]);
-            }
+            const data = await apiService.fetchAllLoginLogs(undefined, undefined, pageNo, pageSize);
+            setLoginLogs(data.data);
+            setTotalLoginPages(data.totalPages);
         } catch (error) {
             console.error('Erro ao buscar os dados de logs:', error);
         }
     };
 
     // Função para buscar os logs de histórico
-    const fetchAllHistoryLogs = async () => {
+    const fetchAllHistoryLogs = async (pageNo?: "1", pageSize?: "20") => {
         try {
-            const data = await apiService.fetchAllHistoryLogs();
-            if (Array.isArray(data)) {
-                setHistoryLogs(data);
-            } else {
-                setHistoryLogs([]);
-            }
+            const data = await apiService.fetchAllHistoryLogs(undefined, undefined, pageNo, pageSize);
+            setHistoryLogs(data.data);
+            setTotalHistoryPages(data.totalPages);
         } catch (error) {
             console.error('Erro ao buscar os dados de logs:', error);
         }
@@ -181,7 +180,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <EntityContext.Provider value={{ entities, setEntities, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees }}>
+        <EntityContext.Provider value={{ entities, setEntities, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees, totalHistoryPages, totalLoginPages }}>
             {children}
             <LoadingModal
                 show={loadingExportBackup || loadingImportBackup || loadingImportEmployees}

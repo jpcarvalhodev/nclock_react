@@ -257,7 +257,7 @@ export const Terminals = () => {
   const [bioLoading, setBioLoading] = useState(false);
   const [cardLoading, setCardLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(20);
+  const [perPage, setPerPage] = useState(5);
   const [loadingTurnOffDevice, setLoadingTurnOffDevice] = useState(false);
   const [showDeleteMBModal, setShowDeleteMBModal] = useState(false);
 
@@ -299,7 +299,7 @@ export const Terminals = () => {
 
       try {
         setLoadingActivityData(true);
-        const fetchedActivity = await fetchDeviceActivities();
+        const fetchedActivity = await fetchDeviceActivities(selectedTerminal.serialNumber, undefined, undefined, String(currentPage), String(perPage));
         setTransactions(fetchedActivity);
         setLoadingActivityData(false);
       } catch (error) {
@@ -320,7 +320,7 @@ export const Terminals = () => {
     return () => {
       if (intervalTasks) clearInterval(intervalTasks);
     };
-  }, [selectedTerminal, refreshIntervalTasks]);
+  }, [selectedTerminal, refreshIntervalTasks, perPage, currentPage]);
 
   // Função para buscar todos os movimentos de dispositivos via websocket
   useEffect(() => {

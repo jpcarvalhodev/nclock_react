@@ -109,11 +109,6 @@ export const Persons = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Busca os funcionários
-  useEffect(() => {
-    fetchAllDisabledEmployees();
-  }, []);
-
   // Busca os funcionários paginados ao mudar a página
   useEffect(() => {
     fetchPaginationPersons(currentPage.toString(), perPage.toString());

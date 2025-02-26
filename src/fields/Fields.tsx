@@ -18,9 +18,9 @@ export const employeeFields = [
   { label: "Data de Nascimento", key: "birthday", type: "datetime-local" },
   { label: "Nacionalidade", key: "nationality", type: "string" },
   { label: "Gênero", key: "gender", type: "boolean" },
-  { label: "Nº de BI", key: "bInumber", type: "string" },
-  { label: "Emissão de BI", key: "bIissuance", type: "datetime-local" },
-  { label: "Validade de BI", key: "biValidity", type: "datetime-local" },
+  { label: "Cartão EU", key: "bInumber", type: "string" },
+  { label: "Emissão do Cartão", key: "bIissuance", type: "datetime-local" },
+  { label: "Validade do Cartão", key: "biValidity", type: "datetime-local" },
   { label: "NIF", key: "nif", type: "number" },
   { label: "Data de Admissão", key: "admissionDate", type: "datetime-local" },
   { label: "Data de Saída", key: "exitDate", type: "datetime-local" },
@@ -558,7 +558,6 @@ export const mbDeviceFields = [
   { key: "nomeQuiosque", label: "Nome", type: "string", required: true },
   { key: "modelo", label: "Modelo", type: "string" },
   { key: "estadoTerminal", label: "Estado do Terminal", type: "number" },
-  { key: "timeReboot", label: "Tempo de Reinício", type: "string" },
 ];
 
 export const mbDeviceStatusFields = [
@@ -862,7 +861,7 @@ export const activityFields = [
 
 export const employeeVisitorFields = [
   { key: "dataInicio", label: "Data de Início", type: "date" },
-  { key: "dataFim", label: "Data do Fim", type: "date" },
+  { key: "dataFim", label: "Data de Fim", type: "date" },
   { key: "dataSaida", label: "Data de Saída", type: "date" },
   { key: "idVisitante", label: "Visitante", type: "string" },
   { key: "idPessoa", label: "Visitado", type: "string" },
@@ -880,5 +879,8 @@ export const employeeVisitorFields = [
   { key: "empresaNome", label: "Nome Empresa", type: "string" },
   { key: "empresaNif", label: "NIF Empresa", type: "string" },
   { key: "visitanteMotivo", label: "Motivo da Visita", type: "string" },
-  { key: "created_at", label: "Data de Criação", type: "date" },
+];
+
+export const employeeVisitorMotiveFields = [
+  { key: "descricao", label: "Descrição", type: "string" },
 ];

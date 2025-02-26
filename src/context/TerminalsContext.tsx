@@ -64,7 +64,7 @@ export interface DeviceContextType {
     handleUpdateReaders: (reader: Readers) => Promise<void>;
     fetchEventsDevice: (startDate?: string, endDate?: string) => Promise<Events[]>;
     fetchEventsAndTransactionDevice: (startDate?: string, endDate?: string) => Promise<Movements[]>;
-    fetchDeviceActivities: (startDate?: string, endDate?: string) => Promise<Activity[]>;
+    fetchDeviceActivities: (sn?: string, startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Activity[]>;
     refreshIntervalTasks: number;
     setRefreshIntervalTasks: (interval: number) => void;
     totalMovementPages: number;
@@ -639,9 +639,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todas as atividades do dispositivo
-    const fetchDeviceActivities = async (startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Activity[]> => {
+    const fetchDeviceActivities = async (sn?: string, startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Activity[]> => {
         try {
-            const data = await apiService.fetchAllDeviceActivities(startDate, endDate, pageNo, pageSize);
+            const data = await apiService.fetchAllDeviceActivities(sn, startDate, endDate, pageNo, pageSize);
             setTotalMovementPages(data.totalPages);
             setTotalMovementRows(data.totalRows);
             return data.data;

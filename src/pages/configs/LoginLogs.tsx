@@ -34,7 +34,7 @@ export const LoginLogs = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { loginLogs, setLoginLogs, fetchAllLoginLogs } = useEntity();
+  const { loginLogs, setLoginLogs, fetchAllLoginLogs, totalLoginPages } = useEntity();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -52,7 +52,26 @@ export const LoginLogs = () => {
   const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
+  const [totalRows, setTotalRows] = useState(0);
+
+  // Função para buscar os dados da paginação
+    const fetchPaginationLogin = async (pageNo: string, perPage: string) => {
+      try {
+        const data = await apiService.fetchAllLoginLogs(
+          undefined,
+          undefined,
+          pageNo,
+          perPage
+        );
+        setLoginLogs(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar logins paginados:", error);
+        setLoginLogs([]);
+      }
+    };
 
   // Função para buscar os logs entre datas
   const fetchLogsBetweenDates = async () => {
@@ -135,6 +154,11 @@ export const LoginLogs = () => {
     }
   };
 
+  // Busca os funcionários paginados ao mudar a página
+  useEffect(() => {
+    fetchPaginationLogin(currentPage.toString(), perPage.toString());
+  }, [currentPage, perPage]);
+
   // Função para atualizar os logs
   const refreshLogs = () => {
     fetchAllLoginLogs();
@@ -154,6 +178,17 @@ export const LoginLogs = () => {
       setFilteredDevices(loginLogs);
     }
   }, [selectedDevicesIds, loginLogs]);
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
+  };
 
   // Função para selecionar as colunas
   const toggleColumn = (columnName: string) => {
@@ -516,11 +551,7 @@ export const LoginLogs = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -532,6 +563,29 @@ export const LoginLogs = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="createdDate"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalLoginPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>
@@ -769,11 +823,7 @@ export const LoginLogs = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -785,6 +835,29 @@ export const LoginLogs = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="createdDate"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalLoginPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>

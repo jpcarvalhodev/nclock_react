@@ -22,6 +22,7 @@ import {
   EmployeeFP,
   EmployeeFace,
   EmployeeVisitor,
+  EmployeeVisitorMotive,
   ExternalEntity,
   ExternalEntityTypes,
   Group,
@@ -678,7 +679,7 @@ export const fetchEmployeeVisitorById = async (id: string[]) => {
   return response.json();
 };
 
-export const addEmployeeVisitor = async (employee: EmployeeVisitor) => {
+export const addEmployeeVisitor = async (employee: Partial<EmployeeVisitor>) => {
   const response = await fetchWithAuth(`Employees/CreateEmployeeVisitor`, {
     method: "POST",
     headers: {
@@ -703,7 +704,7 @@ export const addEmployeeVisitor = async (employee: EmployeeVisitor) => {
   return response.json();
 };
 
-export const updateEmployeeVisitor = async (employee: EmployeeVisitor) => {
+export const updateEmployeeVisitor = async (employee: Partial<EmployeeVisitor>) => {
   const response = await fetchWithAuth(`Employees/UpdateEmployeeVisitor`, {
     method: "PUT",
     headers: {
@@ -735,6 +736,115 @@ export const updateEmployeeVisitor = async (employee: EmployeeVisitor) => {
 
 export const deleteEmployeeVisitor = async (employeeID: string[]) => {
   const response = await fetchWithAuth(`Employees/DeleteEmployeeVisitor`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(employeeID),
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const fetchEmployeeVisitorMotive = async () => {
+  const response = await fetchWithAuth(`Employees/GetAllVisitanteMotivo`);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const addEmployeeVisitorMotive = async (employee: Partial<EmployeeVisitorMotive>) => {
+  const response = await fetchWithAuth(`Employees/CreateVisitantesMotivo`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(employee),
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    toast.error(errorData.error);
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const updateEmployeeVisitorMotive = async (employee: Partial<EmployeeVisitorMotive>) => {
+  const response = await fetchWithAuth(`Employees/UpdateVisitanteMotivo`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(employee),
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const deleteEmployeeVisitorMotive = async (employeeID: string[]) => {
+  const response = await fetchWithAuth(`Employees/DeleteVisitanteMotivo`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -1496,12 +1606,17 @@ export const fetchAllEventAndTransactionDevice = async (
 };
 
 export const fetchAllDeviceActivities = async (
+  sn?: string,
   startDate?: string,
   endDate?: string,
   pageNo?: string,
   pageSize?: string
 ) => {
   const params: string[] = [];
+
+  if (sn) {
+    params.push(`ids=${sn}`);
+  }
 
   if (startDate && endDate) {
     params.push(`startTime=${startDate}`);
@@ -3055,6 +3170,62 @@ export const addKioskTransaction = async (
   return response.json();
 };
 
+export const fetchAllKioskTransactionByEnrollNumber = async (
+  enrollmentNumbers: string[],
+  eventDoorIds?: string,
+  deviceSN?: string,
+  startDate?: string,
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
+) => {
+  const params: string[] = [];
+
+  if (eventDoorIds) {
+    params.push(`eventDoorIds=${eventDoorIds}`);
+  }
+
+  if (enrollmentNumbers) {
+    params.push(`enrollmentNumbers=${enrollmentNumbers}`);
+  }
+
+  if (deviceSN) {
+    params.push(`deviceSNs=${deviceSN}`);
+  }
+
+  if (startDate && endDate) {
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
+  }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `KioskTransaction/GetKioskTransactionByEnrollmentNumbers`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
+  const response = await fetchWithAuth(url);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    toast.error(errorData.message);
+    throw new Error();
+  }
+  return response.json();
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE CRIAÇÃO DE CONTAS, ENTIDADES E EMAILS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const fetchAllRegisteredUsers = async () => {
@@ -4534,12 +4705,27 @@ export const fetchAllAlerts = async (startDate?: string, endDate?: string) => {
 
 export const fetchAllHistoryLogs = async (
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
 ) => {
-  let url = `Configuration/GetHistoryUsers`;
+  const params: string[] = [];
+
   if (startDate && endDate) {
-    url += `?startDate=${startDate}&endDate=${endDate}`;
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
   }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `Configuration/GetHistoryUsers`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -4565,12 +4751,27 @@ export const fetchAllHistoryLogs = async (
 
 export const fetchAllLoginLogs = async (
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
 ) => {
-  let url = `Configuration/GetAuthTasks`;
+  const params: string[] = [];
+
   if (startDate && endDate) {
-    url += `?startDate=${startDate}&endDate=${endDate}`;
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
   }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `Configuration/GetAuthTasks`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -5056,45 +5257,6 @@ export const importEmployees = async (employees: FormData) => {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE ACESSOS/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const fetchAllAccessesByDeviceNoPagination = async (
-  deviceSN?: string,
-  startDate?: string,
-  endDate?: string
-) => {
-  const params: string[] = [];
-
-  if (deviceSN) {
-    params.push(`deviceSNList=${deviceSN}`);
-  }
-
-  if (startDate && endDate) {
-    params.push(`startTime=${startDate}`);
-    params.push(`endTime=${endDate}`);
-  }
-
-  let url = `AccPlanoAcesso/GetTransactionsByDeviceSN`;
-  if (params.length > 0) {
-    url += `?${params.join("&")}`;
-  }
-
-  const response = await fetchWithAuth(url);
-  if (response.status === 403) {
-    if (!hasShown403) {
-      toast.error(
-        "Você não tem permissão para visualizar o conteúdo desta página"
-      );
-      hasShown403 = true;
-      throw new Error();
-    }
-  }
-  if (!response.ok) {
-    const errorData = await response.json();
-    toast.error(errorData.message);
-    throw new Error();
-  }
-  return response.json();
-};
-
 export const fetchAllAccessesByDevice = async (
   deviceSN?: string,
   startDate?: string,
@@ -5118,7 +5280,7 @@ export const fetchAllAccessesByDevice = async (
     params.push(`pageSize=${pageSize}`);
   }
 
-  let url = `AccPlanoAcesso/GetTransactionsByDeviceSNPagination`;
+  let url = `AccPlanoAcesso/GetTransactionsByDeviceSN`;
   if (params.length > 0) {
     url += `?${params.join("&")}`;
   }

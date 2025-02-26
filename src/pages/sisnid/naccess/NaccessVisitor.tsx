@@ -23,6 +23,7 @@ import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
 import { TreeViewNaccessVisitorsData } from "../../../components/TreeViewNaccessVisitors";
 import { DeleteModal } from "../../../modals/DeleteModal";
+import { CreateModalVisitor } from "../../../modals/CreateModalVisitor";
 
 // Define a interface para os filtros
 interface Filters {
@@ -46,6 +47,7 @@ export const NaccessVisitor = () => {
     employeeVisitor,
     totalPages,
     fetchEmployeeVisitor,
+    fetchEmployeeVisitorsById,
     handleAddEmployeeVisitor,
     handleUpdateEmployeeVisitor,
     handleDeleteEmployeeVisitor,
@@ -192,14 +194,14 @@ export const NaccessVisitor = () => {
   };
 
   // Função para adicionar um visitante
-  const addVisitor = async (visitor: EmployeeVisitor) => {
+  const addVisitor = async (visitor: Partial<EmployeeVisitor>) => {
     await handleAddEmployeeVisitor(visitor);
     refreshVisitor();
     setClearSelectionToggle((prev) => !prev);
   };
 
   // Função para atualizar um visitante
-  const updateVisitor = async (visitor: EmployeeVisitor) => {
+  const updateVisitor = async (visitor: Partial<EmployeeVisitor>) => {
     await handleUpdateEmployeeVisitor(visitor);
     refreshVisitor();
     setClearSelectionToggle((prev) => !prev);
@@ -255,8 +257,30 @@ export const NaccessVisitor = () => {
   };
 
   // Define a seleção de funcionários
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
+
+    const missingIds = selectedIds.filter(
+      (id) => !employeeVisitor.some((emp) => emp.employeeID === id)
+    );
+
+    if (missingIds.length > 0) {
+      setLoading(true);
+      try {
+        const foundEmployees = await fetchEmployeeVisitorsById(missingIds);
+        setFilteredEmployees((prev) => {
+          const existingIds = new Set(prev.map((emp) => emp.employeeID));
+          const uniqueEmployees = foundEmployees.filter(
+            (emp) => !existingIds.has(emp.employeeID)
+          );
+          return [...prev, ...uniqueEmployees];
+        });
+      } catch (error) {
+        console.error("Erro ao buscar visitantes por ID:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   // Função para alternar a visibilidade das colunas
@@ -362,16 +386,16 @@ export const NaccessVisitor = () => {
   };
 
   // Função para editar um visitante
-  const handleEditCategory = (visitor: EmployeeVisitor) => {
+  const handleEditVisitor = (visitor: EmployeeVisitor) => {
     setSelectedEmployeeVisitor(visitor);
     const sortedVisitors = employeeVisitor.sort(
       (a, b) =>
         new Date(a.dataInicio).getTime() - new Date(b.dataInicio).getTime()
     );
-    const categoryIndex = sortedVisitors.findIndex(
+    const visitorIndex = sortedVisitors.findIndex(
       (emp) => emp.id === visitor.id
     );
-    setCurrentVisitorIndex(categoryIndex);
+    setCurrentVisitorIndex(visitorIndex);
     setShowUpdateModal(true);
   };
 
@@ -556,7 +580,7 @@ export const NaccessVisitor = () => {
           <CustomOutlineButton
             className="action-button"
             icon="bi bi-pencil-fill"
-            onClick={() => handleEditCategory(row)}
+            onClick={() => handleEditVisitor(row)}
           />
         </OverlayTrigger>
         <OverlayTrigger
@@ -1256,6 +1280,14 @@ export const NaccessVisitor = () => {
           onSelectAllColumns={handleSelectAllColumns}
         />
       )}
+      <CreateModalVisitor 
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={addVisitor}
+        fields={employeeVisitorFields}
+        title="Adicionar Visitante"
+        initialValues={initialData || {}}
+      />
       {selectedEmployee && (
         <UpdateModalEmployees
           open={showEditModal}

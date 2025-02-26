@@ -505,7 +505,6 @@ export type MBDevice = {
   nomeQuiosque: string;
   modelo: string;
   estadoTerminal: number;
-  timeReboot: string;
 };
 
 export type MBDeviceStatus = {
@@ -879,3 +878,11 @@ export type EmployeeVisitorCompanion = {
 };
 
 export type AllDevices = Partial<Devices> & Partial<MBDevice>;
+
+export type EmployeeVisitorMotive = {
+  [key: string]: any;
+  id: string;
+  descricao: string;
+  created_at: Date;
+  rem: boolean;
+};

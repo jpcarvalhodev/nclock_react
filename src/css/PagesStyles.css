@@ -641,7 +641,7 @@ body {
 }
 
 .custom-input-height {
-  height: 30px !important;
+  height: 28px !important;
 }
 
 .required-asterisk {
@@ -942,6 +942,12 @@ body {
 
 .accesscontrol-buttons {
   margin-right: 5px;
+}
+
+.card:hover {
+  transform: none;
+  box-shadow: none;
+  transition: none;
 }
 
 @media (max-width: 380px) {

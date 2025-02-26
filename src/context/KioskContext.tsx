@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { toast } from 'react-toastify';
 
 import * as apiService from '../api/apiService';
-import { Counter, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, MBDeviceStatus, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../types/Types';
+import { Accesses, Counter, KioskTransaction, KioskTransactionCard, KioskTransactionMB, LimpezasEOcorrencias, MBDeviceStatus, ManualOpenDoor, NewTransactionCard, RecolhaMoedeiroEContador } from '../types/Types';
 
 import { useTerminals } from './TerminalsContext';
 
@@ -55,6 +55,7 @@ export interface KioskContextType {
     alerts: MBDeviceStatus[];
     setAlerts: (alerts: MBDeviceStatus[]) => void;
     fetchAllTasks: () => void;
+    fetchAllKioskTransactionByEnrollNumber: (enrollmentNumbers: string[], eventDoorIds?: string, sn?: string, pageNo?: string, pageSize?: string) => Promise<Accesses[]>;
     unifyTotalPayments: () => void;
     unifyTotalMovements: () => void;
     fetchAndUnifyPaymentsForNavbar: () => void;
@@ -440,6 +441,17 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Função para buscar todos os dados por enrollNumber, deviceSN e eventDoorId
+      const fetchAllKioskTransactionByEnrollNumber = async (enrollmentNumbers: string[], eventDoorIds?: string, sn?: string, pageNo?: string, pageSize?: string): Promise<Accesses[]> => {
+        try {
+          const data = await apiService.fetchAllKioskTransactionByEnrollNumber(enrollmentNumbers, eventDoorIds, sn, pageNo, pageSize);
+          return data;
+        } catch (error) {
+          console.error("Erro ao buscar dados:", error);
+        }
+        return [];
+      };
+
     // Função para buscar os pagamentos e movimentos e unificar os dados para a navbar
     const fetchAndUnifyPaymentsForNavbar = async () => {
         await fetchAllPayTerminal();
@@ -537,7 +549,8 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         unifyTotalPayments,
         unifyTotalMovements,
         fetchAndUnifyPaymentsForNavbar,
-        fetchAndUnifyMovementsForNavbar
+        fetchAndUnifyMovementsForNavbar,
+        fetchAllKioskTransactionByEnrollNumber
     };
 
     return (

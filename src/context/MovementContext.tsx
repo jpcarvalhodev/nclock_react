@@ -28,8 +28,8 @@ export interface AttendanceContextType {
   fetchAllAttendancesBetweenDates: (
     options?: FetchOptions
   ) => Promise<EmployeeAttendanceTimes[]>;
-  fetchAllAccessesByDeviceNoPagination: () => Promise<Accesses[]>;
-  fetchAllAccessesbyDevice: (pageNo?: string, pageSize?: string) => Promise<Accesses[]>;
+  fetchAllInitialAccessesbyDevice: (pageNo?: "1", pageSize?: "20") => Promise<Accesses[]>;
+  fetchAllAccessesbyDevice: (sn?: string, pageNo?: string, pageSize?: string) => Promise<Accesses[]>;
   fetchAllAccessesbyDoor: (
     eventDoorId: number,
     deviceSN: string
@@ -124,24 +124,24 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     [startDate, endDate]
   );
 
-  // Função para buscar todos os acessos por dispositivo sem paginação
-  const fetchAllAccessesByDeviceNoPagination = async (): Promise<Accesses[]> => {
+  // Função para buscar todos os acessos por dispositivo
+  const fetchAllInitialAccessesbyDevice = async (pageNo?: "1", pageSize?: "20"): Promise<Accesses[]> => {
     try {
-      const data = await apiService.fetchAllAccessesByDeviceNoPagination();
-      setAccessForGraph(data);
-      return data;
+      const data = await apiService.fetchAllAccessesByDevice(pageNo, pageSize);
+      setAccess(data.data);
+      setTotalPages(data.totalPages);
+      return data.data;
     } catch (error) {
       console.error("Erro ao buscar acessos:", error);
     }
     return [];
   };
 
-  // Função para buscar todos os acessos por dispositivo com paginação
-  const fetchAllAccessesbyDevice = async (pageNo?: string, pageSize?: string): Promise<Accesses[]> => {
+  // Função para buscar todos os acessos por dispositivo
+  const fetchAllAccessesbyDevice = async (sn?: string, pageNo?: string, pageSize?: string): Promise<Accesses[]> => {
     try {
-      const data = await apiService.fetchAllAccessesByDevice(pageNo, pageSize);
-      setAccess(data.data);
-      setTotalPages(data.totalPages);
+      const data = await apiService.fetchAllAccessesByDevice(sn, pageNo, pageSize);
+      setAccessForGraph(data.data);
       return data.data;
     } catch (error) {
       console.error("Erro ao buscar acessos:", error);
@@ -254,7 +254,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchAllAttendances();
-      fetchAllAccessesByDeviceNoPagination();
       fetchAllAccessesbyDevice();
     }
   }, []);
@@ -272,7 +271,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     setEndDate,
     fetchAllAttendances,
     fetchAllAttendancesBetweenDates,
-    fetchAllAccessesByDeviceNoPagination,
+    fetchAllInitialAccessesbyDevice,
     fetchAllAccessesbyDevice,
     fetchAllAccessesbyDoor,
     handleAddAccess,
