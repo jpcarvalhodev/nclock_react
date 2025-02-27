@@ -207,6 +207,8 @@ export const Terminals = () => {
   const [selectedTerminal, setSelectedTerminal] = useState<AllDevices | null>(
     null
   );
+  const [selectedMBTerminal, setSelectedMBTerminal] =
+    useState<AllDevices | null>(null);
   const [selectedDevice, setSelectedDevice] = useState<AllDevices | null>(null);
   const [loadingUser, setLoadingUser] = useState(false);
   const [loadingAllUser, setLoadingAllUser] = useState(false);
@@ -299,7 +301,13 @@ export const Terminals = () => {
 
       try {
         setLoadingActivityData(true);
-        const fetchedActivity = await fetchDeviceActivities(selectedTerminal.serialNumber, undefined, undefined, String(currentPage), String(perPage));
+        const fetchedActivity = await fetchDeviceActivities(
+          selectedTerminal.serialNumber,
+          undefined,
+          undefined,
+          String(currentPage),
+          String(perPage)
+        );
         setTransactions(fetchedActivity);
         setLoadingActivityData(false);
       } catch (error) {
@@ -329,7 +337,7 @@ export const Terminals = () => {
     let socket: WebSocket;
 
     setLoadingMovementData(true);
-    socket = new WebSocket(`${process.env.REACT_APP_WS_DOOR}`);
+    socket = new WebSocket(`${process.env.REACT_APP_WS_DOOR}/activities`);
 
     socket.onopen = () => {
       console.log("Conexão WebSocket aberta.");
@@ -597,7 +605,12 @@ export const Terminals = () => {
       (a, b) => a.deviceNumber - b.deviceNumber
     );
     setSelectedDeviceRows(sortedDevices);
-    setSelectedTerminal(state.selectedRows[0] || null);
+    const firstSelected = state.selectedRows[0];
+    if (firstSelected && firstSelected.deviceNumber !== undefined) {
+      setSelectedTerminal(firstSelected);
+    } else {
+      setSelectedMBTerminal(firstSelected);
+    }
   };
 
   // Define a função de seleção de linhas de utilizadores
@@ -1092,33 +1105,84 @@ export const Terminals = () => {
     return devices.filter((device) =>
       Object.keys(filters).every(
         (key) =>
-          filters[key] === "" || String(device[key]) === String(filters[key])
+          filters[key] === "" ||
+          String(device[key]).toLowerCase().includes(filters[key].toLowerCase())
       )
     );
-  }, [devices]);
+  }, [devices, filters]);
 
-  // Define as colunas de estado de dispositivos
-  const stateColumns: TableColumn<AllDevices>[] = deviceFields
+  // Cria a coluna mesclada para exibir deviceName ou nomeQuiosque
+  const mergedStateColumn: TableColumn<AllDevices> = {
+    id: "name",
+    name: (
+      <>
+        Nome
+        <SelectFilter
+          column="deviceName"
+          setFilters={setFilters}
+          data={filteredStateDataTable}
+        />
+      </>
+    ),
+    selector: (row) => row.deviceName || row.nomeQuiosque || "",
+    sortable: true,
+    cell: (row) => (
+      <OverlayTrigger
+        placement="top"
+        delay={0}
+        container={document.body}
+        popperConfig={{
+          strategy: "fixed",
+          modifiers: [
+            { name: "preventOverflow", options: { boundary: "window" } },
+          ],
+        }}
+        overlay={
+          <Tooltip className="custom-tooltip">
+            {row.deviceName || row.nomeQuiosque || ""}
+          </Tooltip>
+        }
+      >
+        <span
+          style={{
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {row.deviceName || row.nomeQuiosque || ""}
+        </span>
+      </OverlayTrigger>
+    ),
+  };
+
+  // Outras colunas de estado que você deseja exibir (exceto deviceName e nomeQuiosque)
+  const otherStateColumns: TableColumn<AllDevices>[] = allDeviceFields
     .filter(
-      (field) =>
-        excludedColumns.includes(field.key) || field.key === "deviceName"
+      (field) => field.key !== "deviceName" && field.key !== "nomeQuiosque"
     )
-    .map((field) => {
-      return {
-        name: (
-          <>
-            {field.label}
-            <SelectFilter
-              column={field.key}
-              setFilters={setFilters}
-              data={filteredStateDataTable}
-            />
-          </>
-        ),
-        selector: (row) => row[field.key],
-        sortable: true,
-      };
-    });
+    .filter((field) => excludedColumns.includes(field.key))
+    .map((field) => ({
+      name: (
+        <>
+          {field.label}
+          <SelectFilter
+            column={field.key}
+            setFilters={setFilters}
+            data={filteredStateDataTable}
+          />
+        </>
+      ),
+      selector: (row) => row[field.key],
+      sortable: true,
+    }));
+
+  // Combina a coluna mesclada com as demais
+  const stateColumns: TableColumn<AllDevices>[] = [
+    mergedStateColumn,
+    ...otherStateColumns,
+  ];
 
   // Formata as colunas especiais na tabela de utilizadores, biometria e cartões
   const formatUserStatus = (row: EmployeeAndCard) => {
@@ -1542,7 +1606,7 @@ export const Terminals = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditDevices(row)}
           />
         </OverlayTrigger>
@@ -1564,7 +1628,7 @@ export const Terminals = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row)}
           />
         </OverlayTrigger>
@@ -1941,14 +2005,14 @@ export const Terminals = () => {
 
   // Função para reiniciar o dispositivo
   const handleRestartDevice = async () => {
-    if (selectedTerminal?.zktecoDeviceID) {
+    if (selectedTerminal) {
       setLoadingRestartDevice(true);
       await restartDevice(selectedTerminal.zktecoDeviceID);
       setLoadingRestartDevice(false);
       setClearSelectionToggle((prev) => !prev);
-    } else if (selectedTerminal?.id) {
+    } else if (selectedMBTerminal) {
       setLoadingRestartDevice(true);
-      const tpId = selectedTerminal.id;
+      const tpId = selectedMBTerminal.id;
       const type = 1;
       const status = 0;
       const mbDevice = { tpId, type, status };

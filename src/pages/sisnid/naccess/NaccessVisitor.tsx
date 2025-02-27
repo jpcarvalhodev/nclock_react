@@ -24,6 +24,7 @@ import { useMediaQuery } from "react-responsive";
 import { TreeViewNaccessVisitorsData } from "../../../components/TreeViewNaccessVisitors";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { CreateModalVisitor } from "../../../modals/CreateModalVisitor";
+import { UpdateModalVisitor } from "../../../modals/UpdateModalVisitor";
 
 // Define a interface para os filtros
 interface Filters {
@@ -243,7 +244,7 @@ export const NaccessVisitor = () => {
     } else {
       setFilteredEmployees(employeeVisitor);
     }
-  }, [selectedEmployeeIds]);
+  }, [selectedEmployeeIds, employeeVisitor]);
 
   // Callback disparado ao mudar a página
   const handlePageChange = (page: number) => {
@@ -260,14 +261,10 @@ export const NaccessVisitor = () => {
   const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
 
-    const missingIds = selectedIds.filter(
-      (id) => !employeeVisitor.some((emp) => emp.employeeID === id)
-    );
-
-    if (missingIds.length > 0) {
+    if (selectedIds.length > 0) {
       setLoading(true);
       try {
-        const foundEmployees = await fetchEmployeeVisitorsById(missingIds);
+        const foundEmployees = await fetchEmployeeVisitorsById(selectedIds);
         setFilteredEmployees((prev) => {
           const existingIds = new Set(prev.map((emp) => emp.employeeID));
           const uniqueEmployees = foundEmployees.filter(
@@ -312,7 +309,9 @@ export const NaccessVisitor = () => {
 
   // Função para atualizar os visitantes
   const refreshVisitor = () => {
-    fetchEmployeeVisitor();
+    fetchEmployeeVisitor(undefined, undefined, "1", "20");
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -399,6 +398,30 @@ export const NaccessVisitor = () => {
     setShowUpdateModal(true);
   };
 
+  // Seleciona o visitante anterior
+  const handleNextVisitor = () => {
+    const sortedVisitors = employeeVisitor.sort(
+      (a, b) =>
+        new Date(a.dataInicio).getTime() - new Date(b.dataInicio).getTime()
+    );
+    if (currentVisitorIndex < sortedVisitors.length - 1) {
+      setCurrentVisitorIndex(currentVisitorIndex + 1);
+      setSelectedEmployeeVisitor(sortedVisitors[currentVisitorIndex + 1]);
+    }
+  };
+
+  // Seleciona o visitante seguinte
+  const handlePrevVisitor = () => {
+    const sortedVisitors = employeeVisitor.sort(
+      (a, b) =>
+        new Date(a.dataInicio).getTime() - new Date(b.dataInicio).getTime()
+    );
+    if (currentVisitorIndex > 0) {
+      setCurrentVisitorIndex(currentVisitorIndex - 1);
+      setSelectedEmployeeVisitor(sortedVisitors[currentVisitorIndex - 1]);
+    }
+  };
+
   // Função para abrir o modal de apagar visitante
   const handleOpenDeleteModal = (id: string) => {
     setSelectedVisitorForDelete(id);
@@ -428,9 +451,39 @@ export const NaccessVisitor = () => {
     deleteVisitor(visitorIds);
   };
 
+  // Função para remover propriedades com null ou "" antes de alterar o estado
+  const cleanObject = (obj: Record<string, any>) => {
+    return Object.keys(obj).reduce((acc, key) => {
+      const value = obj[key];
+      if (value !== null && value !== "") {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as Record<string, any>);
+  };
+
+  // Função para alterar o estado de um visitante
+  const handleUpdateEstado = async (
+    visitor: EmployeeVisitor,
+    newEstado: number
+  ) => {
+    const { companions, ...visitorWithoutCompanions } = visitor;
+    const updatedVisitor = { ...visitorWithoutCompanions, estado: newEstado };
+
+    const cleanedVisitor = cleanObject(updatedVisitor);
+
+    const payload = {
+      visitor: cleanedVisitor,
+      companionEmployeeIds: companions.map((comp) => comp.employeeId),
+    };
+
+    await updateVisitor(payload as unknown as EmployeeVisitor);
+  };
+
   // Define as colunas
-  const columns: TableColumn<EmployeeVisitor>[] = employeeVisitorFields.map(
-    (field) => {
+  const columns: TableColumn<EmployeeVisitor>[] = employeeVisitorFields
+    .filter((field) => selectedColumns.includes(field.key))
+    .map((field) => {
       if (field.key === "idVisitante") {
         return {
           ...field,
@@ -444,14 +497,19 @@ export const NaccessVisitor = () => {
               />
             </>
           ),
-          cell: (row: EmployeeVisitor) => (
-            <div
-              style={{ cursor: "pointer" }}
-              onClick={() => handleOpenEditModal(row)}
-            >
-              {row.idVisitante}
-            </div>
-          ),
+          cell: (row: EmployeeVisitor) => {
+            const visitor = employeesNoPagination.find(
+              (emp) => String(emp.employeeID) === String(row.idVisitante)
+            );
+            return (
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => handleOpenEditModal(row)}
+              >
+                {visitor ? visitor.name : row.idVisitante}
+              </div>
+            );
+          },
         };
       }
       if (field.key === "idPessoa") {
@@ -467,22 +525,33 @@ export const NaccessVisitor = () => {
               />
             </>
           ),
-          cell: (row: EmployeeVisitor) => (
-            <div
-              style={{ cursor: "pointer" }}
-              onClick={() => handleOpenEditModal(row)}
-            >
-              {row.idPessoa}
-            </div>
-          ),
+          cell: (row: EmployeeVisitor) => {
+            const person = employeesNoPagination.find(
+              (emp) => String(emp.employeeID) === String(row.idPessoa)
+            );
+            return (
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => handleOpenEditModal(row)}
+              >
+                {person ? person.name : row.idPessoa}
+              </div>
+            );
+          },
         };
       }
       const formatField = (row: EmployeeVisitor) => {
         switch (field.key) {
           case "dataInicio":
           case "dataFim":
-          case "dataSaida":
-            return new Date(row[field.key]).toLocaleString();
+          case "dataSaida": {
+            const rawValue = row[field.key];
+            if (!rawValue) return "";
+            const formattedDate = new Date(String(rawValue)).toLocaleString();
+            return formattedDate === "01/01/1970, 01:00:00"
+              ? ""
+              : formattedDate;
+          }
           case "estado":
             switch (row[field.key]) {
               case 0:
@@ -494,13 +563,6 @@ export const NaccessVisitor = () => {
               default:
                 return row[field.key] || "";
             }
-          case "idVisitante":
-          case "idPessoa":
-            return (
-              employeesNoPagination.find(
-                (emp) => emp.employeeID === row[field.key]
-              )?.name || ""
-            );
           default:
             return row[field.key] || "";
         }
@@ -525,8 +587,7 @@ export const NaccessVisitor = () => {
           new Date(rowB.dataInicio).getTime() -
           new Date(rowA.dataInicio).getTime(),
       };
-    }
-  );
+    });
 
   // Define as opções de paginação de EN para PT
   const paginationOptions = {
@@ -539,6 +600,54 @@ export const NaccessVisitor = () => {
     name: "Ações",
     cell: (row: EmployeeVisitor) => (
       <div style={{ display: "flex" }}>
+        {row.estado === 0 && (
+          <OverlayTrigger
+            placement="top"
+            delay={0}
+            container={document.body}
+            popperConfig={{
+              modifiers: [
+                {
+                  name: "preventOverflow",
+                  options: {
+                    boundary: "window",
+                  },
+                },
+              ],
+            }}
+            overlay={<Tooltip className="custom-tooltip">Iniciar</Tooltip>}
+          >
+            <CustomOutlineButton
+              className="action-button"
+              icon="bi bi-play"
+              onClick={() => handleUpdateEstado(row, 1)}
+            />
+          </OverlayTrigger>
+        )}
+        {row.estado === 1 && (
+          <OverlayTrigger
+            placement="top"
+            delay={0}
+            container={document.body}
+            popperConfig={{
+              modifiers: [
+                {
+                  name: "preventOverflow",
+                  options: {
+                    boundary: "window",
+                  },
+                },
+              ],
+            }}
+            overlay={<Tooltip className="custom-tooltip">Terminar</Tooltip>}
+          >
+            <CustomOutlineButton
+              className="action-button"
+              icon="bi bi-stop"
+              onClick={() => handleUpdateEstado(row, 2)}
+            />
+          </OverlayTrigger>
+        )}
         <OverlayTrigger
           placement="top"
           delay={0}
@@ -579,7 +688,7 @@ export const NaccessVisitor = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditVisitor(row)}
           />
         </OverlayTrigger>
@@ -601,7 +710,7 @@ export const NaccessVisitor = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.id)}
           />
         </OverlayTrigger>
@@ -743,7 +852,7 @@ export const NaccessVisitor = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedVisitorToDelete}
                     iconSize="1.1em"
                   />
@@ -1068,7 +1177,7 @@ export const NaccessVisitor = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedVisitorToDelete}
                     iconSize="1.1em"
                   />
@@ -1280,7 +1389,7 @@ export const NaccessVisitor = () => {
           onSelectAllColumns={handleSelectAllColumns}
         />
       )}
-      <CreateModalVisitor 
+      <CreateModalVisitor
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSave={addVisitor}
@@ -1288,6 +1397,21 @@ export const NaccessVisitor = () => {
         title="Adicionar Visitante"
         initialValues={initialData || {}}
       />
+      {selectedEmployeeVisitor && (
+        <UpdateModalVisitor
+          open={showUpdateModal}
+          onClose={() => setShowUpdateModal(false)}
+          onUpdate={updateVisitor}
+          onDuplicate={handleDuplicate}
+          entity={selectedEmployeeVisitor}
+          fields={employeeVisitorFields}
+          title="Atualizar Visitante"
+          canMoveNext={currentVisitorIndex < employeeVisitor.length - 1}
+          canMovePrev={currentVisitorIndex > 0}
+          onPrev={handlePrevVisitor}
+          onNext={handleNextVisitor}
+        />
+      )}
       {selectedEmployee && (
         <UpdateModalEmployees
           open={showEditModal}

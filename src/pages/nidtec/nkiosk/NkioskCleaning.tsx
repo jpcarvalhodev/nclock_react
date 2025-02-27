@@ -449,7 +449,7 @@ export const NkioskCleaning = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditLimpezas(row)}
           />
         </OverlayTrigger>
@@ -471,7 +471,7 @@ export const NkioskCleaning = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.id)}
           />
         </OverlayTrigger>
@@ -614,7 +614,7 @@ export const NkioskCleaning = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedCleaningToDelete}
                     iconSize="1.1em"
                   />
@@ -913,7 +913,7 @@ export const NkioskCleaning = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedCleaningToDelete}
                     iconSize="1.1em"
                   />

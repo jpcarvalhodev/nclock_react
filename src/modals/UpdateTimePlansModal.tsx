@@ -297,7 +297,7 @@ export const UpdateTimePlansModal = <T extends Record<string, any>>({
                     }
                   >
                     <CustomOutlineButton
-                      icon="bi bi-trash-fill"
+                      icon="bi bi-trash"
                       onClick={removeSelectedPeriods}
                       iconSize="1.1em"
                     />

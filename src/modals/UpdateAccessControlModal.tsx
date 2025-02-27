@@ -511,7 +511,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
                             }
                           >
                             <CustomOutlineButton
-                              icon="bi bi-trash-fill"
+                              icon="bi bi-trash"
                               onClick={removeSelectedDevices}
                               iconSize="1.1em"
                             />
@@ -592,7 +592,7 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
                             }
                           >
                             <CustomOutlineButton
-                              icon="bi bi-trash-fill"
+                              icon="bi bi-trash"
                               onClick={removeSelectedEmployees}
                               iconSize="1.1em"
                             />

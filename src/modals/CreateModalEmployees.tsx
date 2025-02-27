@@ -114,6 +114,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
         newFormData = { ...newFormData, type: "Contacto" };
       } else if (window.location.pathname.includes("Temporaries")) {
         newFormData = { ...newFormData, type: "Provisório" };
+      } else if (window.location.pathname.includes("visitors")) {
+        newFormData = { ...newFormData, type: "Visitante" };
       }
       if (initialValues.name) {
         newFormData = {

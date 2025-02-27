@@ -382,7 +382,7 @@ export const TimePeriods = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditPeriod(row)}
           />
         </OverlayTrigger>
@@ -404,7 +404,7 @@ export const TimePeriods = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.id)}
           />
         </OverlayTrigger>
@@ -547,7 +547,7 @@ export const TimePeriods = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedPeriodToDelete}
                     iconSize="1.1em"
                   />
@@ -720,7 +720,7 @@ export const TimePeriods = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedPeriodToDelete}
                     iconSize="1.1em"
                   />

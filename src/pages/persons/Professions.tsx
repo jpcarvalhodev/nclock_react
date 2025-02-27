@@ -305,7 +305,7 @@ export const Professions = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditProfession(row)}
           />
         </OverlayTrigger>
@@ -327,7 +327,7 @@ export const Professions = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.professionID)}
           />
         </OverlayTrigger>
@@ -462,7 +462,7 @@ export const Professions = () => {
               }
             >
               <CustomOutlineButton
-                icon="bi bi-trash-fill"
+                icon="bi bi-trash"
                 onClick={handleSelectedProfessionToDelete}
                 iconSize="1.1em"
               />

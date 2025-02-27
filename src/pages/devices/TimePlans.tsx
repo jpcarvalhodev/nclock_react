@@ -301,7 +301,7 @@ export const TimePlans = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditTimePlan(row)}
           />
         </OverlayTrigger>
@@ -323,7 +323,7 @@ export const TimePlans = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.id)}
           />
         </OverlayTrigger>
@@ -456,7 +456,7 @@ export const TimePlans = () => {
               }
             >
               <CustomOutlineButton
-                icon="bi bi-trash-fill"
+                icon="bi bi-trash"
                 onClick={handleSelectedTimePlanToDelete}
                 iconSize="1.1em"
               />

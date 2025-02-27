@@ -301,7 +301,7 @@ export const Groups = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditGroup(row)}
           />
         </OverlayTrigger>
@@ -323,7 +323,7 @@ export const Groups = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.groupID)}
           />
         </OverlayTrigger>
@@ -467,7 +467,7 @@ export const Groups = () => {
               }
             >
               <CustomOutlineButton
-                icon="bi bi-trash-fill"
+                icon="bi bi-trash"
                 onClick={handleSelectedGroupsToDelete}
                 iconSize="1.1em"
               />

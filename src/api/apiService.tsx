@@ -3017,12 +3017,27 @@ export const fetchKioskTransactionsByCardAndDeviceSN = async (
 
 export const fetchKioskTransactionsByMBAndDeviceSN = async (
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  pageNo?: number,
+  pageSize?: number
 ) => {
-  let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN`;
+  const params: string[] = [];
+
   if (startDate && endDate) {
-    url += `?startDate=${startDate}&endDate=${endDate}`;
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
   }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+  
+  let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+  
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -3050,12 +3065,35 @@ export const fetchKioskTransactionsByPayCoins = async (
   eventDoorId: string,
   deviceSN: string,
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  pageNo?: number,
+  pageSize?: number
 ) => {
-  let url = `KioskTransaction/GetTransactionsByPayCoins?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
-  if (startDate && endDate) {
-    url += `&startDate=${startDate}&endDate=${endDate}`;
+  const params: string[] = [];
+
+  if (eventDoorId) {
+    params.push(`eventDoorId=${eventDoorId}`);
   }
+
+  if (deviceSN) {
+    params.push(`deviceSN=${deviceSN}`);
+  }
+
+  if (startDate && endDate) {
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
+  }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+  
+  let url = `KioskTransaction/GetTransactionsByPayCoins`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+  
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -3202,12 +3240,12 @@ export const fetchAllKioskTransactionByEnrollNumber = async (
     params.push(`pageNumber=${pageNo}`);
     params.push(`pageSize=${pageSize}`);
   }
-
+  
   let url = `KioskTransaction/GetKioskTransactionByEnrollmentNumbers`;
   if (params.length > 0) {
     url += `?${params.join("&")}`;
   }
-
+  
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -4706,6 +4744,7 @@ export const fetchAllAlerts = async (startDate?: string, endDate?: string) => {
 export const fetchAllHistoryLogs = async (
   startDate?: string,
   endDate?: string,
+  userIds?: string[],
   pageNo?: string,
   pageSize?: string
 ) => {
@@ -4714,6 +4753,10 @@ export const fetchAllHistoryLogs = async (
   if (startDate && endDate) {
     params.push(`startTime=${startDate}`);
     params.push(`endTime=${endDate}`);
+  }
+
+  if (userIds) {
+    params.push(`userIds=${startDate}`);
   }
 
   if (pageNo && pageSize) {
@@ -4752,6 +4795,7 @@ export const fetchAllHistoryLogs = async (
 export const fetchAllLoginLogs = async (
   startDate?: string,
   endDate?: string,
+  userIds?: string[],
   pageNo?: string,
   pageSize?: string
 ) => {
@@ -4760,6 +4804,10 @@ export const fetchAllLoginLogs = async (
   if (startDate && endDate) {
     params.push(`startTime=${startDate}`);
     params.push(`endTime=${endDate}`);
+  }
+
+  if (userIds) {
+    params.push(`userIds=${startDate}`);
   }
 
   if (pageNo && pageSize) {
@@ -5258,7 +5306,7 @@ export const importEmployees = async (employees: FormData) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE ACESSOS/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const fetchAllAccessesByDevice = async (
-  deviceSN?: string,
+  deviceSN?: string[],
   startDate?: string,
   endDate?: string,
   pageNo?: string,

@@ -663,7 +663,7 @@ export const LicenseModal = <T extends Entity>({
                         `Entidade ${entity.entidadeNumber}`}
                     </span>
                     <i
-                      className="bi bi-trash-fill ms-2"
+                      className="bi bi-trash ms-2"
                       style={{ cursor: "pointer", color: "black" }}
                       onClick={(e) => {
                         e.stopPropagation();

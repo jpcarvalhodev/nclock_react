@@ -332,7 +332,7 @@ export const NviewOnlineCameras = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditCameras(row)}
           />
         </OverlayTrigger>
@@ -354,7 +354,7 @@ export const NviewOnlineCameras = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.id)}
           />
         </OverlayTrigger>

@@ -19,6 +19,7 @@ import { Logs } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { usePersons } from "../../context/PersonsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -34,7 +35,13 @@ export const HistoryLogs = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { historyLogs, setHistoryLogs, fetchAllHistoryLogs } = useEntity();
+  const {
+    historyLogs,
+    setHistoryLogs,
+    fetchAllHistoryLogs,
+    totalHistoryPages,
+  } = useEntity();
+  const { registeredUsers } = usePersons();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -52,17 +59,33 @@ export const HistoryLogs = () => {
   const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
+  const [totalRows, setTotalRows] = useState(0);
+
+  // Função para buscar os dados da paginação
+  const fetchPaginationHistory = async (pageNo: string, perPage: string) => {
+    try {
+      const data = await apiService.fetchAllHistoryLogs(
+        undefined,
+        undefined,
+        undefined,
+        pageNo,
+        perPage
+      );
+      setHistoryLogs(data.data);
+      setTotalRows(data.totalRecords);
+    } catch (error) {
+      console.error("Erro ao buscar logs paginados:", error);
+      setHistoryLogs([]);
+    }
+  };
 
   // Função para buscar os logs entre datas
   const fetchLogsBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllHistoryLogs(startDate, endDate);
-      if (Array.isArray(data)) {
-        setHistoryLogs(data);
-      } else {
-        setHistoryLogs([]);
-      }
+      setHistoryLogs(data.data);
     } catch (error) {
       console.error("Erro ao buscar os dados de logs:", error);
     }
@@ -75,11 +98,7 @@ export const HistoryLogs = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllHistoryLogs(start, end);
-      if (Array.isArray(data)) {
-        setHistoryLogs(data);
-      } else {
-        setHistoryLogs([]);
-      }
+      setHistoryLogs(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -97,11 +116,7 @@ export const HistoryLogs = () => {
 
     try {
       const data = await apiService.fetchAllHistoryLogs(start, end);
-      if (Array.isArray(data)) {
-        setHistoryLogs(data);
-      } else {
-        setHistoryLogs([]);
-      }
+      setHistoryLogs(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -123,11 +138,7 @@ export const HistoryLogs = () => {
 
     try {
       const data = await apiService.fetchAllHistoryLogs(start, end);
-      if (Array.isArray(data)) {
-        setHistoryLogs(data);
-      } else {
-        setHistoryLogs([]);
-      }
+      setHistoryLogs(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -135,9 +146,16 @@ export const HistoryLogs = () => {
     }
   };
 
+  // Busca os logs de histórico ao montar o componente
+  useEffect(() => {
+    fetchAllHistoryLogs(undefined, undefined, undefined, "1", "20");
+  }, []);
+
   // Função para atualizar os logs
   const refreshLogs = () => {
-    fetchAllHistoryLogs();
+    fetchAllHistoryLogs(undefined, undefined, undefined, "1", "20");
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -187,6 +205,17 @@ export const HistoryLogs = () => {
     setSelectedRows(sortedSelectedRows);
   };
 
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
+  };
+
   // Opções de paginação da tabela com troca de EN para PT
   const paginationOptions = {
     rowsPerPageText: "Linhas por página",
@@ -194,8 +223,36 @@ export const HistoryLogs = () => {
   };
 
   // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedDevicesIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      try {
+        const rawUsername = selectedIds[0];
+        const username = rawUsername.replace("user-", "");
+
+        const foundUser = registeredUsers.find(
+          (user) => user.userName === username
+        );
+
+        if (foundUser) {
+          const logs = await apiService.fetchAllLoginLogs(
+            undefined,
+            undefined,
+            [foundUser.id],
+            undefined,
+            undefined
+          );
+          setFilteredDevices(logs.data);
+        } else {
+          setFilteredDevices([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar logs para o usuário selecionado:", error);
+      }
+    } else {
+      setFilteredDevices(historyLogs);
+    }
   };
 
   // Filtra os dados da tabela
@@ -516,11 +573,7 @@ export const HistoryLogs = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -532,6 +585,29 @@ export const HistoryLogs = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="createdDate"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalHistoryPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>
@@ -769,11 +845,7 @@ export const HistoryLogs = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -785,6 +857,29 @@ export const HistoryLogs = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="createdDate"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalHistoryPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>

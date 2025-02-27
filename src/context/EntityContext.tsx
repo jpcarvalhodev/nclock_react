@@ -29,8 +29,8 @@ export interface EntityContextType {
     historyLogs: Logs[];
     setLoginLogs: React.Dispatch<React.SetStateAction<Logs[]>>;
     setHistoryLogs: React.Dispatch<React.SetStateAction<Logs[]>>;
-    fetchAllLoginLogs: () => void;
-    fetchAllHistoryLogs: () => void;
+    fetchAllLoginLogs: (startDate?: string, endDate?: string, userIds?: string[], pageNo?: "1", pageSize?: "20") => Promise<Logs[]>;
+    fetchAllHistoryLogs: (startDate?: string, endDate?: string, userIds?: string[], pageNo?: "1", pageSize?: "20") => Promise<Logs[]>;
     exportBackupDB: (backup: BackupDB) => void;
     importBackupDB: (backup: FormData) => void;
     importEmployees: (employees: FormData) => void;
@@ -104,25 +104,29 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar os logs de login
-    const fetchAllLoginLogs = async (pageNo?: "1", pageSize?: "20") => {
+    const fetchAllLoginLogs = async (startDate?: string, endDate?: string, userIds?: string[], pageNo?: "1", pageSize?: "20"): Promise<Logs[]> => {
         try {
-            const data = await apiService.fetchAllLoginLogs(undefined, undefined, pageNo, pageSize);
+            const data = await apiService.fetchAllLoginLogs(undefined, undefined, undefined, pageNo, pageSize);
             setLoginLogs(data.data);
             setTotalLoginPages(data.totalPages);
+            return data.data;
         } catch (error) {
             console.error('Erro ao buscar os dados de logs:', error);
         }
+        return [];
     };
 
     // Função para buscar os logs de histórico
-    const fetchAllHistoryLogs = async (pageNo?: "1", pageSize?: "20") => {
+    const fetchAllHistoryLogs = async (startDate?: string, endDate?: string, userIds?: string[], pageNo?: "1", pageSize?: "20"): Promise<Logs[]> => {
         try {
-            const data = await apiService.fetchAllHistoryLogs(undefined, undefined, pageNo, pageSize);
+            const data = await apiService.fetchAllHistoryLogs(undefined, undefined, undefined, pageNo, pageSize);
             setHistoryLogs(data.data);
             setTotalHistoryPages(data.totalPages);
+            return data.data;
         } catch (error) {
             console.error('Erro ao buscar os dados de logs:', error);
         }
+        return [];
     };
 
     // Função para exportar o backup do banco de dados
@@ -174,8 +178,6 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
         const token = localStorage.getItem('token');
         if (token) {
             fetchAllEntity();
-            fetchAllLoginLogs();
-            fetchAllHistoryLogs();
         }
     }, []);
 

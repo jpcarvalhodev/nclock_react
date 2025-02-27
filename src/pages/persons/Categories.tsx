@@ -306,7 +306,7 @@ export const Categories = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditCategory(row)}
           />
         </OverlayTrigger>
@@ -328,7 +328,7 @@ export const Categories = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.categoryID)}
           />
         </OverlayTrigger>
@@ -461,7 +461,7 @@ export const Categories = () => {
               }
             >
               <CustomOutlineButton
-                icon="bi bi-trash-fill"
+                icon="bi bi-trash"
                 onClick={handleSelectedCatToDelete}
                 iconSize="1.1em"
               />

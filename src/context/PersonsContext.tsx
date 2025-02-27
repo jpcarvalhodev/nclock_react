@@ -90,7 +90,7 @@ export interface PersonsContextType {
     handleDeleteZone: (zoneID: string[]) => Promise<void>;
     totalPages: number;
     employeeVisitor: EmployeeVisitor[];
-    fetchEmployeeVisitor: () => Promise<EmployeeVisitor[]>;
+    fetchEmployeeVisitor: (startDate?: string, endDate?: string, pageNo?: "1", perPage?: "20") => Promise<EmployeeVisitor[]>;
     fetchEmployeeVisitorsById: (employeeID: string[]) => Promise<EmployeeVisitor[]>;
     handleAddEmployeeVisitor: (employeeVisitor: Partial<EmployeeVisitor>) => Promise<void>;
     handleUpdateEmployeeVisitor: (employeeVisitor: Partial<EmployeeVisitor>) => Promise<void>;
@@ -828,9 +828,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Define a função para buscar os visitantes
-    const fetchEmployeeVisitor = async (): Promise<EmployeeVisitor[]> => {
+    const fetchEmployeeVisitor = async (startDate?: string, endDate?: string, pageNo?: "1", perPage?: "20"): Promise<EmployeeVisitor[]> => {
         try {
-            const data = await apiService.fetchAllEmployeeVisitors();
+            const data = await apiService.fetchAllEmployeeVisitors(undefined, undefined, pageNo, perPage);
             setEmployeeVisitor(data.data);
             setTotalPages(data.totalPages);
             return data.data;
@@ -855,7 +855,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     const handleAddEmployeeVisitor = async (visitor: Partial<EmployeeVisitor>) => {
         try {
             const visitorData = await apiService.addEmployeeVisitor(visitor);
-            setEmployeeVisitor([...employeeVisitor, visitorData]);
+            setEmployeeVisitor([...(Array.isArray(employeeVisitor) ? employeeVisitor : []), visitorData]);
             toast.success(visitorData.message || 'Visitante adicionado com sucesso!');
         } catch (error) {
             console.error('Erro ao adicionar novo visitante:', error);
@@ -956,7 +956,6 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllExternalEntitiesData();
             fetchAllProfessions();
             fetchAllZones();
-            fetchEmployeeVisitor();
             fetchVisitorsMotive();
         }
     }, []);

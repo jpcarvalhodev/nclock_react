@@ -360,7 +360,7 @@ export const Departments = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditDepartment(row)}
           />
         </OverlayTrigger>
@@ -382,7 +382,7 @@ export const Departments = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.departmentID)}
           />
         </OverlayTrigger>
@@ -532,7 +532,7 @@ export const Departments = () => {
               }
             >
               <CustomOutlineButton
-                icon="bi bi-trash-fill"
+                icon="bi bi-trash"
                 onClick={handleSelectedDeptsToDelete}
                 iconSize="1.1em"
               />

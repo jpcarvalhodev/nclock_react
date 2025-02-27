@@ -278,7 +278,7 @@ export const Entities = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditEntity(row)}
           />
         </OverlayTrigger>

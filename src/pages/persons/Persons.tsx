@@ -146,14 +146,9 @@ export const Persons = () => {
   const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
 
-    const missingIds = selectedIds.filter(
-      (id) => !disabledEmployees.some((emp) => emp.employeeID === id)
-    );
-
-    if (missingIds.length > 0) {
-      setLoading(true);
+    if (selectedIds.length > 0) {
       try {
-        const foundEmployees = await fetchEmployeesById(missingIds);
+        const foundEmployees = await fetchEmployeesById(selectedIds);
         setFilteredEmployees((prev) => {
           const existingIds = new Set(prev.map((emp) => emp.employeeID));
           const uniqueEmployees = foundEmployees.filter(
@@ -163,8 +158,6 @@ export const Persons = () => {
         });
       } catch (error) {
         console.error("Erro ao buscar funcionários por ID:", error);
-      } finally {
-        setLoading(false);
       }
     }
   };
@@ -447,7 +440,7 @@ export const Persons = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditEmployee(row)}
           />
         </OverlayTrigger>
@@ -469,7 +462,7 @@ export const Persons = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.employeeID)}
           />
         </OverlayTrigger>
@@ -612,7 +605,7 @@ export const Persons = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedEmployeesToDelete}
                     iconSize="1.1em"
                   />
@@ -816,7 +809,7 @@ export const Persons = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedEmployeesToDelete}
                     iconSize="1.1em"
                   />

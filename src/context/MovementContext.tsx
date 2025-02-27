@@ -28,8 +28,8 @@ export interface AttendanceContextType {
   fetchAllAttendancesBetweenDates: (
     options?: FetchOptions
   ) => Promise<EmployeeAttendanceTimes[]>;
-  fetchAllInitialAccessesbyDevice: (pageNo?: "1", pageSize?: "20") => Promise<Accesses[]>;
-  fetchAllAccessesbyDevice: (sn?: string, pageNo?: string, pageSize?: string) => Promise<Accesses[]>;
+  fetchAllInitialAccessesbyDevice: (sn?: string[], startDate?: string, endDate?: string, pageNo?: "1", pageSize?: "20") => Promise<Accesses[]>;
+  fetchAllAccessesbyDevice: (sn?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Accesses[]>;
   fetchAllAccessesbyDoor: (
     eventDoorId: number,
     deviceSN: string
@@ -125,9 +125,9 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
   );
 
   // Função para buscar todos os acessos por dispositivo
-  const fetchAllInitialAccessesbyDevice = async (pageNo?: "1", pageSize?: "20"): Promise<Accesses[]> => {
+  const fetchAllInitialAccessesbyDevice = async (sn?: string[], startDate?: string, endDate?: string, pageNo?: "1", pageSize?: "20"): Promise<Accesses[]> => {
     try {
-      const data = await apiService.fetchAllAccessesByDevice(pageNo, pageSize);
+      const data = await apiService.fetchAllAccessesByDevice(undefined, undefined, undefined, pageNo, pageSize);
       setAccess(data.data);
       setTotalPages(data.totalPages);
       return data.data;
@@ -138,9 +138,9 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Função para buscar todos os acessos por dispositivo
-  const fetchAllAccessesbyDevice = async (sn?: string, pageNo?: string, pageSize?: string): Promise<Accesses[]> => {
+  const fetchAllAccessesbyDevice = async (sn?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Accesses[]> => {
     try {
-      const data = await apiService.fetchAllAccessesByDevice(sn, pageNo, pageSize);
+      const data = await apiService.fetchAllAccessesByDevice(sn, undefined, undefined, pageNo, pageSize);
       setAccessForGraph(data.data);
       return data.data;
     } catch (error) {
@@ -254,7 +254,6 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchAllAttendances();
-      fetchAllAccessesbyDevice();
     }
   }, []);
 

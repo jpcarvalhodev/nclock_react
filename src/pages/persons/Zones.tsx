@@ -320,7 +320,7 @@ export const Zones = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditZone(row)}
           />
         </OverlayTrigger>
@@ -342,7 +342,7 @@ export const Zones = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.zoneID)}
           />
         </OverlayTrigger>
@@ -475,7 +475,7 @@ export const Zones = () => {
               }
             >
               <CustomOutlineButton
-                icon="bi bi-trash-fill"
+                icon="bi bi-trash"
                 onClick={handleSelectedZonesToDelete}
                 iconSize="1.1em"
               />

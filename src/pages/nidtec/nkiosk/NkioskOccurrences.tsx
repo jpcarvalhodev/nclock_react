@@ -446,7 +446,7 @@ export const NkioskOccurrences = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditOcorrencias(row)}
           />
         </OverlayTrigger>
@@ -468,7 +468,7 @@ export const NkioskOccurrences = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.id)}
           />
         </OverlayTrigger>
@@ -611,7 +611,7 @@ export const NkioskOccurrences = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedOccurrencesToDelete}
                     iconSize="1.1em"
                   />
@@ -912,7 +912,7 @@ export const NkioskOccurrences = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-trash-fill"
+                    icon="bi bi-trash"
                     onClick={handleSelectedOccurrencesToDelete}
                     iconSize="1.1em"
                   />

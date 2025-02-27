@@ -516,7 +516,7 @@ export const NclockRequests = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditAssiduity([row])}
           />
         </OverlayTrigger>
@@ -538,7 +538,7 @@ export const NclockRequests = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.attendanceTimeId)}
           />
         </OverlayTrigger>

@@ -549,7 +549,7 @@ export const NavBar = ({ style }: NavBarProps) => {
     fetchAndUnifyPaymentsForNavbar,
     fetchAndUnifyMovementsForNavbar,
   } = useKiosk();
-  const { fetchAllAttendances, fetchAllAccessesbyDevice } = useAttendance();
+  const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice } = useAttendance();
   const [user, setUser] = useState({ name: "", email: "" });
   const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
   const [showDispositivosRibbon, setShowDispositivosRibbon] = useState(false);
@@ -3938,7 +3938,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                         <div className="icon-text-pessoas">
                           <Link
                             to="/naccess/naccessaccesses"
-                            onClick={() => fetchAllAccessesbyDevice()}
+                            onClick={() => fetchAllInitialAccessesbyDevice()}
                             type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "/naccess/naccessaccesses"

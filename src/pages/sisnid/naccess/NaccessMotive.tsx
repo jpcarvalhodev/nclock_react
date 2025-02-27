@@ -309,7 +309,7 @@ export const NaccessMotive = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditMotive(row)}
           />
         </OverlayTrigger>
@@ -331,7 +331,7 @@ export const NaccessMotive = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.id)}
           />
         </OverlayTrigger>
@@ -463,7 +463,7 @@ export const NaccessMotive = () => {
               }
             >
               <CustomOutlineButton
-                icon="bi bi-trash-fill"
+                icon="bi bi-trash"
                 onClick={handleSelectedVisitorToDelete}
                 iconSize="1.1em"
               />

@@ -34,18 +34,28 @@ interface Props<T> {
   title: string;
   open: boolean;
   onClose: () => void;
-  onSave: (data: Partial<T>) => void;
+  onUpdate: (entity: T) => void;
+  onDuplicate: (entity: T) => void;
   fields: FieldConfig[];
-  initialValues: Partial<T>;
+  entity: T;
+  onNext?: () => void;
+  onPrev?: () => void;
+  canMoveNext?: boolean;
+  canMovePrev?: boolean;
 }
 
-export const CreateModalVisitor = <T extends Record<string, any>>({
+export const UpdateModalVisitor = <T extends Record<string, any>>({
   title,
   open,
   onClose,
-  onSave,
+  onUpdate,
+  onDuplicate,
   fields,
-  initialValues,
+  entity,
+  canMoveNext,
+  canMovePrev,
+  onNext,
+  onPrev,
 }: Props<T>) => {
   const {
     employees,
@@ -54,29 +64,21 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
     handleAddExternalEntity,
     handleAddEmployee,
   } = usePersons();
-  const [formData, setFormData] = useState<Partial<T>>({ ...initialValues });
+  const [formData, setFormData] = useState<Partial<T>>({ ...entity });
   const [selectedRows, setSelectedRows] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [showAddEEModal, setShowAddEEModal] = useState(false);
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
 
-  // Busca os initialValues ao abrir o modal
+  // Busca entity ao abrir o modal
   useEffect(() => {
     if (open) {
-      const now = new Date();
-      const startDate = now.toISOString().substring(0, 16);
-      now.setHours(23, 59, 0, 0);
-      const endDate = now.toISOString().substring(0, 16);
-      setFormData({
-        ...initialValues,
-        dataInicio: startDate,
-        dataFim: endDate,
-      });
+      setFormData({ ...entity });
     } else {
       setFormData({});
     }
-  }, [open, initialValues]);
+  }, [open, entity]);
 
   // Função para adicionar um funcionário e um cartão
   const addEmployeeAndCard = async (employee: Partial<Employee>) => {
@@ -176,6 +178,12 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
     }));
   };
 
+  // Função para manipular o clique no botão Duplicar
+  const handleDuplicateClick = () => {
+    if (!onDuplicate) return;
+    onDuplicate(formData as T);
+  };
+
   // Define a função selecionar uma linha
   const handleRowSelected = (state: {
     allSelected: boolean;
@@ -223,38 +231,45 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
   // Define o envio de dados
   const handleSave = () => {
     const { phone, card, department, ...visitorData } = formData;
-  
+
     const selectedCompany = dataEE.externalEntity.find(
       (entity: any) => entity.name === formData.empresaNome
     );
-    const idEntidadeExterna = selectedCompany ? selectedCompany.externalEntityID : undefined;
-  
-    const selectedVisitor = visitantes.find((emp) => emp.name === formData.idVisitante);
-    const idVisitante = selectedVisitor ? selectedVisitor.employeeID : undefined;
-  
-    const selectedVisitado = visitados.find((emp) => emp.name === formData.idPessoa);
+    const idEntidadeExterna = selectedCompany
+      ? selectedCompany.externalEntityID
+      : undefined;
+
+    const selectedVisitor = visitantes.find(
+      (emp) => emp.name === formData.idVisitante
+    );
+    const idVisitante = selectedVisitor
+      ? selectedVisitor.employeeID
+      : undefined;
+
+    const selectedVisitado = visitados.find(
+      (emp) => emp.name === formData.idPessoa
+    );
     const idPessoa = selectedVisitado ? selectedVisitado.employeeID : undefined;
-  
+
     const selectedMotive = employeeVisitorMotive.find(
       (motive: any) => motive.descricao === formData.visitanteMotivo
     );
     const idVisitanteMotivo = selectedMotive ? selectedMotive.id : undefined;
-  
+
     const finalVisitorData = {
       ...visitorData,
       idEntidadeExterna,
       idVisitanteMotivo,
       idPessoa,
       idVisitante,
-      estado: 0,
     };
-  
+
     const payload = {
       visitor: finalVisitorData,
       companionEmployeeIds: filteredEmployees.map((emp) => emp.id),
     };
-    
-    onSave(payload as unknown as T);
+
+    onUpdate(payload as unknown as T);
     handleClose();
   };
 
@@ -689,6 +704,54 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
         </Row>
       </Modal.Body>
       <Modal.Footer>
+        <OverlayTrigger
+          placement="top"
+          delay={0}
+          container={document.body}
+          popperConfig={{
+            modifiers: [
+              {
+                name: "preventOverflow",
+                options: {
+                  boundary: "window",
+                },
+              },
+            ],
+          }}
+          overlay={<Tooltip className="custom-tooltip">Anterior</Tooltip>}
+        >
+          <CustomOutlineButton
+            icon="bi-arrow-left"
+            onClick={onPrev}
+            disabled={!canMovePrev}
+          />
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="top"
+          delay={0}
+          container={document.body}
+          popperConfig={{
+            modifiers: [
+              {
+                name: "preventOverflow",
+                options: {
+                  boundary: "window",
+                },
+              },
+            ],
+          }}
+          overlay={<Tooltip className="custom-tooltip">Seguinte</Tooltip>}
+        >
+          <CustomOutlineButton
+            className="arrows-modal"
+            icon="bi-arrow-right"
+            onClick={onNext}
+            disabled={!canMoveNext}
+          />
+        </OverlayTrigger>
+        <Button variant="outline-dark" onClick={handleDuplicateClick}>
+          Duplicar
+        </Button>
         <Button variant="outline-dark" onClick={handleClose}>
           Fechar
         </Button>

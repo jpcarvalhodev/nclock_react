@@ -19,6 +19,7 @@ import { Logs } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { usePersons } from "../../context/PersonsContext";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -34,7 +35,9 @@ export const LoginLogs = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { loginLogs, setLoginLogs, fetchAllLoginLogs, totalLoginPages } = useEntity();
+  const { loginLogs, setLoginLogs, fetchAllLoginLogs, totalLoginPages } =
+    useEntity();
+  const { registeredUsers } = usePersons();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -57,31 +60,28 @@ export const LoginLogs = () => {
   const [totalRows, setTotalRows] = useState(0);
 
   // Função para buscar os dados da paginação
-    const fetchPaginationLogin = async (pageNo: string, perPage: string) => {
-      try {
-        const data = await apiService.fetchAllLoginLogs(
-          undefined,
-          undefined,
-          pageNo,
-          perPage
-        );
-        setLoginLogs(data.data);
-        setTotalRows(data.totalRecords);
-      } catch (error) {
-        console.error("Erro ao buscar logins paginados:", error);
-        setLoginLogs([]);
-      }
-    };
+  const fetchPaginationLogin = async (pageNo: string, perPage: string) => {
+    try {
+      const data = await apiService.fetchAllLoginLogs(
+        undefined,
+        undefined,
+        undefined,
+        pageNo,
+        perPage
+      );
+      setLoginLogs(data.data);
+      setTotalRows(data.totalRecords);
+    } catch (error) {
+      console.error("Erro ao buscar logs paginados:", error);
+      setLoginLogs([]);
+    }
+  };
 
   // Função para buscar os logs entre datas
   const fetchLogsBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllLoginLogs(startDate, endDate);
-      if (Array.isArray(data)) {
-        setLoginLogs(data);
-      } else {
-        setLoginLogs([]);
-      }
+      setLoginLogs(data.data);
     } catch (error) {
       console.error("Erro ao buscar os dados de logs:", error);
     }
@@ -94,11 +94,7 @@ export const LoginLogs = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      if (Array.isArray(data)) {
-        setLoginLogs(data);
-      } else {
-        setLoginLogs([]);
-      }
+      setLoginLogs(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -116,11 +112,7 @@ export const LoginLogs = () => {
 
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      if (Array.isArray(data)) {
-        setLoginLogs(data);
-      } else {
-        setLoginLogs([]);
-      }
+      setLoginLogs(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -142,17 +134,18 @@ export const LoginLogs = () => {
 
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      if (Array.isArray(data)) {
-        setLoginLogs(data);
-      } else {
-        setLoginLogs([]);
-      }
+      setLoginLogs(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
       console.error("Erro ao buscar os dados de logs amanhã:", error);
     }
   };
+
+  // Busca os logs de login ao montar o componente
+  useEffect(() => {
+    fetchAllLoginLogs(undefined, undefined, undefined, "1", "20");
+  }, []);
 
   // Busca os funcionários paginados ao mudar a página
   useEffect(() => {
@@ -161,7 +154,9 @@ export const LoginLogs = () => {
 
   // Função para atualizar os logs
   const refreshLogs = () => {
-    fetchAllLoginLogs();
+    fetchAllLoginLogs(undefined, undefined, undefined, "1", "20");
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -229,8 +224,36 @@ export const LoginLogs = () => {
   };
 
   // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedDevicesIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      try {
+        const rawUsername = selectedIds[0];
+        const username = rawUsername.replace("user-", "");
+
+        const foundUser = registeredUsers.find(
+          (user) => user.userName === username
+        );
+
+        if (foundUser) {
+          const logs = await apiService.fetchAllLoginLogs(
+            undefined,
+            undefined,
+            [foundUser.id],
+            undefined,
+            undefined
+          );
+          setFilteredDevices(logs.data);
+        } else {
+          setFilteredDevices([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar logs para o usuário selecionado:", error);
+      }
+    } else {
+      setFilteredDevices(loginLogs);
+    }
   };
 
   // Filtra os dados da tabela

@@ -45,12 +45,8 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a página de acessos
 export const NaccessAccesses = () => {
-  const {
-    access,
-    totalPages,
-    fetchAllAccessesbyDevice,
-    handleAddAccess,
-  } = useAttendance();
+  const { access, totalPages, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice, handleAddAccess } =
+    useAttendance();
   const { fetchAllKioskTransactionByEnrollNumber } = useKiosk();
   const currentDate = new Date();
   const pastDate = new Date();
@@ -208,10 +204,8 @@ export const NaccessAccesses = () => {
 
   // Atualiza os movimentos ao mudar a lista de movimentos
   useEffect(() => {
-    if (access.length > 0) {
-      setFilteredAccess(access);
-    }
-  }, [access]);
+    fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20");
+  }, []);
 
   // Busca os dados se a paginação mudar
   useEffect(() => {
@@ -252,26 +246,31 @@ export const NaccessAccesses = () => {
   const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
 
-    const missingIds = selectedIds.filter(
-      (id) => !filteredAccess.some((emp) => emp.pin === id)
-    );
-
-    if (missingIds.length > 0) {
-      setLoading(true);
+    if (selectedIds.length > 0) {
       try {
-        const foundEmployees = await fetchAllKioskTransactionByEnrollNumber(missingIds);
-        setFilteredAccess((prev) => {
-          const existingIds = new Set(prev.map((emp) => emp.pin));
-          const uniqueEmployees = foundEmployees.filter(
-            (emp) => !existingIds.has(emp.pin)
-          );
-          return [...prev, ...uniqueEmployees];
-        });
+        const foundEmployees = await fetchAllKioskTransactionByEnrollNumber(
+          selectedIds,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        );
+        if (foundEmployees && Array.isArray(foundEmployees)) {
+          setFilteredAccess((prev) => {
+            const existingIds = new Set(prev.map((emp) => emp.pin));
+            const uniqueEmployees = foundEmployees.filter(
+              (emp) => !existingIds.has(emp.pin)
+            );
+            return [...prev, ...uniqueEmployees];
+          });
+        } else {
+          setFilteredAccess([]);
+        }
       } catch (error) {
         console.error("Erro ao buscar funcionários por número:", error);
-      } finally {
-        setLoading(false);
       }
+    } else {
+      setFilteredAccess(access);
     }
   };
 
@@ -306,8 +305,7 @@ export const NaccessAccesses = () => {
 
   // Função para atualizar os funcionários
   const refreshAccess = () => {
-    fetchAllAccessesbyDevice();
-    setFilteredAccess(access);
+    fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20");
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -913,7 +911,11 @@ export const NaccessAccesses = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
             <TreeViewDataNaccess onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">

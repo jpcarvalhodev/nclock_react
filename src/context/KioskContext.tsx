@@ -96,7 +96,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     const [counter, setCounter] = useState<Counter[]>([]);
     const [totalPayments, setTotalPayments] = useState<KioskTransactionMB[]>([]);
     const [totalMovements, setTotalMovements] = useState<KioskTransactionCard[]>([]);
-    const [lastRecolha, setLastRecolha] = useState<KioskTransactionMB[]>([]);
     const eventDoorId2 = '2'
     const eventDoorId3 = '3'
     const eventDoorId4 = '4'

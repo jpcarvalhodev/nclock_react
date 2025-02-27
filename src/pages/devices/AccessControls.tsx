@@ -268,7 +268,7 @@ export const AccessControls = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditAccessControl(row)}
           />
         </OverlayTrigger>
@@ -290,7 +290,7 @@ export const AccessControls = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.id)}
           />
         </OverlayTrigger>
@@ -452,7 +452,7 @@ export const AccessControls = () => {
               }
             >
               <CustomOutlineButton
-                icon="bi bi-trash-fill"
+                icon="bi bi-trash"
                 onClick={handleSelectedAccessPlanToDelete}
                 iconSize="1.1em"
               />

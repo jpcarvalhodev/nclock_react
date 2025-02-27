@@ -334,7 +334,7 @@ export const ExternalEntities = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-pencil-fill"
+            icon="bi bi-pencil"
             onClick={() => handleEditExternalEntity(row)}
           />
         </OverlayTrigger>
@@ -356,7 +356,7 @@ export const ExternalEntities = () => {
         >
           <CustomOutlineButton
             className="action-button"
-            icon="bi bi-trash-fill"
+            icon="bi bi-trash"
             onClick={() => handleOpenDeleteModal(row.externalEntityID)}
           />
         </OverlayTrigger>
@@ -491,7 +491,7 @@ export const ExternalEntities = () => {
               }
             >
               <CustomOutlineButton
-                icon="bi bi-trash-fill"
+                icon="bi bi-trash"
                 onClick={handleSelectedEntExtToDelete}
                 iconSize="1.1em"
               />
