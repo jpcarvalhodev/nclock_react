@@ -607,7 +607,8 @@ export const fetchAllEmployeeVisitors = async (
   startDate?: string,
   endDate?: string,
   pageNo?: string,
-  pageSize?: string
+  pageSize?: string,
+  employeeIds?: string[]
 ) => {
   const params: string[] = [];
 
@@ -619,6 +620,10 @@ export const fetchAllEmployeeVisitors = async (
   if (pageNo && pageSize) {
     params.push(`pageNumber=${pageNo}`);
     params.push(`pageSize=${pageSize}`);
+  }
+
+  if (employeeIds) {
+    params.push(`employeeIds=${employeeIds}`);
   }
 
   let url = `Employees/GetAllEmployeeVisitors`;
@@ -679,7 +684,9 @@ export const fetchEmployeeVisitorById = async (id: string[]) => {
   return response.json();
 };
 
-export const addEmployeeVisitor = async (employee: Partial<EmployeeVisitor>) => {
+export const addEmployeeVisitor = async (
+  employee: Partial<EmployeeVisitor>
+) => {
   const response = await fetchWithAuth(`Employees/CreateEmployeeVisitor`, {
     method: "POST",
     headers: {
@@ -704,7 +711,9 @@ export const addEmployeeVisitor = async (employee: Partial<EmployeeVisitor>) => 
   return response.json();
 };
 
-export const updateEmployeeVisitor = async (employee: Partial<EmployeeVisitor>) => {
+export const updateEmployeeVisitor = async (
+  employee: Partial<EmployeeVisitor>
+) => {
   const response = await fetchWithAuth(`Employees/UpdateEmployeeVisitor`, {
     method: "PUT",
     headers: {
@@ -788,7 +797,9 @@ export const fetchEmployeeVisitorMotive = async () => {
   return response.json();
 };
 
-export const addEmployeeVisitorMotive = async (employee: Partial<EmployeeVisitorMotive>) => {
+export const addEmployeeVisitorMotive = async (
+  employee: Partial<EmployeeVisitorMotive>
+) => {
   const response = await fetchWithAuth(`Employees/CreateVisitantesMotivo`, {
     method: "POST",
     headers: {
@@ -813,7 +824,9 @@ export const addEmployeeVisitorMotive = async (employee: Partial<EmployeeVisitor
   return response.json();
 };
 
-export const updateEmployeeVisitorMotive = async (employee: Partial<EmployeeVisitorMotive>) => {
+export const updateEmployeeVisitorMotive = async (
+  employee: Partial<EmployeeVisitorMotive>
+) => {
   const response = await fetchWithAuth(`Employees/UpdateVisitanteMotivo`, {
     method: "PUT",
     headers: {
@@ -1606,7 +1619,7 @@ export const fetchAllEventAndTransactionDevice = async (
 };
 
 export const fetchAllDeviceActivities = async (
-  sn?: string,
+  sn?: string[],
   startDate?: string,
   endDate?: string,
   pageNo?: string,
@@ -1615,7 +1628,9 @@ export const fetchAllDeviceActivities = async (
   const params: string[] = [];
 
   if (sn) {
+    sn.forEach((sn) => {
     params.push(`ids=${sn}`);
+    });
   }
 
   if (startDate && endDate) {
@@ -2983,15 +2998,47 @@ export const fetchKioskTransactionsByEventDoorIdAndDeviceSNAsync = async (
 };
 
 export const fetchKioskTransactionsByCardAndDeviceSN = async (
-  eventDoorId: string,
-  deviceSN: string,
+  eventDoorIds?: string[],
+  eventDoorId?: string,
+  deviceSNs?: string[],
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
 ) => {
-  let url = `KioskTransaction/GetTransactionsByCardAndDeviceSN?eventDoorId=${eventDoorId}&deviceSN=${deviceSN}`;
-  if (startDate && endDate) {
-    url += `&startDate=${startDate}&endDate=${endDate}`;
+  const params: string[] = [];
+
+  if (eventDoorIds) {
+    eventDoorIds.forEach((eventDoorIds) => {
+      params.push(`eventDoorIds=${eventDoorIds}`);
+    });
   }
+
+  if (eventDoorId) {
+    params.push(`eventDoorId=${eventDoorId}`);
+  }
+
+  if (deviceSNs) {
+    deviceSNs.forEach((deviceSNs) => {
+    params.push(`deviceSNs=${deviceSNs}`);
+    });
+  }
+
+  if (startDate && endDate) {
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
+  }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `KioskTransaction/GetTransactionsByCardAndDeviceSN`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -3018,8 +3065,8 @@ export const fetchKioskTransactionsByCardAndDeviceSN = async (
 export const fetchKioskTransactionsByMBAndDeviceSN = async (
   startDate?: string,
   endDate?: string,
-  pageNo?: number,
-  pageSize?: number
+  pageNo?: string,
+  pageSize?: string
 ) => {
   const params: string[] = [];
 
@@ -3032,12 +3079,70 @@ export const fetchKioskTransactionsByMBAndDeviceSN = async (
     params.push(`pageNumber=${pageNo}`);
     params.push(`pageSize=${pageSize}`);
   }
-  
+
   let url = `KioskTransaction/GetTransactionsByMBAndDeviceSN`;
   if (params.length > 0) {
     url += `?${params.join("&")}`;
   }
-  
+
+  const response = await fetchWithAuth(url);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const fetchKioskTransactionsByMBPayCoins = async (
+  eventDoorId?: string,
+  deviceSNs?: string[],
+  startDate?: string,
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
+) => {
+  const params: string[] = [];
+
+  if (eventDoorId) {
+    params.push(`eventDoorId=${eventDoorId}`);
+  }
+
+  if (deviceSNs) {
+    deviceSNs.forEach((deviceSNs) => {
+    params.push(`deviceSNs=${deviceSNs}`);
+    });
+  }
+
+  if (startDate && endDate) {
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
+  }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `KioskTransaction/GetKioskTransactionsMBPayCoins`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -3062,12 +3167,12 @@ export const fetchKioskTransactionsByMBAndDeviceSN = async (
 };
 
 export const fetchKioskTransactionsByPayCoins = async (
-  eventDoorId: string,
-  deviceSN: string,
+  eventDoorId?: string,
+  deviceSNs?: string[],
   startDate?: string,
   endDate?: string,
-  pageNo?: number,
-  pageSize?: number
+  pageNo?: string,
+  pageSize?: string
 ) => {
   const params: string[] = [];
 
@@ -3075,8 +3180,10 @@ export const fetchKioskTransactionsByPayCoins = async (
     params.push(`eventDoorId=${eventDoorId}`);
   }
 
-  if (deviceSN) {
-    params.push(`deviceSN=${deviceSN}`);
+  if (deviceSNs) {
+    deviceSNs.forEach((deviceSNs) => {
+    params.push(`deviceSNs=${deviceSNs}`);
+    });
   }
 
   if (startDate && endDate) {
@@ -3088,12 +3195,12 @@ export const fetchKioskTransactionsByPayCoins = async (
     params.push(`pageNumber=${pageNo}`);
     params.push(`pageSize=${pageSize}`);
   }
-  
+
   let url = `KioskTransaction/GetTransactionsByPayCoins`;
   if (params.length > 0) {
     url += `?${params.join("&")}`;
   }
-  
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {
@@ -3240,12 +3347,12 @@ export const fetchAllKioskTransactionByEnrollNumber = async (
     params.push(`pageNumber=${pageNo}`);
     params.push(`pageSize=${pageSize}`);
   }
-  
+
   let url = `KioskTransaction/GetKioskTransactionByEnrollmentNumbers`;
   if (params.length > 0) {
     url += `?${params.join("&")}`;
   }
-  
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {

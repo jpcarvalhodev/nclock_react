@@ -46,9 +46,9 @@ export const NaccessVisitor = () => {
   const {
     employeesNoPagination,
     employeeVisitor,
+    registeredUsers,
     totalPages,
     fetchEmployeeVisitor,
-    fetchEmployeeVisitorsById,
     handleAddEmployeeVisitor,
     handleUpdateEmployeeVisitor,
     handleDeleteEmployeeVisitor,
@@ -70,6 +70,8 @@ export const NaccessVisitor = () => {
     "dataSaida",
     "idVisitante",
     "idPessoa",
+    "idInserido",
+    "empresaNome",
   ]);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [resetSelection, setResetSelection] = useState(false);
@@ -125,10 +127,13 @@ export const NaccessVisitor = () => {
         startDate,
         endDate
       );
-      setFilteredEmployees(data.data);
+      if (data.length > 0) {
+        setFilteredEmployees(data.data);
+      } else {
+        setFilteredEmployees([]);
+      }
     } catch (error) {
       console.error("Erro ao buscar visitantes entre datas:", error);
-      setFilteredEmployees([]);
     }
   };
 
@@ -143,13 +148,16 @@ export const NaccessVisitor = () => {
         start,
         end
       );
-      setFilteredEmployees(data.data);
+      if (data.length > 0) {
+        setFilteredEmployees(data.data);
+      } else {
+        setFilteredEmployees([]);
+      }
+      setStartDate(start);
+      setEndDate(end);
     } catch (error) {
       console.error("Erro ao buscar visitantes hoje:", error);
-      setFilteredEmployees([]);
     }
-    setStartDate(start);
-    setEndDate(end);
   };
 
   // Função para buscar os visitantes de ontem
@@ -162,13 +170,16 @@ export const NaccessVisitor = () => {
 
     try {
       const data = await apiService.fetchAllEmployeeVisitors(start, end);
-      setFilteredEmployees(data.data);
+      if (data.length > 0) {
+        setFilteredEmployees(data.data);
+      } else {
+        setFilteredEmployees([]);
+      }
+      setStartDate(start);
+      setEndDate(end);
     } catch (error) {
       console.error("Erro ao buscar visitantes ontem:", error);
-      setFilteredEmployees([]);
     }
-    setStartDate(start);
-    setEndDate(end);
   };
 
   // Função para buscar os visitantes de amanhã
@@ -185,13 +196,16 @@ export const NaccessVisitor = () => {
 
     try {
       const data = await apiService.fetchAllEmployeeVisitors(start, end);
-      setFilteredEmployees(data);
+      if (data.length > 0) {
+        setFilteredEmployees(data.data);
+      } else {
+        setFilteredEmployees([]);
+      }
+      setStartDate(start);
+      setEndDate(end);
     } catch (error) {
       console.error("Erro ao buscar visitantes amanhã:", error);
-      setFilteredEmployees([]);
     }
-    setStartDate(start);
-    setEndDate(end);
   };
 
   // Função para adicionar um visitante
@@ -264,11 +278,17 @@ export const NaccessVisitor = () => {
     if (selectedIds.length > 0) {
       setLoading(true);
       try {
-        const foundEmployees = await fetchEmployeeVisitorsById(selectedIds);
+        const foundEmployees = await fetchEmployeeVisitor(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          selectedIds
+        );
         setFilteredEmployees((prev) => {
-          const existingIds = new Set(prev.map((emp) => emp.employeeID));
+          const existingIds = new Set(prev.map((emp) => emp.idVisitante));
           const uniqueEmployees = foundEmployees.filter(
-            (emp) => !existingIds.has(emp.employeeID)
+            (emp) => !existingIds.has(emp.idVisitante)
           );
           return [...prev, ...uniqueEmployees];
         });
@@ -304,6 +324,8 @@ export const NaccessVisitor = () => {
       "dataSaida",
       "idVisitante",
       "idPessoa",
+      "idInserido",
+      "empresaNome",
     ]);
   };
 
@@ -465,10 +487,15 @@ export const NaccessVisitor = () => {
   // Função para alterar o estado de um visitante
   const handleUpdateEstado = async (
     visitor: EmployeeVisitor,
-    newEstado: number
+    newEstado: number,
+    newDataSaida?: Date
   ) => {
     const { companions, ...visitorWithoutCompanions } = visitor;
-    const updatedVisitor = { ...visitorWithoutCompanions, estado: newEstado };
+    const updatedVisitor = {
+      ...visitorWithoutCompanions,
+      estado: newEstado,
+      dataSaida: newDataSaida,
+    };
 
     const cleanedVisitor = cleanObject(updatedVisitor);
 
@@ -563,6 +590,11 @@ export const NaccessVisitor = () => {
               default:
                 return row[field.key] || "";
             }
+          case "idInserido":
+            const employee = registeredUsers.find(
+              (emp) => emp.id === row[field.key]
+            );
+            return employee ? employee.userName : row[field.key];
           default:
             return row[field.key] || "";
         }
@@ -600,54 +632,6 @@ export const NaccessVisitor = () => {
     name: "Ações",
     cell: (row: EmployeeVisitor) => (
       <div style={{ display: "flex" }}>
-        {row.estado === 0 && (
-          <OverlayTrigger
-            placement="top"
-            delay={0}
-            container={document.body}
-            popperConfig={{
-              modifiers: [
-                {
-                  name: "preventOverflow",
-                  options: {
-                    boundary: "window",
-                  },
-                },
-              ],
-            }}
-            overlay={<Tooltip className="custom-tooltip">Iniciar</Tooltip>}
-          >
-            <CustomOutlineButton
-              className="action-button"
-              icon="bi bi-play"
-              onClick={() => handleUpdateEstado(row, 1)}
-            />
-          </OverlayTrigger>
-        )}
-        {row.estado === 1 && (
-          <OverlayTrigger
-            placement="top"
-            delay={0}
-            container={document.body}
-            popperConfig={{
-              modifiers: [
-                {
-                  name: "preventOverflow",
-                  options: {
-                    boundary: "window",
-                  },
-                },
-              ],
-            }}
-            overlay={<Tooltip className="custom-tooltip">Terminar</Tooltip>}
-          >
-            <CustomOutlineButton
-              className="action-button"
-              icon="bi bi-stop"
-              onClick={() => handleUpdateEstado(row, 2)}
-            />
-          </OverlayTrigger>
-        )}
         <OverlayTrigger
           placement="top"
           delay={0}
@@ -714,6 +698,60 @@ export const NaccessVisitor = () => {
             onClick={() => handleOpenDeleteModal(row.id)}
           />
         </OverlayTrigger>
+        {row.estado === 0 && (
+          <OverlayTrigger
+            placement="top"
+            delay={0}
+            container={document.body}
+            popperConfig={{
+              modifiers: [
+                {
+                  name: "preventOverflow",
+                  options: {
+                    boundary: "window",
+                  },
+                },
+              ],
+            }}
+            overlay={<Tooltip className="custom-tooltip">Iniciar</Tooltip>}
+          >
+            <CustomOutlineButton
+              className="action-button"
+              icon="bi bi-play"
+              onClick={() => handleUpdateEstado(row, 1)}
+            />
+          </OverlayTrigger>
+        )}
+        {row.estado === 1 && (
+          <OverlayTrigger
+            placement="top"
+            delay={0}
+            container={document.body}
+            popperConfig={{
+              modifiers: [
+                {
+                  name: "preventOverflow",
+                  options: {
+                    boundary: "window",
+                  },
+                },
+              ],
+            }}
+            overlay={<Tooltip className="custom-tooltip">Terminar</Tooltip>}
+          >
+            <CustomOutlineButton
+              className="action-button"
+              icon="bi bi-stop"
+              onClick={() =>
+                handleUpdateEstado(
+                  row,
+                  2,
+                  new Date(new Date().toISOString().substring(0, 16))
+                )
+              }
+            />
+          </OverlayTrigger>
+        )}
       </div>
     ),
     selector: (row: EmployeeVisitor) => row.id,
@@ -1012,6 +1050,7 @@ export const NaccessVisitor = () => {
                     data={filteredDataTable}
                     pagination
                     paginationComponentOptions={paginationOptions}
+                    onRowDoubleClicked={handleEditVisitor}
                     selectableRows
                     paginationRowsPerPageOptions={[20, 50]}
                     clearSelectedRows={clearSelectionToggle}
@@ -1337,6 +1376,7 @@ export const NaccessVisitor = () => {
                     data={filteredDataTable}
                     pagination
                     paginationComponentOptions={paginationOptions}
+                    onRowDoubleClicked={handleEditVisitor}
                     selectableRows
                     paginationRowsPerPageOptions={[20, 50]}
                     clearSelectedRows={clearSelectionToggle}

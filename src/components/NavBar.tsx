@@ -530,12 +530,12 @@ export const NavBar = ({ style }: NavBarProps) => {
     zones,
   } = usePersons();
   const {
-    payTerminal,
-    payCoins,
-    totalPayments,
-    moveCard,
-    moveKiosk,
-    totalMovements,
+    payTerminalNoPagination,
+    payCoinsNoPagination,
+    totalPaymentsNoPagination,
+    moveCardNoPagination,
+    moveKioskNoPagination,
+    totalMovementsNoPagination,
     moveVP,
     manualOpenDoor,
     getCoins,
@@ -546,8 +546,8 @@ export const NavBar = ({ style }: NavBarProps) => {
     fetchAllPayCoins,
     fetchAllMoveCard,
     fetchAllMoveKiosk,
-    fetchAndUnifyPaymentsForNavbar,
-    fetchAndUnifyMovementsForNavbar,
+    fetchAllMBAndCoin,
+    fetchAllCardAndKiosk
   } = useKiosk();
   const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice } = useAttendance();
   const [user, setUser] = useState({ name: "", email: "" });
@@ -2103,12 +2103,12 @@ export const NavBar = ({ style }: NavBarProps) => {
     geral_utilizadores: { data: registeredUsers, fields: registerFields },
     geral_logins: { data: loginLogs, fields: logsFields },
     geral_historico: { data: historyLogs, fields: logsFields },
-    recebimento_multibanco: { data: payTerminal, fields: transactionMBFields },
-    recebimento_moedeiro: { data: payCoins, fields: transactionMBFields },
-    recebimento_totais: { data: totalPayments, fields: transactionMBFields },
-    movimento_torniquete: { data: moveCard, fields: transactionCardFields },
-    movimento_quiosque: { data: moveKiosk, fields: transactionCardFields },
-    movimento_totais: { data: totalMovements, fields: transactionCardFields },
+    recebimento_multibanco: { data: payTerminalNoPagination, fields: transactionMBFields },
+    recebimento_moedeiro: { data: payCoinsNoPagination, fields: transactionMBFields },
+    recebimento_totais: { data: totalPaymentsNoPagination, fields: transactionMBFields },
+    movimento_torniquete: { data: moveCardNoPagination, fields: transactionCardFields },
+    movimento_quiosque: { data: moveKioskNoPagination, fields: transactionCardFields },
+    movimento_totais: { data: totalMovementsNoPagination, fields: transactionCardFields },
     remota_vp: { data: moveVP, fields: transactionCardFields },
     remota_abertura: { data: manualOpenDoor, fields: manualOpenDoorFields },
     registo_recolhas: {
@@ -3938,7 +3938,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                         <div className="icon-text-pessoas">
                           <Link
                             to="/naccess/naccessaccesses"
-                            onClick={() => fetchAllInitialAccessesbyDevice()}
+                            onClick={() => fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "/naccess/naccessaccesses"
@@ -4385,7 +4385,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                         >
                           <Link
                             to="/nvisitor/nvisitormovecard"
-                            onClick={() => fetchAllMoveCard()}
+                            onClick={() => fetchAllMoveCard(undefined, "3", undefined, undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button mt-2 ${
                               currentRoute === "/nvisitor/nvisitormovecard"
@@ -4403,7 +4403,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           </Link>
                           <Link
                             to="/nvisitor/nvisitormovekiosk"
-                            onClick={() => fetchAllMoveKiosk()}
+                            onClick={() => fetchAllMoveKiosk(undefined, "4", undefined, undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button mt-2 ${
                               currentRoute === "/nvisitor/nvisitormovekiosk"
@@ -4423,7 +4423,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                         <div className="icon-text-pessoas">
                           <Link
                             to="/nvisitor/nvisitorlistmovements"
-                            onClick={() => fetchAndUnifyMovementsForNavbar()}
+                            onClick={() => fetchAllCardAndKiosk(["3", "4"], undefined, undefined, undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
                               currentRoute === "/nvisitor/nvisitorlistmovements"
@@ -16045,7 +16045,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                         >
                           <Link
                             to="/nkiosk/nkioskpayterminal"
-                            onClick={() => fetchAllPayTerminal()}
+                            onClick={() => fetchAllPayTerminal(undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button ${
                               currentRoute === "/nkiosk/nkioskpayterminal"
@@ -16063,7 +16063,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           </Link>
                           <Link
                             to="/nkiosk/nkioskpaycoins"
-                            onClick={() => fetchAllPayCoins()}
+                            onClick={() => fetchAllPayCoins("2", undefined, undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button ${
                               currentRoute === "/nkiosk/nkioskpaycoins"
@@ -16080,7 +16080,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                         <div className="icon-text-pessoas">
                           <Link
                             to="/nkiosk/nkiosklistpayments"
-                            onClick={() => fetchAndUnifyPaymentsForNavbar()}
+                            onClick={() => fetchAllMBAndCoin(undefined, undefined, undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "/nkiosk/nkiosklistpayments"
@@ -16117,7 +16117,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                         >
                           <Link
                             to="/nkiosk/nkioskmovecard"
-                            onClick={() => fetchAllMoveCard()}
+                            onClick={() => fetchAllMoveCard(undefined, "3", undefined, undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button ${
                               currentRoute === "/nkiosk/nkioskmovecard"
@@ -16135,7 +16135,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           </Link>
                           <Link
                             to="/nkiosk/nkioskmovekiosk"
-                            onClick={() => fetchAllMoveKiosk()}
+                            onClick={() => fetchAllMoveKiosk(undefined, "4", undefined, undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button ${
                               currentRoute === "/nkiosk/nkioskmovekiosk"
@@ -16155,7 +16155,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                         <div className="icon-text-pessoas">
                           <Link
                             to="/nkiosk/nkiosklistmovements"
-                            onClick={() => fetchAndUnifyMovementsForNavbar()}
+                            onClick={() => fetchAllCardAndKiosk(["3", "4"], undefined, undefined, undefined, undefined, "1", "20")}
                             type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "/nkiosk/nkiosklistmovements"

@@ -64,9 +64,7 @@ export interface DeviceContextType {
     handleUpdateReaders: (reader: Readers) => Promise<void>;
     fetchEventsDevice: (startDate?: string, endDate?: string) => Promise<Events[]>;
     fetchEventsAndTransactionDevice: (startDate?: string, endDate?: string) => Promise<Movements[]>;
-    fetchDeviceActivities: (sn?: string, startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Activity[]>;
-    refreshIntervalTasks: number;
-    setRefreshIntervalTasks: (interval: number) => void;
+    fetchDeviceActivities: (sn?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Activity[]>;
     totalMovementPages: number;
     totalMovementRows: number;
     totalEventPages: number;
@@ -89,7 +87,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [cameras, setCameras] = useState<Cameras[]>([]);
     const [timePlans, setTimePlans] = useState<TimePlan[]>([]);
     const [events, setEvents] = useState<Alerts[]>([]);
-    const [refreshIntervalTasks, setRefreshIntervalTasks] = useState<number>(10000);
     const [totalMovementPages, setTotalMovementPages] = useState<number>(1);
     const [totalMovementRows, setTotalMovementRows] = useState<number>(0);
     const [totalEventPages, setTotalEventPages] = useState<number>(1);
@@ -639,7 +636,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todas as atividades do dispositivo
-    const fetchDeviceActivities = async (sn?: string, startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Activity[]> => {
+    const fetchDeviceActivities = async (sn?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Activity[]> => {
         try {
             const data = await apiService.fetchAllDeviceActivities(sn, startDate, endDate, pageNo, pageSize);
             setTotalMovementPages(data.totalPages);
@@ -732,8 +729,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         fetchEventsDevice,
         fetchEventsAndTransactionDevice,
         fetchDeviceActivities,
-        refreshIntervalTasks,
-        setRefreshIntervalTasks,
         totalMovementPages,
         totalMovementRows,
         totalEventPages

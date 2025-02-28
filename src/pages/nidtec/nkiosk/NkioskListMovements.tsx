@@ -40,19 +40,11 @@ export const NkioskListMovements = () => {
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
   const {
-    moveCard,
-    fetchAllMoveCard,
-    moveKiosk,
-    fetchAllMoveKiosk,
     totalMovements,
     setTotalMovements,
+    fetchAllCardAndKiosk,
+    totalMovementsPages,
   } = useKiosk();
-  const [listMovementCard, setListMovementCard] = useState<
-    KioskTransactionCard[]
-  >([]);
-  const [listMovementKiosk, setListMovementKiosk] = useState<
-    KioskTransactionCard[]
-  >([]);
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -77,99 +69,67 @@ export const NkioskListMovements = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
-  const eventDoorId = "3";
-  const eventDoorId2 = "4";
+  const [totalRows, setTotalRows] = useState(0);
 
-  // Função para buscar os pagamentos dos terminais
-  const settingVariables = () => {
-    setListMovementCard(moveCard);
-    setListMovementKiosk(moveKiosk);
+  // Função para buscar os dados da paginação
+  const fetchPaginationTotalMove = async (pageNo: string, perPage: string) => {
+    setLoading(true);
+    try {
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        ["3", "4"],
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        pageNo,
+        perPage
+      );
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar acessos paginados:", error);
+      setLoading(false);
+    }
   };
 
   // Função para buscar os movimentos entre datas
   const fetchMovementCardBetweenDates = async () => {
     try {
-      if (devices.length === 0) {
-        setListMovementCard([]);
-        setListMovementKiosk([]);
-        return;
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        ["3", "4"],
+        undefined,
+        undefined,
+        startDate,
+        endDate
+      );
+      if (data.length > 0) {
+        setTotalMovements(data.data);
+      } else {
+        setTotalMovements([]);
       }
-
-      const promisesMovementCard = devices.map((device) =>
-        apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          startDate,
-          endDate
-        )
-      );
-
-      const promisesMovementKiosk = devices.map((device) =>
-        apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId2,
-          device.serialNumber,
-          startDate,
-          endDate
-        )
-      );
-
-      const resultsMovementCard = await Promise.all(promisesMovementCard);
-      const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
-
-      const validDataCard = resultsMovementCard
-        .filter((data) => Array.isArray(data) && data.length > 0)
-        .flat();
-      const validDataKiosk = resultsMovementKiosk
-        .filter((data) => Array.isArray(data) && data.length > 0)
-        .flat();
-
-      setTotalMovements([...validDataCard, ...validDataKiosk]);
     } catch (error) {
       console.error("Erro ao buscar os dados de listagem de movimentos", error);
-      setListMovementCard([]);
-      setListMovementKiosk([]);
     }
   };
 
   // Função para buscar os movimentos entre datas
   const fetchTotalMovementsToday = async () => {
     try {
-      if (devices.length === 0) {
-        setListMovementCard([]);
-        setListMovementKiosk([]);
-        return;
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        ["3", "4"],
+        undefined,
+        undefined,
+        formatDateToStartOfDay(currentDate),
+        formatDateToEndOfDay(currentDate)
+      );
+      if (data.length > 0) {
+        setTotalMovements(data.data);
+      } else {
+        setTotalMovements([]);
       }
-
-      const promisesMovementCard = devices.map((device) =>
-        apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          formatDateToStartOfDay(currentDate),
-          formatDateToEndOfDay(currentDate)
-        )
-      );
-
-      const promisesMovementKiosk = devices.map((device) =>
-        apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId2,
-          device.serialNumber,
-          formatDateToStartOfDay(currentDate),
-          formatDateToEndOfDay(currentDate)
-        )
-      );
-
-      const resultsMovementCard = await Promise.all(promisesMovementCard);
-      const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
-
-      const validDataCard = resultsMovementCard
-        .filter((data) => Array.isArray(data) && data.length > 0)
-        .flat();
-      const validDataKiosk = resultsMovementKiosk
-        .filter((data) => Array.isArray(data) && data.length > 0)
-        .flat();
-
-      setTotalMovements([...validDataCard, ...validDataKiosk]);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -177,8 +137,6 @@ export const NkioskListMovements = () => {
         "Erro ao buscar os dados de listagem de movimentos hoje",
         error
       );
-      setListMovementCard([]);
-      setListMovementKiosk([]);
     }
   };
 
@@ -191,41 +149,18 @@ export const NkioskListMovements = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      if (devices.length === 0) {
-        setListMovementCard([]);
-        setListMovementKiosk([]);
-        return;
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        ["3", "4"],
+        undefined,
+        undefined,
+        start,
+        end
+      );
+      if (data.length > 0) {
+        setTotalMovements(data.data);
+      } else {
+        setTotalMovements([]);
       }
-
-      const promisesMovementCard = devices.map((device) =>
-        apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          start,
-          end
-        )
-      );
-
-      const promisesMovementKiosk = devices.map((device) =>
-        apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId2,
-          device.serialNumber,
-          start,
-          end
-        )
-      );
-
-      const resultsMovementCard = await Promise.all(promisesMovementCard);
-      const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
-
-      const validDataCard = resultsMovementCard
-        .filter((data) => Array.isArray(data) && data.length > 0)
-        .flat();
-      const validDataKiosk = resultsMovementKiosk
-        .filter((data) => Array.isArray(data) && data.length > 0)
-        .flat();
-
-      setTotalMovements([...validDataCard, ...validDataKiosk]);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -233,8 +168,6 @@ export const NkioskListMovements = () => {
         "Erro ao buscar os dados de listagem de movimentos hoje",
         error
       );
-      setListMovementCard([]);
-      setListMovementKiosk([]);
     }
   };
 
@@ -251,41 +184,18 @@ export const NkioskListMovements = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      if (devices.length === 0) {
-        setListMovementCard([]);
-        setListMovementKiosk([]);
-        return;
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        ["3", "4"],
+        undefined,
+        undefined,
+        start,
+        end
+      );
+      if (data.length > 0) {
+        setTotalMovements(data.data);
+      } else {
+        setTotalMovements([]);
       }
-
-      const promisesMovementCard = devices.map((device) =>
-        apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          start,
-          end
-        )
-      );
-
-      const promisesMovementKiosk = devices.map((device) =>
-        apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId2,
-          device.serialNumber,
-          start,
-          end
-        )
-      );
-
-      const resultsMovementCard = await Promise.all(promisesMovementCard);
-      const resultsMovementKiosk = await Promise.all(promisesMovementKiosk);
-
-      const validDataCard = resultsMovementCard
-        .filter((data) => Array.isArray(data) && data.length > 0)
-        .flat();
-      const validDataKiosk = resultsMovementKiosk
-        .filter((data) => Array.isArray(data) && data.length > 0)
-        .flat();
-
-      setTotalMovements([...validDataCard, ...validDataKiosk]);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -293,8 +203,6 @@ export const NkioskListMovements = () => {
         "Erro ao buscar os dados de listagem de movimentos hoje",
         error
       );
-      setListMovementCard([]);
-      setListMovementKiosk([]);
     }
   };
 
@@ -303,22 +211,22 @@ export const NkioskListMovements = () => {
     await handleUpdateEmployee(employee);
   };
 
-  // Unifica os dados de movimentos de cartão e porteiro
-  const mergeMovementData = () => {
-    const unifiedData = [...listMovementCard, ...listMovementKiosk];
-    setTotalMovements(unifiedData);
-  };
-
-  // Atualiza a lista de movimentos ao montar o componente
+  // Busca os dados se a paginação mudar
   useEffect(() => {
-    settingVariables();
-    mergeMovementData();
-  }, []);
+    fetchPaginationTotalMove(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
 
   // Função para atualizar as listagens de movimentos
   const refreshListMovements = () => {
-    fetchAllMoveCard();
-    fetchAllMoveKiosk();
+    fetchAllCardAndKiosk(
+      ["3", "4"],
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "1",
+      "20"
+    );
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -352,6 +260,17 @@ export const NkioskListMovements = () => {
     } else {
       setSelectedColumns([...selectedColumns, columnName]);
     }
+  };
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
   };
 
   // Função para resetar as colunas
@@ -796,11 +715,7 @@ export const NkioskListMovements = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -812,6 +727,29 @@ export const NkioskListMovements = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalMovementsPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
               <div style={{ marginLeft: 10, marginTop: -5 }}>
@@ -831,7 +769,11 @@ export const NkioskListMovements = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
             <TreeViewDataNkioskMove
               onSelectDevices={handleSelectFromTreeView}
             />
@@ -1055,11 +997,7 @@ export const NkioskListMovements = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -1071,6 +1009,29 @@ export const NkioskListMovements = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalMovementsPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
               <div style={{ marginLeft: 10, marginTop: -5 }}>

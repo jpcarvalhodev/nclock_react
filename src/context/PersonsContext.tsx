@@ -37,9 +37,9 @@ export interface PersonsContextType {
     setDisabledEmployees: (employees: Employee[]) => void;
     setDisabledEmployeesNoPagination: (employees: Employee[]) => void;
     fetchAllData: (entity?: string) => Promise<void>;
-    fetchAllEmployees: (options?: FetchOptions) => Promise<Employee[]>;
+    fetchAllEmployees: (options?: FetchOptions, pageNo?: string, pageSize?: string) => Promise<Employee[]>;
     fetchAllEmployeesNoPagination: (options?: FetchOptions) => Promise<Employee[]>;
-    fetchAllDisabledEmployees: (options?: FetchOptions) => Promise<Employee[]>;
+    fetchAllDisabledEmployees: (options?: FetchOptions, pageNo?: string, pageSize?: string) => Promise<Employee[]>;
     fetchAllDisabledEmployeesNoPagination: (options?: FetchOptions) => Promise<Employee[]>;
     fetchEmployeesById: (employeeID: string[]) => Promise<Employee[]>;
     fetchAllCardData: () => Promise<EmployeeCard[]>;
@@ -89,9 +89,9 @@ export interface PersonsContextType {
     handleUpdateZone: (zone: Zone) => Promise<void>;
     handleDeleteZone: (zoneID: string[]) => Promise<void>;
     totalPages: number;
+    setTotalPages: (totalPages: number) => void;
     employeeVisitor: EmployeeVisitor[];
-    fetchEmployeeVisitor: (startDate?: string, endDate?: string, pageNo?: "1", perPage?: "20") => Promise<EmployeeVisitor[]>;
-    fetchEmployeeVisitorsById: (employeeID: string[]) => Promise<EmployeeVisitor[]>;
+    fetchEmployeeVisitor: (startDate?: string, endDate?: string, pageNo?: "1", perPage?: "20", employeeIds?: string[]) => Promise<EmployeeVisitor[]>;
     handleAddEmployeeVisitor: (employeeVisitor: Partial<EmployeeVisitor>) => Promise<void>;
     handleUpdateEmployeeVisitor: (employeeVisitor: Partial<EmployeeVisitor>) => Promise<void>;
     handleDeleteEmployeeVisitor: (employeeVisitorID: string[]) => Promise<void>;
@@ -828,23 +828,12 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Define a função para buscar os visitantes
-    const fetchEmployeeVisitor = async (startDate?: string, endDate?: string, pageNo?: "1", perPage?: "20"): Promise<EmployeeVisitor[]> => {
+    const fetchEmployeeVisitor = async (startDate?: string, endDate?: string, pageNo?: "1", perPage?: "20", employeeIds?: string[]): Promise<EmployeeVisitor[]> => {
         try {
-            const data = await apiService.fetchAllEmployeeVisitors(undefined, undefined, pageNo, perPage);
+            const data = await apiService.fetchAllEmployeeVisitors(undefined, undefined, pageNo, perPage, employeeIds);
             setEmployeeVisitor(data.data);
             setTotalPages(data.totalPages);
             return data.data;
-        } catch (error) {
-            console.error('Erro ao buscar dados:', error);
-        }
-        return [];
-    }
-    
-    // Função para buscar visitantes por ID
-    const fetchEmployeeVisitorsById = async (employeeID: string[]): Promise<EmployeeVisitor[]> => {
-        try {
-            const data = await apiService.fetchEmployeeVisitorById(employeeID);
-            return data;
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
         }
@@ -957,6 +946,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllProfessions();
             fetchAllZones();
             fetchVisitorsMotive();
+            fetchEmployeeVisitor();
         }
     }, []);
 
@@ -1030,9 +1020,9 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         handleUpdateZone,
         handleDeleteZone,
         totalPages,
+        setTotalPages,
         employeeVisitor,
         fetchEmployeeVisitor,
-        fetchEmployeeVisitorsById,
         handleAddEmployeeVisitor,
         handleUpdateEmployeeVisitor,
         handleDeleteEmployeeVisitor,

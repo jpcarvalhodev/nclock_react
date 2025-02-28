@@ -38,18 +38,12 @@ export const NkioskListPayments = () => {
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
   const {
-    payTerminal,
-    fetchAllPayTerminal,
-    payCoins,
-    fetchAllPayCoins,
+    fetchAllMBAndCoin,
     totalPayments,
     setTotalPayments,
+    totalPaymentsPages,
   } = useKiosk();
   const { kioskConfig } = useNavbar();
-  const [listPaymentMB, setListPaymentMB] = useState<KioskTransactionMB[]>([]);
-  const [listPaymentCoin, setListPaymentCoin] = useState<KioskTransactionMB[]>(
-    []
-  );
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -70,102 +64,67 @@ export const NkioskListPayments = () => {
   );
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
-  const eventDoorId = "2";
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(20);
+  const [totalRows, setTotalRows] = useState(0);
 
-  // Função para buscar os pagamentos dos terminais
-  const settingVariables = () => {
-    setListPaymentMB(payTerminal);
-    setListPaymentCoin(payCoins);
+  // Função para buscar os dados da paginação
+  const fetchPaginationTotalPay = async (pageNo: string, perPage: string) => {
+    setLoading(true);
+    try {
+      const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        pageNo,
+        perPage
+      );
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar acessos paginados:", error);
+      setLoading(false);
+    }
   };
 
   // Função para buscar as listagens de pagamentos entre datas
   const fetchPaymentsBetweenDates = async () => {
     try {
-      if (devices.length === 0) {
-        setListPaymentMB([]);
-        setListPaymentCoin([]);
-        return;
+      const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+        undefined,
+        undefined,
+        startDate,
+        endDate
+      );
+      if (data.length > 0) {
+        setTotalPayments(data.data);
+      } else {
+        setTotalPayments([]);
       }
-
-      const mbPromises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByMBAndDeviceSN(
-          startDate,
-          endDate
-        );
-      });
-
-      const coinPromises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByPayCoins(
-          eventDoorId,
-          device.serialNumber,
-          startDate,
-          endDate
-        );
-      });
-
-      const allMBData = await Promise.all(mbPromises);
-      const allCoinData = await Promise.all(coinPromises);
-
-      const validMBData = allMBData.filter(
-        (data) => Array.isArray(data) && data.length > 0
-      );
-      const combinedMBData = validMBData.flat();
-
-      const validCoinData = allCoinData.filter(
-        (data) => Array.isArray(data) && data.length > 0
-      );
-      const combinedCoinData = validCoinData.flat();
-
-      setTotalPayments([...combinedMBData, ...combinedCoinData]);
     } catch (error) {
       console.error(
         "Erro ao buscar os dados de listagem de pagamentos:",
         error
       );
-      setListPaymentMB([]);
-      setListPaymentCoin([]);
     }
   };
 
   // Função para buscar as listagens de pagamentos hoje
   const fetchTotalPaymentsToday = async () => {
     try {
-      if (devices.length === 0) {
-        setListPaymentMB([]);
-        setListPaymentCoin([]);
-        return;
+      const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+        undefined,
+        undefined,
+        startDate,
+        endDate
+      );
+      if (data.length > 0) {
+        setTotalPayments(data.data);
+      } else {
+        setTotalPayments([]);
       }
-
-      const mbPromises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByMBAndDeviceSN(
-          formatDateToStartOfDay(currentDate),
-          formatDateToEndOfDay(currentDate)
-        );
-      });
-
-      const coinPromises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByPayCoins(
-          eventDoorId,
-          device.serialNumber,
-          formatDateToStartOfDay(currentDate),
-          formatDateToEndOfDay(currentDate)
-        );
-      });
-
-      const allMBData = await Promise.all(mbPromises);
-      const allCoinData = await Promise.all(coinPromises);
-
-      const validMBData = allMBData.filter(
-        (data) => Array.isArray(data) && data.length > 0
-      );
-      const combinedMBData = validMBData.flat();
-
-      const validCoinData = allCoinData.filter(
-        (data) => Array.isArray(data) && data.length > 0
-      );
-      const combinedCoinData = validCoinData.flat();
-
-      setTotalPayments([...combinedMBData, ...combinedCoinData]);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -173,8 +132,6 @@ export const NkioskListPayments = () => {
         "Erro ao buscar os dados de listagem de pagamentos hoje:",
         error
       );
-      setListPaymentMB([]);
-      setListPaymentCoin([]);
     }
   };
 
@@ -187,39 +144,17 @@ export const NkioskListPayments = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      if (devices.length === 0) {
-        setListPaymentMB([]);
-        setListPaymentCoin([]);
-        return;
+      const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+        undefined,
+        undefined,
+        start,
+        end
+      );
+      if (data.length > 0) {
+        setTotalPayments(data.data);
+      } else {
+        setTotalPayments([]);
       }
-
-      const mbPromises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByMBAndDeviceSN(start, end);
-      });
-
-      const coinPromises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByPayCoins(
-          eventDoorId,
-          device.serialNumber,
-          start,
-          end
-        );
-      });
-
-      const allMBData = await Promise.all(mbPromises);
-      const allCoinData = await Promise.all(coinPromises);
-
-      const validMBData = allMBData.filter(
-        (data) => Array.isArray(data) && data.length > 0
-      );
-      const combinedMBData = validMBData.flat();
-
-      const validCoinData = allCoinData.filter(
-        (data) => Array.isArray(data) && data.length > 0
-      );
-      const combinedCoinData = validCoinData.flat();
-
-      setTotalPayments([...combinedMBData, ...combinedCoinData]);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -227,8 +162,6 @@ export const NkioskListPayments = () => {
         "Erro ao buscar os dados de listagem de pagamento de ontem:",
         error
       );
-      setListPaymentMB([]);
-      setListPaymentCoin([]);
     }
   };
 
@@ -245,39 +178,17 @@ export const NkioskListPayments = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      if (devices.length === 0) {
-        setListPaymentMB([]);
-        setListPaymentCoin([]);
-        return;
+      const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+        undefined,
+        undefined,
+        start,
+        end
+      );
+      if (data.length > 0) {
+        setTotalPayments(data.data);
+      } else {
+        setTotalPayments([]);
       }
-
-      const mbPromises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByMBAndDeviceSN(start, end);
-      });
-
-      const coinPromises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByPayCoins(
-          eventDoorId,
-          device.serialNumber,
-          start,
-          end
-        );
-      });
-
-      const allMBData = await Promise.all(mbPromises);
-      const allCoinData = await Promise.all(coinPromises);
-
-      const validMBData = allMBData.filter(
-        (data) => Array.isArray(data) && data.length > 0
-      );
-      const combinedMBData = validMBData.flat();
-
-      const validCoinData = allCoinData.filter(
-        (data) => Array.isArray(data) && data.length > 0
-      );
-      const combinedCoinData = validCoinData.flat();
-
-      setTotalPayments([...combinedMBData, ...combinedCoinData]);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -285,27 +196,17 @@ export const NkioskListPayments = () => {
         "Erro ao buscar os dados de listagem de pagamentos de amanhã:",
         error
       );
-      setListPaymentMB([]);
-      setListPaymentCoin([]);
     }
   };
 
-  // Unifica os dados de transações MB e moedas
-  const mergePaymentData = () => {
-    const unifiedData = [...listPaymentMB, ...listPaymentCoin];
-    setTotalPayments(unifiedData);
-  };
-
-  // Atualiza a lista de pagamentos ao montar o componente
+  // Busca os dados se a paginação mudar
   useEffect(() => {
-    settingVariables();
-    mergePaymentData();
-  }, []);
+    fetchPaginationTotalPay(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
 
   // Função para atualizar as listagens de pagamentos
   const refreshListPayments = () => {
-    fetchAllPayTerminal();
-    fetchAllPayCoins();
+    fetchAllMBAndCoin(undefined, undefined, undefined, undefined, "1", "20");
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -337,6 +238,17 @@ export const NkioskListPayments = () => {
     } else {
       setSelectedColumns([...selectedColumns, columnName]);
     }
+  };
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
   };
 
   // Função para resetar as colunas
@@ -774,7 +686,6 @@ export const NkioskListPayments = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
                   paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -787,6 +698,29 @@ export const NkioskListPayments = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="timestamp"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalPaymentsPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
               <div style={{ marginLeft: 10, marginTop: -5 }}>
@@ -1029,7 +963,6 @@ export const NkioskListPayments = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
                   paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -1042,6 +975,29 @@ export const NkioskListPayments = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="timestamp"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(totalPaymentsPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
               <div style={{ marginLeft: 10, marginTop: -5 }}>

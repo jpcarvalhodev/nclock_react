@@ -42,7 +42,7 @@ export const Login = () => {
   const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice } = useAttendance();
   const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones, fetchAllDisabledEmployees, fetchAllEmployeesNoPagination, fetchAllDisabledEmployeesNoPagination, fetchEmployeeVisitor, fetchVisitorsMotive } = usePersons();
   const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans, fetchCameras, fetchEventsDevice, fetchEventsAndTransactionDevice, fetchDeviceActivities } = useTerminals();
-  const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks } = useKiosk();
+  const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks, fetchAllMBAndCoin, fetchAllCardAndKiosk, fetchAllChartData } = useKiosk();
   const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
@@ -216,7 +216,7 @@ export const Login = () => {
             fetchAllLoginLogs(),
             fetchAllHistoryLogs(),
             fetchAllAttendances(),
-            fetchAllInitialAccessesbyDevice(),
+            fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20"),
             fetchAllAccessesbyDevice(),
             fetchAllMBDevices(),
             fetchAccessControl(),
@@ -230,12 +230,15 @@ export const Login = () => {
             fetchAllCounter(),
             fetchAllLimpezas(),
             fetchAllManualOpen(),
-            fetchAllMoveCard(),
-            fetchAllMoveKiosk(),
+            fetchAllMoveCard(undefined, "3", undefined, undefined, undefined, undefined, undefined),
+            fetchAllMoveKiosk(undefined, "4", undefined, undefined, undefined, undefined, undefined),
             fetchAllMoveVP(),
             fetchAllOcorrencias(),
-            fetchAllPayCoins(),
+            fetchAllPayCoins("2", undefined, undefined, undefined, undefined, undefined),
             fetchAllPayTerminal(),
+            fetchAllMBAndCoin(),
+            fetchAllCardAndKiosk(["3", "4"], undefined, undefined, undefined, undefined, undefined, undefined),
+            fetchAllChartData(),
             fetchEmailConfig(),
             fetchKioskConfig(),
             fetchAllTasks(),

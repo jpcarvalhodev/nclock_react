@@ -865,7 +865,6 @@ export const employeeVisitorFields = [
   { key: "dataSaida", label: "Data de Saída", type: "date" },
   { key: "idVisitante", label: "Visitante", type: "string" },
   { key: "idPessoa", label: "Visitado", type: "string" },
-  { key: "estado", label: "Estado", type: "number" },
   { key: "idInserido", label: "Inserido Por", type: "string" },
   { key: "obs", label: "Observações", type: "string" },
   { key: "idViatura", label: "Viatura", type: "string" },
@@ -878,6 +877,7 @@ export const employeeVisitorFields = [
   { key: "empresaNome", label: "Nome Empresa", type: "string" },
   { key: "empresaNif", label: "NIF Empresa", type: "string" },
   { key: "visitanteMotivo", label: "Motivo da Visita", type: "string" },
+  { key: "estado", label: "Estado", type: "number" },
 ];
 
 export const employeeVisitorMotiveFields = [

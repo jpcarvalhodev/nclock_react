@@ -81,7 +81,11 @@ export const LoginLogs = () => {
   const fetchLogsBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllLoginLogs(startDate, endDate);
-      setLoginLogs(data.data);
+      if (data.length > 0) {
+        setLoginLogs(data.data);
+      } else {
+        setLoginLogs([]);
+      }
     } catch (error) {
       console.error("Erro ao buscar os dados de logs:", error);
     }
@@ -94,7 +98,11 @@ export const LoginLogs = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      setLoginLogs(data.data);
+      if (data.length > 0) {
+        setLoginLogs(data.data);
+      } else {
+        setLoginLogs([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -112,7 +120,11 @@ export const LoginLogs = () => {
 
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      setLoginLogs(data.data);
+      if (data.length > 0) {
+        setLoginLogs(data.data);
+      } else {
+        setLoginLogs([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -134,18 +146,17 @@ export const LoginLogs = () => {
 
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      setLoginLogs(data.data);
+      if (data.length > 0) {
+        setLoginLogs(data.data);
+      } else {
+        setLoginLogs([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
       console.error("Erro ao buscar os dados de logs amanhã:", error);
     }
   };
-
-  // Busca os logs de login ao montar o componente
-  useEffect(() => {
-    fetchAllLoginLogs(undefined, undefined, undefined, "1", "20");
-  }, []);
 
   // Busca os funcionários paginados ao mudar a página
   useEffect(() => {

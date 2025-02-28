@@ -44,7 +44,7 @@ export const TestEmailModal = <T extends Record<string, any>>({
 
   return (
     <Modal show={open} onHide={handleClose} backdrop="static" centered>
-      <Modal.Header closeButton>
+      <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-body-scrollable">
@@ -64,7 +64,7 @@ export const TestEmailModal = <T extends Record<string, any>>({
           </Row>
         </div>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
         <Button
           className="narrow-mobile-modal-button"
           variant="outline-dark"

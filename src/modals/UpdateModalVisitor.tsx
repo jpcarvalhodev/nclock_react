@@ -58,7 +58,7 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
   onPrev,
 }: Props<T>) => {
   const {
-    employees,
+    employeesNoPagination,
     dataEE,
     employeeVisitorMotive,
     handleAddExternalEntity,
@@ -74,11 +74,71 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
   // Busca entity ao abrir o modal
   useEffect(() => {
     if (open) {
-      setFormData({ ...entity });
+      let newData = { ...entity };
+
+      if (entity.idVisitante) {
+        const visitor = employeesNoPagination.find(
+          (emp) => emp.employeeID === entity.idVisitante
+        );
+        if (visitor) {
+          newData = {
+            ...newData,
+            idVisitante: visitor.employeeID,
+            visitanteCartaoEU: visitor.biNumber || "",
+            visitanteContacto: visitor.mobile || "",
+            visitanteNif: visitor.nif || "",
+            visitantePassaporte: visitor.passaporte || "",
+            card:
+              visitor.employeeCards && visitor.employeeCards.length > 0
+                ? visitor.employeeCards[0].cardNumber
+                : "",
+          };
+        }
+      }
+
+      if (entity.idPessoa) {
+        const visitado = employeesNoPagination.find(
+          (emp) => emp.employeeID === entity.idPessoa
+        );
+        if (visitado) {
+          newData = {
+            ...newData,
+            idPessoa: visitado.employeeID,
+            department: visitado.departmentName || "",
+            phone: visitado.mobile || "",
+          };
+        }
+      }
+
+      if (entity.companions && Array.isArray(entity.companions)) {
+        const companionList = entity.companions
+          .map((companion) => {
+            const emp = employeesNoPagination.find(
+              (e) => e.employeeID === companion.employeeId
+            );
+            if (emp) {
+              return {
+                ...emp,
+                cardNumber:
+                  emp.employeeCards && emp.employeeCards.length > 0
+                    ? emp.employeeCards[0].cardNumber
+                    : "",
+              };
+            }
+            return null;
+          })
+          .filter((item) => item !== null) as Employee[];
+        setFilteredEmployees(companionList);
+      } else {
+        setFilteredEmployees([]);
+      }
+
+      setFormData(newData);
     } else {
       setFormData({});
+      setFilteredEmployees([]);
     }
-  }, [open, entity]);
+  }, [open, entity, employeesNoPagination]);
 
   // Função para adicionar um funcionário e um cartão
   const addEmployeeAndCard = async (employee: Partial<Employee>) => {
@@ -115,16 +175,20 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
   };
 
   // Filtra os visitantes
-  const visitantes = employees.filter((emp) => emp.type === "Visitante");
+  const visitantes = employeesNoPagination.filter(
+    (emp) => emp.type === "Visitante"
+  );
 
   // Função para tratar a mudança do visitante no dropdown:
   const handleVisitorChange = (e: ChangeEvent<FormControlElement>) => {
-    const selectedVisitorName = e.target.value;
-    const visitor = visitantes.find((emp) => emp.name === selectedVisitorName);
+    const selectedVisitorId = e.target.value;
+    const visitor = employeesNoPagination.find(
+      (emp) => emp.employeeID === selectedVisitorId
+    );
     if (visitor) {
       setFormData((prev) => ({
         ...prev,
-        idVisitante: visitor.name,
+        idVisitante: visitor.employeeID,
         visitanteCartaoEU: visitor.biNumber || "",
         visitanteContacto: visitor.mobile || "",
         visitanteNif: visitor.nif || "",
@@ -139,23 +203,24 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
         visitanteContacto: "",
         visitanteNif: "",
         visitantePassaporte: "",
+        card: "",
       }));
     }
   };
 
   // Dentro do componente, antes do retorno:
-  const visitados = employees.filter(
+  const visitados = employeesNoPagination.filter(
     (emp) => emp.type === "Funcionário" || emp.type === "Subcontratado"
   );
 
   // Função para tratar a mudança do visitado no dropdown
   const handleVisitadoChange = (e: ChangeEvent<FormControlElement>) => {
-    const selectedName = e.target.value;
-    const visitado = visitados.find((emp) => emp.name === selectedName);
+    const selectedId = e.target.value;
+    const visitado = visitados.find((emp) => emp.employeeID === selectedId);
     if (visitado) {
       setFormData((prev) => ({
         ...prev,
-        idPessoa: visitado.name,
+        idPessoa: visitado.employeeID,
         department: visitado.departmentName || "",
         phone: visitado.mobile || "",
       }));
@@ -191,6 +256,22 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
     selectedRows: Employee[];
   }) => {
     setSelectedRows(state.selectedRows);
+  };
+
+  // Define a função para remover acompanhantes
+  const handleRemoveCompanions = () => {
+    if (selectedRows.length > 0) {
+      const remainingCompanions = filteredEmployees.filter(
+        (emp) =>
+          !selectedRows.some(
+            (selected) => selected.employeeID === emp.employeeID
+          )
+      );
+      setFilteredEmployees(remainingCompanions);
+      setSelectedRows([]);
+    } else {
+      setFilteredEmployees([]);
+    }
   };
 
   // Define as opções de paginação de EN para PT
@@ -230,31 +311,31 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
 
   // Define o envio de dados
   const handleSave = () => {
-    const { phone, card, department, ...visitorData } = formData;
+    const { phone, card, department, companions, ...visitorData } = formData;
 
     const selectedCompany = dataEE.externalEntity.find(
       (entity: any) => entity.name === formData.empresaNome
     );
     const idEntidadeExterna = selectedCompany
       ? selectedCompany.externalEntityID
-      : undefined;
+      : formData.empresaNome;
 
     const selectedVisitor = visitantes.find(
       (emp) => emp.name === formData.idVisitante
     );
     const idVisitante = selectedVisitor
       ? selectedVisitor.employeeID
-      : undefined;
+      : formData.idVisitante;
 
     const selectedVisitado = visitados.find(
       (emp) => emp.name === formData.idPessoa
     );
-    const idPessoa = selectedVisitado ? selectedVisitado.employeeID : undefined;
+    const idPessoa = selectedVisitado ? selectedVisitado.employeeID : formData.idPessoa;
 
     const selectedMotive = employeeVisitorMotive.find(
       (motive: any) => motive.descricao === formData.visitanteMotivo
     );
-    const idVisitanteMotivo = selectedMotive ? selectedMotive.id : undefined;
+    const idVisitanteMotivo = selectedMotive ? selectedMotive.id : formData.visitanteMotivo;
 
     const finalVisitorData = {
       ...visitorData,
@@ -266,16 +347,17 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
 
     const payload = {
       visitor: finalVisitorData,
-      companionEmployeeIds: filteredEmployees.map((emp) => emp.id),
+      companionEmployeeIds: filteredEmployees.map((emp) => emp.employeeID || emp.id),
     };
 
+    console.log(payload);
     onUpdate(payload as unknown as T);
     handleClose();
   };
 
   return (
     <Modal show={open} onHide={handleClose} size="xl" centered>
-      <Modal.Header closeButton>
+      <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -481,7 +563,10 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
                     >
                       <option value="">Selecione...</option>
                       {visitantes.map((visitor) => (
-                        <option key={visitor.employeeID} value={visitor.name}>
+                        <option
+                          key={visitor.employeeID}
+                          value={visitor.employeeID}
+                        >
                           {visitor.name}
                         </option>
                       ))}
@@ -564,7 +649,7 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
                 }}
               >
                 <span style={{ textAlign: "center" }}>Acompanhantes</span>
-                <div style={{ marginLeft: "auto", right: 0 }}>
+                <div style={{ display: "flex", marginLeft: "auto", gap: 5 }}>
                   <OverlayTrigger
                     placement="top"
                     delay={0}
@@ -582,13 +667,39 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
                     }}
                     overlay={
                       <Tooltip className="custom-tooltip">
-                        Adicionar Acompanhante
+                        Adicionar Acompanhantes
                       </Tooltip>
                     }
                   >
                     <CustomOutlineButton
                       icon="bi bi-person-plus"
                       onClick={() => setShowAddCompanyModal(true)}
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">
+                        Remover Acompanhantes
+                      </Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi bi-trash"
+                      onClick={handleRemoveCompanions}
                     />
                   </OverlayTrigger>
                 </div>
@@ -601,8 +712,8 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
                   data={filteredEmployees}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
-                  paginationRowsPerPageOptions={[20, 50]}
+                  paginationPerPage={5}
+                  paginationRowsPerPageOptions={[5, 10]}
                   selectableRows
                   selectableRowsSingle
                   onSelectedRowsChange={handleRowSelected}
@@ -633,7 +744,7 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
                     >
                       <option value="">Selecione...</option>
                       {visitados.map((emp) => (
-                        <option key={emp.employeeID} value={emp.name}>
+                        <option key={emp.employeeID} value={emp.employeeID}>
                           {emp.name}
                         </option>
                       ))}
@@ -703,7 +814,7 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
           </Card>
         </Row>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
         <OverlayTrigger
           placement="top"
           delay={0}

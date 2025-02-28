@@ -254,6 +254,8 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchAllAttendances();
+      fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20");
+      fetchAllAccessesbyDevice();
     }
   }, []);
 

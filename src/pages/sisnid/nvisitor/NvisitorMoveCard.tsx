@@ -57,7 +57,7 @@ export const NvisitorMoveCard = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { moveCard, setMoveCard, fetchAllMoveCard, handleAddNewMoveCard } =
+  const { moveCard, setMoveCard, fetchAllMoveCard, handleAddNewMoveCard, moveCardPages } =
     useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -86,76 +86,65 @@ export const NvisitorMoveCard = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
-  const eventDoorId = "3";
+  const [totalRows, setTotalRows] = useState(0);
 
   // Função para adicionar um novo movimento de cartão
   const addNewCard = async (newCard: NewTransactionCard) => {
     await handleAddNewMoveCard(newCard);
   };
 
+  // Função para buscar os dados da paginação
+  const fetchPaginationMoveCard = async (
+    pageNo: string,
+    perPage: string
+  ) => {
+    setLoading(true);
+    try {
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "3",
+        undefined,
+        pageNo,
+        perPage
+      );
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar acessos paginados:", error);
+      setLoading(false);
+    }
+  };
+
   // Função para buscar os movimentos dos cartões entre datas
   const fetchMovementCardBetweenDates = async () => {
     try {
-      if (devices.length === 0) {
-        setMoveCard([]);
-        return;
-      }
-
-      const promises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          startDate,
-          endDate
-        );
-      });
-
-      const allData = await Promise.all(promises);
-
-      const validData = allData.filter(
-        (data) => Array.isArray(data) && data.length > 0
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "3",
+        undefined,
+        startDate,
+        endDate
       );
-
-      const combinedData = validData.flat();
-
-      setMoveCard(combinedData);
+      setMoveCard(data.data);
     } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de movimentos de cartões hoje:",
-        error
-      );
-      setMoveCard([]);
+      console.error("Erro ao buscar os dados de movimentos de cartões:", error);
     }
   };
 
   // Função para buscar os movimentos dos cartões hoje
   const fetchCardMovementsToday = async () => {
     try {
-      if (devices.length === 0) {
-        setMoveCard([]);
-        return;
-      }
-
-      const promises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          formatDateToStartOfDay(currentDate),
-          formatDateToEndOfDay(currentDate)
-        );
-      });
-
-      const allData = await Promise.all(promises);
-
-      const validData = allData.filter(
-        (data) => Array.isArray(data) && data.length > 0
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "3",
+        undefined,
+        formatDateToStartOfDay(currentDate),
+        formatDateToStartOfDay(currentDate)
       );
-
-      const combinedData = validData.flat();
-
-      setMoveCard(combinedData);
-
+      setMoveCard(data.data);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -163,7 +152,6 @@ export const NvisitorMoveCard = () => {
         "Erro ao buscar os dados de movimentos de cartões hoje:",
         error
       );
-      setMoveCard([]);
     }
   };
 
@@ -176,30 +164,14 @@ export const NvisitorMoveCard = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      if (devices.length === 0) {
-        setMoveCard([]);
-        return;
-      }
-
-      const promises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          start,
-          end
-        );
-      });
-
-      const allData = await Promise.all(promises);
-
-      const validData = allData.filter(
-        (data) => Array.isArray(data) && data.length > 0
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "3",
+        undefined,
+        start,
+        end
       );
-
-      const combinedData = validData.flat();
-
-      setMoveCard(combinedData);
-
+      setMoveCard(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -207,7 +179,6 @@ export const NvisitorMoveCard = () => {
         "Erro ao buscar os dados de movimentos de cartões ontem:",
         error
       );
-      setMoveCard([]);
     }
   };
 
@@ -224,30 +195,14 @@ export const NvisitorMoveCard = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      if (devices.length === 0) {
-        setMoveCard([]);
-        return;
-      }
-
-      const promises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          start,
-          end
-        );
-      });
-
-      const allData = await Promise.all(promises);
-
-      const validData = allData.filter(
-        (data) => Array.isArray(data) && data.length > 0
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "3",
+        undefined,
+        start,
+        end
       );
-
-      const combinedData = validData.flat();
-
-      setMoveCard(combinedData);
-
+      setMoveCard(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -265,9 +220,14 @@ export const NvisitorMoveCard = () => {
     refreshMoveCard();
   };
 
+  // Busca os dados se a paginação mudar
+  useEffect(() => {
+    fetchPaginationMoveCard(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
+
   // Função para atualizar as publicidades
   const refreshMoveCard = () => {
-    fetchAllMoveCard();
+    fetchAllMoveCard(undefined, "3", undefined, undefined, undefined, "1", "20");
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -314,6 +274,17 @@ export const NvisitorMoveCard = () => {
     } else {
       setSelectedColumns([...selectedColumns, columnName]);
     }
+  };
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
   };
 
   // Função para resetar as colunas
@@ -802,11 +773,7 @@ export const NvisitorMoveCard = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -818,6 +785,29 @@ export const NvisitorMoveCard = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(moveCardPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>
@@ -837,7 +827,11 @@ export const NvisitorMoveCard = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
             <TreeViewDataNkioskMove
               onSelectDevices={handleSelectFromTreeView}
             />
@@ -1110,11 +1104,7 @@ export const NvisitorMoveCard = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -1126,6 +1116,29 @@ export const NvisitorMoveCard = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(moveCardPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>

@@ -38,7 +38,8 @@ export const NkioskPayTerminal = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { payTerminal, setPayTerminal, fetchAllPayTerminal } = useKiosk();
+  const { payTerminal, setPayTerminal, fetchAllPayTerminal, payTerminalPages } =
+    useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -59,6 +60,31 @@ export const NkioskPayTerminal = () => {
   );
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(20);
+  const [totalRows, setTotalRows] = useState(0);
+
+  // Função para buscar os dados da paginação
+  const fetchPaginationPayTerminal = async (
+    pageNo: string,
+    perPage: string
+  ) => {
+    setLoading(true);
+    try {
+      const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(
+        undefined,
+        undefined,
+        pageNo,
+        perPage
+      );
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar acessos paginados:", error);
+      setLoading(false);
+    }
+  };
 
   // Função para buscar os pagamentos dos terminais entre datas
   const fetchPaymentsBetweenDates = async () => {
@@ -67,8 +93,8 @@ export const NkioskPayTerminal = () => {
         startDate,
         endDate
       );
-      if (Array.isArray(data)) {
-        setPayTerminal(data);
+      if (data.length > 0) {
+        setPayTerminal(data.data);
       } else {
         setPayTerminal([]);
       }
@@ -82,21 +108,18 @@ export const NkioskPayTerminal = () => {
 
   // Função para buscar os pagamentos dos terminais de hoje
   const fetchPaymentsToday = async () => {
-    const today = new Date();
-    const start = formatDateToStartOfDay(today);
-    const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(
-        start,
-        end
+        formatDateToStartOfDay(currentDate),
+        formatDateToStartOfDay(currentDate)
       );
-      if (Array.isArray(data)) {
-        setPayTerminal(data);
+      if (data.length > 0) {
+        setPayTerminal(data.data);
       } else {
         setPayTerminal([]);
       }
-      setStartDate(start);
-      setEndDate(end);
+      setStartDate(formatDateToStartOfDay(currentDate));
+      setEndDate(formatDateToStartOfDay(currentDate));
     } catch (error) {
       console.error(
         "Erro ao buscar os dados de pagamento dos terminais hoje:",
@@ -118,7 +141,11 @@ export const NkioskPayTerminal = () => {
         start,
         end
       );
-      setPayTerminal(Array.isArray(data) ? data : []);
+      if (data.length > 0) {
+        setPayTerminal(data.data);
+      } else {
+        setPayTerminal([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -146,7 +173,11 @@ export const NkioskPayTerminal = () => {
         start,
         end
       );
-      setPayTerminal(Array.isArray(data) ? data : []);
+      if (data.length > 0) {
+        setPayTerminal(data.data);
+      } else {
+        setPayTerminal([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -157,9 +188,14 @@ export const NkioskPayTerminal = () => {
     }
   };
 
+  // Busca os dados se a paginação mudar
+  useEffect(() => {
+    fetchPaginationPayTerminal(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
+
   // Função para atualizar os pagamentos dos terminais
   const refreshPayTerminal = () => {
-    fetchAllPayTerminal();
+    fetchAllPayTerminal(undefined, undefined, "1", "20");
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -184,6 +220,17 @@ export const NkioskPayTerminal = () => {
     } else {
       setSelectedColumns([...selectedColumns, columnName]);
     }
+  };
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
   };
 
   // Função para resetar as colunas
@@ -619,7 +666,6 @@ export const NkioskPayTerminal = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
                   paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -632,6 +678,29 @@ export const NkioskPayTerminal = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="timestamp"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(payTerminalPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>
@@ -874,7 +943,6 @@ export const NkioskPayTerminal = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
                   paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -887,6 +955,29 @@ export const NkioskPayTerminal = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="timestamp"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(payTerminalPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>

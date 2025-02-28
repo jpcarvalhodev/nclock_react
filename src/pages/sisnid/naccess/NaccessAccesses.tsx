@@ -111,7 +111,11 @@ export const NaccessAccesses = () => {
         startDate,
         endDate
       );
-      setFilteredAccess(data);
+      if (data.length > 0) {
+        setFilteredAccess(data.data);
+      } else {
+        setFilteredAccess([]);
+      }
     } catch (error) {
       console.error("Erro ao buscar acessos entre datas:", error);
       setFilteredAccess([]);
@@ -129,7 +133,11 @@ export const NaccessAccesses = () => {
         start,
         end
       );
-      setFilteredAccess(data);
+      if (data.length > 0) {
+        setFilteredAccess(data.data);
+      } else {
+        setFilteredAccess([]);
+      }
     } catch (error) {
       console.error("Erro ao buscar acessos hoje:", error);
       setFilteredAccess([]);
@@ -152,7 +160,11 @@ export const NaccessAccesses = () => {
         start,
         end
       );
-      setFilteredAccess(data);
+      if (data.length > 0) {
+        setFilteredAccess(data.data);
+      } else {
+        setFilteredAccess([]);
+      }
     } catch (error) {
       console.error("Erro ao buscar acessos ontem:", error);
       setFilteredAccess([]);
@@ -179,7 +191,11 @@ export const NaccessAccesses = () => {
         start,
         end
       );
-      setFilteredAccess(data);
+      if (data.length > 0) {
+        setFilteredAccess(data.data);
+      } else {
+        setFilteredAccess([]);
+      }
     } catch (error) {
       console.error("Erro ao buscar acessos amanhã:", error);
       setFilteredAccess([]);
@@ -201,11 +217,6 @@ export const NaccessAccesses = () => {
     refreshAccess();
     setClearSelectionToggle((prev) => !prev);
   };
-
-  // Atualiza os movimentos ao mudar a lista de movimentos
-  useEffect(() => {
-    fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20");
-  }, []);
 
   // Busca os dados se a paginação mudar
   useEffect(() => {

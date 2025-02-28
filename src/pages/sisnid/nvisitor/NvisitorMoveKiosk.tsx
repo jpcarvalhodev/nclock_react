@@ -39,7 +39,8 @@ export const NvisitorMoveKiosk = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { moveKiosk, setMoveKiosk, fetchAllMoveKiosk } = useKiosk();
+  const { moveKiosk, setMoveKiosk, fetchAllMoveKiosk, moveKioskPages } =
+    useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -64,69 +65,60 @@ export const NvisitorMoveKiosk = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
-  const eventDoorId = "4";
+  const [totalRows, setTotalRows] = useState(0);
+
+  // Função para buscar os dados da paginação
+  const fetchPaginationMoveKiosk = async (pageNo: string, perPage: string) => {
+    setLoading(true);
+    try {
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "4",
+        undefined,
+        pageNo,
+        perPage
+      );
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar acessos paginados:", error);
+      setLoading(false);
+    }
+  };
 
   // Função para buscar os movimentos de quiosque entre datas
   const fetchMovementsKioskBetweenDates = async () => {
     try {
-      if (devices.length === 0) {
-        setMoveKiosk([]);
-        return;
-      }
-      const promises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          startDate,
-          endDate
-        );
-      });
-
-      const allData = await Promise.all(promises);
-
-      const validData = allData.filter(
-        (data) => Array.isArray(data) && data.length > 0
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "4",
+        undefined,
+        startDate,
+        endDate
       );
-
-      const combinedData = validData.flat();
-
-      setMoveKiosk(combinedData);
+      setMoveKiosk(data.data);
     } catch (error) {
       console.error(
         "Erro ao buscar os dados de movimentos no quiosque:",
         error
       );
-      setMoveKiosk([]);
     }
   };
 
   // Função para buscar os movimentos de quiosque hoje
   const fetchKioskMovementsToday = async () => {
     try {
-      if (devices.length === 0) {
-        setMoveKiosk([]);
-        return;
-      }
-      const promises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          formatDateToStartOfDay(currentDate),
-          formatDateToEndOfDay(currentDate)
-        );
-      });
-
-      const allData = await Promise.all(promises);
-
-      const validData = allData.filter(
-        (data) => Array.isArray(data) && data.length > 0
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "4",
+        undefined,
+        formatDateToStartOfDay(currentDate),
+        formatDateToStartOfDay(currentDate)
       );
-
-      const combinedData = validData.flat();
-
-      setMoveKiosk(combinedData);
-
+      setMoveKiosk(data.data);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -134,7 +126,6 @@ export const NvisitorMoveKiosk = () => {
         "Erro ao buscar os dados de movimentos no quiosque hoje:",
         error
       );
-      setMoveKiosk([]);
     }
   };
 
@@ -147,29 +138,14 @@ export const NvisitorMoveKiosk = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      if (devices.length === 0) {
-        setMoveKiosk([]);
-        return;
-      }
-      const promises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          start,
-          end
-        );
-      });
-
-      const allData = await Promise.all(promises);
-
-      const validData = allData.filter(
-        (data) => Array.isArray(data) && data.length > 0
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "4",
+        undefined,
+        start,
+        end
       );
-
-      const combinedData = validData.flat();
-
-      setMoveKiosk(combinedData);
-
+      setMoveKiosk(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -177,7 +153,6 @@ export const NvisitorMoveKiosk = () => {
         "Erro ao buscar os dados de movimentos no quiosque ontem:",
         error
       );
-      setMoveKiosk([]);
     }
   };
 
@@ -194,29 +169,14 @@ export const NvisitorMoveKiosk = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      if (devices.length === 0) {
-        setMoveKiosk([]);
-        return;
-      }
-      const promises = devices.map((device, i) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId,
-          device.serialNumber,
-          start,
-          end
-        );
-      });
-
-      const allData = await Promise.all(promises);
-
-      const validData = allData.filter(
-        (data) => Array.isArray(data) && data.length > 0
+      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+        undefined,
+        "4",
+        undefined,
+        start,
+        end
       );
-
-      const combinedData = validData.flat();
-
-      setMoveKiosk(combinedData);
-
+      setMoveKiosk(data.data);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -224,7 +184,6 @@ export const NvisitorMoveKiosk = () => {
         "Erro ao buscar os dados de movimentos no quiosque amanhã:",
         error
       );
-      setMoveKiosk([]);
     }
   };
 
@@ -234,9 +193,14 @@ export const NvisitorMoveKiosk = () => {
     window.location.reload();
   };
 
+  // Busca os dados se a paginação mudar
+  useEffect(() => {
+    fetchPaginationMoveKiosk(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
+
   // Função para atualizar os movimentos de quiosque
   const refreshMoveKiosk = () => {
-    fetchAllMoveKiosk();
+    fetchAllMoveKiosk(undefined, "4", undefined, undefined, undefined, "1", "20");
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -270,6 +234,17 @@ export const NvisitorMoveKiosk = () => {
     } else {
       setSelectedColumns([...selectedColumns, columnName]);
     }
+  };
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
   };
 
   // Função para resetar as colunas
@@ -703,11 +678,7 @@ export const NvisitorMoveKiosk = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -719,6 +690,29 @@ export const NvisitorMoveKiosk = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(moveKioskPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>
@@ -738,7 +732,11 @@ export const NvisitorMoveKiosk = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
             <TreeViewDataNkioskMove
               onSelectDevices={handleSelectFromTreeView}
             />
@@ -962,11 +960,7 @@ export const NvisitorMoveKiosk = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={perPage}
                   paginationRowsPerPageOptions={[20, 50]}
-                  onChangeRowsPerPage={(newPerPage, page) => {
-                    setPerPage(newPerPage);
-                  }}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
                   clearSelectedRows={clearSelectionToggle}
@@ -978,6 +972,29 @@ export const NvisitorMoveKiosk = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(moveKioskPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>

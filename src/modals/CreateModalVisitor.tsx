@@ -16,6 +16,7 @@ import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { CreateModalExtEnt } from "./CreateModalExtEnt";
 import { CreateModalEmployees } from "./CreateModalEmployees";
 import { AddCompanyToVisitorModal } from "./AddCompanyToVisitorModal";
+import { id } from "date-fns/locale";
 
 // Define a interface para os itens de campo
 type FormControlElement =
@@ -48,8 +49,9 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
   initialValues,
 }: Props<T>) => {
   const {
-    employees,
+    employeesNoPagination,
     dataEE,
+    registeredUsers,
     employeeVisitorMotive,
     handleAddExternalEntity,
     handleAddEmployee,
@@ -68,15 +70,20 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
       const startDate = now.toISOString().substring(0, 16);
       now.setHours(23, 59, 0, 0);
       const endDate = now.toISOString().substring(0, 16);
+      const nameUser = localStorage.getItem("username");
+      const idUser = registeredUsers.find(
+        (user) => user.userName === nameUser
+      )?.id;
       setFormData({
         ...initialValues,
         dataInicio: startDate,
         dataFim: endDate,
+        idInserido: idUser,
       });
     } else {
       setFormData({});
     }
-  }, [open, initialValues]);
+  }, [open, initialValues, registeredUsers]);
 
   // Função para adicionar um funcionário e um cartão
   const addEmployeeAndCard = async (employee: Partial<Employee>) => {
@@ -113,7 +120,9 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
   };
 
   // Filtra os visitantes
-  const visitantes = employees.filter((emp) => emp.type === "Visitante");
+  const visitantes = employeesNoPagination.filter(
+    (emp) => emp.type === "Visitante"
+  );
 
   // Função para tratar a mudança do visitante no dropdown:
   const handleVisitorChange = (e: ChangeEvent<FormControlElement>) => {
@@ -142,7 +151,7 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
   };
 
   // Dentro do componente, antes do retorno:
-  const visitados = employees.filter(
+  const visitados = employeesNoPagination.filter(
     (emp) => emp.type === "Funcionário" || emp.type === "Subcontratado"
   );
 
@@ -185,6 +194,22 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
     setSelectedRows(state.selectedRows);
   };
 
+  // Define a função para remover acompanhantes
+  const handleRemoveCompanions = () => {
+    if (selectedRows.length > 0) {
+      const remainingCompanions = filteredEmployees.filter(
+        (emp) =>
+          !selectedRows.some(
+            (selected) => selected.employeeID === emp.employeeID
+          )
+      );
+      setFilteredEmployees(remainingCompanions);
+      setSelectedRows([]);
+    } else {
+      setFilteredEmployees([]);
+    }
+  };
+
   // Define as opções de paginação de EN para PT
   const paginationOptions = {
     rowsPerPageText: "Linhas por página",
@@ -223,23 +248,35 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
   // Define o envio de dados
   const handleSave = () => {
     const { phone, card, department, ...visitorData } = formData;
-  
+
     const selectedCompany = dataEE.externalEntity.find(
       (entity: any) => entity.name === formData.empresaNome
     );
-    const idEntidadeExterna = selectedCompany ? selectedCompany.externalEntityID : undefined;
-  
-    const selectedVisitor = visitantes.find((emp) => emp.name === formData.idVisitante);
-    const idVisitante = selectedVisitor ? selectedVisitor.employeeID : undefined;
-  
-    const selectedVisitado = visitados.find((emp) => emp.name === formData.idPessoa);
-    const idPessoa = selectedVisitado ? selectedVisitado.employeeID : undefined;
-  
+    const idEntidadeExterna = selectedCompany
+      ? selectedCompany.externalEntityID
+      : formData.empresaNome;
+
+    const selectedVisitor = visitantes.find(
+      (emp) => emp.name === formData.idVisitante
+    );
+    const idVisitante = selectedVisitor
+      ? selectedVisitor.employeeID
+      : formData.idVisitante;
+
+    const selectedVisitado = visitados.find(
+      (emp) => emp.name === formData.idPessoa
+    );
+    const idPessoa = selectedVisitado
+      ? selectedVisitado.employeeID
+      : formData.idPessoa;
+
     const selectedMotive = employeeVisitorMotive.find(
       (motive: any) => motive.descricao === formData.visitanteMotivo
     );
-    const idVisitanteMotivo = selectedMotive ? selectedMotive.id : undefined;
-  
+    const idVisitanteMotivo = selectedMotive
+      ? selectedMotive.id
+      : formData.visitanteMotivo;
+
     const finalVisitorData = {
       ...visitorData,
       idEntidadeExterna,
@@ -248,19 +285,19 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
       idVisitante,
       estado: 0,
     };
-  
+
     const payload = {
       visitor: finalVisitorData,
       companionEmployeeIds: filteredEmployees.map((emp) => emp.id),
     };
-    
+
     onSave(payload as unknown as T);
     handleClose();
   };
 
   return (
     <Modal show={open} onHide={handleClose} size="xl" centered>
-      <Modal.Header closeButton>
+      <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -549,7 +586,7 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
                 }}
               >
                 <span style={{ textAlign: "center" }}>Acompanhantes</span>
-                <div style={{ marginLeft: "auto", right: 0 }}>
+                <div style={{ display: "flex", marginLeft: "auto", gap: 5 }}>
                   <OverlayTrigger
                     placement="top"
                     delay={0}
@@ -567,13 +604,39 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
                     }}
                     overlay={
                       <Tooltip className="custom-tooltip">
-                        Adicionar Acompanhante
+                        Adicionar Acompanhantes
                       </Tooltip>
                     }
                   >
                     <CustomOutlineButton
                       icon="bi bi-person-plus"
                       onClick={() => setShowAddCompanyModal(true)}
+                    />
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    delay={0}
+                    container={document.body}
+                    popperConfig={{
+                      strategy: "fixed",
+                      modifiers: [
+                        {
+                          name: "preventOverflow",
+                          options: {
+                            boundary: "window",
+                          },
+                        },
+                      ],
+                    }}
+                    overlay={
+                      <Tooltip className="custom-tooltip">
+                        Remover Acompanhantes
+                      </Tooltip>
+                    }
+                  >
+                    <CustomOutlineButton
+                      icon="bi bi-trash"
+                      onClick={handleRemoveCompanions}
                     />
                   </OverlayTrigger>
                 </div>
@@ -688,7 +751,7 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
           </Card>
         </Row>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
         <Button variant="outline-dark" onClick={handleClose}>
           Fechar
         </Button>

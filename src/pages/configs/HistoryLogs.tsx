@@ -85,7 +85,11 @@ export const HistoryLogs = () => {
   const fetchLogsBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllHistoryLogs(startDate, endDate);
-      setHistoryLogs(data.data);
+      if (data.length > 0) {
+        setHistoryLogs(data.data);
+      } else {
+        setHistoryLogs([]);
+      }
     } catch (error) {
       console.error("Erro ao buscar os dados de logs:", error);
     }
@@ -98,7 +102,11 @@ export const HistoryLogs = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllHistoryLogs(start, end);
-      setHistoryLogs(data.data);
+      if (data.length > 0) {
+        setHistoryLogs(data.data);
+      } else {
+        setHistoryLogs([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -116,7 +124,11 @@ export const HistoryLogs = () => {
 
     try {
       const data = await apiService.fetchAllHistoryLogs(start, end);
-      setHistoryLogs(data.data);
+      if (data.length > 0) {
+        setHistoryLogs(data.data);
+      } else {
+        setHistoryLogs([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -138,7 +150,11 @@ export const HistoryLogs = () => {
 
     try {
       const data = await apiService.fetchAllHistoryLogs(start, end);
-      setHistoryLogs(data.data);
+      if (data.length > 0) {
+        setHistoryLogs(data.data);
+      } else {
+        setHistoryLogs([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -146,10 +162,10 @@ export const HistoryLogs = () => {
     }
   };
 
-  // Busca os logs de histórico ao montar o componente
+  // Busca os funcionários paginados ao mudar a página
   useEffect(() => {
-    fetchAllHistoryLogs(undefined, undefined, undefined, "1", "20");
-  }, []);
+    fetchPaginationHistory(currentPage.toString(), perPage.toString());
+  }, [currentPage, perPage]);
 
   // Função para atualizar os logs
   const refreshLogs = () => {

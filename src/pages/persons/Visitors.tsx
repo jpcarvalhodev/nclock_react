@@ -77,19 +77,19 @@ export const Visitors = () => {
 
   // Função para buscar os dados da paginação
   const fetchPaginationPersons = async (pageNo: string, perPage: string) => {
+    setLoading(true);
     try {
       const data = await apiService.fetchAllEmployeesWithDisabled(
         pageNo,
         perPage
       );
-      const sortedPerson = data.data.filter(
-        (emp: Employee) => emp.type === "Visitante"
-      );
-      setFilteredEmployees(sortedPerson);
-      setTotalRows(sortedPerson.length);
+      const onlyVisitante = data.data.filter((emp: Employee) => emp.type === "Visitante");
+      setFilteredEmployees(onlyVisitante);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
     } catch (error) {
       console.error("Erro ao buscar funcionários paginados:", error);
-      setFilteredEmployees([]);
+      setLoading(false);
     }
   };
 
@@ -744,7 +744,11 @@ export const Visitors = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
             <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">

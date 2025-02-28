@@ -15,6 +15,7 @@ import {
   format,
   getDay,
   getMonth,
+  isToday,
   parse,
   parseISO,
   startOfWeek,
@@ -26,7 +27,6 @@ import { Bar, Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
 import { useNavigate } from "react-router-dom";
-import * as apiService from "../../../api/apiService";
 import banner_nvisitor from "../../../assets/img/carousel/banner_nvisitor.jpg";
 
 import { useKiosk } from "../../../context/KioskContext";
@@ -91,30 +91,14 @@ const messages = {
   showMore: (total: number) => `+ Ver mais (${total})`,
 };
 
-// Função para verificar se a resposta tem uma mensagem de erro
-const checkForErrorMessage = (response: string | any[]) => {
-  return response.length === 0 || (response[0] && response[0].message);
-};
-
-// Formata a data para o início do dia às 00:00
-const formatDateToStartOfDay = (date: Date): string => {
-  return `${date.toISOString().substring(0, 10)}T00:00`;
-};
-
-// Formata a data para o final do dia às 23:59
-const formatDateToEndOfDay = (date: Date): string => {
-  return `${date.toISOString().substring(0, 10)}T23:59`;
-};
-
 export const NvisitorDashboardLicensed = () => {
-  const currentDate = new Date();
   const currentYear = new Date().getFullYear();
-  const [startDate, setStartDate] = useState(
-    formatDateToStartOfDay(currentDate)
-  );
-  const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const { devices } = useTerminals();
-  const { totalMovements, setTotalMovements } = useKiosk();
+  const {
+    moveCardNoPagination,
+    moveKioskNoPagination,
+    totalMovementsNoPagination,
+  } = useKiosk();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [moveLineChartData, setMoveLineChartData] = useState<ChartData>({
     labels: [],
@@ -131,8 +115,6 @@ export const NvisitorDashboardLicensed = () => {
     KioskTransactionCard[]
   >([]);
   const navigate = useNavigate();
-  const eventDoorId3 = "3";
-  const eventDoorId4 = "4";
   const [barChartData, setBarChartData] = useState({
     labels: ["Hoje"],
     datasets: [
@@ -148,46 +130,26 @@ export const NvisitorDashboardLicensed = () => {
   // Função para agrupar os movimentos por mês
   const fetchAllData = async () => {
     try {
-      if (devices.length === 0) {
-        console.error("Não há dispositivos para buscar dados");
-        return;
-      }
-
-      const cardPromises = devices.map((device) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId3,
-          device.serialNumber,
-          startDate,
-          endDate
-        );
-      });
-
-      const kioskPromises = devices.map((device) => {
-        return apiService.fetchKioskTransactionsByCardAndDeviceSN(
-          eventDoorId4,
-          device.serialNumber,
-          startDate,
-          endDate
-        );
-      });
-
-      const [cardResults, kioskResults] = await Promise.all([
-        Promise.all(cardPromises),
-        Promise.all(kioskPromises),
-      ]);
-
-      const processedCardResults = checkForErrorMessage(cardResults)
-        ? []
-        : cardResults.flat();
-      const processedKioskResults = checkForErrorMessage(kioskResults)
-        ? []
-        : kioskResults.flat();
-
-      setTodayTotalCard(processedCardResults);
-      setTodayTotalKiosk(processedKioskResults);
+      const todayCard = moveCardNoPagination.filter((item) =>
+        isToday(
+          item.eventTime instanceof Date
+            ? item.eventTime
+            : parseISO(item.eventTime)
+        )
+      );
+      const todayKiosk = moveKioskNoPagination.filter((item) =>
+        isToday(
+          item.eventTime instanceof Date
+            ? item.eventTime
+            : parseISO(item.eventTime)
+        )
+      );
+      
+      setTodayTotalCard(todayCard);
+      setTodayTotalKiosk(todayKiosk);
 
       const eventSet = new Set();
-      const newEvents = totalMovements.reduce(
+      const newEvents = totalMovementsNoPagination.reduce(
         (acc: CalendarEvent[], item: KioskTransactionCard) => {
           const eventDate = new Date(item.eventTime);
           const dateKey = eventDate.toISOString().split("T")[0];
@@ -212,14 +174,13 @@ export const NvisitorDashboardLicensed = () => {
       setEvents(newEvents);
     } catch (error) {
       console.error("Erro ao buscar os dados:", error);
-      setTotalMovements([]);
     }
   };
 
   // Busca os dados ao carregar a página
   useEffect(() => {
     fetchAllData();
-  }, [devices]);
+  }, [moveCardNoPagination, moveKioskNoPagination, totalMovementsNoPagination]);
 
   // Função para renderizar os eventos no calendário
   const MyEvent = ({ event }: MyEventProps) => {
@@ -263,7 +224,9 @@ export const NvisitorDashboardLicensed = () => {
 
   // Atualiza os dados do gráfico com base nos movimentos anuais
   useEffect(() => {
-    const monthlyMoveTotals = calculateMoveMonthlyCounts(totalMovements);
+    const monthlyMoveTotals = calculateMoveMonthlyCounts(
+      totalMovementsNoPagination
+    );
     const newLineData = {
       labels: [
         "Janeiro",
@@ -290,7 +253,7 @@ export const NvisitorDashboardLicensed = () => {
       ],
     };
     setMoveLineChartData(newLineData);
-  }, [totalMovements]);
+  }, [totalMovementsNoPagination]);
 
   // Define os dados do gráfico de linha para os torniquetes de hoje
   useEffect(() => {

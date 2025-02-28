@@ -25,6 +25,7 @@ import { Employee } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -75,6 +76,7 @@ export const Persons = () => {
 
   // Função para buscar os dados da paginação
   const fetchPaginationPersons = async (pageNo: string, perPage: string) => {
+    setLoading(true);
     try {
       const data = await apiService.fetchAllEmployeesWithDisabled(
         pageNo,
@@ -82,9 +84,10 @@ export const Persons = () => {
       );
       setFilteredEmployees(data.data);
       setTotalRows(data.totalRecords);
+      setLoading(false);
     } catch (error) {
       console.error("Erro ao buscar funcionários paginados:", error);
-      setFilteredEmployees([]);
+      setLoading(false);
     }
   };
 
@@ -116,7 +119,7 @@ export const Persons = () => {
 
   // Atualiza os funcionários
   const refreshEmployees = () => {
-    fetchAllDisabledEmployees();
+    fetchAllDisabledEmployees(undefined, "1", "20");
     setCurrentPage(1);
     setPerPage(20);
     setClearSelectionToggle((prev) => !prev);

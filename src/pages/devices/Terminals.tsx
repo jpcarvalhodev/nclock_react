@@ -63,6 +63,7 @@ import {
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { UpdateModalEmployees } from "../../modals/UpdateModalEmployees";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -108,10 +109,8 @@ const formatDateToEndOfDay = (date: Date): string => {
 export const Terminals = () => {
   const {
     devices,
-    door,
     employeeDevices,
     fetchAllDevices,
-    fetchAllEmployeeDevices,
     fetchAllKioskTransactionOnDevice,
     sendAllEmployeesToDevice,
     saveAllEmployeesOnDeviceToDB,
@@ -125,13 +124,9 @@ export const Terminals = () => {
     handleDeleteDevice,
     fetchAllAux,
     fetchAllDoorData,
-    fetchEventsAndTransactionDevice,
     fetchDeviceActivities,
-    refreshIntervalTasks,
-    setRefreshIntervalTasks,
     totalMovementPages,
     totalMovementRows,
-    mbDevices,
     fetchAllMBDevices,
     restartMBDevice,
     handleAddMBDevice,
@@ -294,15 +289,19 @@ export const Terminals = () => {
 
   // Função para buscar todas as tarefas de dispositivos
   useEffect(() => {
-    let intervalTasks: NodeJS.Timeout;
+    if (!selectedTerminal) return;
+
+    const token = localStorage.getItem("token");
+    const wsUrl = `${
+      process.env.REACT_APP_WS_DOOR
+    }/activities?access_token=${encodeURIComponent(token!)}`;
+    const socket = new WebSocket(wsUrl);
 
     const fetchTasks = async () => {
-      if (!selectedTerminal) return;
-
       try {
         setLoadingActivityData(true);
         const fetchedActivity = await fetchDeviceActivities(
-          selectedTerminal.serialNumber,
+          [`${selectedTerminal.serialNumber}`],
           undefined,
           undefined,
           String(currentPage),
@@ -321,23 +320,45 @@ export const Terminals = () => {
 
     fetchTasks();
 
-    if (selectedTerminal && refreshIntervalTasks > 0) {
-      intervalTasks = setInterval(fetchTasks, refreshIntervalTasks);
-    }
+    setLoadingMovementData(true);
+    socket.onopen = () => {
+      console.log("Conexão WebSocket aberta.");
+      setLoadingMovementData(false);
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        setTransactions((prev) => [data, ...prev]);
+      } catch (error) {
+        console.error("Erro ao processar mensagem WebSocket:", error);
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      setLoadingMovementData(false);
+    };
+
+    socket.onclose = () => {
+      console.log("Conexão WebSocket fechada.");
+    };
 
     return () => {
-      if (intervalTasks) clearInterval(intervalTasks);
+      socket.close();
     };
-  }, [selectedTerminal, refreshIntervalTasks, perPage, currentPage]);
+  }, [selectedTerminal, perPage, currentPage]);
 
   // Função para buscar todos os movimentos de dispositivos via websocket
   useEffect(() => {
     if (!selectedTerminal) return;
 
-    let socket: WebSocket;
-
     setLoadingMovementData(true);
-    socket = new WebSocket(`${process.env.REACT_APP_WS_DOOR}/activities`);
+    const token = localStorage.getItem("token");
+    const url = `${
+      process.env.REACT_APP_WS_DOOR
+    }/transactions?access_token=${encodeURIComponent(token!)}`;
+    const socket = new WebSocket(url);
 
     socket.onopen = () => {
       console.log("Conexão WebSocket aberta.");
@@ -371,15 +392,13 @@ export const Terminals = () => {
 
   // Função para buscar todas as tarefas entre datas
   const fetchAllActivityBetweenDates = async () => {
-    if (refreshIntervalTasks > 0) {
-      toast.warn(
-        "A atualização automática está activa. Por favor, desactive-a para buscar tarefas."
-      );
-      return;
-    }
     try {
-      const data = await fetchDeviceActivities(startDate, endDate);
-      setTransactions(data);
+      const data = await fetchDeviceActivities(undefined, startDate, endDate);
+      if (data.length > 0) {
+        setTransactions(data);
+      } else {
+        setTransactions([]);
+      }
     } catch (error) {
       console.error("Erro ao buscar as tarefas:", error);
     }
@@ -387,19 +406,16 @@ export const Terminals = () => {
 
   // Função para buscar as tarefas de hoje
   const fetchActivityToday = async () => {
-    if (refreshIntervalTasks > 0) {
-      toast.warn(
-        "A atualização automática está activa. Por favor, desactive-a para buscar tarefas."
-      );
-      return;
-    }
-
     const today = new Date();
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
     try {
-      const data = await fetchDeviceActivities(start, end);
-      setTransactions(data);
+      const data = await fetchDeviceActivities(undefined, start, end);
+      if (data.length > 0) {
+        setTransactions(data);
+      } else {
+        setTransactions([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -409,13 +425,6 @@ export const Terminals = () => {
 
   // Função para buscar as tarefas de ontem
   const fetchActivityForPreviousDay = async () => {
-    if (refreshIntervalTasks > 0) {
-      toast.warn(
-        "A atualização automática está activa. Por favor, desactive-a para buscar tarefas."
-      );
-      return;
-    }
-
     const prevDate = new Date(startDate);
     prevDate.setDate(prevDate.getDate() - 1);
 
@@ -423,8 +432,12 @@ export const Terminals = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      const data = await fetchDeviceActivities(start, end);
-      setTransactions(data);
+      const data = await fetchDeviceActivities(undefined, start, end);
+      if (data.length > 0) {
+        setTransactions(data);
+      } else {
+        setTransactions([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -434,13 +447,6 @@ export const Terminals = () => {
 
   // Função para buscar as tarefas de amanhã
   const fetchActivityForNextDay = async () => {
-    if (refreshIntervalTasks > 0) {
-      toast.warn(
-        "A atualização automática está activa. Por favor, desactive-a para buscar tarefas."
-      );
-      return;
-    }
-
     const newDate = new Date(endDate);
     newDate.setDate(newDate.getDate() + 1);
 
@@ -452,8 +458,12 @@ export const Terminals = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      const data = await fetchDeviceActivities(start, end);
-      setTransactions(data);
+      const data = await fetchDeviceActivities(undefined, start, end);
+      if (data.length > 0) {
+        setTransactions(data);
+      } else {
+        setTransactions([]);
+      }
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -601,6 +611,13 @@ export const Terminals = () => {
     selectedCount: number;
     selectedRows: AllDevices[];
   }) => {
+    if (state.selectedRows.length === 0) {
+      setSelectedTerminal(null);
+      setSelectedMBTerminal(null);
+      setSelectedDeviceRows([]);
+      return;
+    }
+
     const sortedDevices = devices.sort(
       (a, b) => a.deviceNumber - b.deviceNumber
     );
@@ -2206,7 +2223,7 @@ export const Terminals = () => {
         onHide={() => setShowConfirmModal(false)}
         centered
       >
-        <Modal.Header closeButton>
+        <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
           <Modal.Title>Confirmação</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -2227,7 +2244,7 @@ export const Terminals = () => {
             {confirmMessage || "Tem certeza que deseja prosseguir?"}
           </div>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
           <Button
             variant="outline-dark"
             onClick={() => setShowConfirmModal(false)}
@@ -2401,29 +2418,6 @@ export const Terminals = () => {
                           marginBottom: 10,
                         }}
                       >
-                        <div>
-                          <Form.Group
-                            controlId="refreshInterval"
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
-                            <Form.Label
-                              style={{ marginBottom: 0, marginRight: 5 }}
-                            >
-                              Tempo entre atualizações:
-                            </Form.Label>
-                            <Form.Select
-                              value={refreshIntervalTasks}
-                              onChange={(e) =>
-                                setRefreshIntervalTasks(Number(e.target.value))
-                              }
-                              className="custom-input-height form-control custom-select-font-size w-auto"
-                            >
-                              <option value={0}>Desligar</option>
-                              <option value={10000}>10 segundos</option>
-                              <option value={30000}>30 segundos</option>
-                            </Form.Select>
-                          </Form.Group>
-                        </div>
                         <div className="buttons-container-data-range">
                           <OverlayTrigger
                             placement="top"
