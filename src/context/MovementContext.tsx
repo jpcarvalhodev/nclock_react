@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 
 import * as apiService from "../api/apiService";
 import { Accesses, EmployeeAttendanceTimes } from "../types/Types";
-import { id } from "date-fns/locale";
 
 // Definindo o tipo de contexto
 export interface AttendanceContextType {
@@ -169,25 +168,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
       socket.onmessage = (event) => {
         try {
           const newData = JSON.parse(event.data);
-          const newAccess = {
-            id: newData.id,
-            cardNo: newData.CardNo,
-            nameUser: newData.NameUser,
-            deviceSN: newData.DeviceSN,
-            deviceName: newData.DeviceName,
-            eventNo: newData.EventNo,
-            eventName: newData.EventName,
-            eventDoorId: newData.EventDoorId,
-            eventDoorName: newData.EventDoorName,
-            eventType: newData.EventType,
-            eventTime: newData.EventTime,
-            pin: newData.pin,
-            inOutStatus: newData.InOutStatus,
-            readerName: newData.ReaderName,
-            verifyModeNo: newData.VerifyModeNo,
-          };
-  
-          setAccess((prevAccesses) => [newAccess, ...prevAccesses]);
+          setAccess((prevAccesses) => [newData.data, ...prevAccesses]);
         } catch (error) {
           console.error("Erro ao processar mensagem do WebSocket:", error);
         }

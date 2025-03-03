@@ -334,7 +334,7 @@ export const Terminals = () => {
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        setMovements((prevMovements) => [data, ...prevMovements]);
+        setMovements((prevMovements) => [data.data, ...prevMovements]);
       } catch (error) {
         console.error("Erro ao processar mensagem WebSocket:", error);
       }

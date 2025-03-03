@@ -43,10 +43,74 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Define a função para unificar as chaves
+function unifyKeys(item: any): Accesses {
+  const newItem = { ...item };
+
+  if ("CardNo" in newItem) {
+    newItem.cardNo = newItem.CardNo;
+    delete newItem.CardNo;
+  }
+  if ("NameUser" in newItem) {
+    newItem.nameUser = newItem.NameUser;
+    delete newItem.NameUser;
+  }
+  if ("DeviceSN" in newItem) {
+    newItem.deviceSN = newItem.DeviceSN;
+    delete newItem.DeviceSN;
+  }
+  if ("DeviceName" in newItem) {
+    newItem.deviceName = newItem.DeviceName;
+    delete newItem.DeviceName;
+  }
+  if ("EventNo" in newItem) {
+    newItem.eventNo = newItem.EventNo;
+    delete newItem.EventNo;
+  }
+  if ("EventName" in newItem) {
+    newItem.eventName = newItem.EventName;
+    delete newItem.EventName;
+  }
+  if ("EventDoorId" in newItem) {
+    newItem.eventDoorId = newItem.EventDoorId;
+    delete newItem.EventDoorId;
+  }
+  if ("EventDoorName" in newItem) {
+    newItem.eventDoorName = newItem.EventDoorName;
+    delete newItem.EventDoorName;
+  }
+  if ("EventType" in newItem) {
+    newItem.eventType = newItem.EventType;
+    delete newItem.EventType;
+  }
+  if ("EventTime" in newItem) {
+    newItem.eventTime = newItem.EventTime;
+    delete newItem.EventTime;
+  }
+  if ("InOutStatus" in newItem) {
+    newItem.inOutStatus = newItem.InOutStatus;
+    delete newItem.InOutStatus;
+  }
+  if ("ReaderName" in newItem) {
+    newItem.readerName = newItem.ReaderName;
+    delete newItem.ReaderName;
+  }
+  if ("VerifyModeNo" in newItem) {
+    newItem.verifyModeNo = newItem.VerifyModeNo;
+    delete newItem.VerifyModeNo;
+  }
+
+  return newItem as Accesses;
+}
+
 // Define a página de acessos
 export const NaccessAccesses = () => {
-  const { access, totalPages, fetchAllInitialAccessesbyDevice, handleAddAccess } =
-    useAttendance();
+  const {
+    access,
+    totalPages,
+    fetchAllInitialAccessesbyDevice,
+    handleAddAccess,
+  } = useAttendance();
   const { fetchAllKioskTransactionByEnrollNumber } = useKiosk();
   const currentDate = new Date();
   const pastDate = new Date();
@@ -205,6 +269,24 @@ export const NaccessAccesses = () => {
     refreshAccess();
     setClearSelectionToggle((prev) => !prev);
   };
+
+  // Sempre que access mudar, atualiza o filteredAccess
+  useEffect(() => {
+    const unifiedAccess = access.map((item) => unifyKeys(item));
+
+    const seen = new Set<string>();
+    const deduplicated: Accesses[] = [];
+  
+    for (const item of unifiedAccess) {
+      const key = `${item.deviceSN}-${item.pin}-${item.eventTime}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduplicated.push(item);
+      }
+    }
+  
+    setFilteredAccess(deduplicated);
+  }, [access]);
 
   // Busca os dados se a paginação mudar
   useEffect(() => {
