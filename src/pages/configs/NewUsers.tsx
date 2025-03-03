@@ -329,7 +329,7 @@ export const NewUsers = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -337,7 +337,7 @@ export const NewUsers = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="dashboard-container">

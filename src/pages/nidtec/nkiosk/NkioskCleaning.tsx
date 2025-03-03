@@ -494,7 +494,7 @@ export const NkioskCleaning = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -502,7 +502,7 @@ export const NkioskCleaning = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

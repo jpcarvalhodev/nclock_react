@@ -110,7 +110,12 @@ export interface KioskContextType {
   handleDeleteOcurrences: (id: string[]) => void;
   counter: Counter[];
   setCounter: (counter: Counter[]) => void;
-  fetchAllCounter: (startDate?: string, endDate?: string) => void;
+  fetchAllCounter: (
+    startDate?: string,
+    endDate?: string,
+    pageNo?: "1",
+    pageSize?: "20"
+  ) => Promise<Counter[]>;
   totalPayments: KioskTransactionMB[];
   setTotalPayments: (totalPayments: KioskTransactionMB[]) => void;
   totalMovements: KioskTransactionCard[];
@@ -138,6 +143,14 @@ export interface KioskContextType {
   moveKioskPages: number;
   totalPaymentsPages: number;
   totalMovementsPages: number;
+  payTerminalTotalRecords: number;
+  payCoinsTotalRecords: number;
+  totalPaymentsTotalRecords: number;
+  moveCardTotalRecords: number;
+  moveKioskTotalRecords: number;
+  totalMovementsTotalRecords: number;
+  counterTotalRecords: number;
+  counterPages: number;
 }
 
 // Cria o contexto
@@ -204,6 +217,17 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
   const [moveKioskPages, setMoveKioskPages] = useState<number>(1);
   const [totalPaymentsPages, setTotalPaymentsPages] = useState<number>(1);
   const [totalMovementsPages, setTotalMovementsPages] = useState<number>(1);
+  const [payTerminalTotalRecords, setPayTerminalTotalRecords] =
+    useState<number>(0);
+  const [payCoinsTotalRecords, setPayCoinsTotalRecords] = useState<number>(0);
+  const [totalPaymentsTotalRecords, setTotalPaymentsTotalRecords] =
+    useState<number>(0);
+  const [moveCardTotalRecords, setMoveCardTotalRecords] = useState<number>(0);
+  const [moveKioskTotalRecords, setMoveKioskTotalRecords] = useState<number>(0);
+  const [totalMovementsTotalRecords, setTotalMovementsTotalRecords] =
+    useState<number>(0);
+  const [counterTotalRecords, setCounterTotalRecords] = useState<number>(0);
+  const [counterPages, setCounterPages] = useState<number>(1);
 
   // Função para buscar os pagamentos dos terminais
   const fetchAllPayTerminal = async (
@@ -220,6 +244,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         pageSize
       );
       setPayTerminal(data.data);
+      setPayTerminalTotalRecords(data.totalRecords);
       setPayTerminalPages(data.totalPages);
     } catch (error) {
       console.error(
@@ -249,6 +274,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         pageSize
       );
       setPayCoins(data.data);
+      setPayCoinsTotalRecords(data.totalRecords);
       setPayCoinsPages(data.totalPages);
     } catch (error) {
       console.error("Erro ao buscar os dados de pagamento do moedeiro:", error);
@@ -275,6 +301,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         pageSize
       );
       setTotalPayments(data.data);
+      setTotalPaymentsTotalRecords(data.totalRecords);
       setTotalPaymentsPages(data.totalPages);
     } catch (error) {
       console.error("Erro ao buscar os dados totais de pagamentos:", error);
@@ -303,6 +330,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         pageSize
       );
       setMoveCard(data.data);
+      setMoveCardTotalRecords(data.totalRecords);
       setMoveCardPages(data.totalPages);
     } catch (error) {
       console.error(
@@ -348,6 +376,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         pageSize
       );
       setMoveKiosk(data.data);
+      setMoveKioskTotalRecords(data.totalRecords);
       setMoveKioskPages(data.totalPages);
     } catch (error) {
       console.error(
@@ -379,6 +408,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         pageSize
       );
       setTotalMovements(data.data);
+      setTotalMovementsTotalRecords(data.totalRecords);
       setTotalMovementsPages(data.totalPages);
     } catch (error) {
       console.error("Erro ao buscar os dados totais de movimentos:", error);
@@ -606,17 +636,27 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Função para buscar os contadores
-  const fetchAllCounter = async (startDate?: string, endDate?: string) => {
+  const fetchAllCounter = async (
+    startDate?: string,
+    endDate?: string,
+    pageNo?: "1",
+    pageSize?: "20"
+  ): Promise<Counter[]> => {
     try {
-      const data = await apiService.fetchAllContador(startDate, endDate);
-      if (Array.isArray(data)) {
-        setCounter(data);
-      } else {
-        setCounter([]);
-      }
+      const data = await apiService.fetchAllContador(
+        startDate,
+        endDate,
+        pageNo,
+        pageSize
+      );
+      setCounter(data.data);
+      setCounterTotalRecords(data.totalRecords);
+      setCounterPages(data.totalPages);
+      return data.data;
     } catch (error) {
       console.error("Erro ao buscar os dados do contador:", error);
     }
+    return [];
   };
 
   // Função para buscar os alertas
@@ -659,56 +699,62 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
   // Função para buscar todos os dados para os gráficos
   const fetchAllChartData = async () => {
     try {
-      const [payTerminalRes, payCoinsRes, moveCardRes, moveKioskRes, totalPayRes, totalMovementRes] =
-        await Promise.all([
-          apiService.fetchKioskTransactionsByMBAndDeviceSN(
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          ),
-          apiService.fetchKioskTransactionsByPayCoins(
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          ),
-          apiService.fetchKioskTransactionsByCardAndDeviceSN(
-            undefined,
-            "3",
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          ),
-          apiService.fetchKioskTransactionsByCardAndDeviceSN(
-            undefined,
-            "4",
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          ),
-          apiService.fetchKioskTransactionsByMBPayCoins(
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          ),
-          apiService.fetchKioskTransactionsByCardAndDeviceSN(
-            ["3", "4"],
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          ),
-        ]);
+      const [
+        payTerminalRes,
+        payCoinsRes,
+        moveCardRes,
+        moveKioskRes,
+        totalPayRes,
+        totalMovementRes,
+      ] = await Promise.all([
+        apiService.fetchKioskTransactionsByMBAndDeviceSN(
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        ),
+        apiService.fetchKioskTransactionsByPayCoins(
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        ),
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          undefined,
+          "3",
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        ),
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          undefined,
+          "4",
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        ),
+        apiService.fetchKioskTransactionsByMBPayCoins(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        ),
+        apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          ["3", "4"],
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        ),
+      ]);
 
       setPayTerminalNoPagination(payTerminalRes.data);
       setPayCoinsNoPagination(payCoinsRes.data);
@@ -750,7 +796,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
       fetchAllCoin();
       fetchAllLimpezas();
       fetchAllOcorrencias();
-      fetchAllCounter();
+      fetchAllCounter(undefined, undefined, "1", "20");
       fetchAllTasks();
       fetchAllChartData();
       fetchAllCardAndKiosk(
@@ -761,15 +807,8 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         undefined,
         "1",
         "20"
-      )
-      fetchAllMBAndCoin(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        "1",
-        "20"
-      )
+      );
+      fetchAllMBAndCoin(undefined, undefined, undefined, undefined, "1", "20");
     }
   }, []);
 
@@ -838,6 +877,14 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     totalPaymentsPages,
     totalMovementsPages,
     fetchAllChartData,
+    payTerminalTotalRecords,
+    payCoinsTotalRecords,
+    totalPaymentsTotalRecords,
+    moveCardTotalRecords,
+    moveKioskTotalRecords,
+    totalMovementsTotalRecords,
+    counterTotalRecords,
+    counterPages,
   };
 
   return (

@@ -81,10 +81,10 @@ export const Temporaries = () => {
     try {
       const data = await apiService.fetchAllEmployeesWithDisabled(
         pageNo,
-        perPage
+        perPage,
+        "Provisório"
       );
-      const onlyTemporario = data.data.filter((emp: Employee) => emp.type === "Provisório");
-      setFilteredEmployees(onlyTemporario);
+      setFilteredEmployees(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -121,7 +121,7 @@ export const Temporaries = () => {
 
   // Atualiza os funcionários
   const refreshEmployees = () => {
-    fetchAllDisabledEmployees();
+    fetchAllDisabledEmployees("1", "20", "Provisório");
     setCurrentPage(1);
     setPerPage(20);
     setClearSelectionToggle((prev) => !prev);
@@ -504,7 +504,7 @@ export const Temporaries = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -512,7 +512,7 @@ export const Temporaries = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

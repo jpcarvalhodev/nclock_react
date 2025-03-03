@@ -57,8 +57,14 @@ export const NvisitorMoveCard = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { moveCard, setMoveCard, fetchAllMoveCard, handleAddNewMoveCard, moveCardPages } =
-    useKiosk();
+  const {
+    moveCard,
+    setMoveCard,
+    fetchAllMoveCard,
+    handleAddNewMoveCard,
+    moveCardPages,
+    moveCardTotalRecords
+  } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -96,10 +102,7 @@ export const NvisitorMoveCard = () => {
   };
 
   // Função para buscar os dados da paginação
-  const fetchPaginationMoveCard = async (
-    pageNo: string,
-    perPage: string
-  ) => {
+  const fetchPaginationMoveCard = async (pageNo: string, perPage: string) => {
     setLoading(true);
     try {
       const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
@@ -128,7 +131,8 @@ export const NvisitorMoveCard = () => {
         startDate,
         endDate
       );
-      setMoveCard(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de movimentos de cartões:", error);
     }
@@ -142,9 +146,10 @@ export const NvisitorMoveCard = () => {
         "3",
         undefined,
         formatDateToStartOfDay(currentDate),
-        formatDateToStartOfDay(currentDate)
+        formatDateToEndOfDay(currentDate)
       );
-      setMoveCard(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -171,7 +176,8 @@ export const NvisitorMoveCard = () => {
         start,
         end
       );
-      setMoveCard(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -202,7 +208,8 @@ export const NvisitorMoveCard = () => {
         start,
         end
       );
-      setMoveCard(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -227,7 +234,15 @@ export const NvisitorMoveCard = () => {
 
   // Função para atualizar as publicidades
   const refreshMoveCard = () => {
-    fetchAllMoveCard(undefined, "3", undefined, undefined, undefined, "1", "20");
+    fetchAllMoveCard(
+      undefined,
+      "3",
+      undefined,
+      undefined,
+      undefined,
+      "1",
+      "20"
+    );
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -470,7 +485,7 @@ export const NvisitorMoveCard = () => {
   const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
   // Calcula o valor total dos movimentos
-  const totalAmount = filteredDataTable.length;
+  const totalAmount = moveCardTotalRecords;
 
   // Função para abrir o modal para escolher porta
   const openAuxOutModal = () => {
@@ -491,7 +506,7 @@ export const NvisitorMoveCard = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -499,7 +514,7 @@ export const NvisitorMoveCard = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

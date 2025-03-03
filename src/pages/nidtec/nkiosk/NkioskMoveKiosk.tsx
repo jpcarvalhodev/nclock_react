@@ -39,7 +39,7 @@ export const NkioskMoveKiosk = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { moveKiosk, setMoveKiosk, fetchAllMoveKiosk, moveKioskPages } =
+  const { moveKiosk, setMoveKiosk, fetchAllMoveKiosk, moveKioskPages, moveKioskTotalRecords } =
     useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -77,6 +77,8 @@ export const NkioskMoveKiosk = () => {
         undefined,
         "4",
         undefined,
+        undefined, 
+        undefined,
         pageNo,
         perPage
       );
@@ -99,11 +101,8 @@ export const NkioskMoveKiosk = () => {
         startDate,
         endDate
       );
-      if (data.length > 0) {
-        setMoveKiosk(data.data);
-      } else {
-        setMoveKiosk([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error(
         "Erro ao buscar os dados de movimentos no quiosque:",
@@ -122,11 +121,8 @@ export const NkioskMoveKiosk = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToEndOfDay(currentDate)
       );
-      if (data.length > 0) {
-        setMoveKiosk(data.data);
-      } else {
-        setMoveKiosk([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -153,11 +149,8 @@ export const NkioskMoveKiosk = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setMoveKiosk(data.data);
-      } else {
-        setMoveKiosk([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -188,11 +181,8 @@ export const NkioskMoveKiosk = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setMoveKiosk(data.data);
-      } else {
-        setMoveKiosk([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -454,7 +444,7 @@ export const NkioskMoveKiosk = () => {
   const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
   // Calcula o valor total dos movimentos
-  const totalAmount = filteredDataTable.length;
+  const totalAmount = moveKioskTotalRecords;
 
   // Função para obter os campos selecionados baseado em selectedColumns
   const getSelectedFields = () => {
@@ -469,7 +459,7 @@ export const NkioskMoveKiosk = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -477,7 +467,7 @@ export const NkioskMoveKiosk = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

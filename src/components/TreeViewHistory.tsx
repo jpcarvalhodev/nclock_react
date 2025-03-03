@@ -137,7 +137,7 @@ export function TreeViewDataHistory({
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (itemsMap.size > 0) {
       clearTimeout(timeout);

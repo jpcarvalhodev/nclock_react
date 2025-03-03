@@ -39,7 +39,7 @@ export const NvisitorMoveKiosk = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { moveKiosk, setMoveKiosk, fetchAllMoveKiosk, moveKioskPages } =
+  const { moveKiosk, fetchAllMoveKiosk, moveKioskPages, moveKioskTotalRecords } =
     useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -99,7 +99,8 @@ export const NvisitorMoveKiosk = () => {
         startDate,
         endDate
       );
-      setMoveKiosk(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error(
         "Erro ao buscar os dados de movimentos no quiosque:",
@@ -116,9 +117,10 @@ export const NvisitorMoveKiosk = () => {
         "4",
         undefined,
         formatDateToStartOfDay(currentDate),
-        formatDateToStartOfDay(currentDate)
+        formatDateToEndOfDay(currentDate)
       );
-      setMoveKiosk(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -145,7 +147,8 @@ export const NvisitorMoveKiosk = () => {
         start,
         end
       );
-      setMoveKiosk(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -176,7 +179,8 @@ export const NvisitorMoveKiosk = () => {
         start,
         end
       );
-      setMoveKiosk(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -200,7 +204,15 @@ export const NvisitorMoveKiosk = () => {
 
   // Função para atualizar os movimentos de quiosque
   const refreshMoveKiosk = () => {
-    fetchAllMoveKiosk(undefined, "4", undefined, undefined, undefined, "1", "20");
+    fetchAllMoveKiosk(
+      undefined,
+      "4",
+      undefined,
+      undefined,
+      undefined,
+      "1",
+      "20"
+    );
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -430,7 +442,7 @@ export const NvisitorMoveKiosk = () => {
   const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
   // Calcula o valor total dos movimentos
-  const totalAmount = filteredDataTable.length;
+  const totalAmount = moveKioskTotalRecords;
 
   // Função para obter os campos selecionados baseado em selectedColumns
   const getSelectedFields = () => {
@@ -445,7 +457,7 @@ export const NvisitorMoveKiosk = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -453,7 +465,7 @@ export const NvisitorMoveKiosk = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

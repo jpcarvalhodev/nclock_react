@@ -42,7 +42,7 @@ export const NkioskPayCoins = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { payCoins, setPayCoins, fetchAllPayCoins, payCoinsPages } = useKiosk();
+  const { payCoins, fetchAllPayCoins, payCoinsPages, payCoinsTotalRecords } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -95,13 +95,12 @@ export const NkioskPayCoins = () => {
         "2",
         undefined,
         startDate,
-        endDate
+        endDate,
+        "1",
+        "20"
       );
-      if (data.length > 0) {
-        setPayCoins(data.data);
-      } else {
-        setPayCoins([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados do moedeiro:", error);
     }
@@ -116,11 +115,8 @@ export const NkioskPayCoins = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToEndOfDay(currentDate)
       );
-      if (data.length > 0) {
-        setPayCoins(data.data);
-      } else {
-        setPayCoins([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -146,11 +142,8 @@ export const NkioskPayCoins = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setPayCoins(data.data);
-      } else {
-        setPayCoins([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -180,11 +173,8 @@ export const NkioskPayCoins = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setPayCoins(data.data);
-      } else {
-        setPayCoins([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -216,7 +206,7 @@ export const NkioskPayCoins = () => {
         return payCoinDate >= lastRecolhaDate.toISOString();
       });
       setStartDate(formatDateToStartOfDay(lastRecolhaDate));
-      setPayCoins(filteredData);
+      setFilteredDevices(filteredData);
     } catch (error) {
       console.error("Erro ao buscar os dados da última recolha:", error);
     }
@@ -408,7 +398,7 @@ export const NkioskPayCoins = () => {
     });
 
   // Calcula o total do valor dos pagamentos
-  const totalAmount = filteredDataTable.length * (kioskConfig.amount ?? 0);
+  const totalAmount = payCoinsTotalRecords * (kioskConfig.amount ?? 0);
 
   // Função para gerar os dados com nomes substituídos para o export/print
   const transformTransactionWithNames = (transaction: {
@@ -455,7 +445,7 @@ export const NkioskPayCoins = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -463,7 +453,7 @@ export const NkioskPayCoins = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <TerminalsProvider>
@@ -759,7 +749,7 @@ export const NkioskPayCoins = () => {
               <div style={{ marginLeft: 10, marginTop: -5 }}>
                 <strong>Recebimentos Moedeiro: </strong> Valor -{" "}
                 {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-                {filteredDataTable.length}
+                {payCoinsTotalRecords}
               </div>
             </div>
           )}
@@ -1067,7 +1057,7 @@ export const NkioskPayCoins = () => {
               <div style={{ marginLeft: 10, marginTop: -5 }}>
                 <strong>Recebimentos Moedeiro: </strong> Valor -{" "}
                 {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-                {filteredDataTable.length}
+                {payCoinsTotalRecords}
               </div>
             </div>
           </Split>

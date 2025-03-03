@@ -81,11 +81,8 @@ export const LoginLogs = () => {
   const fetchLogsBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllLoginLogs(startDate, endDate);
-      if (data.length > 0) {
-        setLoginLogs(data.data);
-      } else {
-        setLoginLogs([]);
-      }
+      setLoginLogs(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de logs:", error);
     }
@@ -98,11 +95,8 @@ export const LoginLogs = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      if (data.length > 0) {
-        setLoginLogs(data.data);
-      } else {
-        setLoginLogs([]);
-      }
+      setLoginLogs(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -120,11 +114,8 @@ export const LoginLogs = () => {
 
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      if (data.length > 0) {
-        setLoginLogs(data.data);
-      } else {
-        setLoginLogs([]);
-      }
+      setLoginLogs(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -146,11 +137,8 @@ export const LoginLogs = () => {
 
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      if (data.length > 0) {
-        setLoginLogs(data.data);
-      } else {
-        setLoginLogs([]);
-      }
+      setLoginLogs(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -356,7 +344,7 @@ export const LoginLogs = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -364,7 +352,7 @@ export const LoginLogs = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

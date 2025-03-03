@@ -25,7 +25,6 @@ import { Employee } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
-import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -119,7 +118,7 @@ export const Persons = () => {
 
   // Atualiza os funcionários
   const refreshEmployees = () => {
-    fetchAllDisabledEmployees(undefined, "1", "20");
+    fetchAllDisabledEmployees("1", "20");
     setCurrentPage(1);
     setPerPage(20);
     setClearSelectionToggle((prev) => !prev);
@@ -488,7 +487,7 @@ export const Persons = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -496,7 +495,7 @@ export const Persons = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

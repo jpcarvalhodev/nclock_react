@@ -42,7 +42,6 @@ export const Employees = () => {
     handleUpdateEmployee,
     handleDeleteEmployee,
     totalPages,
-    setTotalPages
   } = usePersons();
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [filterText, setFilterText] = useState("");
@@ -81,10 +80,10 @@ export const Employees = () => {
     try {
       const data = await apiService.fetchAllEmployeesWithDisabled(
         pageNo,
-        perPage
+        perPage,
+        "Funcionário"
       );
-      const onlyFuncionarios = data.data.filter((emp: Employee) => emp.type === "Funcionário");
-      setFilteredEmployees(onlyFuncionarios);
+      setFilteredEmployees(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -121,7 +120,7 @@ export const Employees = () => {
 
   // Atualiza os funcionários
   const refreshEmployees = () => {
-    fetchAllDisabledEmployees();
+    fetchAllDisabledEmployees("1", "20", "Funcionário");
     setCurrentPage(1);
     setPerPage(20);
     setClearSelectionToggle((prev) => !prev);
@@ -505,7 +504,7 @@ export const Employees = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -513,7 +512,7 @@ export const Employees = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

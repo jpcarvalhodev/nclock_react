@@ -45,7 +45,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 
 // Define a página de acessos
 export const NaccessAccesses = () => {
-  const { access, totalPages, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice, handleAddAccess } =
+  const { access, totalPages, fetchAllInitialAccessesbyDevice, handleAddAccess } =
     useAttendance();
   const { fetchAllKioskTransactionByEnrollNumber } = useKiosk();
   const currentDate = new Date();
@@ -111,11 +111,8 @@ export const NaccessAccesses = () => {
         startDate,
         endDate
       );
-      if (data.length > 0) {
-        setFilteredAccess(data.data);
-      } else {
-        setFilteredAccess([]);
-      }
+      setFilteredAccess(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar acessos entre datas:", error);
       setFilteredAccess([]);
@@ -133,11 +130,8 @@ export const NaccessAccesses = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setFilteredAccess(data.data);
-      } else {
-        setFilteredAccess([]);
-      }
+      setFilteredAccess(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar acessos hoje:", error);
       setFilteredAccess([]);
@@ -160,11 +154,8 @@ export const NaccessAccesses = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setFilteredAccess(data.data);
-      } else {
-        setFilteredAccess([]);
-      }
+      setFilteredAccess(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar acessos ontem:", error);
       setFilteredAccess([]);
@@ -191,11 +182,8 @@ export const NaccessAccesses = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setFilteredAccess(data.data);
-      } else {
-        setFilteredAccess([]);
-      }
+      setFilteredAccess(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar acessos amanhã:", error);
       setFilteredAccess([]);
@@ -599,7 +587,7 @@ export const NaccessAccesses = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -607,7 +595,7 @@ export const NaccessAccesses = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

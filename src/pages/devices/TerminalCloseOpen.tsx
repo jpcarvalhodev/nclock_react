@@ -335,7 +335,7 @@ export const TerminalCloseOpen = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDeviceDataTable.length > 0) {
       clearTimeout(timeout);
@@ -343,7 +343,7 @@ export const TerminalCloseOpen = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDeviceDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

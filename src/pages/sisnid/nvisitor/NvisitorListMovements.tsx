@@ -41,9 +41,9 @@ export const NvisitorListMovements = () => {
   pastDate.setDate(currentDate.getDate() - 30);
   const {
     totalMovements,
-    setTotalMovements,
     fetchAllCardAndKiosk,
     totalMovementsPages,
+    totalMovementsTotalRecords
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -105,7 +105,8 @@ export const NvisitorListMovements = () => {
         startDate,
         endDate
       );
-      setTotalMovements(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de listagem de movimentos", error);
     }
@@ -121,7 +122,8 @@ export const NvisitorListMovements = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToEndOfDay(currentDate)
       );
-      setTotalMovements(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -148,7 +150,8 @@ export const NvisitorListMovements = () => {
         start,
         end
       );
-      setTotalMovements(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -179,7 +182,8 @@ export const NvisitorListMovements = () => {
         start,
         end
       );
-      setTotalMovements(data.data);
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -432,7 +436,7 @@ export const NvisitorListMovements = () => {
     });
 
   // Calcula o valor total dos movimentos
-  const totalAmount = filteredDataTable.length;
+  const totalAmount = totalMovementsTotalRecords;
 
   // Função para gerar os dados com nomes substituídos para o export/print
   const transformTransactionWithNames = (transaction: { deviceSN: string }) => {
@@ -466,7 +470,7 @@ export const NvisitorListMovements = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -474,7 +478,7 @@ export const NvisitorListMovements = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

@@ -291,12 +291,6 @@ export const Terminals = () => {
   useEffect(() => {
     if (!selectedTerminal) return;
 
-    const token = localStorage.getItem("token");
-    const wsUrl = `${
-      process.env.REACT_APP_WS_DOOR
-    }/activities?access_token=${encodeURIComponent(token!)}`;
-    const socket = new WebSocket(wsUrl);
-
     const fetchTasks = async () => {
       try {
         setLoadingActivityData(true);
@@ -319,34 +313,6 @@ export const Terminals = () => {
     setEndDate(formatDateToEndOfDay(currentDate));
 
     fetchTasks();
-
-    setLoadingMovementData(true);
-    socket.onopen = () => {
-      console.log("Conexão WebSocket aberta.");
-      setLoadingMovementData(false);
-    };
-
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        setTransactions((prev) => [data, ...prev]);
-      } catch (error) {
-        console.error("Erro ao processar mensagem WebSocket:", error);
-      }
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      setLoadingMovementData(false);
-    };
-
-    socket.onclose = () => {
-      console.log("Conexão WebSocket fechada.");
-    };
-
-    return () => {
-      socket.close();
-    };
   }, [selectedTerminal, perPage, currentPage]);
 
   // Função para buscar todos os movimentos de dispositivos via websocket
@@ -357,7 +323,7 @@ export const Terminals = () => {
     const token = localStorage.getItem("token");
     const url = `${
       process.env.REACT_APP_WS_DOOR
-    }/transactions?access_token=${encodeURIComponent(token!)}`;
+    }/activities?access_token=${encodeURIComponent(token!)}`;
     const socket = new WebSocket(url);
 
     socket.onopen = () => {
@@ -375,7 +341,7 @@ export const Terminals = () => {
     };
 
     socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
+      console.error("Erro no WebSocket:", error);
       setLoadingMovementData(false);
     };
 
@@ -2124,7 +2090,7 @@ export const Terminals = () => {
 
     const timeout = setTimeout(() => {
       setDeviceLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDeviceDataTable.length > 0) {
       clearTimeout(timeout);
@@ -2132,7 +2098,7 @@ export const Terminals = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDeviceDataTable]);
+  }, []);
 
   // Controla o loading da tabela de estado
   useEffect(() => {
@@ -2140,7 +2106,7 @@ export const Terminals = () => {
 
     const timeout = setTimeout(() => {
       setStateLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredStateDataTable.length > 0) {
       clearTimeout(timeout);
@@ -2148,7 +2114,7 @@ export const Terminals = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredStateDataTable]);
+  }, []);
 
   // Controla o loading da tabela de utilizadores no software
   useEffect(() => {
@@ -2156,7 +2122,7 @@ export const Terminals = () => {
 
     const timeout = setTimeout(() => {
       setUserSoftwareLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredUsersInSoftware.length > 0) {
       clearTimeout(timeout);
@@ -2164,7 +2130,7 @@ export const Terminals = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredUsersInSoftware]);
+  }, []);
 
   // Controla o loading da tabela de utilizadores no terminal
   useEffect(() => {
@@ -2174,7 +2140,7 @@ export const Terminals = () => {
 
     const timeout = setTimeout(() => {
       setUserTerminalLoading(false);
-    }, 1000);
+    }, 500);
 
     if (selectedTerminal && filteredUsersInTerminal.length > 0) {
       clearTimeout(timeout);
@@ -2182,7 +2148,7 @@ export const Terminals = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredUsersInTerminal]);
+  }, []);
 
   // Controla o loading da tabela de biometrias
   useEffect(() => {
@@ -2190,7 +2156,7 @@ export const Terminals = () => {
 
     const timeout = setTimeout(() => {
       setBioLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredBioDataTable.length > 0) {
       clearTimeout(timeout);
@@ -2198,7 +2164,7 @@ export const Terminals = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredBioDataTable]);
+  }, []);
 
   // Controla o loading da tabela de cartões
   useEffect(() => {
@@ -2206,7 +2172,7 @@ export const Terminals = () => {
 
     const timeout = setTimeout(() => {
       setCardLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredCardDataTable.length > 0) {
       clearTimeout(timeout);
@@ -2214,7 +2180,7 @@ export const Terminals = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredCardDataTable]);
+  }, []);
 
   return (
     <>

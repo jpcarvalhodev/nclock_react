@@ -63,6 +63,7 @@ export const NkioskMoveCard = () => {
     fetchAllMoveCard,
     handleAddNewMoveCard,
     moveCardPages,
+    moveCardTotalRecords
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -95,6 +96,9 @@ export const NkioskMoveCard = () => {
   const [perPage, setPerPage] = useState(20);
   const [totalRows, setTotalRows] = useState(0);
 
+  console.log("moveCard", moveCard);
+  console.log("moveCardPages", moveCardPages);
+
   // Função para adicionar um novo movimento de cartão
   const addNewCard = async (newCard: NewTransactionCard) => {
     await handleAddNewMoveCard(newCard);
@@ -107,6 +111,8 @@ export const NkioskMoveCard = () => {
       const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
         undefined,
         "3",
+        undefined,
+        undefined, 
         undefined,
         pageNo,
         perPage
@@ -130,11 +136,8 @@ export const NkioskMoveCard = () => {
         startDate,
         endDate
       );
-      if (data.length > 0) {
-        setMoveCard(data.data);
-      } else {
-        setMoveCard([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de movimentos de cartões:", error);
     }
@@ -150,11 +153,8 @@ export const NkioskMoveCard = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToEndOfDay(currentDate)
       );
-      if (data.length > 0) {
-        setMoveCard(data.data);
-      } else {
-        setMoveCard([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -181,11 +181,8 @@ export const NkioskMoveCard = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setMoveCard(data.data);
-      } else {
-        setMoveCard([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -216,11 +213,8 @@ export const NkioskMoveCard = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setMoveCard(data.data);
-      } else {
-        setMoveCard([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -496,7 +490,7 @@ export const NkioskMoveCard = () => {
   const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
   // Calcula o valor total dos movimentos
-  const totalAmount = filteredDataTable.length;
+  const totalAmount = moveCardTotalRecords;
 
   // Função para abrir o modal para escolher porta
   const openAuxOutModal = () => {
@@ -517,7 +511,7 @@ export const NkioskMoveCard = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -525,7 +519,7 @@ export const NkioskMoveCard = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

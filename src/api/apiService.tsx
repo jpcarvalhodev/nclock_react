@@ -359,7 +359,8 @@ export const fetchAllEmployeesWithDisabledNoPagination = async () => {
 
 export const fetchAllEmployeesWithDisabled = async (
   pageNo?: string,
-  pageSize?: string
+  pageSize?: string,
+  type?: string
 ) => {
   const params: string[] = [];
 
@@ -369,6 +370,10 @@ export const fetchAllEmployeesWithDisabled = async (
 
   if (pageSize) {
     params.push(`pageSize=${pageSize}`);
+  }
+
+  if (type) {
+    params.push(`type=${type}`);
   }
 
   let url = `Employees/GetDisabledEmployeesPagination`;
@@ -4787,12 +4792,27 @@ export const deleteOccurrence = async (id: string[]) => {
 
 export const fetchAllContador = async (
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
 ) => {
-  let url = `KioskTransaction/GetKioskAllContador`;
-  if (startDate && endDate) {
-    url += `?startDate=${startDate}&endDate=${endDate}`;
+  const params: string[] = [];
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
   }
+
+  if (startDate && endDate) {
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
+  }
+
+  let url = `KioskTransaction/GetKioskAllContador`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
   const response = await fetchWithAuth(url);
   if (response.status === 403) {
     if (!hasShown403) {

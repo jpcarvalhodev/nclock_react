@@ -127,11 +127,8 @@ export const NaccessVisitor = () => {
         startDate,
         endDate
       );
-      if (data.length > 0) {
-        setFilteredEmployees(data.data);
-      } else {
-        setFilteredEmployees([]);
-      }
+      setFilteredEmployees(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar visitantes entre datas:", error);
     }
@@ -148,11 +145,8 @@ export const NaccessVisitor = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setFilteredEmployees(data.data);
-      } else {
-        setFilteredEmployees([]);
-      }
+      setFilteredEmployees(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -170,11 +164,8 @@ export const NaccessVisitor = () => {
 
     try {
       const data = await apiService.fetchAllEmployeeVisitors(start, end);
-      if (data.length > 0) {
-        setFilteredEmployees(data.data);
-      } else {
-        setFilteredEmployees([]);
-      }
+      setFilteredEmployees(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -196,11 +187,8 @@ export const NaccessVisitor = () => {
 
     try {
       const data = await apiService.fetchAllEmployeeVisitors(start, end);
-      if (data.length > 0) {
-        setFilteredEmployees(data.data);
-      } else {
-        setFilteredEmployees([]);
-      }
+      setFilteredEmployees(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -771,7 +759,7 @@ export const NaccessVisitor = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -779,7 +767,7 @@ export const NaccessVisitor = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

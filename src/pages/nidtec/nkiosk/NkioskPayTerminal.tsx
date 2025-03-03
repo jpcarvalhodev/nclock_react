@@ -38,7 +38,7 @@ export const NkioskPayTerminal = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { payTerminal, setPayTerminal, fetchAllPayTerminal, payTerminalPages } =
+  const { payTerminal, fetchAllPayTerminal, payTerminalPages, payTerminalTotalRecords } =
     useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -93,11 +93,8 @@ export const NkioskPayTerminal = () => {
         startDate,
         endDate
       );
-      if (data.length > 0) {
-        setPayTerminal(data.data);
-      } else {
-        setPayTerminal([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error(
         "Erro ao buscar os dados de pagamento dos terminais:",
@@ -113,11 +110,8 @@ export const NkioskPayTerminal = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToStartOfDay(currentDate)
       );
-      if (data.length > 0) {
-        setPayTerminal(data.data);
-      } else {
-        setPayTerminal([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToStartOfDay(currentDate));
     } catch (error) {
@@ -141,11 +135,8 @@ export const NkioskPayTerminal = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setPayTerminal(data.data);
-      } else {
-        setPayTerminal([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -173,11 +164,8 @@ export const NkioskPayTerminal = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setPayTerminal(data.data);
-      } else {
-        setPayTerminal([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -388,7 +376,7 @@ export const NkioskPayTerminal = () => {
     });
 
   // Calcula o total do valor dos pagamentos
-  const totalAmount = filteredDataTable.length * (kioskConfig.amount ?? 0);
+  const totalAmount = payTerminalTotalRecords * (kioskConfig.amount ?? 0);
 
   // Função para gerar os dados com nomes substituídos para o export/print
   const transformTransactionWithNames = (transaction: {
@@ -433,7 +421,7 @@ export const NkioskPayTerminal = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -441,7 +429,7 @@ export const NkioskPayTerminal = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">
@@ -707,7 +695,7 @@ export const NkioskPayTerminal = () => {
             <div style={{ marginLeft: 10, marginTop: -5 }}>
               <strong>Recebimentos Multibanco: </strong> Valor -{" "}
               {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-              {filteredDataTable.length}
+              {payTerminalTotalRecords}
             </div>
           </div>
         )}
@@ -984,7 +972,7 @@ export const NkioskPayTerminal = () => {
             <div style={{ marginLeft: 10, marginTop: -5 }}>
               <strong>Recebimentos Multibanco: </strong> Valor -{" "}
               {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-              {filteredDataTable.length}
+              {payTerminalTotalRecords}
             </div>
           </div>
         </Split>

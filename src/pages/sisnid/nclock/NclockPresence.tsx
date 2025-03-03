@@ -450,7 +450,7 @@ export const NclockPresence = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -458,7 +458,7 @@ export const NclockPresence = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   // Função para calcular a quantidade de presentes e ausentes
   const calculatePresenceCounts = () => {

@@ -41,9 +41,9 @@ export const NkioskListMovements = () => {
   pastDate.setDate(currentDate.getDate() - 30);
   const {
     totalMovements,
-    setTotalMovements,
     fetchAllCardAndKiosk,
     totalMovementsPages,
+    totalMovementsTotalRecords
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -105,11 +105,8 @@ export const NkioskListMovements = () => {
         startDate,
         endDate
       );
-      if (data.length > 0) {
-        setTotalMovements(data.data);
-      } else {
-        setTotalMovements([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de listagem de movimentos", error);
     }
@@ -125,11 +122,8 @@ export const NkioskListMovements = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToEndOfDay(currentDate)
       );
-      if (data.length > 0) {
-        setTotalMovements(data.data);
-      } else {
-        setTotalMovements([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -156,11 +150,8 @@ export const NkioskListMovements = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setTotalMovements(data.data);
-      } else {
-        setTotalMovements([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -191,11 +182,8 @@ export const NkioskListMovements = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setTotalMovements(data.data);
-      } else {
-        setTotalMovements([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -448,7 +436,7 @@ export const NkioskListMovements = () => {
     });
 
   // Calcula o valor total dos movimentos
-  const totalAmount = filteredDataTable.length;
+  const totalAmount = totalMovementsTotalRecords;
 
   // Função para gerar os dados com nomes substituídos para o export/print
   const transformTransactionWithNames = (transaction: { deviceSN: string }) => {
@@ -482,7 +470,7 @@ export const NkioskListMovements = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -490,7 +478,7 @@ export const NkioskListMovements = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

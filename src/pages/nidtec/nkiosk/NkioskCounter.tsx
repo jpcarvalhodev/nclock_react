@@ -36,31 +36,19 @@ function CustomSearchBox(props: TextFieldProps) {
   return <TextField {...props} className="SearchBox" />;
 }
 
-// Função para converter string em data
-const convertStringToDate = (dateStr: string) => {
-  if (!dateStr || typeof dateStr !== "string") {
-    console.error("Data inválida recebida:", dateStr);
-    return new Date("");
-  }
-  const parts = dateStr.split(" ");
-  const dateParts = parts[0].split("/");
-  const timeParts = parts[1].split(":");
-  return new Date(
-    parseInt(dateParts[2], 10),
-    parseInt(dateParts[1], 10) - 1,
-    parseInt(dateParts[0], 10),
-    parseInt(timeParts[0], 10),
-    parseInt(timeParts[1], 10),
-    parseInt(timeParts[2], 10)
-  );
-};
-
 export const NkioskCounter = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
   const { devices } = useTerminals();
-  const { counter, setCounter, fetchAllCounter } = useKiosk();
+  const {
+    counter,
+    setCounter,
+    fetchAllCounter,
+    counterPages,
+    moveCardTotalRecords,
+    moveKioskTotalRecords,
+  } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -78,20 +66,35 @@ export const NkioskCounter = () => {
   const [filteredDevices, setFilteredDevices] = useState<Counter[]>([]);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(20);
+  const [totalRows, setTotalRows] = useState(0);
+
+  // Função para buscar os dados da paginação
+  const fetchPaginationCounter = async (pageNo: string, perPage: string) => {
+    setLoading(true);
+    try {
+      const data = await apiService.fetchAllContador(
+        undefined,
+        undefined,
+        pageNo,
+        perPage
+      );
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar acessos paginados:", error);
+      setLoading(false);
+    }
+  };
 
   // Busca os dados do contador entre as datas especificadas
   const fetchAllCounterBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllContador(startDate, endDate);
-      if (Array.isArray(data)) {
-        const convertedData = data.map((item) => ({
-          ...item,
-          eventTime: convertStringToDate(item.eventTime),
-        }));
-        setCounter(convertedData);
-      } else {
-        setCounter([]);
-      }
+      setCounter(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados do contador:", error);
     }
@@ -104,15 +107,8 @@ export const NkioskCounter = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllContador(start, end);
-      if (Array.isArray(data)) {
-        const convertedData = data.map((item) => ({
-          ...item,
-          eventTime: convertStringToDate(item.eventTime),
-        }));
-        setCounter(convertedData);
-      } else {
-        setCounter([]);
-      }
+      setCounter(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -130,15 +126,8 @@ export const NkioskCounter = () => {
 
     try {
       const data = await apiService.fetchAllContador(start, end);
-      if (Array.isArray(data)) {
-        const convertedData = data.map((item) => ({
-          ...item,
-          eventTime: convertStringToDate(item.eventTime),
-        }));
-        setCounter(convertedData);
-      } else {
-        setCounter([]);
-      }
+      setCounter(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -160,21 +149,19 @@ export const NkioskCounter = () => {
 
     try {
       const data = await apiService.fetchAllContador(start, end);
-      if (Array.isArray(data)) {
-        const convertedData = data.map((item) => ({
-          ...item,
-          eventTime: convertStringToDate(item.eventTime),
-        }));
-        setCounter(convertedData);
-      } else {
-        setCounter([]);
-      }
+      setCounter(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
       console.error("Erro ao buscar os dados do contador amanhã:", error);
     }
   };
+
+  // Busca os dados se a paginação mudar
+  useEffect(() => {
+    fetchPaginationCounter(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
 
   // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
   useEffect(() => {
@@ -190,7 +177,7 @@ export const NkioskCounter = () => {
 
   // Função para atualizar as recolhas do moedeiro
   const refreshCounter = () => {
-    fetchAllCounter();
+    fetchAllCounter(undefined, undefined, "1", "20");
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -203,6 +190,17 @@ export const NkioskCounter = () => {
     } else {
       setSelectedColumns([...selectedColumns, columnName]);
     }
+  };
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
   };
 
   // Função para resetar as colunas
@@ -341,16 +339,6 @@ export const NkioskCounter = () => {
   // Transforma as linhas selecionadas com nomes substituídos
   const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
 
-  // Calcula o total de movimentos Torniquete
-  const totalCardAmount = filteredDataTable.filter(
-    (transaction) => transaction.eventType !== "Quiosque"
-  ).length;
-
-  // Calcula o total de movimentos Quiosque
-  const totalKioskAmount = filteredDataTable.filter(
-    (transaction) => transaction.eventType === "Quiosque"
-  ).length;
-
   // Função para obter os campos selecionados baseado em selectedColumns
   const getSelectedFields = () => {
     return counterFields.filter((field) => selectedColumns.includes(field.key));
@@ -362,7 +350,7 @@ export const NkioskCounter = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -370,7 +358,7 @@ export const NkioskCounter = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">
@@ -600,7 +588,6 @@ export const NkioskCounter = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
                   paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -613,14 +600,37 @@ export const NkioskCounter = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(counterPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ marginLeft: 10, marginRight: 10 }}>
                 <strong>Total de Movimentos:</strong> Torniquete -{" "}
-                {totalCardAmount} | Quiosque - {totalKioskAmount} | Total -{" "}
-                {totalCardAmount + totalKioskAmount}
+                {moveCardTotalRecords} | Quiosque - {moveKioskTotalRecords} |
+                Total - {moveCardTotalRecords + moveKioskTotalRecords}
               </div>
             </div>
           </div>
@@ -862,7 +872,6 @@ export const NkioskCounter = () => {
                   data={filteredDataTable}
                   pagination
                   paginationComponentOptions={paginationOptions}
-                  paginationPerPage={20}
                   paginationRowsPerPageOptions={[20, 50]}
                   selectableRows
                   onSelectedRowsChange={handleRowSelected}
@@ -875,14 +884,37 @@ export const NkioskCounter = () => {
                   persistTableHead={true}
                   defaultSortAsc={true}
                   defaultSortFieldId="eventTime"
+                  paginationIconFirstPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(1)}
+                    >
+                      <i className="bi bi-chevron-double-left" />
+                    </span>
+                  }
+                  paginationIconLastPage={
+                    <span
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePageChange(counterPages)}
+                    >
+                      <i className="bi bi-chevron-double-right" />
+                    </span>
+                  }
+                  progressPending={loading}
+                  onChangePage={handlePageChange}
+                  onChangeRowsPerPage={handleRowsPerPageChange}
+                  paginationServer
+                  paginationTotalRows={totalRows}
+                  paginationDefaultPage={currentPage}
+                  paginationPerPage={perPage}
                 />
               )}
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ marginLeft: 10, marginRight: 10 }}>
                 <strong>Total de Movimentos:</strong> Torniquete -{" "}
-                {totalCardAmount} | Quiosque - {totalKioskAmount} | Total -{" "}
-                {totalCardAmount + totalKioskAmount}
+                {moveCardTotalRecords} | Quiosque - {moveKioskTotalRecords} |
+                Total - {moveCardTotalRecords + moveKioskTotalRecords}
               </div>
             </div>
           </div>

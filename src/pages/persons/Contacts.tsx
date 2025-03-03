@@ -81,10 +81,10 @@ export const Contacts = () => {
     try {
       const data = await apiService.fetchAllEmployeesWithDisabled(
         pageNo,
-        perPage
+        perPage,
+        "Contacto"
       );
-      const onlyContacto = data.data.filter((emp: Employee) => emp.type === "Contacto");
-      setFilteredEmployees(onlyContacto);
+      setFilteredEmployees(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -121,7 +121,7 @@ export const Contacts = () => {
 
   // Atualiza os funcionários
   const refreshEmployees = () => {
-    fetchAllDisabledEmployees();
+    fetchAllDisabledEmployees("1", "20", "Contacto");
     setCurrentPage(1);
     setPerPage(20);
     setClearSelectionToggle((prev) => !prev);
@@ -504,7 +504,7 @@ export const Contacts = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -512,7 +512,7 @@ export const Contacts = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

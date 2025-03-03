@@ -40,8 +40,8 @@ export const NkioskListPayments = () => {
   const {
     fetchAllMBAndCoin,
     totalPayments,
-    setTotalPayments,
     totalPaymentsPages,
+    totalPaymentsTotalRecords
   } = useKiosk();
   const { kioskConfig } = useNavbar();
   const [filterText, setFilterText] = useState<string>("");
@@ -98,11 +98,8 @@ export const NkioskListPayments = () => {
         startDate,
         endDate
       );
-      if (data.length > 0) {
-        setTotalPayments(data.data);
-      } else {
-        setTotalPayments([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error(
         "Erro ao buscar os dados de listagem de pagamentos:",
@@ -120,11 +117,8 @@ export const NkioskListPayments = () => {
         startDate,
         endDate
       );
-      if (data.length > 0) {
-        setTotalPayments(data.data);
-      } else {
-        setTotalPayments([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
     } catch (error) {
@@ -150,11 +144,8 @@ export const NkioskListPayments = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setTotalPayments(data.data);
-      } else {
-        setTotalPayments([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -184,11 +175,8 @@ export const NkioskListPayments = () => {
         start,
         end
       );
-      if (data.length > 0) {
-        setTotalPayments(data.data);
-      } else {
-        setTotalPayments([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -406,7 +394,7 @@ export const NkioskListPayments = () => {
     });
 
   // Calcula o valor total dos pagamentos no moedeiro
-  const totalAmount = filteredDataTable.length * (kioskConfig.amount ?? 0);
+  const totalAmount = totalPaymentsTotalRecords * (kioskConfig.amount ?? 0);
 
   // Função para gerar os dados com nomes substituídos para o export/print
   const transformTransactionWithNames = (transaction: {
@@ -453,7 +441,7 @@ export const NkioskListPayments = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -461,7 +449,7 @@ export const NkioskListPayments = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">
@@ -726,7 +714,7 @@ export const NkioskListPayments = () => {
               <div style={{ marginLeft: 10, marginTop: -5 }}>
                 <strong>Recebimentos Totais: </strong> Valor -{" "}
                 {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-                {filteredDataTable.length}
+                {totalPaymentsTotalRecords}
               </div>
             </div>
           </div>
@@ -1003,7 +991,7 @@ export const NkioskListPayments = () => {
               <div style={{ marginLeft: 10, marginTop: -5 }}>
                 <strong>Recebimentos Totais: </strong> Valor -{" "}
                 {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-                {filteredDataTable.length}
+                {totalPaymentsTotalRecords}
               </div>
             </div>
           </div>

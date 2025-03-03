@@ -80,11 +80,8 @@ export const NledAlerts = () => {
   const fetchAlertsBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllEventDevice(startDate, endDate);
-      if (Array.isArray(data)) {
-        setEvents(data);
-      } else {
-        setEvents([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de alertas:", error);
     }
@@ -97,11 +94,8 @@ export const NledAlerts = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllEventDevice(start, end);
-      if (Array.isArray(data)) {
-        setEvents(data);
-      } else {
-        setEvents([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -119,11 +113,8 @@ export const NledAlerts = () => {
 
     try {
       const data = await apiService.fetchAllEventDevice(start, end);
-      if (Array.isArray(data)) {
-        setEvents(data);
-      } else {
-        setEvents([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -145,11 +136,8 @@ export const NledAlerts = () => {
 
     try {
       const data = await apiService.fetchAllEventDevice(start, end);
-      if (Array.isArray(data)) {
-        setEvents(data);
-      } else {
-        setEvents([]);
-      }
+      setFilteredDevices(data.data);
+      setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
     } catch (error) {
@@ -320,7 +308,7 @@ export const NledAlerts = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -328,7 +316,7 @@ export const NledAlerts = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

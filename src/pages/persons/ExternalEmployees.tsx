@@ -81,10 +81,10 @@ export const ExternalEmployees = () => {
     try {
       const data = await apiService.fetchAllEmployeesWithDisabled(
         pageNo,
-        perPage
+        perPage,
+        "Subcontratado"
       );
-      const onlyFuncExt = data.data.filter((emp: Employee) => emp.type === "Subcontratado");
-      setFilteredEmployees(onlyFuncExt);
+      setFilteredEmployees(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -121,7 +121,7 @@ export const ExternalEmployees = () => {
 
   // Atualiza os funcionários
   const refreshEmployees = () => {
-    fetchAllDisabledEmployees();
+    fetchAllDisabledEmployees("1", "20", "Subcontratado");
     setCurrentPage(1);
     setPerPage(20);
     setClearSelectionToggle((prev) => !prev);
@@ -506,7 +506,7 @@ export const ExternalEmployees = () => {
 
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     if (filteredDataTable.length > 0) {
       clearTimeout(timeout);
@@ -514,7 +514,7 @@ export const ExternalEmployees = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [filteredDataTable]);
+  }, []);
 
   return (
     <div className="main-container">

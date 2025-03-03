@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 
 import * as apiService from "../api/apiService";
 import { Accesses, EmployeeAttendanceTimes } from "../types/Types";
+import { id } from "date-fns/locale";
 
 // Definindo o tipo de contexto
 export interface AttendanceContextType {
@@ -28,8 +29,20 @@ export interface AttendanceContextType {
   fetchAllAttendancesBetweenDates: (
     options?: FetchOptions
   ) => Promise<EmployeeAttendanceTimes[]>;
-  fetchAllInitialAccessesbyDevice: (sn?: string[], startDate?: string, endDate?: string, pageNo?: "1", pageSize?: "20") => Promise<Accesses[]>;
-  fetchAllAccessesbyDevice: (sn?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Accesses[]>;
+  fetchAllInitialAccessesbyDevice: (
+    sn?: string[],
+    startDate?: string,
+    endDate?: string,
+    pageNo?: "1",
+    pageSize?: "20"
+  ) => Promise<Accesses[]>;
+  fetchAllAccessesbyDevice: (
+    sn?: string[],
+    startDate?: string,
+    endDate?: string,
+    pageNo?: string,
+    pageSize?: string
+  ) => Promise<Accesses[]>;
   fetchAllAccessesbyDoor: (
     eventDoorId: number,
     deviceSN: string
@@ -125,11 +138,69 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
   );
 
   // Função para buscar todos os acessos por dispositivo
-  const fetchAllInitialAccessesbyDevice = async (sn?: string[], startDate?: string, endDate?: string, pageNo?: "1", pageSize?: "20"): Promise<Accesses[]> => {
+  const fetchAllInitialAccessesbyDevice = async (
+    sn?: string[],
+    startDate?: string,
+    endDate?: string,
+    pageNo?: "1",
+    pageSize?: "20"
+  ): Promise<Accesses[]> => {
     try {
-      const data = await apiService.fetchAllAccessesByDevice(undefined, undefined, undefined, pageNo, pageSize);
+      const data = await apiService.fetchAllAccessesByDevice(
+        undefined,
+        undefined,
+        undefined,
+        pageNo,
+        pageSize
+      );
       setAccess(data.data);
       setTotalPages(data.totalPages);
+
+      const token = localStorage.getItem("token");
+      const url = `${
+        process.env.REACT_APP_WS_DOOR
+      }/transactions?access_token=${encodeURIComponent(token!)}`;
+      const socket = new WebSocket(url);
+
+      socket.onopen = () => {
+        console.log("WebSocket conectado");
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const newData = JSON.parse(event.data);
+          const newAccess = {
+            id: newData.id,
+            cardNo: newData.CardNo,
+            nameUser: newData.NameUser,
+            deviceSN: newData.DeviceSN,
+            deviceName: newData.DeviceName,
+            eventNo: newData.EventNo,
+            eventName: newData.EventName,
+            eventDoorId: newData.EventDoorId,
+            eventDoorName: newData.EventDoorName,
+            eventType: newData.EventType,
+            eventTime: newData.EventTime,
+            pin: newData.pin,
+            inOutStatus: newData.InOutStatus,
+            readerName: newData.ReaderName,
+            verifyModeNo: newData.VerifyModeNo,
+          };
+  
+          setAccess((prevAccesses) => [newAccess, ...prevAccesses]);
+        } catch (error) {
+          console.error("Erro ao processar mensagem do WebSocket:", error);
+        }
+      };
+
+      socket.onerror = (error) => {
+        console.error("Erro no WebSocket:", error);
+      };
+
+      socket.onclose = () => {
+        console.log("WebSocket desconectado");
+      };
+
       return data.data;
     } catch (error) {
       console.error("Erro ao buscar acessos:", error);
@@ -138,9 +209,21 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Função para buscar todos os acessos por dispositivo
-  const fetchAllAccessesbyDevice = async (sn?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Accesses[]> => {
+  const fetchAllAccessesbyDevice = async (
+    sn?: string[],
+    startDate?: string,
+    endDate?: string,
+    pageNo?: string,
+    pageSize?: string
+  ): Promise<Accesses[]> => {
     try {
-      const data = await apiService.fetchAllAccessesByDevice(sn, undefined, undefined, pageNo, pageSize);
+      const data = await apiService.fetchAllAccessesByDevice(
+        sn,
+        undefined,
+        undefined,
+        pageNo,
+        pageSize
+      );
       setAccessForGraph(data.data);
       return data.data;
     } catch (error) {
@@ -254,7 +337,13 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem("token");
     if (token) {
       fetchAllAttendances();
-      fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20");
+      fetchAllInitialAccessesbyDevice(
+        undefined,
+        undefined,
+        undefined,
+        "1",
+        "20"
+      );
       fetchAllAccessesbyDevice();
     }
   }, []);
