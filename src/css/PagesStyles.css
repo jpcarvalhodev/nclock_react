@@ -1000,10 +1000,6 @@ body {
     margin-bottom: 1rem;
   }
 
-  .table-css {
-    margin-bottom: 150px;
-  }
-
   .datatable-header,
   .dashboard-container {
     flex-direction: column;
@@ -1162,10 +1158,6 @@ body {
     margin-bottom: 1rem;
   }
 
-  .table-css {
-    margin-bottom: 150px;
-  }
-
   .datatable-header,
   .dashboard-container {
     flex-direction: column;
@@ -1295,10 +1287,6 @@ body {
   .profile-avatar {
     max-width: 30px;
     max-height: 30px;
-  }
-
-  .table-css {
-    margin-bottom: 150px;
   }
 
   .treeview-container .datatable-container {

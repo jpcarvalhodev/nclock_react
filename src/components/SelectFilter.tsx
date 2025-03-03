@@ -12,6 +12,7 @@ import {
   EmployeeDevices,
   EmployeeFP,
   EmployeeFace,
+  EmployeesOnDevice,
   ExternalEntity,
   ExternalEntityTypes,
   Group,
@@ -48,6 +49,7 @@ type DataItem =
   | EmployeeAttendanceTimes
   | Devices
   | EmployeeDevices
+  | EmployeesOnDevice
   | EmployeeAndCard
   | EmployeeFP
   | EmployeeFace

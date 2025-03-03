@@ -41,7 +41,6 @@ import visitorAccess from "../assets/img/navbar/naccess/visitorAccess.png";
 import hardware from "../assets/img/navbar/naut/hardware.png";
 import software from "../assets/img/navbar/naut/software.png";
 import favourite from "../assets/img/navbar/navbar/favourite.svg";
-import mail from "../assets/img/navbar/navbar/mail.svg";
 import profileAvatar from "../assets/img/navbar/navbar/profileAvatar.png";
 import ribbonControl from "../assets/img/navbar/navbar/ribbonControl.png";
 import ribbonControlLock from "../assets/img/navbar/navbar/ribbonControlLock.png";
@@ -242,6 +241,7 @@ import { TerminalOptionsModal } from "../modals/TerminalOptions";
 import { EmailUser, KioskConfig } from "../types/Types";
 import { fetchWithAuth } from "./FetchWithAuth";
 import { PrintButton } from "./PrintButton";
+import { NavbarNotifications } from "./NavbarNotifications";
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -2940,24 +2940,7 @@ export const NavBar = ({ style }: NavBarProps) => {
             </ul>
             <div className="user-section mobile-only">
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Button
-                  onClick={() =>
-                    toast.warn("Funcionalidade de mensagens em desenvolvimento")
-                  }
-                  className="btn btn-light navbar-buttons"
-                  style={{ marginLeft: 5 }}
-                >
-                  <span
-                    className="icon"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <img src={mail} alt="botão mensagens" />
-                  </span>
-                </Button>
+                <NavbarNotifications />
                 <Button
                   onClick={() =>
                     toast.warn("Funcionalidade de favoritos em desenvolvimento")
@@ -3119,24 +3102,7 @@ export const NavBar = ({ style }: NavBarProps) => {
           </li>
         </ul>
         <div className="user-section mobile-hidden">
-          <Button
-            onClick={() =>
-              toast.warn("Funcionalidade de mensagens em desenvolvimento")
-            }
-            className="btn btn-light navbar-buttons"
-            style={{ marginLeft: 5 }}
-          >
-            <span
-              className="icon"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <img src={mail} alt="botão mensagens" />
-            </span>
-          </Button>
+          <NavbarNotifications />
           <Button
             onClick={() =>
               toast.warn("Funcionalidade de favoritos em desenvolvimento")

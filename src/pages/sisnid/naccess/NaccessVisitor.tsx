@@ -521,7 +521,7 @@ export const NaccessVisitor = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => handleOpenEditModal(row)}
               >
-                {visitor ? visitor.name : row.idVisitante}
+                {visitor ? visitor.name : ""}
               </div>
             );
           },
@@ -549,7 +549,7 @@ export const NaccessVisitor = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => handleOpenEditModal(row)}
               >
-                {person ? person.name : row.idPessoa}
+                {person ? person.name : ""}
               </div>
             );
           },
@@ -582,7 +582,7 @@ export const NaccessVisitor = () => {
             const employee = registeredUsers.find(
               (emp) => emp.id === row[field.key]
             );
-            return employee ? employee.userName : row[field.key];
+            return employee ? employee.userName : "";
           default:
             return row[field.key] || "";
         }

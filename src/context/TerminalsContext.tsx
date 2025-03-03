@@ -10,7 +10,6 @@ export interface DeviceContextType {
     mbDevices: MBDevice[];
     mbCloseOpen: MBDeviceCloseOpen[];
     setMbCloseOpen: (mbCloseOpen: MBDeviceCloseOpen[]) => void;
-    employeeDevices: EmployeesOnDevice[];
     door: Doors[];
     aux: Auxiliaries[];
     auxData: AuxOut[];
@@ -18,7 +17,6 @@ export interface DeviceContextType {
     events: Alerts[];
     setEvents: (events: Alerts[]) => void;
     fetchAllDevices: () => Promise<AllDevices[]>;
-    fetchAllEmployeeDevices: (zktecoDeviceID: Devices) => Promise<void>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllKioskTransactionOnDevice: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllDoorData: () => Promise<Doors[]>;
@@ -103,16 +101,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
         return [];
     };
-
-    // Função para buscar todos os funcionários por dispositivos standalone
-    const fetchAllEmployeeDevices = async (zktecoDeviceID: Devices) => {
-        try {
-            const employeesData = await apiService.fetchAllEmployeeDevices(zktecoDeviceID);
-            setEmployeeDevices(employeesData);
-        } catch (error) {
-            console.error('Erro ao apagar dispositivos:', error);
-        }
-    }
 
     // Função para buscar todas as actividades de quiosque
     const fetchAllKioskTransaction = async (zktecoDeviceID: Devices): Promise<KioskTransaction[]> => {
@@ -674,7 +662,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         mbDevices,
         mbCloseOpen,
         setMbCloseOpen,
-        employeeDevices,
         door,
         aux,
         auxData,
@@ -682,7 +669,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         events,
         setEvents,
         fetchAllDevices,
-        fetchAllEmployeeDevices,
         fetchAllKioskTransaction,
         fetchAllKioskTransactionOnDevice,
         fetchAllDoorData,

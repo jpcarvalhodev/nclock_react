@@ -17,6 +17,7 @@ import { CreateModalExtEnt } from "./CreateModalExtEnt";
 import { CreateModalEmployees } from "./CreateModalEmployees";
 import { AddCompanyToVisitorModal } from "./AddCompanyToVisitorModal";
 import { id } from "date-fns/locale";
+import { toast } from "react-toastify";
 
 // Define a interface para os itens de campo
 type FormControlElement =
@@ -62,6 +63,7 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
   const [showAddEEModal, setShowAddEEModal] = useState(false);
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   // Busca os initialValues ao abrir o modal
   useEffect(() => {
@@ -247,6 +249,14 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
 
   // Define o envio de dados
   const handleSave = () => {
+    if (!formData.idVisitante || !formData.idPessoa) {
+      setShowValidationErrors(true);
+      toast.warn(
+        "Preencha todos os campos obrigatórios e verifique os dados preenchidos antes de guardar."
+      );
+      return;
+    }
+
     const { phone, card, department, ...visitorData } = formData;
 
     const selectedCompany = dataEE.externalEntity.find(
@@ -496,7 +506,9 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
                   <Form.Group controlId="formIdVisitante">
                     <Form.Label>Visitante</Form.Label>
                     <Form.Select
-                      className="custom-input-height custom-select-font-size"
+                      className={`custom-input-height custom-select-font-size ${
+                        showValidationErrors ? "error-border" : ""
+                      }`}
                       value={formData.idVisitante || ""}
                       onChange={handleVisitorChange}
                       name="idVisitante"
@@ -674,7 +686,9 @@ export const CreateModalVisitor = <T extends Record<string, any>>({
                   <Form.Group controlId="formIdPessoa">
                     <Form.Label>Nome</Form.Label>
                     <Form.Select
-                      className="custom-input-height custom-select-font-size"
+                      className={`custom-input-height custom-select-font-size ${
+                        showValidationErrors ? "error-border" : ""
+                      }`}
                       value={formData.idPessoa || ""}
                       onChange={handleVisitadoChange}
                       name="idPessoa"

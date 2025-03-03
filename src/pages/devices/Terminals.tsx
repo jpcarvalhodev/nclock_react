@@ -24,15 +24,13 @@ import {
   Tooltip,
 } from "react-bootstrap";
 
+import * as apiService from "../../api/apiService";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
 import { useAttendance } from "../../context/MovementContext";
 
 import { usePersons } from "../../context/PersonsContext";
-import {
-  TerminalsProvider,
-  useTerminals,
-} from "../../context/TerminalsContext";
+import { useTerminals } from "../../context/TerminalsContext";
 import {
   activityFields,
   deviceFields,
@@ -51,7 +49,6 @@ import { UpdateModalDevices } from "../../modals/UpdateModalDevices";
 import {
   Activity,
   AllDevices,
-  Devices,
   DoorDevice,
   Employee,
   EmployeeAndCard,
@@ -63,7 +60,6 @@ import {
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { UpdateModalEmployees } from "../../modals/UpdateModalEmployees";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
-import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -109,7 +105,6 @@ const formatDateToEndOfDay = (date: Date): string => {
 export const Terminals = () => {
   const {
     devices,
-    employeeDevices,
     fetchAllDevices,
     fetchAllKioskTransactionOnDevice,
     sendAllEmployeesToDevice,
@@ -257,6 +252,9 @@ export const Terminals = () => {
   const [perPage, setPerPage] = useState(5);
   const [loadingTurnOffDevice, setLoadingTurnOffDevice] = useState(false);
   const [showDeleteMBModal, setShowDeleteMBModal] = useState(false);
+  const [filteredUsersInTerminal, setFilteredUsersInTerminal] = useState<
+    EmployeesOnDevice[]
+  >([]);
 
   // Função para buscar todos as biometrias
   const fetchEmployeesBio = () => {
@@ -606,11 +604,27 @@ export const Terminals = () => {
   };
 
   // Filtra os utilizadores no terminal
-  const filteredUsersInTerminal = useMemo(() => {
+  useEffect(() => {
     if (selectedTerminal) {
-      return employeeDevices;
+      setUserTerminalLoading(true);
+      const fetchEmployeeTerminal = async () => {
+        await apiService
+          .fetchAllEmployeeDevices(selectedTerminal.zktecoDeviceID)
+          .then((data) => {
+            setFilteredUsersInTerminal(data);
+            setUserTerminalLoading(false);
+          })
+          .catch((error) => {
+            console.error("Erro ao buscar utilizadores no terminal:", error);
+            setFilteredUsersInTerminal([]);
+            setUserTerminalLoading(false);
+          });
+      };
+
+      fetchEmployeeTerminal();
     } else {
-      return [];
+      setFilteredUsersInTerminal([]);
+      setUserTerminalLoading(false);
     }
   }, [selectedTerminal]);
 
@@ -2127,24 +2141,6 @@ export const Terminals = () => {
     if (filteredUsersInSoftware.length > 0) {
       clearTimeout(timeout);
       setUserSoftwareLoading(false);
-    }
-
-    return () => clearTimeout(timeout);
-  }, []);
-
-  // Controla o loading da tabela de utilizadores no terminal
-  useEffect(() => {
-    if (selectedTerminal) {
-      setUserTerminalLoading(true);
-    }
-
-    const timeout = setTimeout(() => {
-      setUserTerminalLoading(false);
-    }, 500);
-
-    if (selectedTerminal && filteredUsersInTerminal.length > 0) {
-      clearTimeout(timeout);
-      setUserTerminalLoading(false);
     }
 
     return () => clearTimeout(timeout);

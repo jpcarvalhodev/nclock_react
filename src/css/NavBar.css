@@ -498,7 +498,8 @@ body {
     max-width: 100% !important;
 }
 
-#dropdown-basic-4::after {
+#dropdown-basic-4::after,
+#dropdown-basic-notifications::after {
     display: none;
 }
 
