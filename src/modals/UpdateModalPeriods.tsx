@@ -268,7 +268,7 @@ export const UpdateModalPeriods = <T extends Entity>({
               </Form.Group>
               <Form.Group
                 controlId="formRemark"
-                className="d-flex justify-content-between mt-4"
+                className="d-flex justify-content-between mt-4 align-items-center"
               >
                 <Form.Label column sm="4">
                   Observações:
@@ -279,13 +279,14 @@ export const UpdateModalPeriods = <T extends Entity>({
                   value={formData.remark}
                   onChange={handleChange}
                   maxLength={50}
+                  className="custom-input-height custom-select-font-size"
                 />
               </Form.Group>
             </Col>
             <Col md={4}>
               <Form.Group
                 controlId="formName"
-                className="d-flex justify-content-between"
+                className="d-flex justify-content-between align-items-center"
               >
                 <Form.Label column sm="3">
                   Nome: <span style={{ color: "red" }}>*</span>
@@ -301,7 +302,9 @@ export const UpdateModalPeriods = <T extends Entity>({
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className={`${showValidationErrors ? "error-border" : ""}`}
+                    className={`custom-input-height custom-select-font-size ${
+                      showValidationErrors ? "error-border" : ""
+                    }`}
                   />
                 </OverlayTrigger>
                 <Form.Control.Feedback type="invalid">
@@ -312,7 +315,7 @@ export const UpdateModalPeriods = <T extends Entity>({
             <Col md={2}>
               <Form.Group
                 controlId="formAppId"
-                className="d-flex justify-content-between"
+                className="d-flex justify-content-between align-items-center"
               >
                 <Form.Label column sm="4">
                   ID:
@@ -323,15 +326,20 @@ export const UpdateModalPeriods = <T extends Entity>({
                   readOnly
                   value={formData.appId}
                   onChange={handleChange}
+                  className="custom-input-height custom-select-font-size"
                 />
               </Form.Group>
             </Col>
           </Row>
           <Col md={12}>
-            <Row className="d-flex justify-content-between mt-5">
+            <Row className="mt-5">
               {Object.entries(daysOfWeek).map(([key, label]) => (
                 <Col md={6} key={key}>
-                  <Form.Group as={Row} style={{ marginBottom: 10 }}>
+                  <Form.Group
+                    as={Row}
+                    style={{ marginBottom: 10 }}
+                    className="d-flex align-items-center justify-content-start"
+                  >
                     <Form.Label column sm="2">
                       {label}:
                     </Form.Label>
@@ -342,12 +350,10 @@ export const UpdateModalPeriods = <T extends Entity>({
                         value={formData[`${key}Start1`] || ""}
                         onChange={handleChange}
                         isInvalid={!!errors[`${key}Start1`]}
+                        className="custom-input-height custom-select-font-size"
                       />
                     </Col>
-                    <Col
-                      sm="1"
-                      className="d-flex align-items-center justify-content-center"
-                    >
+                    <Col sm="1">
                       <span>-</span>
                     </Col>
                     <Col sm="3">
@@ -357,6 +363,7 @@ export const UpdateModalPeriods = <T extends Entity>({
                         value={formData[`${key}End1`] || ""}
                         onChange={handleChange}
                         isInvalid={!!errors[`${key}End1`]}
+                        className="custom-input-height custom-select-font-size"
                       />
                     </Col>
                   </Form.Group>

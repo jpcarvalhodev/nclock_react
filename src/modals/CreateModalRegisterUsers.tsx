@@ -341,7 +341,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({
                   Nome <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-name">Campo obrigatório</Tooltip>
                   }
@@ -367,7 +367,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({
                   E-Mail <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-emailAddress">
                       Campo obrigatório
@@ -419,7 +419,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({
                       cursor: "pointer",
                       background: "transparent",
                       borderLeft: "none",
-                      height: "30px",
+                      height: "28px",
                     }}
                   >
                     <img
@@ -448,7 +448,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({
                   Nome de Utilizador <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-userName">Campo obrigatório</Tooltip>
                   }
@@ -474,7 +474,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({
                   Tipo de Conta <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-roles">Campo obrigatório</Tooltip>
                   }
@@ -532,7 +532,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({
                       cursor: "pointer",
                       background: "transparent",
                       borderLeft: "none",
-                      height: "30px",
+                      height: "28px"
                     }}
                   >
                     <img

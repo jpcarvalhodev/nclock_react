@@ -199,7 +199,7 @@ export const ResetCoinModal = <T extends Entity>({
                   Nome do Local<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>
                   }

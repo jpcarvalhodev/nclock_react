@@ -290,7 +290,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({
                     <span style={{ color: "red" }}> *</span>
                   </Form.Label>
                   <OverlayTrigger
-                    placement="right"
+                    placement="top"
                     overlay={
                       <Tooltip id="tooltip-attendanceTime">
                         {"Campo obrigatório"}
@@ -321,7 +321,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({
                     <span style={{ color: "red" }}> *</span>
                   </Form.Label>
                   <OverlayTrigger
-                    placement="right"
+                    placement="top"
                     overlay={
                       <Tooltip id="tooltip-employeeId">
                         {"Campo obrigatório"}
@@ -393,7 +393,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({
                       </Form.Label>
                       {field.type === "dropdown" ? (
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id={`tooltip-${field.key}`}>
                               {"Campo obrigatório"}
@@ -421,7 +421,7 @@ export const CreateModalAttendance = <T extends Record<string, any>>({
                         </OverlayTrigger>
                       ) : field.key === "attendanceTime" ? (
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id={`tooltip-${field.key}`}>
                               {`Campo obrigatório`}

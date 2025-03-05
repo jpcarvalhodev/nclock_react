@@ -26,7 +26,6 @@ import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
-import { useKiosk } from "../../../context/KioskContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -111,7 +110,6 @@ export const NaccessAccesses = () => {
     fetchAllInitialAccessesbyDevice,
     handleAddAccess,
   } = useAttendance();
-  const { fetchAllKioskTransactionByEnrollNumber } = useKiosk();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -300,18 +298,6 @@ export const NaccessAccesses = () => {
     }
   }, [resetSelection]);
 
-  // Atualiza a seleção ao mudar o filtro
-  useEffect(() => {
-    if (selectedEmployeeIds.length > 0) {
-      const newFilteredAccess = access.filter((acc) =>
-        selectedEmployeeIds.includes(String(acc.pin))
-      );
-      setFilteredAccess(newFilteredAccess);
-    } else if (access.length > 0) {
-      setFilteredAccess(access);
-    }
-  }, [selectedEmployeeIds]);
-
   // Callback disparado ao mudar a página
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -329,21 +315,18 @@ export const NaccessAccesses = () => {
 
     if (selectedIds.length > 0) {
       try {
-        const foundEmployees = await fetchAllKioskTransactionByEnrollNumber(
+        const foundEmployees = await apiService.fetchAllKioskTransactionByEnrollNumber(
           selectedIds,
           undefined,
           undefined,
           undefined,
-          undefined
+          undefined,
+          undefined,
+          undefined,
         );
-        if (foundEmployees && Array.isArray(foundEmployees)) {
-          setFilteredAccess((prev) => {
-            const existingIds = new Set(prev.map((emp) => emp.pin));
-            const uniqueEmployees = foundEmployees.filter(
-              (emp) => !existingIds.has(emp.pin)
-            );
-            return [...prev, ...uniqueEmployees];
-          });
+        if (foundEmployees.data) {
+          setFilteredAccess(foundEmployees.data);
+          setTotalRows(foundEmployees.totalRecords);
         } else {
           setFilteredAccess([]);
         }
@@ -353,7 +336,7 @@ export const NaccessAccesses = () => {
     } else {
       setFilteredAccess(access);
     }
-  };
+  };  
 
   // Função para alternar a visibilidade das colunas
   const handleColumnToggle = (columnKey: string) => {
@@ -678,6 +661,8 @@ export const NaccessAccesses = () => {
 
     return () => clearTimeout(timeout);
   }, []);
+
+  
 
   return (
     <div className="main-container">

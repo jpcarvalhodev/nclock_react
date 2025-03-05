@@ -296,7 +296,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Atualiza um funcionário
+    // Atualiza um dispositivo
     const handleUpdateDevice = async (device: AllDevices) => {
         try {
             const updatedDevice = await apiService.updateDevice(device);

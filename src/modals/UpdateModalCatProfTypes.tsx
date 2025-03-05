@@ -234,7 +234,7 @@ export const UpdateModalCatProfTypes = <T extends Entity>({
                 {field.label}
                 {field.required && (
                   <OverlayTrigger
-                    placement="right"
+                    placement="top"
                     overlay={
                       <Tooltip id={`tooltip-${field.key}`}>
                         Campo obrigatório

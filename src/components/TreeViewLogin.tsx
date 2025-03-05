@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import "../css/TreeView.css";
@@ -146,9 +146,12 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
   }, [memoizedTreeItems]);
 
   // Função para lidar com a expansão dos itens
-  const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
-    setExpandedIds(nodeIds);
-  };
+  const handleToggle = useCallback(
+    (event: SyntheticEvent, nodeIds: string[]) => {
+      setExpandedIds(nodeIds);
+    },
+    []
+  );
 
   // Mapeia os itens para um Map
   const itemsMap = useMemo(() => {
@@ -162,7 +165,8 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
   }, [items]);
 
   // Função para lidar com a mudança de seleção dos itens
-  const handleSelectedItemsChange = (e: SyntheticEvent, itemIds: string[]) => {
+  const handleSelectedItemsChange = useCallback(
+    (e: SyntheticEvent, itemIds: string[]) => {
     const newSelectedIds = new Set(itemIds);
     const previouslySelectedIds = new Set(selectedDevicesIds);
 
@@ -193,7 +197,7 @@ export function TreeViewDataLogin({ onSelectDevices }: TreeViewDataLoginProps) {
     setSelectedDevicesIds(Array.from(newSelectedIds));
 
     onSelectDevices(Array.from(newSelectedIds));
-  };
+  }, [itemsMap, selectedDevicesIds, onSelectDevices]);
 
   // Filtra os itens ao mudar o termo de pesquisa
   useEffect(() => {

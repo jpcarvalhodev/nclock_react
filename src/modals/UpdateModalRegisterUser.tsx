@@ -332,7 +332,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({
                   Nome <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-name">Campo obrigatório</Tooltip>
                   }
@@ -358,7 +358,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({
                   E-Mail <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-emailAddress">
                       Campo obrigatório
@@ -410,7 +410,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({
                       cursor: "pointer",
                       background: "transparent",
                       borderLeft: "none",
-                      height: "30px",
+                      height: "28px",
                     }}
                   >
                     <img
@@ -439,7 +439,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({
                   Nome de Utilizador <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-userName">Campo obrigatório</Tooltip>
                   }
@@ -465,7 +465,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({
                   Tipo de Conta <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-roles">Campo obrigatório</Tooltip>
                   }

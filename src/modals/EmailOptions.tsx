@@ -289,7 +289,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({
                           <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-usernameEmail">
                               Campo obrigatório
@@ -322,7 +322,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({
                           <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-passwordEmail">
                               Campo obrigatório
@@ -350,7 +350,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({
                                 cursor: "pointer",
                                 background: "transparent",
                                 borderLeft: "none",
-                                height: "30px",
+                                height: "28px",
                               }}
                             >
                               <img
@@ -379,7 +379,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({
                           Servidor SMTP <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-hostSMTP">
                               Campo obrigatório
@@ -410,7 +410,7 @@ export const EmailOptionsModal = <T extends Record<string, any>>({
                           Porta SMTP <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-portSMTP">
                               Campo obrigatório

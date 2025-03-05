@@ -1634,7 +1634,7 @@ export const fetchAllDeviceActivities = async (
 
   if (sn) {
     sn.forEach((sn) => {
-    params.push(`ids=${sn}`);
+      params.push(`ids=${sn}`);
     });
   }
 
@@ -3025,7 +3025,7 @@ export const fetchKioskTransactionsByCardAndDeviceSN = async (
 
   if (deviceSNs) {
     deviceSNs.forEach((deviceSNs) => {
-    params.push(`deviceSNs=${deviceSNs}`);
+      params.push(`deviceSNs=${deviceSNs}`);
     });
   }
 
@@ -3129,7 +3129,7 @@ export const fetchKioskTransactionsByMBPayCoins = async (
 
   if (deviceSNs) {
     deviceSNs.forEach((deviceSNs) => {
-    params.push(`deviceSNs=${deviceSNs}`);
+      params.push(`deviceSNs=${deviceSNs}`);
     });
   }
 
@@ -3187,7 +3187,7 @@ export const fetchKioskTransactionsByPayCoins = async (
 
   if (deviceSNs) {
     deviceSNs.forEach((deviceSNs) => {
-    params.push(`deviceSNs=${deviceSNs}`);
+      params.push(`deviceSNs=${deviceSNs}`);
     });
   }
 
@@ -3336,7 +3336,9 @@ export const fetchAllKioskTransactionByEnrollNumber = async (
   }
 
   if (enrollmentNumbers) {
-    params.push(`enrollmentNumbers=${enrollmentNumbers}`);
+    enrollmentNumbers.forEach((enrollmentNumbers) => {
+      params.push(`enrollmentNumbers=${enrollmentNumbers}`);
+    });
   }
 
   if (deviceSN) {
@@ -4108,6 +4110,43 @@ export const deleteAccessControl = async (id: string[]) => {
     },
     body: JSON.stringify(id),
   });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const deleteEmployeesFromDevice = async (
+  acessoId?: string,
+  id?: string[]
+) => {
+  console.log(acessoId, id);
+  const response = await fetchWithAuth(
+    `AccPlanoAcesso/DeleteAccPlanoAcesso?Id=${acessoId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(id),
+    }
+  );
   if (response.status === 403) {
     if (!hasShown403) {
       toast.error(

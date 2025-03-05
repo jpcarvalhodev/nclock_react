@@ -410,7 +410,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({
                           Código<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-code">
                               {deptFieldRequirements["code"]}
@@ -439,7 +439,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({
                           Nome<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-name">
                               {deptFieldRequirements["name"]}
@@ -505,7 +505,7 @@ export const CreateModalDeptGrp = <T extends Record<string, any>>({
                           Nome<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-name">
                               {groupFieldRequirements["name"]}

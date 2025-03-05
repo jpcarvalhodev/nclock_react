@@ -289,7 +289,7 @@ export const CreateModalAccess = <T extends Record<string, any>>({
             <Form.Group controlId="formEventTime">
               <Form.Label>Data</Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={
                   <Tooltip id="tooltip-eventTime">Campo obrigatório</Tooltip>
                 }
@@ -314,7 +314,7 @@ export const CreateModalAccess = <T extends Record<string, any>>({
                 Terminal<span style={{ color: "red" }}> *</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={
                   <Tooltip id="tooltip-eventTime">Campo obrigatório</Tooltip>
                 }
@@ -352,7 +352,7 @@ export const CreateModalAccess = <T extends Record<string, any>>({
                 Porta<span style={{ color: "red" }}> *</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={
                   <Tooltip id="tooltip-eventDoorId">Campo obrigatório</Tooltip>
                 }
@@ -409,7 +409,7 @@ export const CreateModalAccess = <T extends Record<string, any>>({
             <Form.Group controlId="formPin">
               <Form.Label>Funcionário</Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={<Tooltip id="tooltip-pin">Campo obrigatório</Tooltip>}
               >
                 <Form.Control

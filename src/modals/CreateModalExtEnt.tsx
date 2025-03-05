@@ -280,7 +280,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({
                 Nome <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
               >
                 <Form.Control
@@ -316,7 +316,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({
                 NIF <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={
                   <Tooltip id="tooltip-nif">
                     Campo deve ter no mínimo 9 números

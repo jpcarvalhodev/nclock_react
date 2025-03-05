@@ -189,7 +189,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({
                   Número<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-numeroCamera">
                       Campo obrigatório
@@ -243,7 +243,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({
                   Nome<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-nomeCamera">Campo obrigatório</Tooltip>
                   }
@@ -270,7 +270,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({
                   URL<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-url">Campo obrigatório</Tooltip>
                   }
@@ -310,7 +310,7 @@ export const UpdateOnlineCameraModal = <T extends Entity>({
                       cursor: "pointer",
                       background: "transparent",
                       borderLeft: "none",
-                      height: "30px",
+                      height: "28px"
                     }}
                     onClick={togglePasswordVisibility}
                   >

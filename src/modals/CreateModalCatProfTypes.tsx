@@ -204,7 +204,7 @@ export const CreateModalCatProfTypes = <T extends Record<string, any>>({
                 {field.label}
                 {field.required && (
                   <OverlayTrigger
-                    placement="right"
+                    placement="top"
                     overlay={
                       <Tooltip id={`tooltip-${field.key}`}>
                         Campo obrigatório

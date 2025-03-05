@@ -221,7 +221,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({
                   Data de Criação<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-dataCreate">Campo obrigatório</Tooltip>
                   }
@@ -255,7 +255,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({
                   Pessoa Responsável<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-responsavel">
                       Campo obrigatório
@@ -286,7 +286,7 @@ export const CreateLimpezaOcorrenciaModal = <T extends Record<string, any>>({
                   Nome do Local<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-deviceId">Campo obrigatório</Tooltip>
                   }

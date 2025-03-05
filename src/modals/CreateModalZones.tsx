@@ -217,7 +217,7 @@ export const CreateModalZones = <T extends Record<string, any>>({
                 Nome <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
               >
                 <Form.Control
@@ -243,7 +243,7 @@ export const CreateModalZones = <T extends Record<string, any>>({
                 Acrônimo <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={
                   <Tooltip id="tooltip-acronym">
                     Campo deve ter no máximo 4 caracteres

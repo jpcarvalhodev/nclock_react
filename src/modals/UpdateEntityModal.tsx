@@ -279,7 +279,7 @@ export const UpdateEntityModal = <T extends Entity>({
                     width: 128,
                     height: 128,
                     cursor: "pointer",
-                    marginBottom: 15,
+                    marginBottom: 10,
                     objectFit: "cover",
                     borderRadius: "10%",
                   }}
@@ -357,7 +357,7 @@ export const UpdateEntityModal = <T extends Entity>({
                   NIF<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-nif">Campo obrigatório</Tooltip>
                   }
@@ -385,7 +385,7 @@ export const UpdateEntityModal = <T extends Entity>({
                   Nome<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-nome">Campo obrigatório</Tooltip>
                   }

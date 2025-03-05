@@ -8,6 +8,7 @@ interface CustomOutlineButtonProps {
   iconSize?: string;
   className?: string;
   disabled?: boolean;
+  children?: React.ReactNode;
 }
 
 export const CustomOutlineButton = forwardRef<HTMLButtonElement, CustomOutlineButtonProps>(

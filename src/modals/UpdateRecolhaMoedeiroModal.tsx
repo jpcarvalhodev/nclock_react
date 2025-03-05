@@ -346,7 +346,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({
                   Moedas Recolhidas<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-numeroMoedas">
                       Campo obrigatório
@@ -404,7 +404,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({
                   Nome do Local<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-deviceId">Campo obrigatório</Tooltip>
                   }
@@ -469,7 +469,7 @@ export const UpdateRecolhaMoedeiroModal = <T extends Entity>({
               <Form.Group controlId="formDataRecolha">
                 <Form.Label>Data da Recolha</Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-dataRecolha">
                       Campo obrigatório

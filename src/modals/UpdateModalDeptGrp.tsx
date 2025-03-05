@@ -408,7 +408,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({
                           Código<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-code">
                               {deptFieldRequirements["code"]}
@@ -437,7 +437,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({
                           Nome<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-name">
                               {deptFieldRequirements["name"]}
@@ -527,7 +527,7 @@ export const UpdateModalDeptGrp = <T extends Entity>({
                           Nome<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-name">
                               {groupFieldRequirements["name"]}

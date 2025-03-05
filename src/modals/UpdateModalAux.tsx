@@ -260,7 +260,7 @@ export const UpdateModalAux = <T extends Entity>({
                   Período<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>
                   }

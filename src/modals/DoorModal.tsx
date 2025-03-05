@@ -211,7 +211,7 @@ export const DoorModal = <T extends Entity>({
                   Porta<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>
                   }
@@ -260,7 +260,7 @@ export const DoorModal = <T extends Entity>({
                   Tempo Aberta<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>
                   }

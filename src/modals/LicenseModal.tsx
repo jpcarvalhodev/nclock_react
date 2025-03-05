@@ -743,7 +743,7 @@ export const LicenseModal = <T extends Entity>({
                       <Form.Group controlId="formSn">
                         <Form.Label>Número de Série</Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-sn">
                               Separe os números por vírgula

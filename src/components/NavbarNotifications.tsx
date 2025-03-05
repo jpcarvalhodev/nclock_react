@@ -6,7 +6,7 @@ export function NavbarNotifications() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotificationsDropdown, setShowNotificationsDropdown] =
     useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
 
   // Conta as notificações não lidas
   const unreadCount = notifications.filter((not) => !not.read).length;
@@ -20,7 +20,7 @@ export function NavbarNotifications() {
 
   // Busca as notificações do utilizador
   useEffect(() => {
-    setLoading(true);
+    setLoadingNotifications(true);
     const token = localStorage.getItem("token");
     const url = `${
       process.env.REACT_APP_WS_DOOR
@@ -29,7 +29,7 @@ export function NavbarNotifications() {
 
     socket.onopen = () => {
       console.log("Conexão WebSocket aberta.");
-      setLoading(false);
+      setLoadingNotifications(false);
     };
 
     socket.onmessage = (event) => {
@@ -43,7 +43,7 @@ export function NavbarNotifications() {
 
     socket.onerror = (error) => {
       console.error("Erro no WebSocket:", error);
-      setLoading(false);
+      setLoadingNotifications(false);
     };
 
     socket.onclose = () => {
@@ -57,22 +57,14 @@ export function NavbarNotifications() {
     };
   }, []);
 
-  // Função para abrir o menu
-  const handleMouseEnterMenu = () => {
-    setShowNotificationsDropdown(true);
-  };
-
-  // Função para fechar com delay
-  const handleMouseLeaveMenu = () => {
-    setTimeout(() => {
-      setShowNotificationsDropdown(false);
-    }, 200);
-  };
-
   return (
     <Dropdown
-      onMouseEnter={handleMouseEnterMenu}
-      onMouseLeave={handleMouseLeaveMenu}
+      onMouseEnter={() => setShowNotificationsDropdown(true)}
+      onMouseLeave={() =>
+        setTimeout(() => {
+          setShowNotificationsDropdown(false);
+        }, 200)
+      }
       show={showNotificationsDropdown}
       className="dropdown-icon"
       id="dropdown-navbar"
@@ -80,7 +72,7 @@ export function NavbarNotifications() {
       <Dropdown.Toggle
         id="dropdown-basic-notifications"
         className="btn btn-light navbar-buttons"
-        style={{ marginLeft: 5, position: "relative" }}
+        style={{ marginLeft: 5 }}
       >
         <span
           className="icon"
@@ -88,7 +80,6 @@ export function NavbarNotifications() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            position: "relative",
           }}
         >
           <img
@@ -114,19 +105,25 @@ export function NavbarNotifications() {
       <Dropdown.Menu
         align="end"
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           minWidth: "300px",
         }}
       >
-        {notifications.length > 0 ? (
+        {loadingNotifications ? (
+          <Dropdown.Item
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+          </Dropdown.Item>
+        ) : notifications.length > 0 ? (
           notifications.map((notification) => (
             <Dropdown.Item
               key={notification.id}
               onClick={() => handleNotificationClick(notification.id)}
               style={{
-                backgroundColor: notification.read ? "transparent" : "#f7f7f7",
+                backgroundColor: notification.read ? "transparent" : "#0050a0",
               }}
             >
               {notification.title}

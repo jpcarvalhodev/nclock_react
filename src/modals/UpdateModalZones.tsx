@@ -242,7 +242,7 @@ export const UpdateModalZones = <T extends Entity>({
                 Nome <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
               >
                 <Form.Control
@@ -268,7 +268,7 @@ export const UpdateModalZones = <T extends Entity>({
                 Acrônimo <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={
                   <Tooltip id="tooltip-acronym">
                     Campo deve ter no máximo 4 caracteres

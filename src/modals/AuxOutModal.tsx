@@ -229,7 +229,7 @@ export const AuxOutModal = <T extends Entity>({
                   Auxiliar<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>
                   }
@@ -278,7 +278,7 @@ export const AuxOutModal = <T extends Entity>({
                   Tempo para Abrir<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>
                   }

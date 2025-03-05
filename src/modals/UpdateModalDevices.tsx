@@ -139,10 +139,10 @@ export const UpdateModalDevices = <T extends Entity>({
       } else {
         setActiveTab("ac/as");
       }
+      setFormData({ ...entity } as T);
       fetchDoors();
       fetchAllReaders();
       fetchAuxiliaries();
-      setFormData({ ...entity } as T);
       const matchedDevice = deviceOptions.find(
         (option) => option.label === (entity.model || entity.modelo)
       );
@@ -178,7 +178,7 @@ export const UpdateModalDevices = <T extends Entity>({
     { key: "model", label: "Modelo", type: "string" },
     { key: "ipAddress", label: "Endereço IP", type: "string" },
     { key: "port", label: "Porta", type: "number" },
-    { key: "sPhoto", label: "Foto", type: "string" },
+    { key: "photo", label: "Foto", type: "string" },
     { key: "code", label: "Código", type: "number" },
     { key: "platform", label: "Platforma", type: "string" },
     { key: "firmware", label: "Firmware", type: "string" },
@@ -868,7 +868,7 @@ export const UpdateModalDevices = <T extends Entity>({
                           Nome<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-deviceName">
                               Campo obrigatório
@@ -911,7 +911,7 @@ export const UpdateModalDevices = <T extends Entity>({
                           Número<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-deviceNumber">
                               Campo obrigatório
@@ -1405,7 +1405,7 @@ export const UpdateModalDevices = <T extends Entity>({
                         <Form.Group controlId={`form${field.key}`}>
                           {field.required ? (
                             <OverlayTrigger
-                              placement="right"
+                              placement="top"
                               overlay={
                                 <Tooltip id={`tooltip-${field.key}`}>
                                   Campo obrigatório

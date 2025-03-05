@@ -255,6 +255,7 @@ export const Terminals = () => {
   const [filteredUsersInTerminal, setFilteredUsersInTerminal] = useState<
     EmployeesOnDevice[]
   >([]);
+  const [refreshIntervalTasks, setRefreshIntervalTasks] = useState(10000);
 
   // Função para buscar todos as biometrias
   const fetchEmployeesBio = () => {
@@ -287,9 +288,10 @@ export const Terminals = () => {
 
   // Função para buscar todas as tarefas de dispositivos
   useEffect(() => {
-    if (!selectedTerminal) return;
+    let intervalTasks: NodeJS.Timeout;
 
     const fetchTasks = async () => {
+      if (!selectedTerminal) return;
       try {
         setLoadingActivityData(true);
         const fetchedActivity = await fetchDeviceActivities(
@@ -307,11 +309,16 @@ export const Terminals = () => {
       }
     };
 
-    setStartDate(formatDateToStartOfDay(pastDate));
-    setEndDate(formatDateToEndOfDay(currentDate));
-
     fetchTasks();
-  }, [selectedTerminal, perPage, currentPage]);
+
+    if (selectedTerminal && refreshIntervalTasks > 0) {
+      intervalTasks = setInterval(fetchTasks, refreshIntervalTasks);
+    }
+
+    return () => {
+      if (intervalTasks) clearInterval(intervalTasks);
+    };
+  }, [selectedTerminal, refreshIntervalTasks, perPage, currentPage]);
 
   // Função para buscar todos os movimentos de dispositivos via websocket
   useEffect(() => {
@@ -356,6 +363,7 @@ export const Terminals = () => {
 
   // Função para buscar todas as tarefas entre datas
   const fetchAllActivityBetweenDates = async () => {
+    setRefreshIntervalTasks(0);
     try {
       const data = await fetchDeviceActivities(undefined, startDate, endDate);
       if (data.length > 0) {
@@ -370,6 +378,7 @@ export const Terminals = () => {
 
   // Função para buscar as tarefas de hoje
   const fetchActivityToday = async () => {
+    setRefreshIntervalTasks(0);
     const today = new Date();
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
@@ -389,6 +398,7 @@ export const Terminals = () => {
 
   // Função para buscar as tarefas de ontem
   const fetchActivityForPreviousDay = async () => {
+    setRefreshIntervalTasks(0);
     const prevDate = new Date(startDate);
     prevDate.setDate(prevDate.getDate() - 1);
 
@@ -411,6 +421,7 @@ export const Terminals = () => {
 
   // Função para buscar as tarefas de amanhã
   const fetchActivityForNextDay = async () => {
+    setRefreshIntervalTasks(0);
     const newDate = new Date(endDate);
     newDate.setDate(newDate.getDate() + 1);
 
@@ -2380,6 +2391,30 @@ export const Terminals = () => {
                           marginBottom: 10,
                         }}
                       >
+                        <div>
+                          <Form.Group
+                            controlId="refreshInterval"
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <Form.Label
+                              style={{ marginBottom: 0, marginRight: 5 }}
+                            >
+                              Tempo entre atualizações:
+                            </Form.Label>
+                            <Form.Select
+                              value={refreshIntervalTasks}
+                              onChange={(e) =>
+                                setRefreshIntervalTasks(Number(e.target.value))
+                              }
+                              className="form-control custom-select-font-size w-auto"
+                            >
+                              <option value={0}>Desligar</option>
+                              <option value={5000}>5 segundos</option>
+                              <option value={10000}>10 segundos</option>
+                              <option value={20000}>20 segundos</option>
+                            </Form.Select>
+                          </Form.Group>
+                        </div>
                         <div className="buttons-container-data-range">
                           <OverlayTrigger
                             placement="top"

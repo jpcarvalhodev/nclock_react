@@ -1,4 +1,10 @@
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import {
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import "../css/TreeView.css";
@@ -81,9 +87,12 @@ export function TreeViewAC({
   }, [memoizedTreeItems]);
 
   // Função para lidar com a expansão dos itens
-  const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
-    setExpandedIds(nodeIds);
-  };
+  const handleToggle = useCallback(
+    (event: SyntheticEvent, nodeIds: string[]) => {
+      setExpandedIds(nodeIds);
+    },
+    []
+  );
 
   // Mapeia os itens para um Map
   const itemsMap = useMemo(() => {
@@ -97,55 +106,58 @@ export function TreeViewAC({
   }, [items]);
 
   // Função para lidar com a mudança de seleção dos itens
-  const handleSelectedItemsChange = (e: SyntheticEvent, itemIds: string[]) => {
-    const newSelectedIds = new Set(itemIds);
-    const previouslySelectedIds = new Set(selectedDevicesIds);
+  const handleSelectedItemsChange = useCallback(
+    (e: SyntheticEvent, itemIds: string[]) => {
+      const newSelectedIds = new Set(itemIds);
+      const previouslySelectedIds = new Set(selectedDevicesIds);
 
-    function updateParentSelection(itemId: string) {
-      const item = itemsMap.get(itemId);
-      if (item?.id.startsWith("device-")) {
-        newSelectedIds.add(item.id);
-      } else if (item) {
-        const parent = Array.from(itemsMap.values()).find((parent) =>
-          parent.children?.some((child) => child.id === item.id)
-        );
-        if (parent) {
-          newSelectedIds.add(parent.id);
+      function updateParentSelection(itemId: string) {
+        const item = itemsMap.get(itemId);
+        if (item?.id.startsWith("device-")) {
+          newSelectedIds.add(item.id);
+        } else if (item) {
+          const parent = Array.from(itemsMap.values()).find((parent) =>
+            parent.children?.some((child) => child.id === item.id)
+          );
+          if (parent) {
+            newSelectedIds.add(parent.id);
+          }
         }
       }
-    }
 
-    function updateChildSelection(itemId: string, isSelected: boolean) {
-      const item = itemsMap.get(itemId);
-      if (item) {
-        item.children?.forEach((child) => {
-          if (isSelected) {
-            newSelectedIds.add(child.id);
-          } else {
-            newSelectedIds.delete(child.id);
-          }
-          updateChildSelection(child.id, isSelected);
-        });
+      function updateChildSelection(itemId: string, isSelected: boolean) {
+        const item = itemsMap.get(itemId);
+        if (item) {
+          item.children?.forEach((child) => {
+            if (isSelected) {
+              newSelectedIds.add(child.id);
+            } else {
+              newSelectedIds.delete(child.id);
+            }
+            updateChildSelection(child.id, isSelected);
+          });
+        }
       }
-    }
 
-    const addedIds = Array.from(newSelectedIds).filter(
-      (id) => !previouslySelectedIds.has(id)
-    );
-    const removedIds = Array.from(previouslySelectedIds).filter(
-      (id) => !newSelectedIds.has(id)
-    );
+      const addedIds = Array.from(newSelectedIds).filter(
+        (id) => !previouslySelectedIds.has(id)
+      );
+      const removedIds = Array.from(previouslySelectedIds).filter(
+        (id) => !newSelectedIds.has(id)
+      );
 
-    addedIds.forEach((id) => {
-      updateChildSelection(id, true);
-      updateParentSelection(id);
-    });
-    removedIds.forEach((id) => updateChildSelection(id, false));
+      addedIds.forEach((id) => {
+        updateChildSelection(id, true);
+        updateParentSelection(id);
+      });
+      removedIds.forEach((id) => updateChildSelection(id, false));
 
-    setSelectedDevicesIds(Array.from(newSelectedIds));
+      setSelectedDevicesIds(Array.from(newSelectedIds));
 
-    onSelectDevices(Array.from(newSelectedIds));
-  };
+      onSelectDevices(Array.from(newSelectedIds));
+    },
+    [itemsMap, selectedDevicesIds, onSelectDevices]
+  );
 
   useEffect(() => {
     if (selectionChangedRef.current) {

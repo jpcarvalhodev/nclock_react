@@ -351,7 +351,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <
                   Moedas Recolhidas<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-numeroMoedas">
                       Campo obrigatório
@@ -409,7 +409,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <
                   Nome do Local<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-deviceId">Campo obrigatório</Tooltip>
                   }
@@ -474,7 +474,7 @@ export const CreateRecolhaMoedeiroEContadorModal = <
               <Form.Group controlId="formDataRecolha">
                 <Form.Label>Data da Recolha</Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-dataRecolha">
                       Campo obrigatório

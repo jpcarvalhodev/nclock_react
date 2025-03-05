@@ -123,13 +123,6 @@ export interface KioskContextType {
   alerts: MBDeviceStatus[];
   setAlerts: (alerts: MBDeviceStatus[]) => void;
   fetchAllTasks: () => void;
-  fetchAllKioskTransactionByEnrollNumber: (
-    enrollmentNumbers: string[],
-    eventDoorIds?: string,
-    sn?: string,
-    pageNo?: string,
-    pageSize?: string
-  ) => Promise<Accesses[]>;
   payTerminalNoPagination: KioskTransactionMB[];
   payCoinsNoPagination: KioskTransactionMB[];
   moveCardNoPagination: KioskTransactionCard[];
@@ -673,29 +666,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Função para buscar todos os dados por enrollNumber, deviceSN e eventDoorId
-  const fetchAllKioskTransactionByEnrollNumber = async (
-    enrollmentNumbers: string[],
-    eventDoorIds?: string,
-    sn?: string,
-    pageNo?: string,
-    pageSize?: string
-  ): Promise<Accesses[]> => {
-    try {
-      const data = await apiService.fetchAllKioskTransactionByEnrollNumber(
-        enrollmentNumbers,
-        eventDoorIds,
-        sn,
-        pageNo,
-        pageSize
-      );
-      return data;
-    } catch (error) {
-      console.error("Erro ao buscar dados:", error);
-    }
-    return [];
-  };
-
   // Função para buscar todos os dados para os gráficos
   const fetchAllChartData = async () => {
     try {
@@ -863,7 +833,6 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     alerts,
     setAlerts,
     fetchAllTasks,
-    fetchAllKioskTransactionByEnrollNumber,
     payTerminalNoPagination,
     payCoinsNoPagination,
     moveCardNoPagination,

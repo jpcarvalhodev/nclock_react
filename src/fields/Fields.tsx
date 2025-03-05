@@ -1,4 +1,4 @@
-//*** campos de todos os modelos para usar no programa todo ***
+//*** campos de todos os modelos para usar no software ***
 
 export const employeeFields = [
   { label: "Número", key: "enrollNumber", type: "string", required: true },
@@ -150,7 +150,7 @@ export const deviceFields = [
   { key: "model", label: "Modelo", type: "string" },
   { key: "ipAddress", label: "Endereço IP", type: "string" },
   { key: "port", label: "Porta", type: "number" },
-  { key: "sPhoto", label: "Foto", type: "string" },
+  { key: "photo", label: "Foto", type: "string" },
   { key: "code", label: "Código", type: "number" },
   { key: "platform", label: "Platforma", type: "string" },
   { key: "firmware", label: "Firmware", type: "string" },

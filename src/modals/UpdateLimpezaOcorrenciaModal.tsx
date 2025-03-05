@@ -218,7 +218,7 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({
                   Data de Criação<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-dataCreate">Campo obrigatório</Tooltip>
                   }
@@ -252,7 +252,7 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({
                   Pessoa Responsável<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-responsavel">
                       Campo obrigatório
@@ -283,7 +283,7 @@ export const UpdateLimpezaOcorrenciaModal = <T extends Entity>({
                   Nome do Local<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-deviceId">Campo obrigatório</Tooltip>
                   }

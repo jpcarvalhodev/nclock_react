@@ -268,7 +268,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({
                           Valor <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-amount">
                               Campo obrigatório
@@ -296,7 +296,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({
                           Total Moedas <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-totalMoedas">
                               Campo obrigatório
@@ -327,7 +327,7 @@ export const KioskOptionsModal = <T extends Record<string, any>>({
                           E-Mails <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-emails">
                               Digite os e-mails separados por vírgula.

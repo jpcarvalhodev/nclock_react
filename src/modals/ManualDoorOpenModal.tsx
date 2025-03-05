@@ -229,7 +229,7 @@ export const ManualDoorOpenModal = <T extends Record<string, any>>({
                 <Form.Group controlId={`form${field.key}`}>
                   {field.required ? (
                     <OverlayTrigger
-                      placement="right"
+                      placement="top"
                       overlay={
                         <Tooltip id={`tooltip-${field.key}`}>
                           Campo obrigatório

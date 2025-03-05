@@ -211,7 +211,7 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({
                   Número<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-numeroCamera">
                       Campo obrigatório
@@ -265,7 +265,7 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({
                   Nome<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-nomeCamera">Campo obrigatório</Tooltip>
                   }
@@ -292,7 +292,7 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({
                   URL<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-url">Campo obrigatório</Tooltip>
                   }
@@ -332,7 +332,7 @@ export const CreateOnlineCameraModal = <T extends Record<string, any>>({
                       cursor: "pointer",
                       background: "transparent",
                       borderLeft: "none",
-                      height: "30px",
+                      height: "28px"
                     }}
                     onClick={togglePasswordVisibility}
                   >

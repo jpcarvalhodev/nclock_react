@@ -1,6 +1,12 @@
 import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import {
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import "../css/TreeView.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
@@ -260,9 +266,12 @@ export function TreeViewData({
   }, [items, searchTerm]);
 
   // Função para lidar com a expansão dos itens
-  const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
-    setExpandedIds(nodeIds);
-  };
+  const handleToggle = useCallback(
+    (event: SyntheticEvent, nodeIds: string[]) => {
+      setExpandedIds(nodeIds);
+    },
+    []
+  );
 
   // Mapeia os itens para um Map
   const itemsMap = useMemo(() => {
@@ -276,58 +285,61 @@ export function TreeViewData({
   }, [items]);
 
   // Função para lidar com a mudança de seleção dos itens
-  const handleSelectedItemsChange = (e: SyntheticEvent, itemIds: string[]) => {
-    const newSelectedIds = new Set(itemIds);
-    const previouslySelectedIds = new Set(selectedEmployeeIds);
+  const handleSelectedItemsChange = useCallback(
+    (e: SyntheticEvent, itemIds: string[]) => {
+      const newSelectedIds = new Set(itemIds);
+      const previouslySelectedIds = new Set(selectedEmployeeIds);
 
-    function updateChildSelection(itemId: string, isSelected: boolean) {
-      const item = itemsMap.get(itemId);
-      if (item) {
-        item.children?.forEach((child) => {
-          if (isSelected) {
-            newSelectedIds.add(child.id);
-          } else {
-            newSelectedIds.delete(child.id);
-          }
-          updateChildSelection(child.id, isSelected);
-        });
-      }
-    }
-
-    const addedIds = Array.from(newSelectedIds).filter(
-      (id) => !previouslySelectedIds.has(id)
-    );
-    const removedIds = Array.from(previouslySelectedIds).filter(
-      (id) => !newSelectedIds.has(id)
-    );
-
-    addedIds.forEach((id) => updateChildSelection(id, true));
-    removedIds.forEach((id) => updateChildSelection(id, false));
-
-    setSelectedEmployeeIds(Array.from(newSelectedIds));
-
-    const employeeIds = Array.from(newSelectedIds)
-      .filter((id) => id.includes("emp") || id.includes("-emp-"))
-      .map((id) => {
-        if (id.includes("-emp-")) {
-          return id.substring(id.lastIndexOf("-emp-") + 5);
-        } else if (id.startsWith("unassigned-empdept-")) {
-          return id.substring(19);
-        } else if (id.startsWith("unassigned-empgrp-")) {
-          return id.substring(18);
-        } else if (id.startsWith("emp-")) {
-          return id.substring(4);
-        } else if (id.startsWith("empd-")) {
-          return id.substring(5);
-        } else if (id.startsWith("empg-")) {
-          return id.substring(5);
+      function updateChildSelection(itemId: string, isSelected: boolean) {
+        const item = itemsMap.get(itemId);
+        if (item) {
+          item.children?.forEach((child) => {
+            if (isSelected) {
+              newSelectedIds.add(child.id);
+            } else {
+              newSelectedIds.delete(child.id);
+            }
+            updateChildSelection(child.id, isSelected);
+          });
         }
-        return null;
-      })
-      .filter((id) => id !== null);
+      }
 
-    onSelectEmployees(employeeIds as string[]);
-  };
+      const addedIds = Array.from(newSelectedIds).filter(
+        (id) => !previouslySelectedIds.has(id)
+      );
+      const removedIds = Array.from(previouslySelectedIds).filter(
+        (id) => !newSelectedIds.has(id)
+      );
+
+      addedIds.forEach((id) => updateChildSelection(id, true));
+      removedIds.forEach((id) => updateChildSelection(id, false));
+
+      setSelectedEmployeeIds(Array.from(newSelectedIds));
+
+      const employeeIds = Array.from(newSelectedIds)
+        .filter((id) => id.includes("emp") || id.includes("-emp-"))
+        .map((id) => {
+          if (id.includes("-emp-")) {
+            return id.substring(id.lastIndexOf("-emp-") + 5);
+          } else if (id.startsWith("unassigned-empdept-")) {
+            return id.substring(19);
+          } else if (id.startsWith("unassigned-empgrp-")) {
+            return id.substring(18);
+          } else if (id.startsWith("emp-")) {
+            return id.substring(4);
+          } else if (id.startsWith("empd-")) {
+            return id.substring(5);
+          } else if (id.startsWith("empg-")) {
+            return id.substring(5);
+          }
+          return null;
+        })
+        .filter((id) => id !== null);
+
+      onSelectEmployees(employeeIds as string[]);
+    },
+    [itemsMap, selectedEmployeeIds, onSelectEmployees]
+  );
 
   // Atualiza a referência de mudança de seleção
   useEffect(() => {

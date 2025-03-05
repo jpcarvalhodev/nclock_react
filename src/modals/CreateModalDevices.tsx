@@ -103,7 +103,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
     { key: "model", label: "Modelo", type: "string" },
     { key: "ipAddress", label: "Endereço IP", type: "string" },
     { key: "port", label: "Porta", type: "number" },
-    { key: "sPhoto", label: "Foto", type: "string" },
+    { key: "photo", label: "Foto", type: "string" },
     { key: "code", label: "Código", type: "number" },
     { key: "platform", label: "Platforma", type: "string" },
     { key: "firmware", label: "Firmware", type: "string" },
@@ -276,7 +276,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
       ...prevFormData,
       model: deviceOption ? deviceOption.label : "",
       modelo: deviceOption ? deviceOption.label : "",
-      sPhoto: deviceOption?.img || no_image,
+      photo: deviceOption?.img || no_image,
     }));
 
     if (selected) {
@@ -383,7 +383,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
   // Função para lidar com o salvamento
   const handleSave = () => {
     if (activeTab === "multibanco") {
-      const { sPhoto, deviceNumber, enabled, model, ...dataToSend } = formData;
+      const { photo, deviceNumber, enabled, model, ...dataToSend } = formData;
       onMBSave({ ...dataToSend, estadoTerminal: 0 } as unknown as MBDevice);
     } else {
       const { modelo, ...dataToSend } = formData;
@@ -471,7 +471,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                           Nome<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-deviceName">
                               Campo obrigatório
@@ -514,7 +514,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                           Número<span style={{ color: "red" }}> *</span>
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id="tooltip-deviceNumber">
                               Campo obrigatório
@@ -889,7 +889,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                         <Form.Group controlId={`form${field.key}`}>
                           {field.required ? (
                             <OverlayTrigger
-                              placement="right"
+                              placement="top"
                               overlay={
                                 <Tooltip id={`tooltip-${field.key}`}>
                                   Campo obrigatório

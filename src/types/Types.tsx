@@ -1,4 +1,4 @@
-//*** todos os tipos dos modelos para usar no programa todo ***
+//*** todos os tipos dos modelos para usar no software ***
 
 export type Employee = {
   [key: string]: any;

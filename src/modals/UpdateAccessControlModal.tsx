@@ -11,6 +11,7 @@ import {
   Tab,
   Tooltip,
 } from "react-bootstrap";
+import * as apiService from "../api/apiService";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { customStyles } from "../components/CustomStylesDataTable";
@@ -25,6 +26,7 @@ import { AddEmployeeToACModal } from "./AddEmployeeToACModal";
 import { AddTerminalToACModal } from "./AddTerminalToACModal";
 import { UpdateModalEmployees } from "./UpdateModalEmployees";
 import { UpdateTerminalOnAccessControlModal } from "./UpdateTerminalOnAccessControlModal";
+import { toast } from "react-toastify";
 
 // Define as propriedades do componente
 interface Props<T> {
@@ -148,12 +150,20 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
   };
 
   // Função para remover funcionários selecionados
-  const removeSelectedEmployees = () => {
-    const remainingData = employeeTableData.filter(
-      (emp) => !selectedRows.some((row) => row.employeeID === emp.employeeID)
-    );
-    setEmployeeTableData(remainingData);
-    setClearSelectionToggle((prev) => !prev);
+  const removeSelectedEmployees = async () => {
+    const selectedIds = selectedRows.map((row) => row.employeeID);
+    const data = await apiService.deleteEmployeesFromDevice(formData.id, selectedIds);
+    console.log(data)
+    if (data.ok) {
+      const remainingData = employeeTableData.filter(
+        (emp) => !selectedRows.some((row) => row.employeeID === emp.employeeID)
+      );
+      setEmployeeTableData(remainingData);
+      setClearSelectionToggle((prev) => !prev);
+      toast.success(data.message || 'Funcionários apagados com sucesso!');
+    } else {
+      toast.error("Erro ao remover funcionários. Tente novamente.");
+    }    
   };
 
   // Função para atualizar um funcionário

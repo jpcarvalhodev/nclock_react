@@ -226,7 +226,7 @@ export const UpdateModalAttendance = <T extends Entity>({
                     <span style={{ color: "red" }}> *</span>
                   </Form.Label>
                   <OverlayTrigger
-                    placement="right"
+                    placement="top"
                     overlay={
                       <Tooltip id="tooltip-attendanceTime">
                         {"Campo obrigatório"}
@@ -257,7 +257,7 @@ export const UpdateModalAttendance = <T extends Entity>({
                     <span style={{ color: "red" }}> *</span>
                   </Form.Label>
                   <OverlayTrigger
-                    placement="right"
+                    placement="top"
                     overlay={
                       <Tooltip id="tooltip-employeeId">
                         {"Campo obrigatório"}
@@ -329,7 +329,7 @@ export const UpdateModalAttendance = <T extends Entity>({
                       </Form.Label>
                       {field.type === "dropdown" ? (
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id={`tooltip-${field.key}`}>
                               {"Campo obrigatório"}
@@ -357,7 +357,7 @@ export const UpdateModalAttendance = <T extends Entity>({
                         </OverlayTrigger>
                       ) : field.key === "attendanceTime" ? (
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
                             <Tooltip id={`tooltip-${field.key}`}>
                               {`Campo obrigatório`}

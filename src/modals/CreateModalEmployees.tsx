@@ -25,6 +25,7 @@ import { departmentFields, groupFields } from "../fields/Fields";
 import { Employee, EmployeeCard } from "../types/Types";
 
 import { CreateModalDeptGrp } from "./CreateModalDeptGrp";
+import { nationalities } from "../utils/nationalities";
 
 // Define a interface para os itens de campo
 type FormControlElement =
@@ -63,7 +64,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
   initialValues,
 }: Props<T>) => {
   const {
-    employees,
+    employeesNoPagination,
     departments,
     groups,
     categories,
@@ -91,13 +92,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
   const [showGrpModal, setShowGrpModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Atualiza o estado do componente ao abrir o modal
   useEffect(() => {
     if (open) {
-      fetchEmployeesAndSetNextEnrollNumber();
-      fetchDropdownOptions();
-
       let newFormData = {
         ...initialValues,
         status: true,
@@ -124,6 +123,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
         };
       }
       setFormData(newFormData);
+
+      fetchEmployeesAndSetNextEnrollNumber();
+      fetchDropdownOptions();
     } else {
       setFormData({ ...initialValues, status: true });
       setCardFormData({});
@@ -182,10 +184,10 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
     return isValid;
   };
 
-  // Função para buscar os funcionários e definir o próximo número de matrícula
+  // Função para buscar os funcionários e definir o próximo número
   const fetchEmployeesAndSetNextEnrollNumber = async () => {
     try {
-      const maxEnrollNumber = employees.reduce(
+      const maxEnrollNumber = employeesNoPagination.reduce(
         (max: number, employee: Employee) => {
           const currentEnrollNumber = parseInt(employee.enrollNumber);
           return Math.max(max, currentEnrollNumber);
@@ -532,6 +534,49 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
     setShowPassword(!showPassword);
   };
 
+  // Função para buscar os dados do código postal
+  const handleZipCode = async () => {
+    const cPostal = formData.ziPcode;
+    if (!cPostal) return;
+
+    setIsLoading(true);
+    const [cPostal1, cPostal2] = cPostal.split("-");
+
+    try {
+      const response = await fetch(
+        `https://www.cttcodigopostal.pt/api/v1/4ca3e090c6ba47a29d720ed8cc597648/${cPostal1}-${cPostal2}`
+      );
+      if (!response.ok) {
+        console.error("Falha ao buscar dados de código postal");
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data) && data.length > 0) {
+        const item = data[0];
+
+        setFormData((prev) => ({
+          ...prev,
+          address: item.morada || "",
+          locality: item.localidade || "",
+          village: item.freguesia || "",
+          district: item.distrito || "",
+        }));
+      } else {
+        toast.warn(
+          "A busca pelo código postal informado falhou. Tente novamente ou insira manualmente os dados."
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Não foi possível buscar pelo código postal informado",
+        error
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Modal
       show={open}
@@ -575,9 +620,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                 Número da Pessoa <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={
-                  <Tooltip id="tooltip-enrollNumber">Campo obrigatório</Tooltip>
+                  <Tooltip className="custom-tooltip">
+                    Campo obrigatório
+                  </Tooltip>
                 }
               >
                 <Form.Control
@@ -599,8 +646,12 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                 Nome <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
-                overlay={<Tooltip id="tooltip-name">Campo obrigatório</Tooltip>}
+                placement="top"
+                overlay={
+                  <Tooltip className="custom-tooltip">
+                    Campo obrigatório
+                  </Tooltip>
+                }
               >
                 <Form.Control
                   type="string"
@@ -622,9 +673,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                 Nome Abreviado <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={
-                  <Tooltip id="tooltip-shortName">Campo obrigatório</Tooltip>
+                  <Tooltip className="custom-tooltip">
+                    Campo obrigatório
+                  </Tooltip>
                 }
               >
                 <Form.Control
@@ -649,9 +702,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
             <Form.Group controlId="formNameAcronym">
               <Form.Label>Iniciais do Nome</Form.Label>
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={
-                  <Tooltip id="tooltip-name">Máximo de 4 caracteres</Tooltip>
+                  <Tooltip className="custom-tooltip">
+                    Máximo de 4 caracteres
+                  </Tooltip>
                 }
               >
                 <Form.Control
@@ -825,8 +880,8 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                 <Row>
                   {[
                     { key: "nif", label: "NIF", type: "number" },
-                    { key: "address", label: "Morada", type: "string" },
                     { key: "ziPcode", label: "Código Postal", type: "string" },
+                    { key: "address", label: "Morada", type: "string" },
                     { key: "locality", label: "Localidade", type: "string" },
                     { key: "village", label: "Freguesia", type: "string" },
                     { key: "district", label: "Distrito", type: "string" },
@@ -868,9 +923,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           </Form.Control>
                         ) : field.key === "nif" ? (
                           <OverlayTrigger
-                            placement="right"
+                            placement="top"
                             overlay={
-                              <Tooltip id="tooltip-nif">
+                              <Tooltip className="custom-tooltip">
                                 NIF deve ter pelo menos 9 dígitos
                               </Tooltip>
                             }
@@ -883,6 +938,58 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                               name={field.key}
                             />
                           </OverlayTrigger>
+                        ) : field.key === "ziPcode" ? (
+                          <InputGroup>
+                            <Form.Control
+                              type="text"
+                              className="custom-input-height custom-select-font-size"
+                              value={formData.ziPcode || ""}
+                              name="ziPcode"
+                              onChange={handleChange}
+                            />
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Pesquisar Código Postal
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi bi-search"
+                                onClick={handleZipCode}
+                                iconSize="1em"
+                                className="custom-input-height"
+                              >
+                                {isLoading ? (
+                                  <div className="d-flex align-items-center gap-2">
+                                    <span
+                                      className="spinner-border spinner-border-sm"
+                                      role="status"
+                                      aria-hidden="true"
+                                    />
+                                  </div>
+                                ) : (
+                                  "Buscar"
+                                )}
+                              </CustomOutlineButton>
+                            </OverlayTrigger>
+                          </InputGroup>
+                        ) : field.key === "nationality" ? (
+                          <Form.Control
+                            as="select"
+                            className="custom-input-height custom-select-font-size"
+                            value={formData.nationality || ""}
+                            onChange={handleChange}
+                            name="nationality"
+                          >
+                            <option value="">Selecione...</option>
+                            {nationalities.map((nat) => (
+                              <option key={nat} value={nat}>
+                                {nat}
+                              </option>
+                            ))}
+                          </Form.Control>
                         ) : (
                           <Form.Control
                             type={field.type}
@@ -962,96 +1069,68 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           )}
                         </Form.Label>
                         <OverlayTrigger
-                          placement="right"
+                          placement="top"
                           overlay={
-                            <Tooltip id={`tooltip-${field.key}`}>
+                            <Tooltip className="custom-tooltip">
                               Campo Obrigatório
                             </Tooltip>
                           }
                         >
                           {field.type === "dropdown" ? (
-                            <Row>
+                            <InputGroup>
+                              <Form.Control
+                                as="select"
+                                className={`custom-input-height custom-select-font-size ${
+                                  showValidationErrors ? "error-border" : ""
+                                }`}
+                                value={formData[field.key] || ""}
+                                onChange={(e) =>
+                                  handleDropdownChange(field.key, e)
+                                }
+                              >
+                                <option value="">Selecione...</option>
+                                {dropdownData[field.key]?.map((option: any) => {
+                                  const optionId =
+                                    option.departmentID ||
+                                    option.groupID ||
+                                    option.professionID ||
+                                    option.zoneID ||
+                                    option.externalEntityID ||
+                                    option.categoryID;
+
+                                  const optionName =
+                                    option.name || option.description;
+                                  return (
+                                    <option key={optionId} value={optionId}>
+                                      {optionName}
+                                    </option>
+                                  );
+                                })}
+                              </Form.Control>
                               {field.key === "departmentId" ||
                               field.key === "groupId" ? (
-                                <>
-                                  <Col>
-                                    <Form.Control
-                                      as="select"
-                                      className={`custom-input-height custom-select-font-size ${
-                                        showValidationErrors
-                                          ? "error-border"
-                                          : ""
-                                      }`}
-                                      value={formData[field.key] || ""}
-                                      onChange={(e) =>
-                                        handleDropdownChange(field.key, e)
-                                      }
-                                    >
-                                      <option value="">Selecione...</option>
-                                      {dropdownData[field.key]?.map(
-                                        (option: any) => {
-                                          let optionId =
-                                            option.departmentID ||
-                                            option.groupID;
-                                          let optionName =
-                                            option.name || option.description;
-                                          return (
-                                            <option
-                                              key={optionId}
-                                              value={optionId}
-                                            >
-                                              {optionName}
-                                            </option>
-                                          );
-                                        }
-                                      )}
-                                    </Form.Control>
-                                  </Col>
-                                  <Col xs="auto">
-                                    <CustomOutlineButton
-                                      icon="bi-plus"
-                                      onClick={() =>
-                                        field.key === "departmentId"
-                                          ? setShowDeptModal(true)
-                                          : setShowGrpModal(true)
-                                      }
-                                    />
-                                  </Col>
-                                </>
-                              ) : (
-                                <Col>
-                                  <Form.Control
-                                    as="select"
-                                    className="custom-input-height custom-select-font-size"
-                                    value={formData[field.key] || ""}
-                                    onChange={(e) =>
-                                      handleDropdownChange(field.key, e)
+                                <OverlayTrigger
+                                  placement="top"
+                                  overlay={
+                                    <Tooltip className="custom-tooltip">
+                                      {field.key === "departmentId"
+                                        ? "Novo Departamento"
+                                        : "Novo Grupo"}
+                                    </Tooltip>
+                                  }
+                                >
+                                  <CustomOutlineButton
+                                    icon="bi-plus"
+                                    className="custom-input-height"
+                                    onClick={() =>
+                                      field.key === "departmentId"
+                                        ? setShowDeptModal(true)
+                                        : setShowGrpModal(true)
                                     }
-                                  >
-                                    <option value="">Selecione...</option>
-                                    {dropdownData[field.key]?.map(
-                                      (option: any) => {
-                                        let optionId =
-                                          option.professionID ||
-                                          option.zoneID ||
-                                          option.externalEntityID ||
-                                          option.categoryID;
-                                        let optionName =
-                                          option.name || option.description;
-                                        return (
-                                          <option
-                                            key={optionId}
-                                            value={optionId}
-                                          >
-                                            {optionName}
-                                          </option>
-                                        );
-                                      }
-                                    )}
-                                  </Form.Control>
-                                </Col>
-                              )}
-                            </Row>
+                                  />
+                                </OverlayTrigger>
+                              ) : null}
+                            </InputGroup>
                           ) : (
                             <Form.Control
                               type={field.type}
@@ -1120,7 +1199,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                             cursor: "pointer",
                             background: "transparent",
                             borderLeft: "none",
-                            height: "30px",
+                            height: "28px",
                           }}
                           onClick={togglePasswordVisibility}
                         >

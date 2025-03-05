@@ -221,7 +221,7 @@ export const CreateModalNewCard = <T extends Record<string, any>>({
                   Data do Evento<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-eventTime">Campo obrigatório</Tooltip>
                   }
@@ -255,7 +255,7 @@ export const CreateModalNewCard = <T extends Record<string, any>>({
                   Funcionário<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-pin">Campo obrigatório</Tooltip>
                   }
@@ -303,7 +303,7 @@ export const CreateModalNewCard = <T extends Record<string, any>>({
                   Nome do Local<span style={{ color: "red" }}> *</span>
                 </Form.Label>
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={
                     <Tooltip id="tooltip-deviceSN">Campo obrigatório</Tooltip>
                   }

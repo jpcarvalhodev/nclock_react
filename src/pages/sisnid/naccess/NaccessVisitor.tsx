@@ -25,6 +25,7 @@ import { TreeViewNaccessVisitorsData } from "../../../components/TreeViewNaccess
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { CreateModalVisitor } from "../../../modals/CreateModalVisitor";
 import { UpdateModalVisitor } from "../../../modals/UpdateModalVisitor";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -236,18 +237,6 @@ export const NaccessVisitor = () => {
     }
   }, [resetSelection]);
 
-  // Atualiza a seleção ao mudar o filtro
-  useEffect(() => {
-    if (selectedEmployeeIds.length > 0) {
-      const newFilteredAccess = employeeVisitor.filter((emp) =>
-        selectedEmployeeIds.includes(emp.idVisitante)
-      );
-      setFilteredEmployees(newFilteredAccess);
-    } else {
-      setFilteredEmployees(employeeVisitor);
-    }
-  }, [selectedEmployeeIds, employeeVisitor]);
-
   // Callback disparado ao mudar a página
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -266,25 +255,26 @@ export const NaccessVisitor = () => {
     if (selectedIds.length > 0) {
       setLoading(true);
       try {
-        const foundEmployees = await fetchEmployeeVisitor(
+        const foundEmployees = await apiService.fetchAllEmployeeVisitors(
           undefined,
           undefined,
           undefined,
           undefined,
           selectedIds
         );
-        setFilteredEmployees((prev) => {
-          const existingIds = new Set(prev.map((emp) => emp.idVisitante));
-          const uniqueEmployees = foundEmployees.filter(
-            (emp) => !existingIds.has(emp.idVisitante)
-          );
-          return [...prev, ...uniqueEmployees];
-        });
+        if (foundEmployees.data) {
+          setFilteredEmployees(foundEmployees.data);
+          setTotalRows(foundEmployees.totalRecords);
+        } else {
+          setFilteredEmployees([]);
+        }
       } catch (error) {
         console.error("Erro ao buscar visitantes por ID:", error);
       } finally {
         setLoading(false);
       }
+    } else {
+      setFilteredEmployees(employeeVisitor);
     }
   };
 
