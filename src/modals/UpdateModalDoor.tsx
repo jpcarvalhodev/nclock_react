@@ -10,6 +10,7 @@ import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { useTerminals } from "../context/TerminalsContext";
+import { verifyModeOptions } from "../utils/verifyModesForDoors";
 
 // Define a interface para os itens de campo
 type FormControlElement =
@@ -188,14 +189,6 @@ export const UpdateModalDoor = <T extends Entity>({
     }
     onUpdate(formData as T);
   };
-
-  // Define as seleções de modo de verificação
-  const verifyModeOptions = [
-    { value: 3, label: "Somente Password" },
-    { value: 4, label: "Somente Cartão" },
-    { value: 7, label: "Cartão/Password" },
-    { value: 11, label: "Cartão + Password" },
-  ];
 
   // Define as seleções de tipo de sensor
   const doorSensorTypes = [
@@ -441,7 +434,7 @@ export const UpdateModalDoor = <T extends Entity>({
                       cursor: "pointer",
                       background: "transparent",
                       borderLeft: "none",
-                      height: "30px",
+                      height: "28px",
                     }}
                   >
                     <img
@@ -493,7 +486,7 @@ export const UpdateModalDoor = <T extends Entity>({
                       cursor: "pointer",
                       background: "transparent",
                       borderLeft: "none",
-                      height: "30px",
+                      height: "28px",
                     }}
                   >
                     <img

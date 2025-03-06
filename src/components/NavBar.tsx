@@ -194,6 +194,7 @@ import person from "../assets/img/navbar/pessoas/person.png";
 import profession from "../assets/img/navbar/pessoas/professions.png";
 import types from "../assets/img/navbar/pessoas/types.png";
 import zone from "../assets/img/navbar/pessoas/zones.png";
+import mail from "../assets/img/navbar/navbar/mail.svg";
 import { useAds } from "../context/AdsContext";
 import { useCardScroll } from "../context/CardScrollContext";
 import { useEntity } from "../context/EntityContext";
@@ -2809,6 +2810,14 @@ export const NavBar = ({ style }: NavBarProps) => {
     setIsMouseOver(false);
   };
 
+  // Função para fechar o modal de licença
+  const handleCloseLicenseModal = () => {
+    setShowLicenseModal(false);
+    clearAllTabs();
+    clearAllRibbons();
+    navigate("/dashboard");
+  };
+
   return (
     <nav data-role="ribbonmenu" style={{ backgroundColor: navbarColor }}>
       <div className="nav-container">
@@ -2940,7 +2949,24 @@ export const NavBar = ({ style }: NavBarProps) => {
             </ul>
             <div className="user-section mobile-only">
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <NavbarNotifications />
+                <Button
+                  onClick={() =>
+                    toast.warn("Funcionalidade de mensagens em desenvolvimento")
+                  }
+                  className="btn btn-light navbar-buttons"
+                >
+                  <span
+                    className="icon"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <img src={mail} alt="botão mensagens" />
+                  </span>
+                </Button>
+                {/* <NavbarNotifications /> */}
                 <Button
                   onClick={() =>
                     toast.warn("Funcionalidade de favoritos em desenvolvimento")
@@ -3102,7 +3128,24 @@ export const NavBar = ({ style }: NavBarProps) => {
           </li>
         </ul>
         <div className="user-section mobile-hidden">
-          <NavbarNotifications />
+          <Button
+            onClick={() =>
+              toast.warn("Funcionalidade de mensagens em desenvolvimento")
+            }
+            className="btn btn-light navbar-buttons"
+          >
+            <span
+              className="icon"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img src={mail} alt="botão mensagens" />
+            </span>
+          </Button>
+          {/* <NavbarNotifications /> */}
           <Button
             onClick={() =>
               toast.warn("Funcionalidade de favoritos em desenvolvimento")
@@ -20574,7 +20617,7 @@ export const NavBar = ({ style }: NavBarProps) => {
       {showLicenseModal && (
         <LicenseModal
           open={showLicenseModal}
-          onClose={() => setShowLicenseModal(false)}
+          onClose={handleCloseLicenseModal}
           onUpdate={handleUpdateLicense}
           fields={licenseFields}
         />

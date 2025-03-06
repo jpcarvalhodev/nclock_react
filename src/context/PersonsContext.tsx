@@ -539,7 +539,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
       console.error("Erro ao adicionar novo funcionário:", error);
     } finally {
       fetchAllData();
-      fetchAllEmployees();
+      fetchAllEmployeesNoPagination();
     }
   };
 
@@ -559,7 +559,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
       console.error("Erro ao atualizar funcionário:", error);
     } finally {
       fetchAllData();
-      fetchAllEmployees();
+      fetchAllEmployeesNoPagination();
     }
   };
 
@@ -574,7 +574,7 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
       console.error("Erro ao apagar funcionário:", error);
     } finally {
       fetchAllData();
-      fetchAllEmployees();
+      fetchAllEmployeesNoPagination();
     }
   };
 

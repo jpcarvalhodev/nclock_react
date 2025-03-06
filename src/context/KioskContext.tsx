@@ -114,7 +114,8 @@ export interface KioskContextType {
     startDate?: string,
     endDate?: string,
     pageNo?: "1",
-    pageSize?: "20"
+    pageSize?: "20",
+    devSNs?: string[]
   ) => Promise<Counter[]>;
   totalPayments: KioskTransactionMB[];
   setTotalPayments: (totalPayments: KioskTransactionMB[]) => void;
@@ -633,14 +634,16 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     startDate?: string,
     endDate?: string,
     pageNo?: "1",
-    pageSize?: "20"
+    pageSize?: "20",
+    devSNs?: string[]
   ): Promise<Counter[]> => {
     try {
       const data = await apiService.fetchAllContador(
         startDate,
         endDate,
         pageNo,
-        pageSize
+        pageSize,
+        devSNs
       );
       setCounter(data.data);
       setCounterTotalRecords(data.totalRecords);

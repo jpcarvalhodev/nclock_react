@@ -674,6 +674,11 @@ body {
   margin-right: 5px;
 }
 
+.license-modal-button {
+  width: 28px !important;
+  height: 28px !important;
+}
+
 .dashboard-content-wrapper {
   display: flex;
   flex: 1;

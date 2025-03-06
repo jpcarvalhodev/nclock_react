@@ -315,10 +315,9 @@ export const NaccessAccesses = () => {
 
     if (selectedIds.length > 0) {
       try {
-        const foundEmployees = await apiService.fetchAllKioskTransactionByEnrollNumber(
+        const foundEmployees = await apiService.fetchAllAccessesByEnrollNumber(
+          undefined,
           selectedIds,
-          undefined,
-          undefined,
           undefined,
           undefined,
           undefined,

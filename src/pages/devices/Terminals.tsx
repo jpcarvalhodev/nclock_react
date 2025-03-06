@@ -458,6 +458,11 @@ export const Terminals = () => {
   const updateDevice = async (device: AllDevices) => {
     await handleUpdateDevice(device);
     refreshAll();
+    setSelectedDevice((prevDevice) =>
+      prevDevice && prevDevice.zktecoDeviceID === device.zktecoDeviceID
+        ? { ...prevDevice, ...device }
+        : prevDevice
+    );
     setClearSelectionToggle((prev) => !prev);
   };
 
@@ -1524,49 +1529,6 @@ export const Terminals = () => {
     setShowAddModal(true);
     setShowUpdateModal(false);
     setSelectedTerminal(null);
-  };
-
-  // Função que manipula o filtro de utilizadores
-  const handleAllUsersChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = e.target.checked;
-    setShowAllUsers(isChecked);
-    if (isChecked) {
-      setShowFingerprintUsers(false);
-      setShowFacialRecognitionUsers(false);
-    }
-  };
-
-  // Função que manipula o filtro de utilizadores de biometria digital
-  const handleFingerprintUsersChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const isChecked = e.target.checked;
-    setShowFingerprintUsers(isChecked);
-    if (isChecked) {
-      setShowAllUsers(false);
-    } else {
-      checkAllFiltersOff(false, showFacialRecognitionUsers);
-    }
-  };
-
-  // Função que manipula o filtro de utilizadores de biometria facial
-  const handleFacialRecognitionUsersChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const isChecked = e.target.checked;
-    setShowFacialRecognitionUsers(isChecked);
-    if (isChecked) {
-      setShowAllUsers(false);
-    } else {
-      checkAllFiltersOff(showFingerprintUsers, false);
-    }
-  };
-
-  // Função que verifica se todos os filtros estão desligados
-  const checkAllFiltersOff = (fingerprint: boolean, facial: boolean) => {
-    if (!fingerprint && !facial) {
-      setShowAllUsers(true);
-    }
   };
 
   // Define as colunas de ação de dispositivos
@@ -3049,26 +3011,6 @@ export const Terminals = () => {
                   )}
                   Apagar utilizadores
                 </Button>
-                <div className="col-3">
-                  <Form.Check
-                    type="checkbox"
-                    label="Utilizadores"
-                    checked={showAllUsers}
-                    onChange={handleAllUsersChange}
-                  />
-                  <Form.Check
-                    type="checkbox"
-                    label="Biometria digital"
-                    checked={showFingerprintUsers}
-                    onChange={handleFingerprintUsersChange}
-                  />
-                  <Form.Check
-                    type="checkbox"
-                    label="Biometria facial"
-                    checked={showFacialRecognitionUsers}
-                    onChange={handleFacialRecognitionUsersChange}
-                  />
-                </div>
               </div>
             </Tab>
             <Tab eventKey="onOff" title="Ligação">

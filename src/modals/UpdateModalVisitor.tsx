@@ -366,7 +366,6 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
       ),
     };
 
-    console.log(payload);
     onUpdate(payload as unknown as T);
     handleClose();
   };

@@ -74,7 +74,7 @@ export const PrintButton = ({
   // Função para calcular o renderTimeout com base na quantidade de dados
   const calculateRenderTimeout = (dataLength: number): number => {
     const baseTimeout = 5000;
-    const timePerItem = 50;
+    const timePerItem = 100;
     return baseTimeout + dataLength * timePerItem;
   };
 
@@ -158,7 +158,7 @@ export const PrintButton = ({
                 height: "600px",
               }}
             >
-              <h3>Não há dados para exibir.</h3>
+              <h3>Não existem dados disponíveis para mostrar.</h3>
             </div>
           ) : (
             <PDFViewer width="100%" height="600px">
@@ -175,7 +175,7 @@ export const PrintButton = ({
           )}
         </Modal.Body>
         <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
-          <Button variant="outline-secondary" onClick={handleCloseModal}>
+          <Button variant="outline-dark" onClick={handleCloseModal}>
             Fechar
           </Button>
           <PDFDownloadLink
@@ -192,7 +192,7 @@ export const PrintButton = ({
             }
             fileName="dados_impressos.pdf"
           >
-            <Button variant="outline-primary">Guardar</Button>
+            <Button variant="outline-dark">Guardar</Button>
           </PDFDownloadLink>
         </Modal.Footer>
       </Modal>

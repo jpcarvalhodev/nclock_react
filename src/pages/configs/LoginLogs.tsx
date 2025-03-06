@@ -52,7 +52,6 @@ export const LoginLogs = () => {
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
   const [currentPage, setCurrentPage] = useState(1);
@@ -161,18 +160,6 @@ export const LoginLogs = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const filterLogs = loginLogs.filter((log) =>
-        selectedDevicesIds.includes(log.taskId)
-      );
-      setFilteredDevices(filterLogs);
-    } else {
-      setFilteredDevices(loginLogs);
-    }
-  }, [selectedDevicesIds, loginLogs]);
-
   // Callback disparado ao mudar a página
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -243,24 +230,24 @@ export const LoginLogs = () => {
             undefined,
             undefined
           );
-          setFilteredDevices(logs.data);
+          setLoginLogs(logs.data);
         } else {
-          setFilteredDevices([]);
+          setLoginLogs([]);
         }
       } catch (error) {
         console.error("Erro ao buscar logs para o usuário selecionado:", error);
       }
     } else {
-      setFilteredDevices(loginLogs);
+      setLoginLogs(loginLogs);
     }
   };
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(loginLogs)) {
       return [];
     }
-    return filteredDevices
+    return loginLogs
       .filter(
         (getCoin) =>
           Object.keys(filters).every(
@@ -292,7 +279,7 @@ export const LoginLogs = () => {
         (a, b) =>
           new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [loginLogs, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Logs>[] = logsFields

@@ -39,8 +39,13 @@ export const NvisitorMoveKiosk = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { moveKiosk, fetchAllMoveKiosk, moveKioskPages, moveKioskTotalRecords } =
-    useKiosk();
+  const {
+    moveKiosk,
+    setMoveKiosk,
+    fetchAllMoveKiosk,
+    moveKioskPages,
+    moveKioskTotalRecords,
+  } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -76,6 +81,8 @@ export const NvisitorMoveKiosk = () => {
       const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
         undefined,
         "4",
+        undefined,
+        undefined,
         undefined,
         pageNo,
         perPage
@@ -218,27 +225,6 @@ export const NvisitorMoveKiosk = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const employeeShortNames = selectedDevicesIds
-        .map((employeeId) => {
-          const employee = employeesNoPagination.find(
-            (emp) => emp.employeeID === employeeId
-          );
-          return employee ? employee.shortName : null;
-        })
-        .filter((name) => name !== null);
-
-      const filtered = moveKiosk.filter((listMovement) =>
-        employeeShortNames.includes(listMovement.nameUser)
-      );
-      setFilteredDevices(filtered);
-    } else {
-      setFilteredDevices(moveKiosk);
-    }
-  }, [selectedDevicesIds, moveKiosk]);
-
   // Função para selecionar as colunas
   const toggleColumn = (columnName: string) => {
     if (selectedColumns.includes(columnName)) {
@@ -278,8 +264,47 @@ export const NvisitorMoveKiosk = () => {
   };
 
   // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedDevicesIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      const deviceIds: string[] = [];
+      const personIds: string[] = [];
+
+      selectedIds.forEach((id) => {
+        if (/^[A-Z0-9]+$/.test(id)) {
+          deviceIds.push(id);
+        } else if (
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            id
+          )
+        ) {
+          personIds.push(id);
+        }
+      });
+      try {
+        const foundEntity =
+          await apiService.fetchAllKioskTransactionByEnrollNumber(
+            personIds.length > 0 ? personIds : undefined,
+            undefined,
+            deviceIds.length > 0 ? deviceIds : undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          );
+        if (foundEntity.data) {
+          setFilteredDevices(foundEntity.data);
+          setTotalRows(foundEntity.totalRecords);
+        } else {
+          setFilteredDevices([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar entidades:", error);
+      }
+    } else {
+      setFilteredDevices(moveKiosk);
+    }
   };
 
   // Define a função de seleção de linhas
@@ -436,7 +461,9 @@ export const NvisitorMoveKiosk = () => {
   };
 
   // Dados com nomes substituídos para o export/print
-  const moveKioskWithNames = moveKiosk.map(transformTransactionWithNames);
+  const moveKioskWithNames = Array.isArray(moveKiosk)
+    ? moveKiosk.map(transformTransactionWithNames)
+    : [];
 
   // Transforma as linhas selecionadas com nomes substituídos
   const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
@@ -730,7 +757,7 @@ export const NvisitorMoveKiosk = () => {
             </div>
             <div style={{ marginLeft: 10, marginTop: -5 }}>
               <strong>Movimentos do Quiosque: </strong>
-              {totalAmount}
+              {totalAmount ?? 0}
             </div>
           </div>
         )}
@@ -1012,7 +1039,7 @@ export const NvisitorMoveKiosk = () => {
             </div>
             <div style={{ marginLeft: 10, marginTop: -5 }}>
               <strong>Movimentos do Quiosque: </strong>
-              {totalAmount}
+              {totalAmount ?? 0}
             </div>
           </div>
         </Split>

@@ -216,6 +216,9 @@ export const NkioskDashboardLicensed = () => {
 
   // Calcula a quantidade todal de pagamentos por mês
   const calculatePayMonthlyCounts = (transactions: KioskTransactionMB[]) => {
+    if (!transactions || !Array.isArray(transactions)) {
+      return Array(12).fill(0);
+    }
     const currentYear = new Date().getFullYear();
     const monthlyCounts = Array(12).fill(0);
 
@@ -237,6 +240,9 @@ export const NkioskDashboardLicensed = () => {
 
   // Calcula a quantidade total de movimentos por mês
   const calculateMoveMonthlyCounts = (transactions: KioskTransactionCard[]) => {
+    if (!transactions || !Array.isArray(transactions)) {
+      return Array(12).fill(0);
+    }
     const currentYear = new Date().getFullYear();
     const monthlyCounts = Array(12).fill(0);
 

@@ -10,21 +10,18 @@ import { useEffect, useMemo, useState } from "react";
 
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 import { useAttendance } from "../../../context/MovementContext";
 
 import { usePersons } from "../../../context/PersonsContext";
-import {
-  employeeAttendanceTimesFields,
-  employeeFields,
-} from "../../../fields/Fields";
+import { accessesFields, employeeFields } from "../../../fields/Fields";
 import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
-import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
+import { Accesses, Employee } from "../../../types/Types";
 
 import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
+import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
@@ -35,9 +32,16 @@ interface Filters {
 }
 
 // Define a interface para os dados de presença de funcionários
-interface EmployeeAttendanceWithPresence extends EmployeeAttendanceTimes {
+interface EmployeeAccessWithPresence extends Accesses {
   isPresent: boolean;
 }
+
+// Função para converter a data para o formato ISO
+const convertToISO = (dateString: string) => {
+  const [datePart, timePart] = dateString.split(" ");
+  const [day, month, year] = datePart.split("/");
+  return `${year}-${month}-${day}T${timePart}`;
+};
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -54,10 +58,10 @@ export const NclockPresence = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { fetchAllAttendances } = useAttendance();
+  const { accessForGraph, fetchAllAccessesbyDevice } = useAttendance();
   const { employeesNoPagination, handleUpdateEmployee } = usePersons();
-  const [attendancePresence, setAttendancePresence] = useState<
-    EmployeeAttendanceWithPresence[]
+  const [accessPresence, setAccessPresence] = useState<
+    EmployeeAccessWithPresence[]
   >([]);
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
@@ -65,17 +69,14 @@ export const NclockPresence = () => {
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
-    "employeeName",
-    "inOutMode",
-    "attendanceTime",
+    "eventTime",
+    "cardNo",
+    "nameUser",
+    "pin",
   ]);
-  const [selectedRows, setSelectedRows] = useState<EmployeeAttendanceTimes[]>(
-    []
-  );
-  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
-  const [filteredAttendances, setFilteredAttendances] = useState<
-    EmployeeAttendanceTimes[]
-  >([]);
+  const [selectedRows, setSelectedRows] = useState<Accesses[]>([]);
+  const [selectedEmployeeIds, setselectedEmployeeIds] = useState<string>("");
+  const [filteredAccess, setFilteredAccess] = useState<Accesses[]>([]);
   const [filters, setFilters] = useState<Filters>({});
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
@@ -85,85 +86,90 @@ export const NclockPresence = () => {
 
   // Função para filtrar as presenças
   useEffect(() => {
-    fetchAllAttendances({
-      filterFunc: (data) => data.filter((att) => att.type !== 3),
-    })
-      .then((allAttendanceData) => {
-        const sDate = new Date(startDate);
-        const eDate = new Date(endDate);
-        const filtered = allAttendanceData.filter((att) => {
-          const attDate = new Date(att.attendanceTime);
-          return attDate >= sDate && attDate <= eDate;
-        });
+    const sDate = new Date(startDate);
+    const eDate = new Date(endDate);
 
-        const latestByEmployee = new Map<string, EmployeeAttendanceTimes>();
+    const filtered = accessForGraph.filter((acc) => {
+      const isoDateString = convertToISO(acc.eventTime);
+      const eventDateTime = new Date(isoDateString);
 
-        filtered.forEach((att) => {
-          const existing = latestByEmployee.get(att.employeeId);
-          if (!existing) {
-            latestByEmployee.set(att.employeeId, att);
-          } else {
-            const existingDate = new Date(existing.attendanceTime);
-            const currentDate = new Date(att.attendanceTime);
-            if (currentDate > existingDate) {
-              latestByEmployee.set(att.employeeId, att);
-            }
-          }
-        });
+      return (
+        Number(acc.pin) !== 0 &&
+        eventDateTime >= sDate &&
+        eventDateTime <= eDate
+      );
+    });
 
-        const isToday = (date: Date) => {
-          const now = new Date();
-          return (
-            date.getDate() === now.getDate() &&
-            date.getMonth() === now.getMonth() &&
-            date.getFullYear() === now.getFullYear()
-          );
+    const latestAccessByPin = new Map<string, Accesses>();
+    filtered.forEach((acc) => {
+      const pinString = String(acc.pin).trim();
+      const existing = latestAccessByPin.get(pinString);
+
+      if (!existing) {
+        latestAccessByPin.set(pinString, acc);
+      } else {
+        const existingDate = new Date(convertToISO(existing.eventTime));
+        const currentDate = new Date(convertToISO(acc.eventTime));
+        if (currentDate > existingDate) {
+          latestAccessByPin.set(pinString, acc);
+        }
+      }
+    });
+
+    const isToday = (date: Date) => {
+      const now = new Date();
+      return (
+        date.getDate() === now.getDate() &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear()
+      );
+    };
+
+    const presenceArray: EmployeeAccessWithPresence[] = Array.from(
+      latestAccessByPin.values()
+    ).map((acc) => {
+      const isoDateString = convertToISO(acc.eventTime);
+      const eventDateTime = new Date(isoDateString);
+
+      const presentToday = acc.inOutStatus === 0 && isToday(eventDateTime);
+
+      return {
+        ...acc,
+        isPresent: presentToday,
+      };
+    });
+
+    const employeesWithoutAccess = employeesNoPagination.filter((emp) => {
+      const enrollString = String(emp.enrollNumber).trim();
+      return !latestAccessByPin.has(enrollString);
+    });
+
+    const absentRecords: EmployeeAccessWithPresence[] =
+      employeesWithoutAccess.map((emp) => {
+        const defaultCardNo =
+          emp.employeeCards?.length > 0 ? emp.employeeCards[0].cardNumber : "";
+
+        return {
+          id: "",
+          cardNo: defaultCardNo,
+          pin: String(emp.enrollNumber).trim(),
+          nameUser: emp.name,
+          eventTime: "",
+          inOutStatus: null,
+          inOutMode: null,
+          deviceSN: "",
+          eventDoorId: "",
+          deviceName: "",
+          eventName: "",
+          eventDoorName: "",
+          readerName: "",
+          isPresent: false,
         };
-
-        const presenceArray: EmployeeAttendanceWithPresence[] = Array.from(
-          latestByEmployee.values()
-        ).map((att) => {
-          const attDate = new Date(att.attendanceTime);
-          const present = isToday(attDate) && [0, 2, 4].includes(Number(att.inOutMode));
-
-          return {
-            ...att,
-            isPresent: present,
-          };
-        });
-
-        const employeesWithoutAttendance = employeesNoPagination.filter(
-          (emp) => !latestByEmployee.has(emp.employeeID)
-        );
-
-        const absentRecords: EmployeeAttendanceWithPresence[] =
-          employeesWithoutAttendance.map((emp) => ({
-            id: emp.employeeID,
-            employeeId: emp.employeeID,
-            employeeName: emp.name,
-            attendanceTime: "",
-            inOutMode: "",
-            enrollNumber: emp.enrollNumber ?? "",
-            type: 0,
-            deviceId: "",
-            deviceNumber: 0,
-            observation: "",
-            verifyMode: 0,
-            workCode: 0,
-            isPresent: false,
-          }));
-
-        const combinedData = [...presenceArray, ...absentRecords];
-
-        setAttendancePresence(combinedData as EmployeeAttendanceWithPresence[]);
-        setFilteredAttendances(
-          combinedData as EmployeeAttendanceWithPresence[]
-        );
-      })
-      .catch((error) => {
-        console.error("Erro ao tentar buscar os dados:", error);
       });
-  }, [startDate, endDate, employeesNoPagination]);
+
+    const combinedData = [...presenceArray, ...absentRecords];
+    setAccessPresence(combinedData);
+  }, [startDate, endDate, accessForGraph, employeesNoPagination]);
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresence = () => {
@@ -199,25 +205,25 @@ export const NclockPresence = () => {
 
   // Função para atualizar os dados da tabela
   const refreshAttendance = () => {
-    fetchAllAttendances();
+    fetchAllAccessesbyDevice();
     setClearSelectionToggle((prev) => !prev);
   };
 
   // Atualiza a seleção ao mudar o filtro
   useEffect(() => {
-    if (selectedEmployeeIds.length > 0) {
-      const newFilteredAttendances = attendancePresence.filter((att) =>
-        selectedEmployeeIds.includes(att.employeeId)
+    if (selectedEmployeeIds && selectedEmployeeIds.length > 0) {
+      const newFilteredAccess = accessPresence.filter((att) =>
+        selectedEmployeeIds.includes(String(att.pin))
       );
-      setFilteredAttendances(newFilteredAttendances);
-    } else if (attendancePresence.length > 0) {
-      setFilteredAttendances(attendancePresence);
+      setFilteredAccess(newFilteredAccess);
+    } else {
+      setFilteredAccess(accessPresence);
     }
-  }, [attendancePresence, selectedEmployeeIds]);
+  }, [selectedEmployeeIds, accessPresence]);
 
   // Define a seleção de funcionários
   const handleSelectFromTreeView = (selectedIds: string[]) => {
-    setSelectedEmployeeIds(selectedIds);
+    setselectedEmployeeIds(selectedIds[0] || "");
   };
 
   // Função para alternar a visibilidade das colunas
@@ -231,39 +237,24 @@ export const NclockPresence = () => {
 
   // Função para selecionar todas as colunas
   const handleSelectAllColumns = () => {
-    const allColumnKeys = employeeAttendanceTimesFields.map(
-      (field) => field.key
-    );
+    const allColumnKeys = accessesFields.map((field) => field.key);
     setSelectedColumns(allColumnKeys);
   };
 
   // Função para resetar as colunas
   const handleResetColumns = () => {
-    setSelectedColumns(["employeeName", "inOutMode", "attendanceTime"]);
+    setSelectedColumns(["eventTime", "cardNo", "nameUser", "pin"]);
   };
 
-  // Remove o campo de observação, número, nome do funcionário e o tipo
-  const filteredColumns = employeeAttendanceTimesFields.filter(
-    (field) =>
-      field.key !== "observation" &&
-      field.key !== "enrollNumber" &&
-      field.key !== "employeeId" &&
-      field.key !== "type" &&
-      field.key !== "deviceNumber" &&
-      field.key !== "deviceId" &&
-      field.key !== "verifyMode" &&
-      field.key !== "workCode"
-  );
-
   // Definindo a coluna de Presença primeiro
-  const presenceColumn: TableColumn<EmployeeAttendanceTimes> = {
+  const presenceColumn: TableColumn<Accesses> = {
     name: (
       <>
         Presença
         <SelectFilter
           column={"isPresent"}
           setFilters={setFilters}
-          data={filteredAttendances}
+          data={filteredAccess}
         />
       </>
     ),
@@ -286,10 +277,10 @@ export const NclockPresence = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredAttendances)) {
+    if (!Array.isArray(filteredAccess)) {
       return [];
     }
-    return filteredAttendances.filter(
+    return filteredAccess.filter(
       (attendances) =>
         Object.keys(filters).every(
           (key) =>
@@ -316,108 +307,99 @@ export const NclockPresence = () => {
           return false;
         })
     );
-  }, [filteredAttendances, filters, filterText]);
+  }, [filteredAccess, filters, filterText]);
 
   // Função para abrir o modal de edição
-  const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
+  const handleOpenEditModal = (person: Accesses) => {
     const employeeDetails = employeesNoPagination.find(
-      (emp) => emp.employeeID === person.employeeId
+      (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {
       setSelectedEmployee(employeeDetails);
       setShowEditModal(true);
     } else {
-      console.error("Funcionário não encontrado:", person.employeeName);
+      console.error("Funcionário não encontrado:", person.nameUser);
     }
   };
 
+  // Remove o campo deviceSN e eventDoorId
+  const filteredColumns = accessesFields.filter(
+    (field) => field.key !== "deviceSN" && field.key !== "eventDoorId"
+  );
+
   // Adicionando as outras colunas
-  const otherColumns: TableColumn<EmployeeAttendanceTimes>[] =
-    employeeAttendanceTimesFields
-      .filter((field) => selectedColumns.includes(field.key))
-      .sort((a, b) => {
-        if (a.key === "attendanceTime") return 1;
-        else if (b.key === "attendanceTime") return -1;
-        else return 0;
-      })
-      .map((field) => {
-        if (field.key === "employeeName") {
-          return {
-            ...field,
-            name: (
-              <>
-                {field.label}
-                <SelectFilter
-                  column={field.key}
-                  setFilters={setFilters}
-                  data={filteredAttendances}
-                />
-              </>
-            ),
-            cell: (row: EmployeeAttendanceTimes) => (
-              <div
-                style={{ cursor: "pointer" }}
-                onClick={() => handleOpenEditModal(row)}
-              >
-                {row.employeeName}
-              </div>
-            ),
-          };
-        }
-        const formatField = (row: EmployeeAttendanceTimes) => {
-          switch (field.key) {
-            case "attendanceTime":
-              return row.attendanceTime && row.attendanceTime !== ""
-                ? new Date(row.attendanceTime).toLocaleString()
-                : "";
-            case "inOutMode":
-              switch (row[field.key]) {
-                case 0:
-                  return "Entrada";
-                case 1:
-                  return "Saída";
-                case 2:
-                  return "Pausa - Entrada";
-                case 3:
-                  return "Pausa - Saída";
-                case 4:
-                  return "Hora Extra - Entrada";
-                case 5:
-                  return "Hora Extra - Saída";
-                default:
-                  return "";
-              }
-            default:
-              return row[field.key];
-          }
-        };
+  const otherColumns: TableColumn<Accesses>[] = accessesFields
+    .filter((field) => selectedColumns.includes(field.key))
+    .sort((a, b) => {
+      if (a.key === "eventTime") return 1;
+      else if (b.key === "eventTime") return -1;
+      else return 0;
+    })
+    .sort((a, b) => {
+      if (a.key === "nameUser") return -1;
+      else if (b.key === "nameUser") return 1;
+      else return 0;
+    })
+    .map((field) => {
+      if (field.key === "nameUser") {
         return {
-          id: field.key,
+          ...field,
           name: (
             <>
               {field.label}
-              {field.key !== "attendanceTime" && (
-                <SelectFilter
-                  column={field.key}
-                  setFilters={setFilters}
-                  data={filteredDataTable}
-                />
-              )}
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
             </>
           ),
-          selector: (row) => formatField(row),
-          sortable: true,
-          sortFunction: (rowA, rowB) =>
-            new Date(rowB.attendanceTime).getTime() -
-            new Date(rowA.attendanceTime).getTime(),
+          cell: (row: Accesses) => (
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => handleOpenEditModal(row)}
+            >
+              {row.nameUser}
+            </div>
+          ),
         };
-      });
+      }
+      const formatField = (row: Accesses) => {
+        switch (field.key) {
+          case "inOutMode":
+            switch (row[field.key]) {
+              case 0:
+                return "Entrada";
+              case 1:
+                return "Saída";
+              default:
+                return "";
+            }
+          default:
+            return row[field.key];
+        }
+      };
+      return {
+        id: field.key,
+        name: (
+          <>
+            {field.label}
+            {field.key !== "eventTime" && (
+              <SelectFilter
+                column={field.key}
+                setFilters={setFilters}
+                data={filteredDataTable}
+              />
+            )}
+          </>
+        ),
+        selector: (row) => formatField(row),
+        sortable: true,
+      };
+    });
 
   // Combinando colunas, com a coluna de Presença primeiro
-  const columns: TableColumn<EmployeeAttendanceTimes>[] = [
-    presenceColumn,
-    ...otherColumns,
-  ];
+  const columns: TableColumn<Accesses>[] = [presenceColumn, ...otherColumns];
 
   // Define as opções de paginação de EN para PT
   const paginationOptions = {
@@ -429,17 +411,17 @@ export const NclockPresence = () => {
   const handleRowSelected = (state: {
     allSelected: boolean;
     selectedCount: number;
-    selectedRows: EmployeeAttendanceTimes[];
+    selectedRows: Accesses[];
   }) => {
     const sortedSelectedRows = state.selectedRows.sort(
-      (a, b) => Number(a.enrollNumber) - Number(b.enrollNumber)
+      (a, b) => Number(a.pin) - Number(b.pin)
     );
     setSelectedRows(sortedSelectedRows);
   };
 
   // Função para obter os campos selecionados baseado em selectedColumns
   const getSelectedFields = () => {
-    return employeeAttendanceTimesFields.filter((field) =>
+    return accessesFields.filter((field) =>
       selectedColumns.includes(field.key)
     );
   };
@@ -462,7 +444,7 @@ export const NclockPresence = () => {
 
   // Função para calcular a quantidade de presentes e ausentes
   const calculatePresenceCounts = () => {
-    const presentes = filteredDataTable.filter((item) => item.isPresent).length;
+    const presentes = accessForGraph.filter((item) => item.isPresent).length;
     const ausentes = employeesNoPagination.length - presentes;
     return { presentes, ausentes };
   };
@@ -700,8 +682,8 @@ export const NclockPresence = () => {
                     striped
                     responsive
                     persistTableHead={true}
-                    defaultSortAsc={true}
-                    defaultSortFieldId="attendanceTime"
+                    defaultSortAsc={false}
+                    defaultSortFieldId="eventTime"
                   />
                 )}
               </div>
@@ -719,7 +701,7 @@ export const NclockPresence = () => {
           dragInterval={1}
         >
           <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
-            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+            <TreeViewDataNaccess onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">
@@ -949,8 +931,8 @@ export const NclockPresence = () => {
                     striped
                     responsive
                     persistTableHead={true}
-                    defaultSortAsc={true}
-                    defaultSortFieldId="attendanceTime"
+                    defaultSortAsc={false}
+                    defaultSortFieldId="eventTime"
                   />
                 )}
               </div>

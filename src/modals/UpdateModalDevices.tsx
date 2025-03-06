@@ -847,12 +847,12 @@ export const UpdateModalDevices = <T extends Entity>({
             onSelect={(k) => setActiveTab(k)}
           >
             <Nav variant="tabs" className="nav-modal">
-              <Nav.Item>
+              <Nav.Item style={{ pointerEvents: "none" }}>
                 <Nav.Link eventKey="ac/as" disabled>
                   Acesso/Assiduidade
                 </Nav.Link>
               </Nav.Item>
-              <Nav.Item>
+              <Nav.Item style={{ pointerEvents: "none" }}>
                 <Nav.Link eventKey="multibanco" disabled>
                   Multibanco
                 </Nav.Link>
@@ -1103,7 +1103,7 @@ export const UpdateModalDevices = <T extends Entity>({
                                           onChange={handleChange}
                                           className="custom-input-height custom-select-font-size"
                                         >
-                                          <option value="">Selecione</option>
+                                          <option value="">Selecione...</option>
                                           <option value="1">Standalone</option>
                                           <option value="2">Pull</option>
                                           <option value="3">Push</option>
@@ -1183,7 +1183,7 @@ export const UpdateModalDevices = <T extends Entity>({
                                           onChange={handleChange}
                                           className="custom-input-height custom-select-font-size"
                                         >
-                                          <option value="">Selecione</option>
+                                          <option value="">Selecione...</option>
                                           <option value="1">Assiduidade</option>
                                           <option value="2">
                                             Controle de Acesso

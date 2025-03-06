@@ -25,6 +25,7 @@ import { EmployeeCard } from "../types/Types";
 
 import { CreateModalDeptGrp } from "./CreateModalDeptGrp";
 import { nationalities } from "../utils/nationalities";
+import { CircularProgress } from "@mui/material";
 
 // Define o tipo FormControlElement
 type FormControlElement =
@@ -972,15 +973,13 @@ export const UpdateModalEmployees = <T extends Entity>({
                                 className="custom-input-height"
                               >
                                 {isLoading ? (
-                                  <div className="d-flex align-items-center gap-2">
-                                    <span
-                                      className="spinner-border spinner-border-sm"
-                                      role="status"
-                                      aria-hidden="true"
-                                    />
-                                  </div>
+                                  <CircularProgress
+                                    size={20}
+                                    color="inherit"
+                                    style={{ marginLeft: 5, marginRight: 5 }}
+                                  />
                                 ) : (
-                                  "Buscar"
+                                  ""
                                 )}
                               </CustomOutlineButton>
                             </OverlayTrigger>

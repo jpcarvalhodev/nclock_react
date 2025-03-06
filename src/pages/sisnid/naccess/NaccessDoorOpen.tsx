@@ -67,7 +67,7 @@ export const NaccessDoorOpen = () => {
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
-
+  
   // Função para buscar os dados de aberturas manuais entre datas
   const fetchManualOpenBetweenDates = async () => {
     try {

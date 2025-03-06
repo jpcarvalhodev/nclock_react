@@ -31,7 +31,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 };
 
 export const NclockAlerts = () => {
-  const { events, setEvents, fetchEventsDevice, totalEventPages } = useTerminals();
+  const { events, fetchEventsDevice, totalEventPages } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -63,6 +63,7 @@ export const NclockAlerts = () => {
       const data = await apiService.fetchAllEventDevice(
         undefined,
         undefined,
+        undefined,
         pageNo,
         perPage
       );
@@ -79,7 +80,7 @@ export const NclockAlerts = () => {
   // Função para buscar os alertas entre datas
   const fetchAlertsBetweenDates = async () => {
     try {
-      const data = await apiService.fetchAllEventDevice(startDate, endDate);
+      const data = await apiService.fetchAllEventDevice(undefined, startDate, endDate);
       setFilteredDevices(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
@@ -93,7 +94,7 @@ export const NclockAlerts = () => {
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
     try {
-      const data = await apiService.fetchAllEventDevice(start, end);
+      const data = await apiService.fetchAllEventDevice(undefined, start, end);
       setFilteredDevices(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
@@ -112,7 +113,7 @@ export const NclockAlerts = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      const data = await apiService.fetchAllEventDevice(start, end);
+      const data = await apiService.fetchAllEventDevice(undefined, start, end);
       setFilteredDevices(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
@@ -135,7 +136,7 @@ export const NclockAlerts = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      const data = await apiService.fetchAllEventDevice(start, end);
+      const data = await apiService.fetchAllEventDevice(undefined, start, end);
       setFilteredDevices(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
@@ -152,23 +153,11 @@ export const NclockAlerts = () => {
 
   // Função para atualizar os alertas
   const refreshTasks = () => {
-    fetchEventsDevice();
+    fetchEventsDevice(undefined, undefined, undefined, "1", "20");
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
   };
-
-  // Atualiza os dispositivos filtrados da treeview
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const filtered = events.filter((devices) =>
-        selectedDevicesIds.includes(devices.deviceSN)
-      );
-      setFilteredDevices(filtered);
-    } else {
-      setFilteredDevices(events);
-    }
-  }, [selectedDevicesIds, events]);
 
   // Callback disparado ao mudar a página
   const handlePageChange = (page: number) => {
@@ -201,8 +190,30 @@ export const NclockAlerts = () => {
   };
 
   // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedDevicesIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      try {
+        const foundDevices = await apiService.fetchAllEventDevice(
+          selectedIds,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+        );
+        if (foundDevices.data) {
+          setFilteredDevices(foundDevices.data);
+          setTotalRows(foundDevices.totalRecords);
+        } else {
+          setFilteredDevices([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar funcionários por número:", error);
+      }
+    } else {
+      setFilteredDevices(events);
+    }
   };
 
   // Define a função de seleção de linhas

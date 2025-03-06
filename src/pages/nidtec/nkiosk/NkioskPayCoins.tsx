@@ -42,7 +42,8 @@ export const NkioskPayCoins = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { payCoins, fetchAllPayCoins, payCoinsPages, payCoinsTotalRecords } = useKiosk();
+  const { payCoins, fetchAllPayCoins, payCoinsPages, payCoinsTotalRecords } =
+    useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -225,18 +226,6 @@ export const NkioskPayCoins = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const filtered = payCoins.filter((payCoin) =>
-        selectedDevicesIds.includes(payCoin.deviceSN)
-      );
-      setFilteredDevices(filtered);
-    } else {
-      setFilteredDevices(payCoins);
-    }
-  }, [selectedDevicesIds, payCoins]);
-
   // Função para selecionar as colunas
   const toggleColumn = (columnName: string) => {
     if (selectedColumns.includes(columnName)) {
@@ -274,8 +263,32 @@ export const NkioskPayCoins = () => {
   };
 
   // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedDevicesIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      try {
+        const foundDevices =
+          await apiService.fetchKioskTransactionsByMBPayCoins(
+            "2",
+            selectedIds,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+          );
+        if (foundDevices.data) {
+          setFilteredDevices(foundDevices.data);
+          setTotalRows(foundDevices.totalRecords);
+        } else {
+          setFilteredDevices([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dispositivos por sn:", error);
+      }
+    } else {
+      setFilteredDevices(payCoins);
+    }
   };
 
   // Define a função de seleção de linhas
@@ -748,8 +761,7 @@ export const NkioskPayCoins = () => {
               </div>
               <div style={{ marginLeft: 10, marginTop: -5 }}>
                 <strong>Recebimentos Moedeiro: </strong> Valor -{" "}
-                {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-                {payCoinsTotalRecords}
+                {totalAmount.toFixed(2)}€ | Visitantes - {payCoinsTotalRecords}
               </div>
             </div>
           )}
@@ -1056,8 +1068,7 @@ export const NkioskPayCoins = () => {
               </div>
               <div style={{ marginLeft: 10, marginTop: -5 }}>
                 <strong>Recebimentos Moedeiro: </strong> Valor -{" "}
-                {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-                {payCoinsTotalRecords}
+                {totalAmount.toFixed(2)}€ | Visitantes - {payCoinsTotalRecords}
               </div>
             </div>
           </Split>

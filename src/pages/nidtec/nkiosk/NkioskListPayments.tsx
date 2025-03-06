@@ -41,7 +41,7 @@ export const NkioskListPayments = () => {
     fetchAllMBAndCoin,
     totalPayments,
     totalPaymentsPages,
-    totalPaymentsTotalRecords
+    totalPaymentsTotalRecords,
   } = useKiosk();
   const { kioskConfig } = useNavbar();
   const [filterText, setFilterText] = useState<string>("");
@@ -200,23 +200,33 @@ export const NkioskListPayments = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const filtered = totalPayments.filter(
-        (payTerminals) =>
-          selectedDevicesIds.includes(payTerminals.deviceSN) ||
-          selectedDevicesIds.includes(payTerminals.tpId)
-      );
-      setFilteredDevices(filtered);
+  // Define a seleção da árvore
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
+    setSelectedDevicesIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      try {
+        const foundDevices =
+          await apiService.fetchKioskTransactionsByMBPayCoins(
+            undefined,
+            selectedIds,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          );
+        if (foundDevices.data) {
+          setFilteredDevices(foundDevices.data);
+          setTotalRows(foundDevices.totalRecords);
+        } else {
+          setFilteredDevices([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dispositivos por sn:", error);
+      }
     } else {
       setFilteredDevices(totalPayments);
     }
-  }, [selectedDevicesIds, totalPayments]);
-
-  // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
-    setSelectedDevicesIds(selectedIds);
   };
 
   // Função para selecionar as colunas

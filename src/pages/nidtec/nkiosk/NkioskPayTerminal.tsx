@@ -38,8 +38,12 @@ export const NkioskPayTerminal = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { payTerminal, fetchAllPayTerminal, payTerminalPages, payTerminalTotalRecords } =
-    useKiosk();
+  const {
+    payTerminal,
+    fetchAllPayTerminal,
+    payTerminalPages,
+    payTerminalTotalRecords,
+  } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -189,18 +193,6 @@ export const NkioskPayTerminal = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const filtered = payTerminal.filter((payTerminals) =>
-        selectedDevicesIds.includes(payTerminals.deviceSN)
-      );
-      setFilteredDevices(filtered);
-    } else {
-      setFilteredDevices(payTerminal);
-    }
-  }, [selectedDevicesIds, payTerminal]);
-
   // Função para selecionar as colunas
   const toggleColumn = (columnName: string) => {
     if (selectedColumns.includes(columnName)) {
@@ -238,8 +230,32 @@ export const NkioskPayTerminal = () => {
   };
 
   // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedDevicesIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      try {
+        const foundDevices =
+          await apiService.fetchKioskTransactionsByMBPayCoins(
+            "1",
+            selectedIds,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          );
+        if (foundDevices.data) {
+          setFilteredDevices(foundDevices.data);
+          setTotalRows(foundDevices.totalRecords);
+        } else {
+          setFilteredDevices([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dispositivos por sn:", error);
+      }
+    } else {
+      setFilteredDevices(payTerminal);
+    }
   };
 
   // Define a função de seleção de linhas
@@ -694,8 +710,7 @@ export const NkioskPayTerminal = () => {
             </div>
             <div style={{ marginLeft: 10, marginTop: -5 }}>
               <strong>Recebimentos Multibanco: </strong> Valor -{" "}
-              {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-              {payTerminalTotalRecords}
+              {totalAmount.toFixed(2)}€ | Visitantes - {payTerminalTotalRecords}
             </div>
           </div>
         )}
@@ -971,8 +986,7 @@ export const NkioskPayTerminal = () => {
             </div>
             <div style={{ marginLeft: 10, marginTop: -5 }}>
               <strong>Recebimentos Multibanco: </strong> Valor -{" "}
-              {totalAmount.toFixed(2)}€ | Visitantes -{" "}
-              {payTerminalTotalRecords}
+              {totalAmount.toFixed(2)}€ | Visitantes - {payTerminalTotalRecords}
             </div>
           </div>
         </Split>

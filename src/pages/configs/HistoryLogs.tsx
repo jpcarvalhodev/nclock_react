@@ -56,7 +56,6 @@ export const HistoryLogs = () => {
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
   const [currentPage, setCurrentPage] = useState(1);
@@ -165,18 +164,6 @@ export const HistoryLogs = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const filterLogs = historyLogs.filter((log) =>
-        selectedDevicesIds.includes(log.taskId)
-      );
-      setFilteredDevices(filterLogs);
-    } else {
-      setFilteredDevices(historyLogs);
-    }
-  }, [selectedDevicesIds, historyLogs]);
-
   // Função para selecionar as colunas
   const toggleColumn = (columnName: string) => {
     if (selectedColumns.includes(columnName)) {
@@ -247,24 +234,25 @@ export const HistoryLogs = () => {
             undefined,
             undefined
           );
-          setFilteredDevices(logs.data);
+          setHistoryLogs(logs.data);
+          setTotalRows(logs.totalRecords);
         } else {
-          setFilteredDevices([]);
+          setHistoryLogs([]);
         }
       } catch (error) {
         console.error("Erro ao buscar logs para o usuário selecionado:", error);
       }
     } else {
-      setFilteredDevices(historyLogs);
+      setHistoryLogs(historyLogs);
     }
   };
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(historyLogs)) {
       return [];
     }
-    return filteredDevices
+    return historyLogs
       .filter(
         (getCoin) =>
           Object.keys(filters).every(
@@ -296,7 +284,7 @@ export const HistoryLogs = () => {
         (a, b) =>
           new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [setHistoryLogs, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Logs>[] = logsFields

@@ -126,28 +126,6 @@ export const Employees = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Função para filtrar as presenças com base no texto de pesquisa e nos filtros
-  useEffect(() => {
-    let filtered = disabledEmployees.filter(
-      (emp) => emp.type === "Funcionário"
-    );
-
-    if (selectedEmployeeIds.length > 0) {
-      filtered = filtered.filter((emp) =>
-        selectedEmployeeIds.includes(emp.employeeID)
-      );
-    }
-
-    if (filterText.trim() !== "") {
-      const lowerFilter = filterText.toLowerCase();
-      filtered = filtered.filter((emp) =>
-        emp.name?.toLowerCase().includes(lowerFilter)
-      );
-    }
-
-    setFilteredEmployees(filtered);
-  }, [disabledEmployees, selectedEmployeeIds, filterText]);
-
   // Atualiza o índice do funcionário selecionado
   useEffect(() => {
     if (selectedEmployee) {
@@ -179,16 +157,16 @@ export const Employees = () => {
     if (selectedIds.length > 0) {
       try {
         const foundEmployees = await fetchEmployeesById(selectedIds);
-        setFilteredEmployees((prev) => {
-          const existingIds = new Set(prev.map((emp) => emp.employeeID));
-          const uniqueEmployees = foundEmployees.filter(
-            (emp) => !existingIds.has(emp.employeeID)
-          );
-          return [...prev, ...uniqueEmployees];
-        });
+        if (foundEmployees) {
+          setFilteredEmployees(foundEmployees);
+        } else {
+          setFilteredEmployees([]);
+        }
       } catch (error) {
         console.error("Erro ao buscar funcionários por ID:", error);
       }
+    } else {
+      setFilteredEmployees(disabledEmployees);
     }
   };
 

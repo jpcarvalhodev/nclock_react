@@ -60,7 +60,7 @@ export interface DeviceContextType {
     handleDeletePeriodTimePlan: (planoId: string, id: string[]) => Promise<void>;
     fetchReaders: (deviceId: string) => Promise<Readers[]>;
     handleUpdateReaders: (reader: Readers) => Promise<void>;
-    fetchEventsDevice: (startDate?: string, endDate?: string) => Promise<Events[]>;
+    fetchEventsDevice: (deviceSN?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Events[]>;
     fetchEventsAndTransactionDevice: (startDate?: string, endDate?: string) => Promise<Movements[]>;
     fetchDeviceActivities: (sn?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Activity[]>;
     totalMovementPages: number;
@@ -76,7 +76,6 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [devices, setDevices] = useState<Devices[]>([]);
     const [mbDevices, setMBDevices] = useState<MBDevice[]>([]);
     const [mbCloseOpen, setMbCloseOpen] = useState<MBDeviceCloseOpen[]>([]);
-    const [employeeDevices, setEmployeeDevices] = useState<EmployeesOnDevice[]>([]);
     const [accessControl, setAccessControl] = useState<AccessControl[]>([]);
     const [period, setPeriod] = useState<TimePeriod[]>([]);
     const [door, setDoor] = useState<Doors[]>([]);
@@ -600,9 +599,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os eventos do dispositivo
-    const fetchEventsDevice = async (startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Events[]> => {
+    const fetchEventsDevice = async (deviceSN?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Events[]> => {
         try {
-            const data = await apiService.fetchAllEventDevice(startDate, endDate, pageNo, pageSize);
+            const data = await apiService.fetchAllEventDevice(deviceSN, startDate, endDate, pageNo, pageSize);
             setEvents(data.data);
             setTotalEventPages(data.totalPages);
             return data.data;

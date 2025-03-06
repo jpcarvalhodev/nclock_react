@@ -46,8 +46,7 @@ export const NkioskCounter = () => {
     setCounter,
     fetchAllCounter,
     counterPages,
-    moveCardTotalRecords,
-    moveKioskTotalRecords,
+    counterTotalRecords,
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -163,18 +162,6 @@ export const NkioskCounter = () => {
     fetchPaginationCounter(String(currentPage), String(perPage));
   }, [currentPage, perPage]);
 
-  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const filtered = counter.filter((count) =>
-        selectedDevicesIds.includes(count.deviceSN)
-      );
-      setFilteredDevices(filtered);
-    } else {
-      setFilteredDevices(counter);
-    }
-  }, [selectedDevicesIds, counter]);
-
   // Função para atualizar as recolhas do moedeiro
   const refreshCounter = () => {
     fetchAllCounter(undefined, undefined, "1", "20");
@@ -233,8 +220,30 @@ export const NkioskCounter = () => {
   };
 
   // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedDevicesIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      try {
+        const foundDevices = await apiService.fetchAllContador(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          selectedIds
+        );
+        if (foundDevices.data) {
+          setFilteredDevices(foundDevices.data);
+          setTotalRows(foundDevices.totalRecords);
+        } else {
+          setFilteredDevices([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dispositivos por sn:", error);
+      }
+    } else {
+      setFilteredDevices(counter);
+    }
   };
 
   // Filtra os dados da tabela
@@ -628,9 +637,7 @@ export const NkioskCounter = () => {
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <strong>Total de Movimentos:</strong> Torniquete -{" "}
-                {moveCardTotalRecords} | Quiosque - {moveKioskTotalRecords} |
-                Total - {moveCardTotalRecords + moveKioskTotalRecords}
+                <strong>Total de Movimentos:</strong> {counterTotalRecords ?? 0}
               </div>
             </div>
           </div>
@@ -912,9 +919,7 @@ export const NkioskCounter = () => {
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ marginLeft: 10, marginRight: 10 }}>
-                <strong>Total de Movimentos:</strong> Torniquete -{" "}
-                {moveCardTotalRecords} | Quiosque - {moveKioskTotalRecords} |
-                Total - {moveCardTotalRecords + moveKioskTotalRecords}
+                <strong>Total de Movimentos:</strong> {counterTotalRecords ?? 0}
               </div>
             </div>
           </div>

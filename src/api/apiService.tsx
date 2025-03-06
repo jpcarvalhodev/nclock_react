@@ -1542,12 +1542,19 @@ export const addManualOpenDoor = async (door: Partial<ManualOpenDoor>) => {
 };
 
 export const fetchAllEventDevice = async (
+  deviceSN?: string[],
   startDate?: string,
   endDate?: string,
   pageNo?: string,
   pageSize?: string
 ) => {
   const params: string[] = [];
+
+  if (deviceSN) {
+    deviceSN.forEach((deviceSN) => {
+      params.push(`deviceSN=${deviceSN}`);
+    });
+  }
 
   if (startDate && endDate) {
     params.push(`startTime=${startDate}`);
@@ -3321,9 +3328,9 @@ export const addKioskTransaction = async (
 };
 
 export const fetchAllKioskTransactionByEnrollNumber = async (
-  enrollmentNumbers: string[],
+  enrollmentNumbers?: string[],
   eventDoorIds?: string,
-  deviceSN?: string,
+  deviceSNs?: string[],
   startDate?: string,
   endDate?: string,
   pageNo?: string,
@@ -3341,8 +3348,10 @@ export const fetchAllKioskTransactionByEnrollNumber = async (
     });
   }
 
-  if (deviceSN) {
-    params.push(`deviceSNs=${deviceSN}`);
+  if (deviceSNs) {
+    deviceSNs.forEach((deviceSNs) => {
+    params.push(`deviceSNs=${deviceSNs}`);
+    });
   }
 
   if (startDate && endDate) {
@@ -4136,7 +4145,6 @@ export const deleteEmployeesFromDevice = async (
   acessoId?: string,
   id?: string[]
 ) => {
-  console.log(acessoId, id);
   const response = await fetchWithAuth(
     `AccPlanoAcesso/DeleteAccPlanoAcesso?Id=${acessoId}`,
     {
@@ -4833,7 +4841,8 @@ export const fetchAllContador = async (
   startDate?: string,
   endDate?: string,
   pageNo?: string,
-  pageSize?: string
+  pageSize?: string,
+  devSNs?: string[]
 ) => {
   const params: string[] = [];
 
@@ -4845,6 +4854,12 @@ export const fetchAllContador = async (
   if (startDate && endDate) {
     params.push(`startTime=${startDate}`);
     params.push(`endTime=${endDate}`);
+  }
+
+  if (devSNs) {
+    devSNs.forEach((devSNs) => {
+    params.push(`devSNs=${devSNs}`);
+    });
   }
 
   let url = `KioskTransaction/GetKioskAllContador`;
@@ -5539,6 +5554,61 @@ export const fetchAllAccessesByDoor = async (
   }
 
   let url = `AccPlanoAcesso/GetTransactionsByDeviceSN`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
+  const response = await fetchWithAuth(url);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    toast.error(errorData.message);
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const fetchAllAccessesByEnrollNumber = async (
+  deviceSNList?: string[],
+  enrollNumbers?: string[],
+  startDate?: string,
+  endDate?: string,
+  pageNo?: string,
+  pageSize?: string
+) => {
+  const params: string[] = [];
+
+  if (deviceSNList) {
+    deviceSNList.forEach((deviceSNList) => {
+    params.push(`deviceSNList=${deviceSNList}`);
+    });
+  }
+
+  if (enrollNumbers) {
+    enrollNumbers.forEach((enrollNumbers) => {
+    params.push(`enrollNumbers=${enrollNumbers}`);
+    });
+  }
+
+  if (startDate && endDate) {
+    params.push(`startTime=${startDate}`);
+    params.push(`endTime=${endDate}`);
+  }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `AccPlanoAcesso/GetTransactionsByEnrollDeviceSN`;
   if (params.length > 0) {
     url += `?${params.join("&")}`;
   }

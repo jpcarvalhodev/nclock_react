@@ -178,6 +178,8 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
         const token = localStorage.getItem('token');
         if (token) {
             fetchAllEntity();
+            fetchAllHistoryLogs(undefined, undefined, undefined, "1", "20");
+            fetchAllLoginLogs(undefined, undefined, undefined, "1", "20");
         }
     }, []);
 

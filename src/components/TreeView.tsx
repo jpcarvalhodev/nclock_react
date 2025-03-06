@@ -86,8 +86,22 @@ export function TreeViewData({
   const memoizedTreeItems = useMemo(() => {
     const departments = data.departments;
     const groups = data.groups;
-    const allEmployees =
+    let allEmployees =
       employees && employees.length > 0 ? employees : data.employees;
+
+    if (window.location.pathname.endsWith("/Employees")) {
+      allEmployees = allEmployees.filter((emp) => emp.type === "Funcionário");
+    } else if (window.location.pathname.endsWith("/ExternalEmployees")) {
+      allEmployees = allEmployees.filter((emp) => emp.type === "Subcontratado");
+    } else if (window.location.pathname.endsWith("/User")) {
+      allEmployees = allEmployees.filter((emp) => emp.type === "Utente");
+    } else if (window.location.pathname.endsWith("/Visitors")) {
+      allEmployees = allEmployees.filter((emp) => emp.type === "Visitante");
+    } else if (window.location.pathname.endsWith("/Contacts")) {
+      allEmployees = allEmployees.filter((emp) => emp.type === "Contacto");
+    } else if (window.location.pathname.endsWith("/Temporaries")) {
+      allEmployees = allEmployees.filter((emp) => emp.type === "Provisório");
+    } 
 
     const departmentMap = new Map();
     const deptIdToCodeMap = new Map();

@@ -168,7 +168,7 @@ export const LicenseModal = <T extends Entity>({
     setIsCheckVisible(false);
     setIsModalVisible(false);
     fetchAllLicensesWithoutKey();
-    navigate("/dashboard");
+    onClose();
   };
 
   // Função para atualizar o estado do formulário
@@ -362,7 +362,7 @@ export const LicenseModal = <T extends Entity>({
       return entity;
     });
     onUpdate(key, updatedEntities as License[]);
-    setIsModalVisible(false);
+    handleClose();
   };
 
   // Alterna a visibilidade da password
@@ -515,7 +515,7 @@ export const LicenseModal = <T extends Entity>({
 
   return (
     <div>
-      <Modal show={isCheckVisible} onHide={onClose} backdrop="static" centered>
+      <Modal show={isCheckVisible} onHide={handleClose} backdrop="static" centered>
         <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
           <Modal.Title>Inserir Password</Modal.Title>
         </Modal.Header>
@@ -590,6 +590,7 @@ export const LicenseModal = <T extends Entity>({
                 }
               >
                 <CustomOutlineButton
+                  className="license-modal-button"
                   icon="bi-plus"
                   iconSize="1.1em"
                   onClick={handleCreateNewLicense}
@@ -639,6 +640,7 @@ export const LicenseModal = <T extends Entity>({
                 }
               >
                 <CustomOutlineButton
+                  className="license-modal-button"
                   icon="bi bi-copy"
                   iconSize="1em"
                   onClick={() => handleCopyKey(licenseString)}

@@ -124,26 +124,6 @@ export const Persons = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Função para filtrar as presenças com base no texto de pesquisa e nos filtros
-  useEffect(() => {
-    let filtered = disabledEmployees;
-
-    if (selectedEmployeeIds.length > 0) {
-      filtered = disabledEmployees.filter((emp) =>
-        selectedEmployeeIds.includes(emp.employeeID)
-      );
-    }
-
-    if (filterText.trim() !== "") {
-      const lowerFilter = filterText.toLowerCase();
-      filtered = filtered.filter((emp) =>
-        emp.name?.toLowerCase().includes(lowerFilter)
-      );
-    }
-
-    setFilteredEmployees(filtered);
-  }, [disabledEmployees, selectedEmployeeIds]);
-
   // Define a seleção da árvore
   const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
@@ -151,16 +131,16 @@ export const Persons = () => {
     if (selectedIds.length > 0) {
       try {
         const foundEmployees = await fetchEmployeesById(selectedIds);
-        setFilteredEmployees((prev) => {
-          const existingIds = new Set(prev.map((emp) => emp.employeeID));
-          const uniqueEmployees = foundEmployees.filter(
-            (emp) => !existingIds.has(emp.employeeID)
-          );
-          return [...prev, ...uniqueEmployees];
-        });
+        if (foundEmployees) {
+          setFilteredEmployees(foundEmployees);
+        } else {
+          setFilteredEmployees([]);
+        }
       } catch (error) {
         console.error("Erro ao buscar funcionários por ID:", error);
       }
+    } else {
+      setFilteredEmployees(disabledEmployees);
     }
   };
 
@@ -702,7 +682,11 @@ export const Persons = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
             <TreeViewData onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">

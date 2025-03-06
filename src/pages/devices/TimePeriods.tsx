@@ -414,11 +414,23 @@ export const TimePeriods = () => {
     ignoreRowClick: true,
   };
 
-  // Função para obter os campos selecionados baseado em selectedColumns
+  // Função para obter os campos selecionados baseado em selectedColumns e dayColumns
   const getSelectedFields = () => {
-    return timePeriodFields.filter((field) =>
+    const nonDayFields = timePeriodFields.filter((field) =>
       selectedColumns.includes(field.key)
     );
+
+    const dayFields = dayColumns.flatMap(({ day, label }) => {
+      if (selectedColumns.includes(label)) {
+        return [
+          { key: `${day}Start1`, label: `${label} - Início` },
+          { key: `${day}End1`, label: `${label} - Fim` },
+        ];
+      }
+      return [];
+    });
+
+    return [...nonDayFields, ...dayFields];
   };
 
   // Controla o loading da tabela

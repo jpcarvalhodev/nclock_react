@@ -153,7 +153,6 @@ export const UpdateAccessControlModal = <T extends Record<string, any>>({
   const removeSelectedEmployees = async () => {
     const selectedIds = selectedRows.map((row) => row.employeeID);
     const data = await apiService.deleteEmployeesFromDevice(formData.id, selectedIds);
-    console.log(data)
     if (data.ok) {
       const remainingData = employeeTableData.filter(
         (emp) => !selectedRows.some((row) => row.employeeID === emp.employeeID)

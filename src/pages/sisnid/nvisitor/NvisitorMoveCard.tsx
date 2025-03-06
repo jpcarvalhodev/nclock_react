@@ -63,7 +63,7 @@ export const NvisitorMoveCard = () => {
     fetchAllMoveCard,
     handleAddNewMoveCard,
     moveCardPages,
-    moveCardTotalRecords
+    moveCardTotalRecords,
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -108,6 +108,8 @@ export const NvisitorMoveCard = () => {
       const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
         undefined,
         "3",
+        undefined,
+        undefined,
         undefined,
         pageNo,
         perPage
@@ -261,27 +263,6 @@ export const NvisitorMoveCard = () => {
     setLoadingAuxOut(false);
   };
 
-  // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
-  useEffect(() => {
-    if (selectedDevicesIds.length > 0) {
-      const employeeShortNames = selectedDevicesIds
-        .map((employeeId) => {
-          const employee = employeesNoPagination.find(
-            (emp) => emp.employeeID === employeeId
-          );
-          return employee ? employee.shortName : null;
-        })
-        .filter((name) => name !== null);
-
-      const filtered = moveCard.filter((listMovement) =>
-        employeeShortNames.includes(listMovement.nameUser)
-      );
-      setFilteredDevices(filtered);
-    } else {
-      setFilteredDevices(moveCard);
-    }
-  }, [selectedDevicesIds, moveCard]);
-
   // Função para selecionar as colunas
   const toggleColumn = (columnName: string) => {
     if (selectedColumns.includes(columnName)) {
@@ -321,8 +302,47 @@ export const NvisitorMoveCard = () => {
   };
 
   // Define a seleção da árvore
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedDevicesIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      const deviceIds: string[] = [];
+      const personIds: string[] = [];
+
+      selectedIds.forEach((id) => {
+        if (/^[A-Z0-9]+$/.test(id)) {
+          deviceIds.push(id);
+        } else if (
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            id
+          )
+        ) {
+          personIds.push(id);
+        }
+      });
+      try {
+        const foundEntity =
+          await apiService.fetchAllKioskTransactionByEnrollNumber(
+            personIds.length > 0 ? personIds : undefined,
+            undefined,
+            deviceIds.length > 0 ? deviceIds : undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          );
+        if (foundEntity.data) {
+          setFilteredDevices(foundEntity.data);
+          setTotalRows(foundEntity.totalRecords);
+        } else {
+          setFilteredDevices([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar entidades:", error);
+      }
+    } else {
+      setFilteredDevices(moveCard);
+    }
   };
 
   // Define a função de seleção de linhas
@@ -479,7 +499,9 @@ export const NvisitorMoveCard = () => {
   };
 
   // Dados com nomes substituídos para o export/print
-  const moveCardWithNames = moveCard.map(transformTransactionWithNames);
+  const moveCardWithNames = Array.isArray(moveCard)
+    ? moveCard.map(transformTransactionWithNames)
+    : [];
 
   // Transforma as linhas selecionadas com nomes substituídos
   const selectedRowsWithNames = selectedRows.map(transformTransactionWithNames);
@@ -828,7 +850,7 @@ export const NvisitorMoveCard = () => {
             </div>
             <div style={{ marginLeft: 10, marginTop: -5 }}>
               <strong>Movimentos do Torniquete: </strong>
-              {totalAmount}
+              {totalAmount ?? 0}
             </div>
           </div>
         )}
@@ -1159,7 +1181,7 @@ export const NvisitorMoveCard = () => {
             </div>
             <div style={{ marginLeft: 10, marginTop: -5 }}>
               <strong>Movimentos do Torniquete: </strong>
-              {totalAmount}
+              {totalAmount ?? 0}
             </div>
           </div>
         </Split>
