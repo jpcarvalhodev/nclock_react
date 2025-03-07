@@ -73,7 +73,7 @@ export const NewUsers = () => {
   useEffect(() => {
     if (selectedDevicesIds.length > 0) {
       const filteredData = registeredUsers.filter((user) =>
-        selectedDevicesIds.includes(user.name)
+        selectedDevicesIds.includes(user.id)
       );
       setFilteredData(filteredData);
     } else {

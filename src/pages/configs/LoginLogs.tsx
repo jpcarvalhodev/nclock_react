@@ -35,7 +35,7 @@ export const LoginLogs = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { loginLogs, setLoginLogs, fetchAllLoginLogs, totalLoginPages } =
+  const { loginLogs, fetchAllLoginLogs, totalLoginPages } =
     useEntity();
   const { registeredUsers } = usePersons();
   const [filterText, setFilterText] = useState<string>("");
@@ -47,6 +47,7 @@ export const LoginLogs = () => {
     "createdDate",
   ]);
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
   const [selectedRows, setSelectedRows] = useState<Logs[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
@@ -68,11 +69,11 @@ export const LoginLogs = () => {
         pageNo,
         perPage
       );
-      setLoginLogs(data.data);
+      setFilteredDevices(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar logs paginados:", error);
-      setLoginLogs([]);
+      setFilteredDevices([]);
     }
   };
 
@@ -80,7 +81,7 @@ export const LoginLogs = () => {
   const fetchLogsBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllLoginLogs(startDate, endDate);
-      setLoginLogs(data.data);
+      setFilteredDevices(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de logs:", error);
@@ -94,7 +95,7 @@ export const LoginLogs = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      setLoginLogs(data.data);
+      setFilteredDevices(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -113,7 +114,7 @@ export const LoginLogs = () => {
 
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      setLoginLogs(data.data);
+      setFilteredDevices(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -136,7 +137,7 @@ export const LoginLogs = () => {
 
     try {
       const data = await apiService.fetchAllLoginLogs(start, end);
-      setLoginLogs(data.data);
+      setFilteredDevices(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -230,24 +231,24 @@ export const LoginLogs = () => {
             undefined,
             undefined
           );
-          setLoginLogs(logs.data);
+          setFilteredDevices(logs.data);
         } else {
-          setLoginLogs([]);
+          setFilteredDevices([]);
         }
       } catch (error) {
         console.error("Erro ao buscar logs para o usuário selecionado:", error);
       }
     } else {
-      setLoginLogs(loginLogs);
+      setFilteredDevices(loginLogs);
     }
   };
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(loginLogs)) {
+    if (!Array.isArray(filteredDevices)) {
       return [];
     }
-    return loginLogs
+    return filteredDevices
       .filter(
         (getCoin) =>
           Object.keys(filters).every(
@@ -279,7 +280,7 @@ export const LoginLogs = () => {
         (a, b) =>
           new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
       );
-  }, [loginLogs, filters, filterText]);
+  }, [filteredDevices, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Logs>[] = logsFields

@@ -151,6 +151,24 @@ export const Visitors = () => {
     setCurrentPage(page);
   };
 
+  // Função para adicionar um funcionário a um novo tipo
+  const handleAddEmployeeToNewType = async (employeeData: {
+    employee: Employee;
+    employeeCards?: any[];
+  }) => {
+    await updateEmployeeAndCard(employeeData.employee);
+    setFilteredEmployees((prev) => {
+      const updatedEmployees = [
+        ...prev,
+        {
+          ...employeeData.employee,
+          employeeCards: employeeData.employeeCards || [],
+        },
+      ];
+      return updatedEmployees;
+    });
+  };
+
   // Define a seleção da árvore
   const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
@@ -275,7 +293,7 @@ export const Visitors = () => {
           return false;
         })
     );
-  }, [filteredEmployees, filters, filterText]);
+  }, [disabledEmployees, filteredEmployees, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Employee>[] = employeeFields
@@ -991,7 +1009,7 @@ export const Visitors = () => {
         title="Adicionar Pessoa aos Visitantes"
         open={showNewAddModal}
         onClose={() => setShowNewAddModal(false)}
-        onUpdate={updateEmployeeAndCard}
+        onUpdate={handleAddEmployeeToNewType}
         entity={filteredDataTable}
         type="Visitante"
       />

@@ -88,30 +88,13 @@ export function TreeViewDataHistory({
         usersMap.set(userName, {
           id: `user-${userName}` || "Sem ID",
           label: userName || "Sem Nome",
-          children: [],
         });
       }
-      usersMap.get(userName).children.push({
-        id: log.taskId || "Sem ID",
-        createdDate: log.createdDate,
-        label: new Date(log.createdDate).toLocaleString() || "Sem Data",
-        children: [],
-      });
     });
 
-    const sortedUsers = Array.from(usersMap.values())
-      .sort((a, b) => a.label.localeCompare(b.label))
-      .map((user) => ({
-        ...user,
-        children: user.children.sort(
-          (
-            a: { createdDate: string | number | Date },
-            b: { createdDate: string | number | Date }
-          ) =>
-            new Date(b.createdDate).getTime() -
-            new Date(a.createdDate).getTime()
-        ),
-      }));
+    const sortedUsers = Array.from(usersMap.values()).sort((a, b) =>
+      a.label.localeCompare(b.label)
+    );
 
     const treeItems = [
       {
@@ -126,6 +109,7 @@ export function TreeViewDataHistory({
         ],
       },
     ];
+
     return treeItems;
   }, [historyLogs]);
 

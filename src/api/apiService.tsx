@@ -4937,7 +4937,9 @@ export const fetchAllHistoryLogs = async (
   }
 
   if (userIds) {
-    params.push(`userIds=${startDate}`);
+    userIds.forEach((userIds) => {
+    params.push(`userIds=${userIds}`);
+    });
   }
 
   if (pageNo && pageSize) {
@@ -4988,7 +4990,9 @@ export const fetchAllLoginLogs = async (
   }
 
   if (userIds) {
-    params.push(`userIds=${startDate}`);
+    userIds.forEach((userIds) => {
+    params.push(`userIds=${userIds}`);
+    });
   }
 
   if (pageNo && pageSize) {

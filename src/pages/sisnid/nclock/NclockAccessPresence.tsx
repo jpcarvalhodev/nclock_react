@@ -21,10 +21,10 @@ import { Accesses, Employee } from "../../../types/Types";
 import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { TreeViewDataNaccessPresence } from "../../../components/TreeViewNaccessPresence";
 
 // Define a interface para os filtros
 interface Filters {
@@ -213,7 +213,7 @@ export const NclockAccessPresence = () => {
   useEffect(() => {
     if (selectedEmployeeIds && selectedEmployeeIds.length > 0) {
       const newFilteredAccess = accessPresence.filter((att) =>
-        selectedEmployeeIds.includes(String(att.pin))
+        selectedEmployeeIds.includes(att.nameUser)
       );
       setFilteredAccess(newFilteredAccess);
     } else {
@@ -444,7 +444,7 @@ export const NclockAccessPresence = () => {
 
   // Função para calcular a quantidade de presentes e ausentes
   const calculatePresenceCounts = () => {
-    const presentes = filteredDataTable.filter((item) => item.isPresent).length;
+    const presentes = accessForGraph.filter((item) => item.isPresent).length;
     const ausentes = employeesNoPagination.length - presentes;
     return { presentes, ausentes };
   };
@@ -701,7 +701,7 @@ export const NclockAccessPresence = () => {
           dragInterval={1}
         >
           <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
-            <TreeViewDataNaccess onSelectEmployees={handleSelectFromTreeView} />
+            <TreeViewDataNaccessPresence onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">

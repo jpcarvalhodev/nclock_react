@@ -151,6 +151,24 @@ export const Contacts = () => {
     setCurrentPage(page);
   };
 
+  // Função para adicionar um funcionário a um novo tipo
+  const handleAddEmployeeToNewType = async (employeeData: {
+    employee: Employee;
+    employeeCards?: any[];
+  }) => {
+    await updateEmployeeAndCard(employeeData.employee);
+    setFilteredEmployees((prev) => {
+      const updatedEmployees = [
+        ...prev,
+        {
+          ...employeeData.employee,
+          employeeCards: employeeData.employeeCards || [],
+        },
+      ];
+      return updatedEmployees;
+    });
+  };
+
   // Define a seleção da árvore
   const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
@@ -991,7 +1009,7 @@ export const Contacts = () => {
         title="Adicionar Pessoa aos Contactos"
         open={showNewAddModal}
         onClose={() => setShowNewAddModal(false)}
-        onUpdate={updateEmployeeAndCard}
+        onUpdate={handleAddEmployeeToNewType}
         entity={filteredDataTable}
         type="Contacto"
       />
