@@ -35,7 +35,7 @@ export const LoginLogs = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { loginLogs, fetchAllLoginLogs, totalLoginPages } =
+  const { loginLogs, fetchAllLoginLogs, totalLoginPages, totalLoginRecords } =
     useEntity();
   const { registeredUsers } = usePersons();
   const [filterText, setFilterText] = useState<string>("");
@@ -154,8 +154,7 @@ export const LoginLogs = () => {
   // Função para atualizar os logs
   const refreshLogs = () => {
     fetchAllLoginLogs(undefined, undefined, undefined, "1", "20");
-    setCurrentPage(1);
-    setPerPage(20);
+    setTotalRows(totalLoginRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -232,6 +231,7 @@ export const LoginLogs = () => {
             undefined
           );
           setFilteredDevices(logs.data);
+          setTotalRows(logs.totalRecords);
         } else {
           setFilteredDevices([]);
         }
@@ -239,6 +239,7 @@ export const LoginLogs = () => {
         console.error("Erro ao buscar logs para o usuário selecionado:", error);
       }
     } else {
+      refreshLogs();
       setFilteredDevices(loginLogs);
     }
   };

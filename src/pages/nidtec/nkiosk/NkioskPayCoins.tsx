@@ -221,6 +221,7 @@ export const NkioskPayCoins = () => {
   // Função para atualizar os pagamentos no moedeiro
   const refreshPayCoins = () => {
     fetchAllPayCoins("2", undefined, undefined, undefined, "1", "20");
+    setTotalRows(payCoinsTotalRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -287,6 +288,7 @@ export const NkioskPayCoins = () => {
         console.error("Erro ao buscar dispositivos por sn:", error);
       }
     } else {
+      refreshPayCoins();
       setFilteredDevices(payCoins);
     }
   };

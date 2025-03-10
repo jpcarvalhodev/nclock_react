@@ -31,7 +31,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 };
 
 export const NledAlerts = () => {
-  const { events, fetchEventsDevice, totalEventPages } = useTerminals();
+  const { events, fetchEventsDevice, totalEventPages, totalEventRecords } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -153,7 +153,9 @@ export const NledAlerts = () => {
 
   // Função para atualizar os alertas
   const refreshTasks = () => {
-    fetchEventsDevice();
+    fetchEventsDevice(undefined, undefined, undefined, "1", "20");
+    setFilteredDevices(events);
+    setTotalRows(totalEventRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -212,7 +214,7 @@ export const NledAlerts = () => {
         console.error("Erro ao buscar funcionários por número:", error);
       }
     } else {
-      setFilteredDevices(events);
+      refreshTasks();
     }
   };
 

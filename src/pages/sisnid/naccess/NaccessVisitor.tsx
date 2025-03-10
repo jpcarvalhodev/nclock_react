@@ -25,7 +25,6 @@ import { TreeViewNaccessVisitorsData } from "../../../components/TreeViewNaccess
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { CreateModalVisitor } from "../../../modals/CreateModalVisitor";
 import { UpdateModalVisitor } from "../../../modals/UpdateModalVisitor";
-import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -47,8 +46,10 @@ export const NaccessVisitor = () => {
   const {
     employeesNoPagination,
     employeeVisitor,
+    setEmployeeVisitor,
     registeredUsers,
-    totalPages,
+    totalVisitorPages,
+    totalVisitorRecords,
     fetchEmployeeVisitor,
     handleAddEmployeeVisitor,
     handleUpdateEmployeeVisitor,
@@ -60,9 +61,6 @@ export const NaccessVisitor = () => {
   pastDate.setDate(currentDate.getDate() - 30);
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-  const [filteredEmployees, setFilteredEmployees] = useState<EmployeeVisitor[]>(
-    []
-  );
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "estado",
@@ -111,12 +109,12 @@ export const NaccessVisitor = () => {
         pageNo,
         perPage
       );
-      setFilteredEmployees(data.data);
+      setEmployeeVisitor(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
       console.error("Erro ao buscar visitantes paginados:", error);
-      setFilteredEmployees([]);
+      setEmployeeVisitor([]);
       setLoading(false);
     }
   };
@@ -128,7 +126,7 @@ export const NaccessVisitor = () => {
         startDate,
         endDate
       );
-      setFilteredEmployees(data.data);
+      setEmployeeVisitor(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar visitantes entre datas:", error);
@@ -146,7 +144,7 @@ export const NaccessVisitor = () => {
         start,
         end
       );
-      setFilteredEmployees(data.data);
+      setEmployeeVisitor(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -165,7 +163,7 @@ export const NaccessVisitor = () => {
 
     try {
       const data = await apiService.fetchAllEmployeeVisitors(start, end);
-      setFilteredEmployees(data.data);
+      setEmployeeVisitor(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -188,7 +186,7 @@ export const NaccessVisitor = () => {
 
     try {
       const data = await apiService.fetchAllEmployeeVisitors(start, end);
-      setFilteredEmployees(data.data);
+      setEmployeeVisitor(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -263,10 +261,10 @@ export const NaccessVisitor = () => {
           selectedIds
         );
         if (foundEmployees.data) {
-          setFilteredEmployees(foundEmployees.data);
+          setEmployeeVisitor(foundEmployees.data);
           setTotalRows(foundEmployees.totalRecords);
         } else {
-          setFilteredEmployees([]);
+          setEmployeeVisitor([]);
         }
       } catch (error) {
         console.error("Erro ao buscar visitantes por ID:", error);
@@ -274,7 +272,7 @@ export const NaccessVisitor = () => {
         setLoading(false);
       }
     } else {
-      setFilteredEmployees(employeeVisitor);
+      setEmployeeVisitor(employeeVisitor);
     }
   };
 
@@ -310,8 +308,7 @@ export const NaccessVisitor = () => {
   // Função para atualizar os visitantes
   const refreshVisitor = () => {
     fetchEmployeeVisitor(undefined, undefined, "1", "20");
-    setCurrentPage(1);
-    setPerPage(20);
+    setTotalRows(totalVisitorRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -328,10 +325,10 @@ export const NaccessVisitor = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredEmployees)) {
+    if (!Array.isArray(employeeVisitor)) {
       return [];
     }
-    return filteredEmployees.filter(
+    return employeeVisitor.filter(
       (emp) =>
         Object.keys(filters).every(
           (key) =>
@@ -358,7 +355,7 @@ export const NaccessVisitor = () => {
           return false;
         })
     );
-  }, [filteredEmployees, filters, filterText]);
+  }, [employeeVisitor, filters, filterText]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeVisitor) => {
@@ -1052,7 +1049,7 @@ export const NaccessVisitor = () => {
                     paginationIconLastPage={
                       <span
                         style={{ cursor: "pointer" }}
-                        onClick={() => handlePageChange(totalPages)}
+                        onClick={() => handlePageChange(totalVisitorPages)}
                       >
                         <i className="bi bi-chevron-double-right" />
                       </span>
@@ -1378,7 +1375,7 @@ export const NaccessVisitor = () => {
                     paginationIconLastPage={
                       <span
                         style={{ cursor: "pointer" }}
-                        onClick={() => handlePageChange(totalPages)}
+                        onClick={() => handlePageChange(totalVisitorPages)}
                       >
                         <i className="bi bi-chevron-double-right" />
                       </span>

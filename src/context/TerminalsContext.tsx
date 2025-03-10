@@ -65,7 +65,9 @@ export interface DeviceContextType {
     fetchDeviceActivities: (sn?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Activity[]>;
     totalMovementPages: number;
     totalMovementRows: number;
+    setTotalMovementRows: (totalMovementRows: number) => void;
     totalEventPages: number;
+    totalEventRecords: number;
 }
 
 // Cria o contexto	
@@ -87,6 +89,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [totalMovementPages, setTotalMovementPages] = useState<number>(1);
     const [totalMovementRows, setTotalMovementRows] = useState<number>(0);
     const [totalEventPages, setTotalEventPages] = useState<number>(1);
+    const [totalEventRecords, setTotalEventRecords] = useState<number>(0);
 
     // Função para buscar todos os dispositivos
     const fetchAllDevices = async (): Promise<AllDevices[]> => {
@@ -604,6 +607,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             const data = await apiService.fetchAllEventDevice(deviceSN, startDate, endDate, pageNo, pageSize);
             setEvents(data.data);
             setTotalEventPages(data.totalPages);
+            setTotalEventRecords(data.totalRecords);
             return data.data;
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
@@ -627,7 +631,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await apiService.fetchAllDeviceActivities(sn, startDate, endDate, pageNo, pageSize);
             setTotalMovementPages(data.totalPages);
-            setTotalMovementRows(data.totalRows);
+            setTotalMovementRows(data.totalRecords);
             return data.data;
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
@@ -716,7 +720,9 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         fetchDeviceActivities,
         totalMovementPages,
         totalMovementRows,
-        totalEventPages
+        setTotalMovementRows,
+        totalEventPages,
+        totalEventRecords
     };
 
     return (

@@ -165,6 +165,7 @@ export const NkioskCounter = () => {
   // Função para atualizar as recolhas do moedeiro
   const refreshCounter = () => {
     fetchAllCounter(undefined, undefined, "1", "20");
+    setTotalRows(counterTotalRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -242,6 +243,7 @@ export const NkioskCounter = () => {
         console.error("Erro ao buscar dispositivos por sn:", error);
       }
     } else {
+      refreshCounter();
       setFilteredDevices(counter);
     }
   };

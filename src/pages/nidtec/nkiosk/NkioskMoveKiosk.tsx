@@ -220,6 +220,7 @@ export const NkioskMoveKiosk = () => {
       "1",
       "20"
     );
+    refreshMoveKiosk();
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -303,6 +304,7 @@ export const NkioskMoveKiosk = () => {
         console.error("Erro ao buscar entidades:", error);
       }
     } else {
+      refreshMoveKiosk();
       setFilteredDevices(moveKiosk);
     }
   };

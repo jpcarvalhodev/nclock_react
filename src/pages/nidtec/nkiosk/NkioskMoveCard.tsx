@@ -245,6 +245,7 @@ export const NkioskMoveCard = () => {
       "1",
       "20"
     );
+    setTotalRows(moveCardTotalRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -341,6 +342,7 @@ export const NkioskMoveCard = () => {
         console.error("Erro ao buscar entidades:", error);
       }
     } else {
+      refreshMoveCard();
       setFilteredDevices(moveCard);
     }
   };

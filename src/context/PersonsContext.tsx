@@ -131,9 +131,12 @@ export interface PersonsContextType {
   handleAddZone: (zone: Zone) => Promise<void>;
   handleUpdateZone: (zone: Zone) => Promise<void>;
   handleDeleteZone: (zoneID: string[]) => Promise<void>;
-  totalPages: number;
-  setTotalPages: (totalPages: number) => void;
+  totalEmployeePages: number;
+  totalEmployeeRecords: number;
+  totalVisitorPages: number;
+  totalVisitorRecords: number;
   employeeVisitor: EmployeeVisitor[];
+  setEmployeeVisitor: (employeeVisitor: EmployeeVisitor[]) => void;
   fetchEmployeeVisitor: (
     startDate?: string,
     endDate?: string,
@@ -200,7 +203,10 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
   >([]);
   const [professions, setProfessions] = useState<Profession[]>([]);
   const [zones, setZones] = useState<Zone[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalEmployeePages, setTotalEmployeePages] = useState(1);
+  const [totalEmployeeRecords, setTotalEmployeeRecords] = useState(0);
+  const [totalVisitorPages, setTotalVisitorPages] = useState(1);
+  const [totalVisitorRecords, setTotalVisitorRecords] = useState(0);
   const [data, setData] = useState<DataState>({
     departments: [],
     groups: [],
@@ -283,7 +289,6 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
           a.enrollNumber - b.enrollNumber
       );
       setEmployees(sortedData);
-      setTotalPages(data.totalPages);
       return sortedData;
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
@@ -326,7 +331,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
           a.enrollNumber - b.enrollNumber
       );
       setDisabledEmployees(sortedData);
-      setTotalPages(data.totalPages);
+      setTotalEmployeePages(data.totalPages);
+      setTotalEmployeeRecords(data.totalRecords);
       return sortedData;
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
@@ -1026,7 +1032,8 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
         employeeIds
       );
       setEmployeeVisitor(data.data);
-      setTotalPages(data.totalPages);
+      setTotalVisitorPages(data.totalPages);
+      setTotalVisitorRecords(data.totalRecords);
       return data.data;
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
@@ -1246,9 +1253,12 @@ export const PersonsProvider = ({ children }: { children: ReactNode }) => {
     handleAddZone,
     handleUpdateZone,
     handleDeleteZone,
-    totalPages,
-    setTotalPages,
+    totalEmployeePages,
+    totalEmployeeRecords,
+    totalVisitorPages,
+    totalVisitorRecords,
     employeeVisitor,
+    setEmployeeVisitor,
     fetchEmployeeVisitor,
     handleAddEmployeeVisitor,
     handleUpdateEmployeeVisitor,

@@ -53,6 +53,21 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Função para verificar se a data é de hoje
+const isToday = (dateString: string) => {
+  const [datePart] = dateString.split(" ");
+  const [day, month, year] = datePart.split("/");
+  
+  const eventDate = new Date(`${year}-${month}-${day}`);
+  const today = new Date();
+  
+  return (
+    eventDate.getDate() === today.getDate() &&
+    eventDate.getMonth() === today.getMonth() &&
+    eventDate.getFullYear() === today.getFullYear()
+  );
+};
+
 // Define a página de presença
 export const NaccessPresence = () => {
   const currentDate = new Date();
@@ -375,6 +390,8 @@ export const NaccessPresence = () => {
               default:
                 return "";
             }
+            case "eventTime":
+              return isToday(row.eventTime) ? row.eventTime : "";
           default:
             return row[field.key];
         }
@@ -682,8 +699,8 @@ export const NaccessPresence = () => {
                     striped
                     responsive
                     persistTableHead={true}
-                    defaultSortAsc={false}
-                    defaultSortFieldId="eventTime"
+                    defaultSortAsc={true}
+                    defaultSortFieldId="pin"
                   />
                 )}
               </div>
@@ -931,8 +948,8 @@ export const NaccessPresence = () => {
                     striped
                     responsive
                     persistTableHead={true}
-                    defaultSortAsc={false}
-                    defaultSortFieldId="eventTime"
+                    defaultSortAsc={true}
+                    defaultSortFieldId="pin"
                   />
                 )}
               </div>

@@ -34,6 +34,8 @@ export interface EntityContextType {
     importEmployees: (employees: FormData) => void;
     totalLoginPages: number;
     totalHistoryPages: number;
+    totalLoginRecords: number;
+    totalHistoryRecords: number;
 }
 
 // Cria o contexto
@@ -49,6 +51,8 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     const [loadingImportEmployees, setLoadingImportEmployees] = useState(false);
     const [totalLoginPages, setTotalLoginPages] = useState(1);
     const [totalHistoryPages, setTotalHistoryPages] = useState(1);
+    const [totalLoginRecords, setTotalLoginRecords] = useState(0);
+    const [totalHistoryRecords, setTotalHistoryRecords] = useState(0);
 
     // Função para buscar todas as entidades
     const fetchAllEntity = async (): Promise<Entity[]> => {
@@ -107,6 +111,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
             const data = await apiService.fetchAllLoginLogs(undefined, undefined, undefined, pageNo, pageSize);
             setLoginLogs(data.data);
             setTotalLoginPages(data.totalPages);
+            setTotalLoginRecords(data.totalRecords);
             return data.data;
         } catch (error) {
             console.error('Erro ao buscar os dados de logs:', error);
@@ -120,6 +125,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
             const data = await apiService.fetchAllHistoryLogs(undefined, undefined, undefined, pageNo, pageSize);
             setHistoryLogs(data.data);
             setTotalHistoryPages(data.totalPages);
+            setTotalHistoryRecords(data.totalRecords);
             return data.data;
         } catch (error) {
             console.error('Erro ao buscar os dados de logs:', error);
@@ -182,7 +188,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <EntityContext.Provider value={{ entities, setEntities, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, historyLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees, totalHistoryPages, totalLoginPages }}>
+        <EntityContext.Provider value={{ entities, setEntities, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, historyLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees, totalHistoryPages, totalLoginPages, totalHistoryRecords, totalLoginRecords }}>
             {children}
             <LoadingModal
                 show={loadingExportBackup || loadingImportBackup || loadingImportEmployees}

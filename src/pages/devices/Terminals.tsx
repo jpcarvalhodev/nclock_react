@@ -122,6 +122,7 @@ export const Terminals = () => {
     fetchDeviceActivities,
     totalMovementPages,
     totalMovementRows,
+    setTotalMovementRows,
     fetchAllMBDevices,
     restartMBDevice,
     handleAddMBDevice,
@@ -255,6 +256,7 @@ export const Terminals = () => {
   const [filteredUsersInTerminal, setFilteredUsersInTerminal] = useState<
     EmployeesOnDevice[]
   >([]);
+  const [totalMoveRows, setTotalMoveRows] = useState(0);
   const [refreshIntervalTasks, setRefreshIntervalTasks] = useState(10000);
 
   // Função para buscar todos as biometrias
@@ -294,14 +296,15 @@ export const Terminals = () => {
       if (!selectedTerminal) return;
       try {
         setLoadingActivityData(true);
-        const fetchedActivity = await fetchDeviceActivities(
+        const fetchedActivity = await apiService.fetchAllDeviceActivities(
           [`${selectedTerminal.serialNumber}`],
           undefined,
           undefined,
           String(currentPage),
           String(perPage)
         );
-        setTransactions(fetchedActivity);
+        setTransactions(fetchedActivity.data);
+        setTotalMovementRows(fetchedActivity.totalRecords);
         setLoadingActivityData(false);
       } catch (error) {
         console.error("Erro ao buscar tarefas:", error);
@@ -365,9 +368,14 @@ export const Terminals = () => {
   const fetchAllActivityBetweenDates = async () => {
     setRefreshIntervalTasks(0);
     try {
-      const data = await fetchDeviceActivities(undefined, startDate, endDate);
-      if (data.length > 0) {
-        setTransactions(data);
+      const data = await apiService.fetchAllDeviceActivities(
+        undefined,
+        startDate,
+        endDate
+      );
+      if (data.data.length > 0) {
+        setTransactions(data.data);
+        setTotalMovementRows(data.totalRecords);
       } else {
         setTransactions([]);
       }
@@ -383,9 +391,14 @@ export const Terminals = () => {
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
     try {
-      const data = await fetchDeviceActivities(undefined, start, end);
-      if (data.length > 0) {
-        setTransactions(data);
+      const data = await apiService.fetchAllDeviceActivities(
+        undefined,
+        startDate,
+        endDate
+      );
+      if (data.data.length > 0) {
+        setTransactions(data.data);
+        setTotalMovementRows(data.totalRecords);
       } else {
         setTransactions([]);
       }
@@ -406,9 +419,14 @@ export const Terminals = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      const data = await fetchDeviceActivities(undefined, start, end);
-      if (data.length > 0) {
-        setTransactions(data);
+      const data = await apiService.fetchAllDeviceActivities(
+        undefined,
+        startDate,
+        endDate
+      );
+      if (data.data.length > 0) {
+        setTransactions(data.data);
+        setTotalMovementRows(data.totalRecords);
       } else {
         setTransactions([]);
       }
@@ -433,9 +451,14 @@ export const Terminals = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      const data = await fetchDeviceActivities(undefined, start, end);
-      if (data.length > 0) {
-        setTransactions(data);
+      const data = await apiService.fetchAllDeviceActivities(
+        undefined,
+        startDate,
+        endDate
+      );
+      if (data.data.length > 0) {
+        setTransactions(data.data);
+        setTotalMovementRows(data.totalRecords);
       } else {
         setTransactions([]);
       }

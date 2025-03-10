@@ -41,7 +41,8 @@ export const Persons = () => {
     handleAddEmployee,
     handleUpdateEmployee,
     handleDeleteEmployee,
-    totalPages,
+    totalEmployeePages,
+    totalEmployeeRecords
   } = usePersons();
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [filterText, setFilterText] = useState("");
@@ -119,8 +120,7 @@ export const Persons = () => {
   // Atualiza os funcionários
   const refreshEmployees = () => {
     fetchAllDisabledEmployees("1", "20");
-    setCurrentPage(1);
-    setPerPage(20);
+    setTotalRows(totalEmployeeRecords);
     setClearSelectionToggle((prev) => !prev);
   };
 
@@ -133,6 +133,7 @@ export const Persons = () => {
         const foundEmployees = await fetchEmployeesById(selectedIds);
         if (foundEmployees) {
           setFilteredEmployees(foundEmployees);
+          setTotalRows(foundEmployees.length);
         } else {
           setFilteredEmployees([]);
         }
@@ -140,6 +141,7 @@ export const Persons = () => {
         console.error("Erro ao buscar funcionários por ID:", error);
       }
     } else {
+      refreshEmployees();
       setFilteredEmployees(disabledEmployees);
     }
   };
@@ -654,7 +656,7 @@ export const Persons = () => {
                     paginationIconLastPage={
                       <span
                         style={{ cursor: "pointer" }}
-                        onClick={() => handlePageChange(totalPages)}
+                        onClick={() => handlePageChange(totalEmployeePages)}
                       >
                         <i className="bi bi-chevron-double-right" />
                       </span>
@@ -862,7 +864,7 @@ export const Persons = () => {
                     paginationIconLastPage={
                       <span
                         style={{ cursor: "pointer" }}
-                        onClick={() => handlePageChange(totalPages)}
+                        onClick={() => handlePageChange(totalEmployeePages)}
                       >
                         <i className="bi bi-chevron-double-right" />
                       </span>

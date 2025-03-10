@@ -42,7 +42,8 @@ export const Contacts = () => {
     handleAddEmployee,
     handleUpdateEmployee,
     handleDeleteEmployee,
-    totalPages,
+    totalEmployeePages,
+    totalEmployeeRecords
   } = usePersons();
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [filterText, setFilterText] = useState("");
@@ -122,8 +123,7 @@ export const Contacts = () => {
   // Atualiza os funcionários
   const refreshEmployees = () => {
     fetchAllDisabledEmployees("1", "20", "Contacto");
-    setCurrentPage(1);
-    setPerPage(20);
+    setTotalRows(totalEmployeeRecords);
     setClearSelectionToggle((prev) => !prev);
   };
 
@@ -178,6 +178,7 @@ export const Contacts = () => {
         const foundEmployees = await fetchEmployeesById(selectedIds);
         if (foundEmployees) {
           setFilteredEmployees(foundEmployees);
+          setTotalRows(foundEmployees.length);
         } else {
           setFilteredEmployees([]);
         }
@@ -185,6 +186,7 @@ export const Contacts = () => {
         console.error("Erro ao buscar funcionários por ID:", error);
       }
     } else {
+      refreshEmployees();
       setFilteredEmployees(disabledEmployees);
     }
   };
@@ -714,7 +716,7 @@ export const Contacts = () => {
                     paginationIconLastPage={
                       <span
                         style={{ cursor: "pointer" }}
-                        onClick={() => handlePageChange(totalPages)}
+                        onClick={() => handlePageChange(totalEmployeePages)}
                       >
                         <i className="bi bi-chevron-double-right" />
                       </span>
@@ -947,7 +949,7 @@ export const Contacts = () => {
                     paginationIconLastPage={
                       <span
                         style={{ cursor: "pointer" }}
-                        onClick={() => handlePageChange(totalPages)}
+                        onClick={() => handlePageChange(totalEmployeePages)}
                       >
                         <i className="bi bi-chevron-double-right" />
                       </span>

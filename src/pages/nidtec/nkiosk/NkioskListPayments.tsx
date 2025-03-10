@@ -195,6 +195,7 @@ export const NkioskListPayments = () => {
   // Função para atualizar as listagens de pagamentos
   const refreshListPayments = () => {
     fetchAllMBAndCoin(undefined, undefined, undefined, undefined, "1", "20");
+    setTotalRows(totalPaymentsTotalRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -225,6 +226,7 @@ export const NkioskListPayments = () => {
         console.error("Erro ao buscar dispositivos por sn:", error);
       }
     } else {
+      refreshListPayments();
       setFilteredDevices(totalPayments);
     }
   };

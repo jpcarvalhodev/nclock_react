@@ -39,6 +39,7 @@ export const HistoryLogs = () => {
     historyLogs,
     fetchAllHistoryLogs,
     totalHistoryPages,
+    totalHistoryRecords
   } = useEntity();
   const { registeredUsers } = usePersons();
   const [filterText, setFilterText] = useState<string>("");
@@ -157,8 +158,7 @@ export const HistoryLogs = () => {
   // Função para atualizar os logs
   const refreshLogs = () => {
     fetchAllHistoryLogs(undefined, undefined, undefined, "1", "20");
-    setCurrentPage(1);
-    setPerPage(20);
+    setTotalRows(totalHistoryRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -243,6 +243,7 @@ export const HistoryLogs = () => {
         console.error("Erro ao buscar logs para o usuário selecionado:", error);
       }
     } else {
+      refreshLogs();
       setFilteredDevices(historyLogs);
     }
   };

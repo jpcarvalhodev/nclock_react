@@ -107,6 +107,7 @@ export const NaccessAccesses = () => {
   const {
     access,
     totalPages,
+    totalRecords,
     fetchAllInitialAccessesbyDevice,
     handleAddAccess,
   } = useAttendance();
@@ -333,9 +334,9 @@ export const NaccessAccesses = () => {
         console.error("Erro ao buscar funcionários por número:", error);
       }
     } else {
-      setFilteredAccess(access);
+      refreshAccess();
     }
-  };  
+  };
 
   // Função para alternar a visibilidade das colunas
   const handleColumnToggle = (columnKey: string) => {
@@ -369,6 +370,7 @@ export const NaccessAccesses = () => {
   // Função para atualizar os funcionários
   const refreshAccess = () => {
     fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20");
+    setTotalRows(totalRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

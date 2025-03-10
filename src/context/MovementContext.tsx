@@ -17,7 +17,7 @@ export interface AttendanceContextType {
   access: Accesses[];
   accessForGraph: Accesses[];
   totalPages: number;
-  setTotalPages: (totalPages: number) => void;
+  totalRecords: number;
   startDate: string;
   endDate: string;
   setStartDate: (date: string) => void;
@@ -89,6 +89,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
   const [access, setAccess] = useState<Accesses[]>([]);
   const [accessForGraph, setAccessForGraph] = useState<Accesses[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
 
   // Função para buscar todas as assiduidades
   const fetchAllAttendances = useCallback(
@@ -154,6 +155,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
       );
       setAccess(data.data);
       setTotalPages(data.totalPages);
+      setTotalRecords(data.totalRecords);
 
       const token = localStorage.getItem("token");
       const url = `${
@@ -335,7 +337,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     access,
     accessForGraph,
     totalPages,
-    setTotalPages,
+    totalRecords,
     startDate,
     endDate,
     setStartDate,

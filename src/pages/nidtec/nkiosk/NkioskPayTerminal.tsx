@@ -188,6 +188,7 @@ export const NkioskPayTerminal = () => {
   // Função para atualizar os pagamentos dos terminais
   const refreshPayTerminal = () => {
     fetchAllPayTerminal(undefined, undefined, "1", "20");
+    setTotalRows(payTerminalTotalRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -254,6 +255,7 @@ export const NkioskPayTerminal = () => {
         console.error("Erro ao buscar dispositivos por sn:", error);
       }
     } else {
+      refreshPayTerminal();
       setFilteredDevices(payTerminal);
     }
   };

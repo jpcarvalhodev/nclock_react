@@ -215,6 +215,7 @@ export const NkioskListMovements = () => {
       "1",
       "20"
     );
+    setTotalRows(totalMovementsTotalRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -298,6 +299,7 @@ export const NkioskListMovements = () => {
         console.error("Erro ao buscar entidades:", error);
       }
     } else {
+      refreshListMovements();
       setFilteredDevices(totalMovements);
     }
   };

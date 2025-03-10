@@ -54,7 +54,7 @@ export const AddCompanyToVisitorModal = <T extends Record<string, any>>({
   onClose,
   onSave,
 }: CreateModalProps<T>) => {
-  const { employees } = usePersons();
+  const { employeesNoPagination } = usePersons();
   const [visitorRows, setVisitorRows] = useState<VisitorRow[]>([
     defaultVisitorRow,
   ]);
@@ -78,7 +78,7 @@ export const AddCompanyToVisitorModal = <T extends Record<string, any>>({
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const selectedName = e.target.value;
-    const visitantes = employees.filter((emp) => emp.type === "Visitante");
+    const visitantes = employeesNoPagination.filter((emp) => emp.type === "Visitante");
     const visitor = visitantes.find((emp) => emp.name === selectedName);
     if (visitor) {
       setVisitorRows((prevRows) => {
@@ -152,7 +152,7 @@ export const AddCompanyToVisitorModal = <T extends Record<string, any>>({
                     onChange={(e) => handleVisitorNameChange(index, e)}
                   >
                     <option value="">Selecione...</option>
-                    {employees
+                    {employeesNoPagination
                       .filter((emp) => emp.type === "Visitante")
                       .map((visitor) => (
                         <option key={visitor.employeeID} value={visitor.name}>
