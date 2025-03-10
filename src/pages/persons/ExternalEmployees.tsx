@@ -124,6 +124,8 @@ export const ExternalEmployees = () => {
   const refreshEmployees = () => {
     fetchAllDisabledEmployees("1", "20", "Subcontratado");
     setTotalRows(totalEmployeeRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setClearSelectionToggle((prev) => !prev);
   };
 

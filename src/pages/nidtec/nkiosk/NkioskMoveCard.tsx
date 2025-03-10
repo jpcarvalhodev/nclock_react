@@ -246,6 +246,8 @@ export const NkioskMoveCard = () => {
       "20"
     );
     setTotalRows(moveCardTotalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

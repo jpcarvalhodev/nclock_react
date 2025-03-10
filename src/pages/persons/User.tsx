@@ -124,6 +124,8 @@ export const User = () => {
   const refreshEmployees = () => {
     fetchAllDisabledEmployees("1", "20", "Utente");
     setTotalRows(totalEmployeeRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setClearSelectionToggle((prev) => !prev);
   };
 

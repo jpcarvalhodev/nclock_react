@@ -166,6 +166,8 @@ export const NkioskCounter = () => {
   const refreshCounter = () => {
     fetchAllCounter(undefined, undefined, "1", "20");
     setTotalRows(counterTotalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

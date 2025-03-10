@@ -57,10 +57,10 @@ const formatDateToEndOfDay = (date: Date): string => {
 const isToday = (dateString: string) => {
   const [datePart] = dateString.split(" ");
   const [day, month, year] = datePart.split("/");
-  
+
   const eventDate = new Date(`${year}-${month}-${day}`);
   const today = new Date();
-  
+
   return (
     eventDate.getDate() === today.getDate() &&
     eventDate.getMonth() === today.getMonth() &&
@@ -390,8 +390,8 @@ export const NclockAccessPresence = () => {
               default:
                 return "";
             }
-            case "eventTime":
-              return isToday(row.eventTime) ? row.eventTime : "";
+          case "eventTime":
+            return isToday(row.eventTime) ? row.eventTime : "";
           default:
             return row[field.key];
         }
@@ -461,7 +461,7 @@ export const NclockAccessPresence = () => {
 
   // Função para calcular a quantidade de presentes e ausentes
   const calculatePresenceCounts = () => {
-    const presentes = accessForGraph.filter((item) => item.isPresent).length;
+    const presentes = filteredDataTable.filter((item) => item.isPresent).length;
     const ausentes = employeesNoPagination.length - presentes;
     return { presentes, ausentes };
   };
@@ -717,8 +717,14 @@ export const NclockAccessPresence = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
-            <TreeViewDataNaccessPresence onSelectEmployees={handleSelectFromTreeView} />
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
+            <TreeViewDataNaccessPresence
+              onSelectEmployees={handleSelectFromTreeView}
+            />
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">

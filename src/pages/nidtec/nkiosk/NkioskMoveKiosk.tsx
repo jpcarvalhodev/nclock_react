@@ -220,7 +220,9 @@ export const NkioskMoveKiosk = () => {
       "1",
       "20"
     );
-    refreshMoveKiosk();
+    setTotalRows(moveKioskTotalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

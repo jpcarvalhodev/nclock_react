@@ -461,7 +461,7 @@ export const NaccessPresence = () => {
 
   // Função para calcular a quantidade de presentes e ausentes
   const calculatePresenceCounts = () => {
-    const presentes = accessForGraph.filter((item) => item.isPresent).length;
+    const presentes = filteredDataTable.filter((item) => item.isPresent).length;
     const ausentes = employeesNoPagination.length - presentes;
     return { presentes, ausentes };
   };

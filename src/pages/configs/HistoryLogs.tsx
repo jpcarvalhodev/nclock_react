@@ -159,6 +159,8 @@ export const HistoryLogs = () => {
   const refreshLogs = () => {
     fetchAllHistoryLogs(undefined, undefined, undefined, "1", "20");
     setTotalRows(totalHistoryRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

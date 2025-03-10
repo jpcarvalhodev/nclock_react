@@ -155,6 +155,8 @@ export const LoginLogs = () => {
   const refreshLogs = () => {
     fetchAllLoginLogs(undefined, undefined, undefined, "1", "20");
     setTotalRows(totalLoginRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

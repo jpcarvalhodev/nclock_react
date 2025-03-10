@@ -196,6 +196,8 @@ export const NkioskListPayments = () => {
   const refreshListPayments = () => {
     fetchAllMBAndCoin(undefined, undefined, undefined, undefined, "1", "20");
     setTotalRows(totalPaymentsTotalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

@@ -222,6 +222,8 @@ export const NkioskPayCoins = () => {
   const refreshPayCoins = () => {
     fetchAllPayCoins("2", undefined, undefined, undefined, "1", "20");
     setTotalRows(payCoinsTotalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

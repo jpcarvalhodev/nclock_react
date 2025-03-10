@@ -189,6 +189,8 @@ export const NkioskPayTerminal = () => {
   const refreshPayTerminal = () => {
     fetchAllPayTerminal(undefined, undefined, "1", "20");
     setTotalRows(payTerminalTotalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

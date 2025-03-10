@@ -335,6 +335,7 @@ export const NaccessAccesses = () => {
       }
     } else {
       refreshAccess();
+      setFilteredAccess(access);
     }
   };
 
@@ -371,6 +372,8 @@ export const NaccessAccesses = () => {
   const refreshAccess = () => {
     fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20");
     setTotalRows(totalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

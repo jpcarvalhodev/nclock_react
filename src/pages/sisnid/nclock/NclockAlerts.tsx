@@ -154,7 +154,6 @@ export const NclockAlerts = () => {
   // Função para atualizar os alertas
   const refreshTasks = () => {
     fetchEventsDevice(undefined, undefined, undefined, "1", "20");
-    setFilteredDevices(events);
     setTotalRows(totalEventRecords);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
@@ -215,6 +214,7 @@ export const NclockAlerts = () => {
       }
     } else {
       refreshTasks();
+      setFilteredDevices(events);
     }
   };
 

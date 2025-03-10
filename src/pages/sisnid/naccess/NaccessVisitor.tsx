@@ -251,7 +251,6 @@ export const NaccessVisitor = () => {
     setSelectedEmployeeIds(selectedIds);
 
     if (selectedIds.length > 0) {
-      setLoading(true);
       try {
         const foundEmployees = await apiService.fetchAllEmployeeVisitors(
           undefined,
@@ -268,10 +267,9 @@ export const NaccessVisitor = () => {
         }
       } catch (error) {
         console.error("Erro ao buscar visitantes por ID:", error);
-      } finally {
-        setLoading(false);
       }
     } else {
+      refreshVisitor();
       setEmployeeVisitor(employeeVisitor);
     }
   };
@@ -309,6 +307,8 @@ export const NaccessVisitor = () => {
   const refreshVisitor = () => {
     fetchEmployeeVisitor(undefined, undefined, "1", "20");
     setTotalRows(totalVisitorRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -562,6 +562,8 @@ export const NaccessVisitor = () => {
                 return "Em Andamento";
               case 2:
                 return "Terminado";
+              case 3:
+                return "Em Espera";
               default:
                 return row[field.key] || "";
             }
@@ -697,7 +699,55 @@ export const NaccessVisitor = () => {
             />
           </OverlayTrigger>
         )}
+        {row.estado === 3 && (
+          <OverlayTrigger
+            placement="top"
+            delay={0}
+            container={document.body}
+            popperConfig={{
+              modifiers: [
+                {
+                  name: "preventOverflow",
+                  options: {
+                    boundary: "window",
+                  },
+                },
+              ],
+            }}
+            overlay={<Tooltip className="custom-tooltip">Continuar</Tooltip>}
+          >
+            <CustomOutlineButton
+              className="action-button"
+              icon="bi bi-play"
+              onClick={() => handleUpdateEstado(row, 1)}
+            />
+          </OverlayTrigger>
+        )}
         {row.estado === 1 && (
+          <OverlayTrigger
+            placement="top"
+            delay={0}
+            container={document.body}
+            popperConfig={{
+              modifiers: [
+                {
+                  name: "preventOverflow",
+                  options: {
+                    boundary: "window",
+                  },
+                },
+              ],
+            }}
+            overlay={<Tooltip className="custom-tooltip">Pausar</Tooltip>}
+          >
+            <CustomOutlineButton
+              className="action-button"
+              icon="bi bi-pause"
+              onClick={() => handleUpdateEstado(row, 3)}
+            />
+          </OverlayTrigger>
+        )}
+        {(row.estado === 1 || row.estado === 3) && (
           <OverlayTrigger
             placement="top"
             delay={0}
