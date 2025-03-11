@@ -578,6 +578,11 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
     }
   };
 
+  // Função para lidar com o clique em um dedo
+  const handleFingerClick = (finger: string) => {
+    console.log(`Capturando digital do ${finger}`);
+  };
+
   return (
     <Modal
       show={open}
@@ -873,6 +878,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
             </Nav.Item>
             <Nav.Item>
               <Nav.Link eventKey="cartoes">Cartões</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="biometria">Biometria</Nav.Link>
             </Nav.Item>
           </Nav>
           <Tab.Content>
@@ -1242,6 +1250,12 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                 </Row>
               </Form>
             </Tab.Pane>
+            {/* <Tab.Pane eventKey="biometria">
+              <Form style={{ marginTop: 10 }}>
+                <h5 style={{ marginTop: 20 }}>Selecione o dedo para capturar a digital</h5>
+                <HandFingerprintCapture onFingerClick={handleFingerClick} />
+              </Form>
+            </Tab.Pane> */}
           </Tab.Content>
         </Tab.Container>
       </Modal.Body>

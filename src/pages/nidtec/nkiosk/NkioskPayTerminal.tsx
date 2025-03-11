@@ -40,6 +40,7 @@ export const NkioskPayTerminal = () => {
   pastDate.setDate(currentDate.getDate() - 30);
   const {
     payTerminal,
+    setPayTerminal,
     fetchAllPayTerminal,
     payTerminalPages,
     payTerminalTotalRecords,
@@ -59,9 +60,6 @@ export const NkioskPayTerminal = () => {
   const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>(
-    []
-  );
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,7 +79,7 @@ export const NkioskPayTerminal = () => {
         pageNo,
         perPage
       );
-      setFilteredDevices(data.data);
+      setPayTerminal(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -97,7 +95,7 @@ export const NkioskPayTerminal = () => {
         startDate,
         endDate
       );
-      setFilteredDevices(data.data);
+      setPayTerminal(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error(
@@ -114,7 +112,7 @@ export const NkioskPayTerminal = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToStartOfDay(currentDate)
       );
-      setFilteredDevices(data.data);
+      setPayTerminal(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToStartOfDay(currentDate));
@@ -139,7 +137,7 @@ export const NkioskPayTerminal = () => {
         start,
         end
       );
-      setFilteredDevices(data.data);
+      setPayTerminal(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -168,7 +166,7 @@ export const NkioskPayTerminal = () => {
         start,
         end
       );
-      setFilteredDevices(data.data);
+      setPayTerminal(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -248,17 +246,17 @@ export const NkioskPayTerminal = () => {
             undefined
           );
         if (foundDevices.data) {
-          setFilteredDevices(foundDevices.data);
+          setPayTerminal(foundDevices.data);
           setTotalRows(foundDevices.totalRecords);
         } else {
-          setFilteredDevices([]);
+          setPayTerminal([]);
         }
       } catch (error) {
         console.error("Erro ao buscar dispositivos por sn:", error);
       }
     } else {
       refreshPayTerminal();
-      setFilteredDevices(payTerminal);
+      setPayTerminal(payTerminal);
     }
   };
 
@@ -283,10 +281,10 @@ export const NkioskPayTerminal = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(payTerminal)) {
       return [];
     }
-    return filteredDevices
+    return payTerminal
       .filter(
         (payTerminals) =>
           Object.keys(filters).every(
@@ -318,7 +316,7 @@ export const NkioskPayTerminal = () => {
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [payTerminal, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields

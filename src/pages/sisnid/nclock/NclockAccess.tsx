@@ -107,6 +107,7 @@ export const NclockAccess = () => {
   const {
     access,
     totalPages,
+    totalRecords,
     fetchAllInitialAccessesbyDevice,
     handleAddAccess,
   } = useAttendance();
@@ -333,9 +334,10 @@ export const NclockAccess = () => {
         console.error("Erro ao buscar funcionários por número:", error);
       }
     } else {
+      refreshAccess();
       setFilteredAccess(access);
     }
-  };  
+  };
 
   // Função para alternar a visibilidade das colunas
   const handleColumnToggle = (columnKey: string) => {
@@ -369,6 +371,9 @@ export const NclockAccess = () => {
   // Função para atualizar os funcionários
   const refreshAccess = () => {
     fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20");
+    setTotalRows(totalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);

@@ -115,6 +115,12 @@ export const User = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
+   // Atualiza a tabela de utentes ao montar o componente
+   useEffect(() => {
+    setFilteredEmployees(disabledEmployees.filter((emp) => emp.type === "Utente"));
+    setTotalRows(totalEmployeeRecords);
+  }, [disabledEmployees]);
+
   // Busca os funcionários paginados ao mudar a página
   useEffect(() => {
     fetchPaginationPersons(currentPage.toString(), perPage.toString());

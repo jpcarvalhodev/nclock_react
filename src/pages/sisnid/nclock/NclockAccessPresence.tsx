@@ -146,7 +146,10 @@ export const NclockAccessPresence = () => {
       const isoDateString = convertToISO(acc.eventTime);
       const eventDateTime = new Date(isoDateString);
 
-      const presentToday = acc.inOutStatus === 0 && isToday(eventDateTime);
+      const presentToday =
+        acc.eventName !== "Acesso não autorizado" &&
+        acc.inOutStatus === 0 &&
+        isToday(eventDateTime);
 
       return {
         ...acc,
@@ -263,6 +266,7 @@ export const NclockAccessPresence = () => {
 
   // Definindo a coluna de Presença primeiro
   const presenceColumn: TableColumn<Accesses> = {
+    id: "isPresent",
     name: (
       <>
         Presença
@@ -288,6 +292,19 @@ export const NclockAccessPresence = () => {
       </span>
     ),
     sortable: true,
+    sortFunction: (rowA, rowB) => {
+      if (rowA.isPresent !== rowB.isPresent) {
+        return rowA.isPresent ? -1 : 1;
+      }
+      const aPin = parseInt(rowA.pin, 10) || 0;
+      const bPin = parseInt(rowB.pin, 10) || 0;
+      if (aPin !== bPin) {
+        return aPin - bPin;
+      }
+      const aTime = new Date(convertToISO(rowA.eventTime)).getTime();
+      const bTime = new Date(convertToISO(rowB.eventTime)).getTime();
+      return bTime - aTime;
+    },
   };
 
   // Filtra os dados da tabela
@@ -391,7 +408,7 @@ export const NclockAccessPresence = () => {
                 return "";
             }
           case "eventTime":
-            return isToday(row.eventTime) ? row.eventTime : "";
+            return isToday(row.eventTime) && row.isPresent ? row.eventTime : "";
           default:
             return row[field.key];
         }
@@ -700,7 +717,7 @@ export const NclockAccessPresence = () => {
                     responsive
                     persistTableHead={true}
                     defaultSortAsc={true}
-                    defaultSortFieldId="pin"
+                    defaultSortFieldId="isPresent"
                   />
                 )}
               </div>
@@ -955,7 +972,7 @@ export const NclockAccessPresence = () => {
                     responsive
                     persistTableHead={true}
                     defaultSortAsc={true}
-                    defaultSortFieldId="pin"
+                    defaultSortFieldId="isPresent"
                   />
                 )}
               </div>

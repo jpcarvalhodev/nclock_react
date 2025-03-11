@@ -35,6 +35,7 @@ interface Filters {
 export const Persons = () => {
   const {
     disabledEmployees,
+    setDisabledEmployees,
     data,
     fetchAllDisabledEmployees,
     fetchEmployeesById,
@@ -44,7 +45,6 @@ export const Persons = () => {
     totalEmployeePages,
     totalEmployeeRecords
   } = usePersons();
-  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [filterText, setFilterText] = useState("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
@@ -82,7 +82,7 @@ export const Persons = () => {
         pageNo,
         perPage
       );
-      setFilteredEmployees(data.data);
+      setDisabledEmployees(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -134,17 +134,17 @@ export const Persons = () => {
       try {
         const foundEmployees = await fetchEmployeesById(selectedIds);
         if (foundEmployees) {
-          setFilteredEmployees(foundEmployees);
+          setDisabledEmployees(foundEmployees);
           setTotalRows(foundEmployees.length);
         } else {
-          setFilteredEmployees([]);
+          setDisabledEmployees([]);
         }
       } catch (error) {
         console.error("Erro ao buscar funcionários por ID:", error);
       }
     } else {
       refreshEmployees();
-      setFilteredEmployees(disabledEmployees);
+      setDisabledEmployees(disabledEmployees);
     }
   };
 
@@ -225,7 +225,7 @@ export const Persons = () => {
 
   // Seleciona o funcionário anterior
   const handleNextEmployee = () => {
-    const sortedEmployees = filteredEmployees.sort(
+    const sortedEmployees = disabledEmployees.sort(
       (a, b) => Number(a.enrollNumber) - Number(b.enrollNumber)
     );
     if (currentEmployeeIndex < sortedEmployees.length - 1) {
@@ -236,7 +236,7 @@ export const Persons = () => {
 
   // Seleciona o funcionário seguinte
   const handlePrevEmployee = () => {
-    const sortedEmployees = filteredEmployees.sort(
+    const sortedEmployees = disabledEmployees.sort(
       (a, b) => Number(a.enrollNumber) - Number(b.enrollNumber)
     );
     if (currentEmployeeIndex > 0) {
@@ -255,10 +255,10 @@ export const Persons = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredEmployees)) {
+    if (!Array.isArray(disabledEmployees)) {
       return [];
     }
-    return filteredEmployees.filter(
+    return disabledEmployees.filter(
       (employee) =>
         Object.keys(filters).every(
           (key) =>
@@ -285,7 +285,7 @@ export const Persons = () => {
           return false;
         })
     );
-  }, [filteredEmployees, filters, filterText]);
+  }, [disabledEmployees, filters, filterText]);
 
   // Define as colunas
   const columns: TableColumn<Employee>[] = employeeFields
@@ -360,7 +360,7 @@ export const Persons = () => {
   // Define a função de edição de funcionários
   const handleEditEmployee = (employee: Employee) => {
     setSelectedEmployee(employee);
-    const sortedEmployees = filteredEmployees.sort(
+    const sortedEmployees = disabledEmployees.sort(
       (a, b) => Number(a.enrollNumber) - Number(b.enrollNumber)
     );
     const employeeIndex = sortedEmployees.findIndex(

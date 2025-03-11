@@ -115,6 +115,12 @@ export const Visitors = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
+   // Atualiza a tabela de visitantes ao montar o componente
+   useEffect(() => {
+    setFilteredEmployees(disabledEmployees.filter((emp) => emp.type === "Visitante"));
+    setTotalRows(totalEmployeeRecords);
+  }, [disabledEmployees]);
+
   // Busca os funcionários paginados ao mudar a página
   useEffect(() => {
     fetchPaginationPersons(currentPage.toString(), perPage.toString());

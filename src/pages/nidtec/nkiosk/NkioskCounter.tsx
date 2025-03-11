@@ -62,7 +62,6 @@ export const NkioskCounter = () => {
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<Counter[]>([]);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,7 +78,7 @@ export const NkioskCounter = () => {
         pageNo,
         perPage
       );
-      setFilteredDevices(data.data);
+      setCounter(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -236,26 +235,26 @@ export const NkioskCounter = () => {
           selectedIds
         );
         if (foundDevices.data) {
-          setFilteredDevices(foundDevices.data);
+          setCounter(foundDevices.data);
           setTotalRows(foundDevices.totalRecords);
         } else {
-          setFilteredDevices([]);
+          setCounter([]);
         }
       } catch (error) {
         console.error("Erro ao buscar dispositivos por sn:", error);
       }
     } else {
       refreshCounter();
-      setFilteredDevices(counter);
+      setCounter(counter);
     }
   };
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(counter)) {
       return [];
     }
-    return filteredDevices
+    return counter
       .filter(
         (getCoin) =>
           Object.keys(filters).every(
@@ -287,7 +286,7 @@ export const NkioskCounter = () => {
         (a, b) =>
           new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [counter, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Counter>[] = counterFields

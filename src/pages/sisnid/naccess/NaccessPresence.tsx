@@ -57,10 +57,10 @@ const formatDateToEndOfDay = (date: Date): string => {
 const isToday = (dateString: string) => {
   const [datePart] = dateString.split(" ");
   const [day, month, year] = datePart.split("/");
-  
+
   const eventDate = new Date(`${year}-${month}-${day}`);
   const today = new Date();
-  
+
   return (
     eventDate.getDate() === today.getDate() &&
     eventDate.getMonth() === today.getMonth() &&
@@ -146,7 +146,10 @@ export const NaccessPresence = () => {
       const isoDateString = convertToISO(acc.eventTime);
       const eventDateTime = new Date(isoDateString);
 
-      const presentToday = acc.inOutStatus === 0 && isToday(eventDateTime);
+      const presentToday =
+        acc.eventName !== "Acesso não autorizado" &&
+        acc.inOutStatus === 0 &&
+        isToday(eventDateTime);
 
       return {
         ...acc,
@@ -263,6 +266,7 @@ export const NaccessPresence = () => {
 
   // Definindo a coluna de Presença primeiro
   const presenceColumn: TableColumn<Accesses> = {
+    id: "isPresent",
     name: (
       <>
         Presença
@@ -288,6 +292,19 @@ export const NaccessPresence = () => {
       </span>
     ),
     sortable: true,
+    sortFunction: (rowA, rowB) => {
+      if (rowA.isPresent !== rowB.isPresent) {
+        return rowA.isPresent ? -1 : 1;
+      }
+      const aPin = parseInt(rowA.pin, 10) || 0;
+      const bPin = parseInt(rowB.pin, 10) || 0;
+      if (aPin !== bPin) {
+        return aPin - bPin;
+      }
+      const aTime = new Date(convertToISO(rowA.eventTime)).getTime();
+      const bTime = new Date(convertToISO(rowB.eventTime)).getTime();
+      return bTime - aTime;
+    },
   };
 
   // Filtra os dados da tabela
@@ -390,8 +407,8 @@ export const NaccessPresence = () => {
               default:
                 return "";
             }
-            case "eventTime":
-              return isToday(row.eventTime) ? row.eventTime : "";
+          case "eventTime":
+            return isToday(row.eventTime) && row.isPresent ? row.eventTime : "";
           default:
             return row[field.key];
         }
@@ -700,7 +717,7 @@ export const NaccessPresence = () => {
                     responsive
                     persistTableHead={true}
                     defaultSortAsc={true}
-                    defaultSortFieldId="pin"
+                    defaultSortFieldId="isPresent"
                   />
                 )}
               </div>
@@ -717,8 +734,14 @@ export const NaccessPresence = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
-            <TreeViewDataNaccessPresence onSelectEmployees={handleSelectFromTreeView} />
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
+            <TreeViewDataNaccessPresence
+              onSelectEmployees={handleSelectFromTreeView}
+            />
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">
@@ -949,7 +972,7 @@ export const NaccessPresence = () => {
                     responsive
                     persistTableHead={true}
                     defaultSortAsc={true}
-                    defaultSortFieldId="pin"
+                    defaultSortFieldId="isPresent"
                   />
                 )}
               </div>

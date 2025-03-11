@@ -26,7 +26,9 @@ export interface EntityContextType {
     updateEntity: (entity: FormData) => void;
     deleteEntity: (id: string) => void;
     loginLogs: Logs[];
+    setLoginLogs: React.Dispatch<React.SetStateAction<Logs[]>>;
     historyLogs: Logs[];
+    setHistoryLogs: React.Dispatch<React.SetStateAction<Logs[]>>;
     fetchAllLoginLogs: (startDate?: string, endDate?: string, userIds?: string[], pageNo?: "1", pageSize?: "20") => Promise<Logs[]>;
     fetchAllHistoryLogs: (startDate?: string, endDate?: string, userIds?: string[], pageNo?: "1", pageSize?: "20") => Promise<Logs[]>;
     exportBackupDB: (backup: BackupDB) => void;
@@ -188,7 +190,7 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <EntityContext.Provider value={{ entities, setEntities, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, historyLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees, totalHistoryPages, totalLoginPages, totalHistoryRecords, totalLoginRecords }}>
+        <EntityContext.Provider value={{ entities, setEntities, fetchAllEntity, addEntity, updateEntity, deleteEntity, loginLogs, setLoginLogs, historyLogs, setHistoryLogs, fetchAllLoginLogs, fetchAllHistoryLogs, exportBackupDB, importBackupDB, importEmployees, totalHistoryPages, totalLoginPages, totalHistoryRecords, totalLoginRecords }}>
             {children}
             <LoadingModal
                 show={loadingExportBackup || loadingImportBackup || loadingImportEmployees}

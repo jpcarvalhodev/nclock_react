@@ -19564,6 +19564,9 @@ export const NavBar = ({ style }: NavBarProps) => {
                         <Link
                           to="/persons/Persons"
                           type="button"
+                          onClick={() =>
+                            fetchAllDisabledEmployees("1", "20")
+                          }
                           className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                             currentRoute === "/persons/Persons"
                               ? "current-active"

@@ -26,6 +26,7 @@ import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { AddEmployeeToPersonFilterModal } from "../../modals/AddEmployeeToPersonFilterModal";
 import { useMediaQuery } from "react-responsive";
+import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -114,6 +115,12 @@ export const Contacts = () => {
     refreshEmployees();
     setClearSelectionToggle((prev) => !prev);
   };
+
+  // Atualiza a tabela de contactos ao montar o componente
+  useEffect(() => {
+    setFilteredEmployees(disabledEmployees.filter((emp) => emp.type === "Contacto"));
+    setTotalRows(totalEmployeeRecords);
+  }, [disabledEmployees]);
 
   // Busca os funcionários paginados ao mudar a página
   useEffect(() => {

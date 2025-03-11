@@ -31,7 +31,7 @@ const formatDateToEndOfDay = (date: Date): string => {
 };
 
 export const NvisitorAlerts = () => {
-  const { events, fetchEventsDevice, totalEventPages, totalEventRecords } = useTerminals();
+  const { events, setEvents, fetchEventsDevice, totalEventPages, totalEventRecords } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -49,7 +49,6 @@ export const NvisitorAlerts = () => {
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<Alerts[]>([]);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,12 +66,12 @@ export const NvisitorAlerts = () => {
         pageNo,
         perPage
       );
-      setFilteredDevices(data.data);
+      setEvents(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
       console.error("Erro ao buscar acessos paginados:", error);
-      setFilteredDevices([]);
+      setEvents([]);
       setLoading(false);
     }
   };
@@ -81,7 +80,7 @@ export const NvisitorAlerts = () => {
   const fetchAlertsBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllEventDevice(undefined, startDate, endDate);
-      setFilteredDevices(data.data);
+      setEvents(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de alertas:", error);
@@ -95,7 +94,7 @@ export const NvisitorAlerts = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllEventDevice(undefined, start, end);
-      setFilteredDevices(data.data);
+      setEvents(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -114,7 +113,7 @@ export const NvisitorAlerts = () => {
 
     try {
       const data = await apiService.fetchAllEventDevice(undefined, start, end);
-      setFilteredDevices(data.data);
+      setEvents(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -137,7 +136,7 @@ export const NvisitorAlerts = () => {
 
     try {
       const data = await apiService.fetchAllEventDevice(undefined, start, end);
-      setFilteredDevices(data.data);
+      setEvents(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -204,17 +203,17 @@ export const NvisitorAlerts = () => {
           undefined,
         );
         if (foundDevices.data) {
-          setFilteredDevices(foundDevices.data);
+          setEvents(foundDevices.data);
           setTotalRows(foundDevices.totalRecords);
         } else {
-          setFilteredDevices([]);
+          setEvents([]);
         }
       } catch (error) {
         console.error("Erro ao buscar funcionários por número:", error);
       }
     } else {
       refreshTasks();
-      setFilteredDevices(events);
+      setEvents(events);
     }
   };
 
@@ -239,10 +238,10 @@ export const NvisitorAlerts = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(events)) {
       return [];
     }
-    return filteredDevices
+    return events
       .filter(
         (getCoin) =>
           Object.keys(filters).every(
@@ -274,7 +273,7 @@ export const NvisitorAlerts = () => {
         (a, b) =>
           new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [events, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Alerts>[] = alertsFields

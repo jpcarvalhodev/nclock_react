@@ -114,6 +114,12 @@ export const ExternalEmployees = () => {
     refreshEmployees();
     setClearSelectionToggle((prev) => !prev);
   };
+  
+   // Atualiza a tabela de subcontratados ao montar o componente
+   useEffect(() => {
+    setFilteredEmployees(disabledEmployees.filter((emp) => emp.type === "Subcontratado"));
+    setTotalRows(totalEmployeeRecords);
+  }, [disabledEmployees]);
 
   // Busca os funcionários paginados ao mudar a página
   useEffect(() => {

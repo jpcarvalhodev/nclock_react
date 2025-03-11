@@ -42,7 +42,7 @@ export const NkioskPayCoins = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { payCoins, fetchAllPayCoins, payCoinsPages, payCoinsTotalRecords } =
+  const { payCoins, setPayCoins, fetchAllPayCoins, payCoinsPages, payCoinsTotalRecords } =
     useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -59,9 +59,6 @@ export const NkioskPayCoins = () => {
   const [selectedRows, setSelectedRows] = useState<KioskTransactionMB[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<KioskTransactionMB[]>(
-    []
-  );
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
   const [currentPage, setCurrentPage] = useState(1);
@@ -80,7 +77,7 @@ export const NkioskPayCoins = () => {
         pageNo,
         perPage
       );
-      setFilteredDevices(data.data);
+      setPayCoins(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -100,7 +97,7 @@ export const NkioskPayCoins = () => {
         "1",
         "20"
       );
-      setFilteredDevices(data.data);
+      setPayCoins(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados do moedeiro:", error);
@@ -116,7 +113,7 @@ export const NkioskPayCoins = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToEndOfDay(currentDate)
       );
-      setFilteredDevices(data.data);
+      setPayCoins(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
@@ -143,7 +140,7 @@ export const NkioskPayCoins = () => {
         start,
         end
       );
-      setFilteredDevices(data.data);
+      setPayCoins(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -174,7 +171,7 @@ export const NkioskPayCoins = () => {
         start,
         end
       );
-      setFilteredDevices(data.data);
+      setPayCoins(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -207,7 +204,7 @@ export const NkioskPayCoins = () => {
         return payCoinDate >= lastRecolhaDate.toISOString();
       });
       setStartDate(formatDateToStartOfDay(lastRecolhaDate));
-      setFilteredDevices(filteredData);
+      setPayCoins(filteredData);
     } catch (error) {
       console.error("Erro ao buscar os dados da última recolha:", error);
     }
@@ -281,17 +278,17 @@ export const NkioskPayCoins = () => {
             undefined,
           );
         if (foundDevices.data) {
-          setFilteredDevices(foundDevices.data);
+          setPayCoins(foundDevices.data);
           setTotalRows(foundDevices.totalRecords);
         } else {
-          setFilteredDevices([]);
+          setPayCoins([]);
         }
       } catch (error) {
         console.error("Erro ao buscar dispositivos por sn:", error);
       }
     } else {
       refreshPayCoins();
-      setFilteredDevices(payCoins);
+      setPayCoins(payCoins);
     }
   };
 
@@ -316,10 +313,10 @@ export const NkioskPayCoins = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(payCoins)) {
       return [];
     }
-    return filteredDevices
+    return payCoins
       .filter(
         (payCoin) =>
           Object.keys(filters).every(
@@ -351,7 +348,7 @@ export const NkioskPayCoins = () => {
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [payCoins, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields

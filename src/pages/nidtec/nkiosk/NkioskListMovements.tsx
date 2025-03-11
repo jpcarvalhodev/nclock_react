@@ -41,6 +41,7 @@ export const NkioskListMovements = () => {
   pastDate.setDate(currentDate.getDate() - 30);
   const {
     totalMovements,
+    setTotalMovements,
     fetchAllCardAndKiosk,
     totalMovementsPages,
     totalMovementsTotalRecords,
@@ -62,9 +63,6 @@ export const NkioskListMovements = () => {
   const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<
-    KioskTransactionCard[]
-  >([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
@@ -86,7 +84,7 @@ export const NkioskListMovements = () => {
         pageNo,
         perPage
       );
-      setFilteredDevices(data.data);
+      setTotalMovements(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -105,7 +103,7 @@ export const NkioskListMovements = () => {
         startDate,
         endDate
       );
-      setFilteredDevices(data.data);
+      setTotalMovements(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de listagem de movimentos", error);
@@ -122,7 +120,7 @@ export const NkioskListMovements = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToEndOfDay(currentDate)
       );
-      setFilteredDevices(data.data);
+      setTotalMovements(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
@@ -150,7 +148,7 @@ export const NkioskListMovements = () => {
         start,
         end
       );
-      setFilteredDevices(data.data);
+      setTotalMovements(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -182,7 +180,7 @@ export const NkioskListMovements = () => {
         start,
         end
       );
-      setFilteredDevices(data.data);
+      setTotalMovements(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -292,17 +290,17 @@ export const NkioskListMovements = () => {
             undefined
           );
         if (foundEntity.data) {
-          setFilteredDevices(foundEntity.data);
+          setTotalMovements(foundEntity.data);
           setTotalRows(foundEntity.totalRecords);
         } else {
-          setFilteredDevices([]);
+          setTotalMovements([]);
         }
       } catch (error) {
         console.error("Erro ao buscar entidades:", error);
       }
     } else {
       refreshListMovements();
-      setFilteredDevices(totalMovements);
+      setTotalMovements(totalMovements);
     }
   };
 
@@ -327,10 +325,10 @@ export const NkioskListMovements = () => {
 
   // Filtra os dados da tabela com base no filtro de 'eventName'
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(totalMovements)) {
       return [];
     }
-    return filteredDevices
+    return totalMovements
       .filter(
         (moveCards) =>
           Object.keys(filters).every(
@@ -362,7 +360,7 @@ export const NkioskListMovements = () => {
         (a, b) =>
           new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [totalMovements, filters, filterText]);
 
   // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
   const combinedMovements = [

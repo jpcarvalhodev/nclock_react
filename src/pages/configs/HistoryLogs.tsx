@@ -37,6 +37,7 @@ export const HistoryLogs = () => {
   pastDate.setDate(currentDate.getDate() - 30);
   const {
     historyLogs,
+    setHistoryLogs,
     fetchAllHistoryLogs,
     totalHistoryPages,
     totalHistoryRecords
@@ -51,7 +52,6 @@ export const HistoryLogs = () => {
     "createdDate",
   ]);
   const [filters, setFilters] = useState<Record<string, string>>({});
-  const [filteredDevices, setFilteredDevices] = useState<Logs[]>([]);
   const [selectedRows, setSelectedRows] = useState<Logs[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
@@ -73,11 +73,11 @@ export const HistoryLogs = () => {
         pageNo,
         perPage
       );
-      setFilteredDevices(data.data);
+      setHistoryLogs(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar logs paginados:", error);
-      setFilteredDevices([]);
+      setHistoryLogs([]);
     }
   };
 
@@ -85,7 +85,7 @@ export const HistoryLogs = () => {
   const fetchLogsBetweenDates = async () => {
     try {
       const data = await apiService.fetchAllHistoryLogs(startDate, endDate);
-      setFilteredDevices(data.data);
+      setHistoryLogs(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar os dados de logs:", error);
@@ -99,7 +99,7 @@ export const HistoryLogs = () => {
     const end = formatDateToEndOfDay(today);
     try {
       const data = await apiService.fetchAllHistoryLogs(start, end);
-      setFilteredDevices(data.data);
+      setHistoryLogs(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -118,7 +118,7 @@ export const HistoryLogs = () => {
 
     try {
       const data = await apiService.fetchAllHistoryLogs(start, end);
-      setFilteredDevices(data.data);
+      setHistoryLogs(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -141,7 +141,7 @@ export const HistoryLogs = () => {
 
     try {
       const data = await apiService.fetchAllHistoryLogs(start, end);
-      setFilteredDevices(data.data);
+      setHistoryLogs(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -236,26 +236,26 @@ export const HistoryLogs = () => {
             undefined,
             undefined
           );
-          setFilteredDevices(logs.data);
+          setHistoryLogs(logs.data);
           setTotalRows(logs.totalRecords);
         } else {
-          setFilteredDevices([]);
+          setHistoryLogs([]);
         }
       } catch (error) {
         console.error("Erro ao buscar logs para o usuário selecionado:", error);
       }
     } else {
       refreshLogs();
-      setFilteredDevices(historyLogs);
+      setHistoryLogs(historyLogs);
     }
   };
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(historyLogs)) {
       return [];
     }
-    return filteredDevices
+    return historyLogs
       .filter(
         (getCoin) =>
           Object.keys(filters).every(
@@ -287,7 +287,7 @@ export const HistoryLogs = () => {
         (a, b) =>
           new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [historyLogs, filters, filterText]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Logs>[] = logsFields

@@ -256,7 +256,6 @@ export const Terminals = () => {
   const [filteredUsersInTerminal, setFilteredUsersInTerminal] = useState<
     EmployeesOnDevice[]
   >([]);
-  const [totalMoveRows, setTotalMoveRows] = useState(0);
   const [refreshIntervalTasks, setRefreshIntervalTasks] = useState(10000);
 
   // Função para buscar todos as biometrias

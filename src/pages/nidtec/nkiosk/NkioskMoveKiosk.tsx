@@ -63,9 +63,6 @@ export const NkioskMoveKiosk = () => {
   const [selectedRows, setSelectedRows] = useState<KioskTransactionCard[]>([]);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [selectedDevicesIds, setSelectedDevicesIds] = useState<string[]>([]);
-  const [filteredDevices, setFilteredDevices] = useState<
-    KioskTransactionCard[]
-  >([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
@@ -87,7 +84,7 @@ export const NkioskMoveKiosk = () => {
         pageNo,
         perPage
       );
-      setFilteredDevices(data.data);
+      setMoveKiosk(data.data);
       setTotalRows(data.totalRecords);
       setLoading(false);
     } catch (error) {
@@ -106,7 +103,7 @@ export const NkioskMoveKiosk = () => {
         startDate,
         endDate
       );
-      setFilteredDevices(data.data);
+      setMoveKiosk(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error(
@@ -126,7 +123,7 @@ export const NkioskMoveKiosk = () => {
         formatDateToStartOfDay(currentDate),
         formatDateToEndOfDay(currentDate)
       );
-      setFilteredDevices(data.data);
+      setMoveKiosk(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(formatDateToStartOfDay(currentDate));
       setEndDate(formatDateToEndOfDay(currentDate));
@@ -154,7 +151,7 @@ export const NkioskMoveKiosk = () => {
         start,
         end
       );
-      setFilteredDevices(data.data);
+      setMoveKiosk(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -186,7 +183,7 @@ export const NkioskMoveKiosk = () => {
         start,
         end
       );
-      setFilteredDevices(data.data);
+      setMoveKiosk(data.data);
       setTotalRows(data.totalRecords);
       setStartDate(start);
       setEndDate(end);
@@ -297,17 +294,17 @@ export const NkioskMoveKiosk = () => {
             undefined
           );
         if (foundEntity.data) {
-          setFilteredDevices(foundEntity.data);
+          setMoveKiosk(foundEntity.data);
           setTotalRows(foundEntity.totalRecords);
         } else {
-          setFilteredDevices([]);
+          setMoveKiosk([]);
         }
       } catch (error) {
         console.error("Erro ao buscar entidades:", error);
       }
     } else {
       refreshMoveKiosk();
-      setFilteredDevices(moveKiosk);
+      setMoveKiosk(moveKiosk);
     }
   };
 
@@ -332,10 +329,10 @@ export const NkioskMoveKiosk = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredDevices)) {
+    if (!Array.isArray(moveKiosk)) {
       return [];
     }
-    return filteredDevices
+    return moveKiosk
       .filter(
         (moveKiosks) =>
           Object.keys(filters).every(
@@ -367,7 +364,7 @@ export const NkioskMoveKiosk = () => {
         (a, b) =>
           new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [moveKiosk, filters, filterText]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: KioskTransactionCard) => {
