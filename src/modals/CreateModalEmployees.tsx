@@ -17,6 +17,8 @@ import { toast } from "react-toastify";
 import hidepass from "../assets/img/login/hidepass.png";
 import showpass from "../assets/img/login/showpass.png";
 import modalAvatar from "../assets/img/navbar/navbar/modalAvatar.png";
+import hand from "../assets/img/modals/hand.svg";
+import handLeft from "../assets/img/modals/handLeft.svg";
 import { CustomOutlineButton } from "../components/CustomOutlineButton";
 import { useEntity } from "../context/EntityContext";
 import { usePersons } from "../context/PersonsContext";
@@ -880,7 +882,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
               <Nav.Link eventKey="cartoes">Cartões</Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="biometria">Biometria</Nav.Link>
+              <Nav.Link eventKey="digitais">Digitais</Nav.Link>
             </Nav.Item>
           </Nav>
           <Tab.Content>
@@ -1250,12 +1252,171 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                 </Row>
               </Form>
             </Tab.Pane>
-            {/* <Tab.Pane eventKey="biometria">
+            <Tab.Pane eventKey="digitais">
               <Form style={{ marginTop: 10 }}>
-                <h5 style={{ marginTop: 20 }}>Selecione o dedo para capturar a digital</h5>
-                <HandFingerprintCapture onFingerClick={handleFingerClick} />
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <h5 style={{ marginTop: 20 }}>
+                    Selecione um dedo para capturar a digital
+                  </h5>
+                  <div style={{ display: "flex" }}>
+                    <div
+                      style={{ position: "relative", width: 250, height: 250 }}
+                    >
+                      <img
+                        src={handLeft}
+                        alt="Mão esquerda para inserir biometria"
+                        style={{ width: "100%", height: "100%" }}
+                      />
+                      {/* "Mindinho Esquerdo" */}
+                      <div
+                        onClick={() => handleFingerClick("Mindinho")}
+                        style={{
+                          position: "absolute",
+                          top: "60px",
+                          left: "25px",
+                          width: "30px",
+                          height: "50px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                      {/* "Anelar Esquerdo" */}
+                      <div
+                        onClick={() => handleFingerClick("Anelar")}
+                        style={{
+                          position: "absolute",
+                          top: "15px",
+                          left: "60px",
+                          width: "30px",
+                          height: "80px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                      {/* "Médio Esquerdo" */}
+                      <div
+                        onClick={() => handleFingerClick("Médio")}
+                        style={{
+                          position: "absolute",
+                          top: "6px",
+                          left: "97px",
+                          width: "30px",
+                          height: "90px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                      {/* "Indicador Esquerdo" */}
+                      <div
+                        onClick={() => handleFingerClick("Indicador")}
+                        style={{
+                          position: "absolute",
+                          top: "13px",
+                          left: "130px",
+                          width: "35px",
+                          height: "90px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                      {/* "Polegar Esquerdo" */}
+                      <div
+                        onClick={() => handleFingerClick("Polegar")}
+                        style={{
+                          position: "absolute",
+                          top: "100px",
+                          left: "170px",
+                          width: "50px",
+                          height: "60px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{ position: "relative", width: 250, height: 250 }}
+                    >
+                      <img
+                        src={hand}
+                        alt="Mão direita para inserir biometria"
+                        style={{ width: "100%", height: "100%" }}
+                      />
+                      {/* "Polegar Direito" */}
+                      <div
+                        onClick={() => handleFingerClick("Polegar")}
+                        style={{
+                          position: "absolute",
+                          top: "100px",
+                          left: "30px",
+                          width: "50px",
+                          height: "60px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                      {/* "Indicador Direito" */}
+                      <div
+                        onClick={() => handleFingerClick("Indicador")}
+                        style={{
+                          position: "absolute",
+                          top: "13px",
+                          left: "83px",
+                          width: "35px",
+                          height: "90px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                      {/* "Médio Direito" */}
+                      <div
+                        onClick={() => handleFingerClick("Médio")}
+                        style={{
+                          position: "absolute",
+                          top: "6px",
+                          left: "123px",
+                          width: "30px",
+                          height: "90px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                      {/* "Anelar Direito" */}
+                      <div
+                        onClick={() => handleFingerClick("Anelar")}
+                        style={{
+                          position: "absolute",
+                          top: "15px",
+                          left: "160px",
+                          width: "30px",
+                          height: "80px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                      {/* "Mindinho Direito" */}
+                      <div
+                        onClick={() => handleFingerClick("Mindinho")}
+                        style={{
+                          position: "absolute",
+                          top: "60px",
+                          left: "195px",
+                          width: "30px",
+                          height: "50px",
+                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </Form>
-            </Tab.Pane> */}
+            </Tab.Pane>
           </Tab.Content>
         </Tab.Container>
       </Modal.Body>
