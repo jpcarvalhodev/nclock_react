@@ -891,9 +891,9 @@ export const UpdateModalEmployees = <T extends Entity>({
             <Nav.Item>
               <Nav.Link eventKey="cartoes">Cartões</Nav.Link>
             </Nav.Item>
-            <Nav.Item>
+            {/* <Nav.Item>
               <Nav.Link eventKey="digitais">Digitais</Nav.Link>
-            </Nav.Item>
+            </Nav.Item> */}
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="dadosPessoais">
@@ -933,7 +933,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                             name="gender"
                           >
                             <option value="">Selecione...</option>
-                            {genderOptions.map((option) => (
+                            {genderOptions?.map((option) => (
                               <option
                                 key={String(option.value)}
                                 value={String(option.value)}
@@ -1003,7 +1003,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                             name="nationality"
                           >
                             <option value="">Selecione...</option>
-                            {nationalities.map((nat) => (
+                            {nationalities?.map((nat) => (
                               <option key={nat} value={nat}>
                                 {nat}
                               </option>
@@ -1292,7 +1292,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "25px",
                           width: "30px",
                           height: "50px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1305,7 +1305,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "60px",
                           width: "30px",
                           height: "80px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1318,7 +1318,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "97px",
                           width: "30px",
                           height: "90px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1331,7 +1331,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "130px",
                           width: "35px",
                           height: "90px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1344,7 +1344,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "170px",
                           width: "50px",
                           height: "60px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1366,7 +1366,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "30px",
                           width: "50px",
                           height: "60px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1379,7 +1379,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "83px",
                           width: "35px",
                           height: "90px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1392,7 +1392,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "123px",
                           width: "30px",
                           height: "90px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1405,7 +1405,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "160px",
                           width: "30px",
                           height: "80px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1418,7 +1418,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                           left: "195px",
                           width: "30px",
                           height: "50px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />

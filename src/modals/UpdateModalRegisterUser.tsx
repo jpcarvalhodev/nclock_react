@@ -476,7 +476,7 @@ export const UpdateModalRegisterUsers = <T extends Entity>({
                     }`}
                     as="select"
                     name="roles"
-                    value={formData.roles || ""}
+                    value={Array.isArray(formData.roles) ? formData.roles[0] || "" : formData.roles || ""}
                     onChange={handleChange}
                   >
                     <option value="">Selecione...</option>

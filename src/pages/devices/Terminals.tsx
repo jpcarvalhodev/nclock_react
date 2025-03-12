@@ -2789,7 +2789,7 @@ export const Terminals = () => {
                         noDataComponent={
                           selectedTerminal
                             ? "Não há dados disponíveis para exibir."
-                            : "Selecione um terminal para exibir os utilizadores."
+                            : "Selecione um terminal online para exibir os utilizadores."
                         }
                         customStyles={customStyles}
                         striped

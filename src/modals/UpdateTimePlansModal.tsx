@@ -197,7 +197,7 @@ export const UpdateTimePlansModal = <T extends Record<string, any>>({
                       className="custom-input-height custom-select-font-size"
                       type="text"
                       name="nome"
-                      value={formData.nome}
+                      value={formData.nome || ""}
                       onChange={handleChange}
                       maxLength={150}
                     />
@@ -210,7 +210,7 @@ export const UpdateTimePlansModal = <T extends Record<string, any>>({
                       className="custom-input-height custom-select-font-size"
                       type="text"
                       name="descricao"
-                      value={formData.descricao}
+                      value={formData.descricao || ""}
                       onChange={handleChange}
                       maxLength={250}
                     />

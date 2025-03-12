@@ -328,7 +328,7 @@ export const UpdateEntityModal = <T extends Entity>({
                   className="custom-input-height custom-select-font-size"
                   type="text"
                   name="morada"
-                  value={formData.morada}
+                  value={formData.morada || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -338,7 +338,7 @@ export const UpdateEntityModal = <T extends Entity>({
                   className="custom-input-height custom-select-font-size"
                   type="text"
                   name="cPostal"
-                  value={formData.cPostal}
+                  value={formData.cPostal || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -348,7 +348,7 @@ export const UpdateEntityModal = <T extends Entity>({
                   className="custom-input-height custom-select-font-size"
                   type="text"
                   name="telemovel"
-                  value={formData.telemovel}
+                  value={formData.telemovel || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -368,7 +368,7 @@ export const UpdateEntityModal = <T extends Entity>({
                     }`}
                     type="number"
                     name="nif"
-                    value={formData.nif}
+                    value={formData.nif || ""}
                     onChange={handleChange}
                   />
                 </OverlayTrigger>
@@ -396,7 +396,7 @@ export const UpdateEntityModal = <T extends Entity>({
                     }`}
                     type="text"
                     name="nome"
-                    value={formData.nome}
+                    value={formData.nome || ""}
                     onChange={handleChange}
                   />
                 </OverlayTrigger>
@@ -412,7 +412,7 @@ export const UpdateEntityModal = <T extends Entity>({
                   className="custom-input-height custom-select-font-size"
                   type="text"
                   name="localidade"
-                  value={formData.localidade}
+                  value={formData.localidade || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -422,7 +422,7 @@ export const UpdateEntityModal = <T extends Entity>({
                   className="custom-input-height custom-select-font-size"
                   type="text"
                   name="telefone"
-                  value={formData.telefone}
+                  value={formData.telefone || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -432,7 +432,7 @@ export const UpdateEntityModal = <T extends Entity>({
                   className="custom-input-height custom-select-font-size"
                   type="email"
                   name="email"
-                  value={formData.email}
+                  value={formData.email || ""}
                   onChange={handleChange}
                 />
                 {errors["email"] && errors["email"].hasError && (
@@ -447,7 +447,7 @@ export const UpdateEntityModal = <T extends Entity>({
                   className="custom-input-height custom-select-font-size"
                   type="url"
                   name="www"
-                  value={formData.www}
+                  value={formData.www || ""}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -460,7 +460,7 @@ export const UpdateEntityModal = <T extends Entity>({
                     as="textarea"
                     rows={3}
                     name="observacoes"
-                    value={formData.observacoes}
+                    value={formData.observacoes || ""}
                     onChange={handleChange}
                     className="custom-select-font-size textarea"
                   />

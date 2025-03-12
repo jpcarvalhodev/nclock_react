@@ -135,6 +135,15 @@ export const NkioskDashboardLicensed = () => {
   // Função para buscar os dados para os gráficos
   const fetchAllData = async () => {
     try {
+      if (
+        !Array.isArray(payCoinsNoPagination) ||
+        !Array.isArray(payTerminalNoPagination) ||
+        !Array.isArray(moveCardNoPagination) ||
+        !Array.isArray(moveKioskNoPagination) ||
+        !Array.isArray(totalMovementsNoPagination)
+      ) {
+        return;
+      }
       const todayMb = payTerminalNoPagination.filter((item) =>
         isToday(
           item.timestamp instanceof Date

@@ -881,9 +881,9 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
             <Nav.Item>
               <Nav.Link eventKey="cartoes">Cartões</Nav.Link>
             </Nav.Item>
-            <Nav.Item>
+            {/* <Nav.Item>
               <Nav.Link eventKey="digitais">Digitais</Nav.Link>
-            </Nav.Item>
+            </Nav.Item> */}
           </Nav>
           <Tab.Content>
             <Tab.Pane eventKey="dadosPessoais">
@@ -1282,7 +1282,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "25px",
                           width: "30px",
                           height: "50px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1295,7 +1295,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "60px",
                           width: "30px",
                           height: "80px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1308,7 +1308,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "97px",
                           width: "30px",
                           height: "90px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1321,7 +1321,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "130px",
                           width: "35px",
                           height: "90px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1334,7 +1334,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "170px",
                           width: "50px",
                           height: "60px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1356,7 +1356,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "30px",
                           width: "50px",
                           height: "60px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1369,7 +1369,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "83px",
                           width: "35px",
                           height: "90px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1382,7 +1382,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "123px",
                           width: "30px",
                           height: "90px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1395,7 +1395,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "160px",
                           width: "30px",
                           height: "80px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />
@@ -1408,7 +1408,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                           left: "195px",
                           width: "30px",
                           height: "50px",
-                          backgroundColor: "rgba(0, 255, 0, 0.2)",
+                          backgroundColor: "transparent",
                           cursor: "pointer",
                         }}
                       />

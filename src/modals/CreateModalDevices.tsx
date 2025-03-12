@@ -257,8 +257,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
 
   // Função para validar o endereço IP
   const validateIPAddress = (ip: string) => {
-    const regex =
-      /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9])$/;
+    const regex = /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})$/;
     return regex.test(ip);
   };
 
@@ -463,7 +462,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
             </Nav>
             <Tab.Content>
               <Tab.Pane eventKey="ac/as">
-                <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                <div style={{ marginTop: 10, marginBottom: 10 }}>
                   <Row>
                     <Col md={3}>
                       <Form.Group controlId="formDeviceName">
@@ -869,7 +868,7 @@ export const CreateModalDevices = <T extends Record<string, any>>({
                       </Tab.Container>
                     </Col>
                   </Row>
-                </Form>
+                </div>
               </Tab.Pane>
             </Tab.Content>
             <Tab.Content>

@@ -291,7 +291,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({
                 <Form.Control
                   type="text"
                   name="remark"
-                  value={formData.remark}
+                  value={formData.remark || ""}
                   onChange={handleChange}
                   maxLength={50}
                   className="custom-input-height custom-select-font-size"
@@ -315,7 +315,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({
                   <Form.Control
                     type="text"
                     name="name"
-                    value={formData.name}
+                    value={formData.name || ""}
                     onChange={handleChange}
                     className={`custom-input-height custom-select-font-size ${showValidationErrors ? "error-border" : ""}`}
                   />
@@ -337,7 +337,7 @@ export const CreateModalPeriods = <T extends Partial<TimePeriod>>({
                   type="text"
                   name="appId"
                   readOnly
-                  value={formData.appId}
+                  value={formData.appId || ""}
                   onChange={handleChange}
                   className="custom-input-height custom-select-font-size"
                 />

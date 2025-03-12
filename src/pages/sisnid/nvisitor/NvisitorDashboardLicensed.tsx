@@ -130,6 +130,13 @@ export const NvisitorDashboardLicensed = () => {
   // Função para agrupar os movimentos por mês
   const fetchAllData = async () => {
     try {
+      if (
+        !Array.isArray(moveCardNoPagination) ||
+        !Array.isArray(moveKioskNoPagination) ||
+        !Array.isArray(totalMovementsNoPagination)
+      ) {
+        return;
+      }
       const todayCard = moveCardNoPagination.filter((item) =>
         isToday(
           item.eventTime instanceof Date
@@ -144,7 +151,7 @@ export const NvisitorDashboardLicensed = () => {
             : parseISO(item.eventTime)
         )
       );
-      
+
       setTodayTotalCard(todayCard);
       setTodayTotalKiosk(todayKiosk);
 

@@ -558,7 +558,7 @@ function App() {
                 <TerminalsProvider>
                   <AdsProvider>
                     <KioskProvider>
-                      <Router>
+                      <Router future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
                         <ToastContainer />
                         <AnimatedRoutes />
                       </Router>

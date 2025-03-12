@@ -134,7 +134,10 @@ export const UpdateModalDevices = <T extends Entity>({
   // UseEffect para atualizar o estado do formulário
   useEffect(() => {
     if (open && entity) {
-      if (entity.model === "Newland U1000" || entity.modelo === "Newland U1000") {
+      if (
+        entity.model === "Newland U1000" ||
+        entity.modelo === "Newland U1000"
+      ) {
         setActiveTab("multibanco");
       } else {
         setActiveTab("ac/as");
@@ -165,56 +168,72 @@ export const UpdateModalDevices = <T extends Entity>({
   }, [open, entity]);
 
   // Define os campos ativos
-  const activeFields = activeTab === "multibanco"
-  ? [
-      { key: "nomeQuiosque", label: "Nome do Terminal", type: "string", required: true },
-      { key: "modelo", label: "Modelo", type: "string" },
-      { key: "timeReboot", label: "Tempo de Reinício", type: "string", required: false }
-    ]
-  : [
-    { key: "deviceNumber", label: "Número", type: "number", required: true },
-    { key: "deviceName", label: "Nome", type: "string", required: true },
-    { key: "status", label: "Estado", type: "boolean" },
-    { key: "model", label: "Modelo", type: "string" },
-    { key: "ipAddress", label: "Endereço IP", type: "string" },
-    { key: "port", label: "Porta", type: "number" },
-    { key: "photo", label: "Foto", type: "string" },
-    { key: "code", label: "Código", type: "number" },
-    { key: "platform", label: "Platforma", type: "string" },
-    { key: "firmware", label: "Firmware", type: "string" },
-    { key: "macAddress", label: "Endereço MAC", type: "string" },
-    { key: "serialNumber", label: "Nº Serial", type: "string" },
-    { key: "readerCount", label: "Contagem no Leitor", type: "number" },
-    { key: "auxInCount", label: "Contagem de Entrada", type: "number" },
-    { key: "auxOutCount", label: "Contagem de Saída", type: "number" },
-    {
-      key: "maxUserCount",
-      label: "Contagem Máxima de Utilizadores",
-      type: "number",
-    },
-    {
-      key: "maxAttLogCount",
-      label: "Contagem Máxima de Atualizações de Log",
-      type: "number",
-    },
-    {
-      key: "maxFingerCount",
-      label: "Contagem Máxima de Digitais",
-      type: "number",
-    },
-    {
-      key: "maxUserFingerCount",
-      label: "Contagem Máxima de Digitais de Utilizadores",
-      type: "number",
-    },
-    { key: "faceAlg", label: "Algoritmo Facial", type: "number" },
-    { key: "fpAlg", label: "Algoritmo de Digitais", type: "number" },
-    { key: "productTime", label: "Tempo de Produção", type: "Date" },
-    { key: "producter", label: "Produtor", type: "string" },
-    { key: "deviceProtocol", label: "Protocolo", type: "number" },
-    { key: "deviceType", label: "Tipo", type: "number" },
-    { key: "enabled", label: "Activo", type: "boolean" },
-  ];
+  const activeFields =
+    activeTab === "multibanco"
+      ? [
+          {
+            key: "nomeQuiosque",
+            label: "Nome do Terminal",
+            type: "string",
+            required: true,
+          },
+          { key: "modelo", label: "Modelo", type: "string" },
+          {
+            key: "timeReboot",
+            label: "Tempo de Reinício",
+            type: "string",
+            required: false,
+          },
+        ]
+      : [
+          {
+            key: "deviceNumber",
+            label: "Número",
+            type: "number",
+            required: true,
+          },
+          { key: "deviceName", label: "Nome", type: "string", required: true },
+          { key: "status", label: "Estado", type: "boolean" },
+          { key: "model", label: "Modelo", type: "string" },
+          { key: "ipAddress", label: "Endereço IP", type: "string" },
+          { key: "port", label: "Porta", type: "number" },
+          { key: "photo", label: "Foto", type: "string" },
+          { key: "code", label: "Código", type: "number" },
+          { key: "platform", label: "Platforma", type: "string" },
+          { key: "firmware", label: "Firmware", type: "string" },
+          { key: "macAddress", label: "Endereço MAC", type: "string" },
+          { key: "serialNumber", label: "Nº Serial", type: "string" },
+          { key: "readerCount", label: "Contagem no Leitor", type: "number" },
+          { key: "auxInCount", label: "Contagem de Entrada", type: "number" },
+          { key: "auxOutCount", label: "Contagem de Saída", type: "number" },
+          {
+            key: "maxUserCount",
+            label: "Contagem Máxima de Utilizadores",
+            type: "number",
+          },
+          {
+            key: "maxAttLogCount",
+            label: "Contagem Máxima de Atualizações de Log",
+            type: "number",
+          },
+          {
+            key: "maxFingerCount",
+            label: "Contagem Máxima de Digitais",
+            type: "number",
+          },
+          {
+            key: "maxUserFingerCount",
+            label: "Contagem Máxima de Digitais de Utilizadores",
+            type: "number",
+          },
+          { key: "faceAlg", label: "Algoritmo Facial", type: "number" },
+          { key: "fpAlg", label: "Algoritmo de Digitais", type: "number" },
+          { key: "productTime", label: "Tempo de Produção", type: "Date" },
+          { key: "producter", label: "Produtor", type: "string" },
+          { key: "deviceProtocol", label: "Protocolo", type: "number" },
+          { key: "deviceType", label: "Tipo", type: "number" },
+          { key: "enabled", label: "Activo", type: "boolean" },
+        ];
 
   // UseEffect para validar o formulário
   useEffect(() => {
@@ -382,8 +401,7 @@ export const UpdateModalDevices = <T extends Entity>({
 
   // Função para validar o endereço IP
   const validateIPAddress = (ip: string) => {
-    const regex =
-      /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[1-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9])$/;
+    const regex = /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})$/;
     return regex.test(ip);
   };
 
@@ -860,7 +878,7 @@ export const UpdateModalDevices = <T extends Entity>({
             </Nav>
             <Tab.Content>
               <Tab.Pane eventKey="ac/as">
-                <Form style={{ marginTop: 10, marginBottom: 10 }}>
+                <div style={{ marginTop: 10, marginBottom: 10 }}>
                   <Row>
                     <Col md={3}>
                       <Form.Group controlId="formDeviceName">
@@ -901,8 +919,7 @@ export const UpdateModalDevices = <T extends Entity>({
                           value={selectedDevice}
                           className="custom-input-height custom-select-font-size"
                           readOnly
-                        >
-                        </Form.Control>
+                        ></Form.Control>
                       </Form.Group>
                     </Col>
                     <Col md={3}>
@@ -1385,7 +1402,7 @@ export const UpdateModalDevices = <T extends Entity>({
                       </Tab.Container>
                     </Col>
                   </Row>
-                </Form>
+                </div>
               </Tab.Pane>
             </Tab.Content>
             <Tab.Content>
@@ -1431,8 +1448,7 @@ export const UpdateModalDevices = <T extends Entity>({
                               onChange={handleChange}
                               className="custom-input-height custom-select-font-size"
                               readOnly
-                            >
-                            </Form.Control>
+                            ></Form.Control>
                           ) : (
                             <Form.Control
                               type={field.type === "number" ? "number" : "text"}

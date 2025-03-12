@@ -276,7 +276,7 @@ export const UpdateModalPeriods = <T extends Entity>({
                 <Form.Control
                   type="text"
                   name="remark"
-                  value={formData.remark}
+                  value={formData.remark || ""}
                   onChange={handleChange}
                   maxLength={50}
                   className="custom-input-height custom-select-font-size"
@@ -300,7 +300,7 @@ export const UpdateModalPeriods = <T extends Entity>({
                   <Form.Control
                     type="text"
                     name="name"
-                    value={formData.name}
+                    value={formData.name || ""}
                     onChange={handleChange}
                     className={`custom-input-height custom-select-font-size ${
                       showValidationErrors ? "error-border" : ""
@@ -324,7 +324,7 @@ export const UpdateModalPeriods = <T extends Entity>({
                   type="text"
                   name="appId"
                   readOnly
-                  value={formData.appId}
+                  value={formData.appId || ""}
                   onChange={handleChange}
                   className="custom-input-height custom-select-font-size"
                 />

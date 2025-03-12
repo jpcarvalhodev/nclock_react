@@ -1,4 +1,4 @@
-import { ArcElement, BarController, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, PieController, Tooltip } from 'chart.js';
+import { ArcElement, BarController, BarElement, CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, PieController, Tooltip } from 'chart.js';
 import { format, getDay, parse, setYear, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 import { Employee } from "../../../types/Types";
 
 // Registra os elementos do ChartJS
-ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend);
+ChartJS.register(PieController, ArcElement, BarElement, BarController, CategoryScale, LinearScale, Tooltip, Legend, Filler);
 
 // Define a linguagem do calendário
 const locales = {
@@ -93,6 +93,10 @@ export const NclockDashboardLicensed = () => {
     const fetchEvents = async (): Promise<CalendarEvent[]> => {
         try {
             const employees: Employee[] = await apiService.fetchAllEmployees();
+            if (!Array.isArray(employees)) {
+                console.error("Erro: Dados inesperados recebidos", employees);
+                return [];
+            }
             const currentYear = new Date().getFullYear();
             return employees.map(employee => {
                 const birthday = new Date(employee.birthday);

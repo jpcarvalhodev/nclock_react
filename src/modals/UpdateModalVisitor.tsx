@@ -370,6 +370,12 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
     handleClose();
   };
 
+  // Define a função de formatação de data e hora
+  const formatDateTimeLocal = (dateString: string) => {
+    if (!dateString) return "";
+    return dateString.split(".")[0].slice(0, 16);
+  };
+
   return (
     <Modal show={open} onHide={handleClose} size="xl" centered>
       <Modal.Header closeButton style={{ backgroundColor: "#f2f2f2" }}>
@@ -387,7 +393,7 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
                     <Form.Control
                       type="datetime-local"
                       className="custom-input-height custom-select-font-size"
-                      value={formData.dataInicio || ""}
+                      value={formData.dataInicio ? formatDateTimeLocal(formData.dataInicio as string) : ""}
                       onChange={handleChange}
                       name="dataInicio"
                     />
@@ -409,7 +415,7 @@ export const UpdateModalVisitor = <T extends Record<string, any>>({
                     <Form.Control
                       type="datetime-local"
                       className="custom-input-height custom-select-font-size"
-                      value={formData.dataFim || ""}
+                      value={formData.dataFim ? formatDateTimeLocal(formData.dataFim as string) : ""}
                       onChange={handleChange}
                       name="dataFim"
                     />

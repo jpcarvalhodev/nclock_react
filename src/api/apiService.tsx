@@ -2420,7 +2420,7 @@ export const updateExternalEntityTypes = async (
   externalEntityType: ExternalEntityTypes
 ) => {
   const response = await fetchWithAuth(
-    `ExternalEntityTypes/${externalEntityType.externalEntityID}`,
+    `ExternalEntityTypes/${externalEntityType.externalEntityTypeID}`,
     {
       method: "PUT",
       headers: {

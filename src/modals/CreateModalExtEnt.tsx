@@ -352,9 +352,9 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({
                 name="externalEntityTypeId"
               >
                 <option value="">Selecione...</option>
-                {dropdownData.externalEntityTypeId?.map((option) => (
+                {dropdownData?.externalEntityTypeId?.map((option, index) => (
                   <option
-                    key={option.externalEntityTypeID}
+                    key={option.externalEntityTypeID || `option-${index}`}
                     value={option.externalEntityTypeID}
                   >
                     {option.name}
@@ -388,15 +388,16 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({
                         className="custom-input-height custom-select-font-size"
                       >
                         <option value="">Selecione...</option>
-                        {dropdownData.responsibleName &&
-                          dropdownData.responsibleName.map((employee) => (
+                        {dropdownData?.responsibleName?.map(
+                          (employee, index) => (
                             <option
-                              key={employee.employeeID}
-                              value={employee.employeeID}
+                              key={employee.id || `employee-${index}`}
+                              value={employee.id}
                             >
                               {employee.enrollNumber} - {employee.name}
                             </option>
-                          ))}
+                          )
+                        )}
                       </Form.Control>
                     </Form.Group>
                     <Form.Group controlId="formPhone">
@@ -533,8 +534,8 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({
                     { label: "Localidade", key: "locality", type: "string" },
                     { label: "Freguesia", key: "village", type: "string" },
                     { label: "Distrito", key: "district", type: "string" },
-                  ].map((field) => (
-                    <Col md={3}>
+                  ].map((field, index) => (
+                    <Col md={3} key={index}>
                       <Form.Group controlId={`form${field.key}`}>
                         <Form.Label>{field.label}</Form.Label>
                         <Form.Control

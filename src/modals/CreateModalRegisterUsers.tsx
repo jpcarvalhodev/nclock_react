@@ -485,7 +485,7 @@ export const CreateModalRegisterUsers = <T extends Record<string, any>>({
                     }`}
                     as="select"
                     name="roles"
-                    value={formData.roles || ""}
+                    value={Array.isArray(formData.roles) ? formData.roles[0] || "" : formData.roles || ""}
                     onChange={handleChange}
                   >
                     <option value="">Selecione...</option>
