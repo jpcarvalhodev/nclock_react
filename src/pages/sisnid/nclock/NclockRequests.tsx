@@ -75,6 +75,7 @@ export const NclockRequests = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "employeeName",
+    "enrollNumber",
     "observation",
     "attendanceTime",
   ]);
@@ -263,7 +264,7 @@ export const NclockRequests = () => {
 
   // Função para resetar as colunas
   const handleResetColumns = () => {
-    setSelectedColumns(["employeeName", "observation", "attendanceTime"]);
+    setSelectedColumns(["employeeName", "enrollNumber", "observation", "attendanceTime"]);
   };
 
   // Função para atualizar os funcionários
@@ -306,7 +307,6 @@ export const NclockRequests = () => {
   // Remove o campo de número, nome, modo de entrada/saída e tipo
   const filteredColumns = employeeAttendanceTimesFields.filter(
     (field) =>
-      field.key !== "enrollNumber" &&
       field.key !== "employeeId" &&
       field.key !== "inOutMode" &&
       field.key !== "type" &&

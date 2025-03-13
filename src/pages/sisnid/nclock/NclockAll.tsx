@@ -61,6 +61,7 @@ export const NclockAll = () => {
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
+    "enrollNumber",
     "employeeName",
     "inOutMode",
     "attendanceTime",
@@ -222,6 +223,7 @@ export const NclockAll = () => {
   // Função para resetar as colunas
   const handleResetColumns = () => {
     setSelectedColumns([
+      "enrollNumber",
       "employeeName",
       "inOutMode",
       "attendanceTime",
@@ -233,10 +235,8 @@ export const NclockAll = () => {
   const filteredColumns = employeeAttendanceTimesFields.filter(
     (field) =>
       field.key !== "employeeId" &&
-      field.key !== "enrollNumber" &&
       field.key !== "type" &&
       field.key !== "deviceNumber" &&
-      field.key !== "deviceId" &&
       field.key !== "verifyMode" &&
       field.key !== "workCode"
   );

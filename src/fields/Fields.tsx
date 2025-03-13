@@ -127,20 +127,20 @@ export const employeeAttendanceTimesFields = [
     type: "datetime-local",
     required: true,
   },
-  { key: "deviceId", label: "Equipamento", type: "dropdown" },
-  { key: "deviceNumber", label: "Nº do Equipamento", type: "number" },
+  { key: "enrollNumber", label: "Número", type: "string" },
   {
     key: "employeeId",
     label: "Nome do Funcionário",
     type: "dropdown",
     required: true,
   },
-  { key: "enrollNumber", label: "Nº", type: "string" },
   { key: "employeeName", label: "Nome do Funcionário", type: "string" },
   { key: "inOutMode", label: "Tipo", type: "number" },
   { key: "observation", label: "Observação", type: "string" },
   { key: "type", label: "Tipo", type: "number" },
   { key: "workCode", label: "Código", type: "number" },
+  { key: "deviceId", label: "Equipamento", type: "dropdown" },
+  { key: "deviceNumber", label: "Nº do Equipamento", type: "number" },
 ];
 
 export const deviceFields = [

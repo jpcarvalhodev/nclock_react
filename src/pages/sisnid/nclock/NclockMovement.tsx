@@ -28,6 +28,7 @@ import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { useTerminals } from "../../../context/TerminalsContext";
 
 // Define a interface para os filtros
 interface Filters {
@@ -51,6 +52,7 @@ export const NclockMovement = () => {
     fetchAllAttendancesBetweenDates,
     handleAddAttendance,
   } = useAttendance();
+  const { devices } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -65,8 +67,10 @@ export const NclockMovement = () => {
   >([]);
   const [showAddAttendanceModal, setShowAddAttendanceModal] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
+    "enrollNumber",
     "employeeName",
     "inOutMode",
+    "deviceId",
     "attendanceTime",
   ]);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
@@ -236,7 +240,13 @@ export const NclockMovement = () => {
 
   // Função para resetar as colunas
   const handleResetColumns = () => {
-    setSelectedColumns(["employeeName", "inOutMode", "attendanceTime"]);
+    setSelectedColumns([
+      "enrollNumber",
+      "employeeName",
+      "inOutMode",
+      "deviceId",
+      "attendanceTime",
+    ]);
   };
 
   // Função para atualizar os funcionários
@@ -273,10 +283,10 @@ export const NclockMovement = () => {
   const filteredColumns = employeeAttendanceTimesFields.filter(
     (field) =>
       field.key !== "observation" &&
-      field.key !== "enrollNumber" &&
       field.key !== "employeeName" &&
       field.key !== "type" &&
-      field.key !== "deviceNumber"
+      field.key !== "deviceNumber" &&
+      field.key !== "workCode"
   );
 
   // Filtra os dados da tabela
@@ -358,8 +368,12 @@ export const NclockMovement = () => {
           switch (field.key) {
             case "attendanceTime":
               return new Date(row.attendanceTime).toLocaleString() || "";
-            case "deviceId":
-              return row.deviceNumber || "";
+            case "deviceId": {
+              const device = devices.find(
+                (device) => device.zktecoDeviceID === row.deviceId
+              );
+              return device ? device.deviceName : "";
+            }
             case "inOutMode":
               if (row.inOutModeDescription) {
                 return row.inOutModeDescription || "";
@@ -435,6 +449,8 @@ export const NclockMovement = () => {
 
     return () => clearTimeout(timeout);
   }, []);
+
+  console.log("filteredDataTable", filteredDataTable);
 
   return (
     <div className="main-container">
@@ -717,7 +733,11 @@ export const NclockMovement = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
             <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
