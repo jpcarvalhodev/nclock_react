@@ -367,16 +367,18 @@ export const Terminals = () => {
   const fetchAllActivityBetweenDates = async () => {
     setRefreshIntervalTasks(0);
     try {
-      const data = await apiService.fetchAllDeviceActivities(
-        undefined,
-        startDate,
-        endDate
-      );
-      if (data.data.length > 0) {
-        setTransactions(data.data);
-        setTotalMovementRows(data.totalRecords);
-      } else {
-        setTransactions([]);
+      if (selectedTerminal) {
+        const data = await apiService.fetchAllDeviceActivities(
+          [`${selectedTerminal.serialNumber}`],
+          startDate,
+          endDate
+        );
+        if (data.data.length > 0) {
+          setTransactions(data.data);
+          setTotalMovementRows(data.totalRecords);
+        } else {
+          setTransactions([]);
+        }
       }
     } catch (error) {
       console.error("Erro ao buscar as tarefas:", error);
@@ -390,19 +392,21 @@ export const Terminals = () => {
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
     try {
-      const data = await apiService.fetchAllDeviceActivities(
-        undefined,
-        startDate,
-        endDate
-      );
-      if (data.data.length > 0) {
-        setTransactions(data.data);
-        setTotalMovementRows(data.totalRecords);
-      } else {
-        setTransactions([]);
+      if (selectedTerminal) {
+        const data = await apiService.fetchAllDeviceActivities(
+          [`${selectedTerminal.serialNumber}`],
+          start,
+          end
+        );
+        if (data.data.length > 0) {
+          setTransactions(data.data);
+          setTotalMovementRows(data.totalRecords);
+        } else {
+          setTransactions([]);
+        }
+        setStartDate(start);
+        setEndDate(end);
       }
-      setStartDate(start);
-      setEndDate(end);
     } catch (error) {
       console.error("Erro ao buscar as tarefas de hoje:", error);
     }
@@ -418,19 +422,21 @@ export const Terminals = () => {
     const end = formatDateToEndOfDay(prevDate);
 
     try {
-      const data = await apiService.fetchAllDeviceActivities(
-        undefined,
-        startDate,
-        endDate
-      );
-      if (data.data.length > 0) {
-        setTransactions(data.data);
-        setTotalMovementRows(data.totalRecords);
-      } else {
-        setTransactions([]);
+      if (selectedTerminal) {
+        const data = await apiService.fetchAllDeviceActivities(
+          [`${selectedTerminal.serialNumber}`],
+          start,
+          end
+        );
+        if (data.data.length > 0) {
+          setTransactions(data.data);
+          setTotalMovementRows(data.totalRecords);
+        } else {
+          setTransactions([]);
+        }
+        setStartDate(start);
+        setEndDate(end);
       }
-      setStartDate(start);
-      setEndDate(end);
     } catch (error) {
       console.error("Erro ao buscar as tarefas do dia anterior:", error);
     }
@@ -450,19 +456,21 @@ export const Terminals = () => {
     const end = formatDateToEndOfDay(newDate);
 
     try {
-      const data = await apiService.fetchAllDeviceActivities(
-        undefined,
-        startDate,
-        endDate
-      );
-      if (data.data.length > 0) {
-        setTransactions(data.data);
-        setTotalMovementRows(data.totalRecords);
-      } else {
-        setTransactions([]);
+      if (selectedTerminal) {
+        const data = await apiService.fetchAllDeviceActivities(
+          [`${selectedTerminal.serialNumber}`],
+          start,
+          end
+        );
+        if (data.data.length > 0) {
+          setTransactions(data.data);
+          setTotalMovementRows(data.totalRecords);
+        } else {
+          setTransactions([]);
+        }
+        setStartDate(start);
+        setEndDate(end);
       }
-      setStartDate(start);
-      setEndDate(end);
     } catch (error) {
       console.error("Erro ao buscar as tarefas do dia seguinte:", error);
     }
@@ -560,6 +568,7 @@ export const Terminals = () => {
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
     setSelectedTerminal(null);
+    setRefreshIntervalTasks(10000);
   };
 
   // Função para resetar as colunas
@@ -1011,7 +1020,7 @@ export const Terminals = () => {
           case "createdDate":
           case "endDate": {
             const formattedDate = new Date(row[field.key]).toLocaleString();
-            if (formattedDate === "01/01/1970, 01:00:00") {
+            if (formattedDate === "01/01/1970, 01:00:00" || formattedDate === null) {
               return "";
             }
             return applyTooltip(formattedDate);
@@ -1053,6 +1062,8 @@ export const Terminals = () => {
     }
   );
 
+  console.log("transactions", transactions);
+
   // Define as colunas de movimentos
   const movementColumns: TableColumn<Movements>[] = movementFields.map(
     (field) => {
@@ -1091,7 +1102,7 @@ export const Terminals = () => {
         switch (field.key) {
           case "CreatedDate": {
             const formattedDate = new Date(row[field.key]).toLocaleString();
-            if (formattedDate === "01/01/1970, 01:00:00") {
+            if (formattedDate === "01/01/1970, 01:00:00" || formattedDate === null) {
               return "";
             }
             return applyTooltip(formattedDate);

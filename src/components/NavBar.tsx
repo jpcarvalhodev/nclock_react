@@ -19999,7 +19999,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           to="/devices/timeplans"
                           type="button"
                           className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                            currentRoute === "#" ? "current-active" : ""
+                            currentRoute === "/devices/timeplans" ? "current-active" : ""
                           }`}
                         >
                           <span className="icon">

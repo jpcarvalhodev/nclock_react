@@ -339,7 +339,7 @@ export const ExternalEmployees = () => {
           case "biValidity":
           case "exitDate": {
             const formattedDate = new Date(row[field.key]).toLocaleString();
-            if (formattedDate === "01/01/1970, 01:00:00") {
+            if (formattedDate === "01/01/1970, 01:00:00" || formattedDate === null) {
               return "";
             }
             return formattedDate;
