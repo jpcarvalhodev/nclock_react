@@ -148,6 +148,7 @@ export const NclockAccessPresence = () => {
 
       const presentToday =
         acc.eventName !== "Acesso não autorizado" &&
+        (acc.readerName === "Entrada Porta Entrada Colaboradores" || acc.readerName === "Saída Porta Entrada Colaboradores") &&
         acc.inOutStatus === 0 &&
         isToday(eventDateTime);
 
