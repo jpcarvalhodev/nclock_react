@@ -7,24 +7,6 @@
     justify-content: center;
 }
 
-@keyframes fadeBackground {
-    0% { background-color: #2d2d2d; }
-    100% { background-color: #fff; }
-}
-
-.loading-spinner-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    animation: fadeBackground 3s;
-}
-
 .div-logo-p {
     margin-left: 100px;
     margin-top: 70px;

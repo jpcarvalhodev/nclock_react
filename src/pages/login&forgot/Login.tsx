@@ -22,6 +22,7 @@ import { usePersons } from "../../context/PersonsContext";
 import { useTerminals } from "../../context/TerminalsContext";
 import { LoginLicenseModal } from "../../modals/LoginLicenseModal";
 import { License, LicenseKey } from "../../types/Types";
+import { LoadingModal } from "../../modals/LoadingModal";
 
 // Define a interface para os itens de campo
 type FormControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -276,11 +277,6 @@ export const Login = () => {
 
   return (
     <div className="background-login">
-      {loading && (
-        <div className="loading-spinner-overlay">
-          <CustomSpinner />
-        </div>
-      )}
       <div className="div-logo-p" id="logo-login">
         <img className="logo-login" src="/logo_login.png" alt="Logo Login" />
       </div>
@@ -432,6 +428,7 @@ export const Login = () => {
         onClose={() => setShowModal(false)}
         onSave={insertLicenseKey}
       />
+      <LoadingModal show={loading} />
     </div>
   );
 };
