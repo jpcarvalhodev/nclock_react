@@ -66,7 +66,7 @@ export const NaccessDashboardLicensed = () => {
   const currentYear = new Date().getFullYear();
   const { accessForGraph } = useAttendance();
   const { manualOpenDoor } = useKiosk();
-  const { employees } = usePersons();
+  const { employeesNoPagination } = usePersons();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [accessLineChartData, setAccessLineChartData] = useState<ChartData>({
     labels: [],
@@ -258,7 +258,7 @@ export const NaccessDashboardLicensed = () => {
       todayAccesses.map((item) => item.id)
     );
 
-    const totalEmployees = employees.length;
+    const totalEmployees = employeesNoPagination.length;
 
     const noPresenceCount = totalEmployees - uniqueEmployeesWhoAccessed.size;
 
@@ -274,7 +274,7 @@ export const NaccessDashboardLicensed = () => {
     };
 
     setNoPresenceBarChartData(chartData);
-  }, [accessForGraph, employees]);
+  }, [accessForGraph, employeesNoPagination]);
 
   // Define os dados do gráfico de linha para os visitantes de hoje
   useEffect(() => {
@@ -388,7 +388,7 @@ export const NaccessDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
             <h2 className="departments-groups-chart-text">
-              Presenças hoje: {}
+              Presenças Totais hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
@@ -401,7 +401,7 @@ export const NaccessDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
             <h2 className="departments-groups-chart-text">
-              Ausências hoje: {}
+              Ausências Totais hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
