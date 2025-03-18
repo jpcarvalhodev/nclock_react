@@ -73,6 +73,15 @@ const formatDateTime = (date: string | Date): string => {
   });
 };
 
+// Função auxiliar para extrair só a parte YYYY-MM-DD
+function getDateOnly(value: string | Date): string {
+  if (typeof value === "string") {
+    return value.substring(0, 10);
+  } else {
+    return value.toISOString().substring(0, 10);
+  }
+}
+
 // Define a página de presença
 export const NclockPresence = () => {
   const currentDate = new Date();
@@ -115,42 +124,38 @@ export const NclockPresence = () => {
       .then((allAttendanceData) => {
         const sDate = new Date(startDate);
         const eDate = new Date(endDate);
+
         const filtered = allAttendanceData.filter((att) => {
           const attDate = new Date(att.attendanceTime);
           return attDate >= sDate && attDate <= eDate;
         });
-
-        const latestByEmployee = new Map<string, EmployeeAttendanceTimes>();
-
+  
+        const earliestMap = new Map<string, EmployeeAttendanceTimes>();
+  
         filtered.forEach((att) => {
-          const existing = latestByEmployee.get(att.employeeId);
+          const day = getDateOnly(att.attendanceTime);
+          const key = `${att.employeeId}_${day}_${att.inOutMode}`;
+  
+          const existing = earliestMap.get(key);
+  
           if (!existing) {
-            latestByEmployee.set(att.employeeId, att);
+            earliestMap.set(key, att);
           } else {
             const existingDate = new Date(existing.attendanceTime);
             const currentDate = new Date(att.attendanceTime);
-            if (currentDate > existingDate) {
-              latestByEmployee.set(att.employeeId, att);
+  
+            if (currentDate < existingDate) {
+              earliestMap.set(key, att);
             }
           }
         });
+  
+        const earliestArray = Array.from(earliestMap.values());
 
-        const isToday = (date: Date) => {
-          const now = new Date();
-          return (
-            date.getDate() === now.getDate() &&
-            date.getMonth() === now.getMonth() &&
-            date.getFullYear() === now.getFullYear()
-          );
-        };
-
-        const presenceArray: EmployeeAttendanceWithPresence[] = Array.from(
-          latestByEmployee.values()
-        ).map((att) => {
+        const presenceArray = earliestArray.map((att) => {
           const attDate = new Date(att.attendanceTime);
           const present =
             isToday(attDate) && [0, 2, 4].includes(Number(att.inOutMode));
-
           return {
             ...att,
             isPresent: present,
@@ -158,32 +163,28 @@ export const NclockPresence = () => {
         });
 
         const employeesWithoutAttendance = employeesNoPagination.filter(
-          (emp) => !latestByEmployee.has(emp.employeeID)
+          (emp) => !earliestArray.some((x) => x.employeeId === emp.employeeID)
         );
-
-        const absentRecords: EmployeeAttendanceWithPresence[] =
-          employeesWithoutAttendance.map((emp) => ({
-            id: emp.employeeID,
-            employeeId: emp.employeeID,
-            employeeName: emp.name,
-            attendanceTime: "",
-            inOutMode: "",
-            enrollNumber: emp.enrollNumber ?? "",
-            type: 0,
-            deviceId: "",
-            deviceNumber: 0,
-            observation: "",
-            verifyMode: 0,
-            workCode: 0,
-            isPresent: false,
-          }));
+        const absentRecords = employeesWithoutAttendance.map((emp) => ({
+          id: emp.employeeID,
+          employeeId: emp.employeeID,
+          employeeName: emp.name,
+          attendanceTime: "",
+          inOutMode: "",
+          enrollNumber: emp.enrollNumber ?? "",
+          type: 0,
+          deviceId: "",
+          deviceNumber: 0,
+          observation: "",
+          verifyMode: 0,
+          workCode: 0,
+          isPresent: false,
+        }));
 
         const combinedData = [...presenceArray, ...absentRecords];
 
-        setAttendancePresence(combinedData as EmployeeAttendanceWithPresence[]);
-        setFilteredAttendances(
-          combinedData as EmployeeAttendanceWithPresence[]
-        );
+        setAttendancePresence(combinedData);
+        setFilteredAttendances(combinedData);
       })
       .catch((error) => {
         console.error("Erro ao tentar buscar os dados:", error);
@@ -224,7 +225,10 @@ export const NclockPresence = () => {
 
   // Função para atualizar os dados da tabela
   const refreshAttendance = () => {
-    fetchAllAttendances({ filterFunc: (data: EmployeeAttendanceTimes[]) => data.filter((att: EmployeeAttendanceTimes) => att.type !== 3) });
+    fetchAllAttendances({
+      filterFunc: (data: EmployeeAttendanceTimes[]) =>
+        data.filter((att: EmployeeAttendanceTimes) => att.type !== 3),
+    });
     setClearSelectionToggle((prev) => !prev);
   };
 
