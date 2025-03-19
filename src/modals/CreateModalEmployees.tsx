@@ -902,7 +902,7 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                     {
                       key: "birthday",
                       label: "Data de Nascimento",
-                      type: "datetime-local",
+                      type: "date",
                     },
                     {
                       key: "nationality",
@@ -1027,12 +1027,12 @@ export const CreateModalEmployees = <T extends Record<string, any>>({
                     {
                       key: "bIissuance",
                       label: "Emissão do Cartão",
-                      type: "datetime-local",
+                      type: "date",
                     },
                     {
                       key: "biValidity",
                       label: "Validade do Cartão",
-                      type: "datetime-local",
+                      type: "date",
                     },
                     {
                       key: "admissionDate",

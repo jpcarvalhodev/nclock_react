@@ -357,7 +357,7 @@ export const NkioskDashboardLicensed = () => {
       labels: ["Hoje"],
       datasets: [
         {
-          label: "Pagamentos com Multibanco Hoje",
+          label: "Multibanco Hoje",
           data: [todayTotalMb.flat().length],
           backgroundColor: "#009739",
         },
@@ -372,7 +372,7 @@ export const NkioskDashboardLicensed = () => {
       labels: ["Hoje"],
       datasets: [
         {
-          label: "Pagamentos com Moedas Hoje",
+          label: "Moedas Hoje",
           data: [todayTotalCoin.length],
           backgroundColor: "#009739",
         },
@@ -387,7 +387,7 @@ export const NkioskDashboardLicensed = () => {
       labels: ["Hoje"],
       datasets: [
         {
-          label: "Movimentos no Torniquete Hoje",
+          label: "Torniquete Hoje",
           data: [todayTotalCard.length],
           backgroundColor: "#009739",
         },
@@ -402,7 +402,7 @@ export const NkioskDashboardLicensed = () => {
       labels: ["Hoje"],
       datasets: [
         {
-          label: "Movimentos no Quiosque Hoje",
+          label: "Quiosque Hoje",
           data: [todayTotalKiosk.length],
           backgroundColor: "#009739",
         },
@@ -496,7 +496,7 @@ export const NkioskDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "15rem" }}>
             <h2 className="departments-groups-chart-text">
-              Total do Multibanco Hoje: {}
+              Multibanco Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
@@ -509,7 +509,7 @@ export const NkioskDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "15rem" }}>
             <h2 className="departments-groups-chart-text">
-              Total do Moedeiro Hoje: {}
+              Moedeiro Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
@@ -522,7 +522,7 @@ export const NkioskDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "15rem" }}>
             <h2 className="departments-groups-chart-text">
-              Total do Torniquete Hoje: {}
+              Torniquete Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
@@ -535,7 +535,7 @@ export const NkioskDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "15rem" }}>
             <h2 className="departments-groups-chart-text">
-              Total do Quiosque Hoje: {}
+              Quiosque Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"

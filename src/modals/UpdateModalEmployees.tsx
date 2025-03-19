@@ -912,7 +912,7 @@ export const UpdateModalEmployees = <T extends Entity>({
                     {
                       key: "birthday",
                       label: "Data de Nascimento",
-                      type: "datetime-local",
+                      type: "date",
                     },
                     {
                       key: "nationality",
@@ -1037,12 +1037,12 @@ export const UpdateModalEmployees = <T extends Entity>({
                     {
                       key: "bIissuance",
                       label: "Emissão do Cartão",
-                      type: "datetime-local",
+                      type: "date",
                     },
                     {
                       key: "biValidity",
                       label: "Validade do Cartão",
-                      type: "datetime-local",
+                      type: "date",
                     },
                     {
                       key: "admissionDate",

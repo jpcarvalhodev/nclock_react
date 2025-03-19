@@ -341,6 +341,7 @@ export const Terminals = () => {
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        console.log("Mensagem WebSocket recebida:", data);
         setMovements((prevMovements) => [data.data, ...prevMovements]);
       } catch (error) {
         console.error("Erro ao processar mensagem WebSocket:", error);
@@ -1020,7 +1021,10 @@ export const Terminals = () => {
           case "createdDate":
           case "endDate": {
             const formattedDate = new Date(row[field.key]).toLocaleString();
-            if (formattedDate === "01/01/1970, 01:00:00" || formattedDate === null) {
+            if (
+              formattedDate === "01/01/1970, 01:00:00" ||
+              formattedDate === null
+            ) {
               return "";
             }
             return applyTooltip(formattedDate);
@@ -1062,8 +1066,6 @@ export const Terminals = () => {
     }
   );
 
-  console.log("transactions", transactions);
-
   // Define as colunas de movimentos
   const movementColumns: TableColumn<Movements>[] = movementFields.map(
     (field) => {
@@ -1098,15 +1100,18 @@ export const Terminals = () => {
             </span>
           </OverlayTrigger>
         );
-
         switch (field.key) {
           case "CreatedDate": {
-            const formattedDate = new Date(row[field.key]).toLocaleString();
-            if (formattedDate === "01/01/1970, 01:00:00" || formattedDate === null) {
+            const createdDate = row[field.key];
+            const createdDateStr = createdDate instanceof Date 
+              ? createdDate.toLocaleString() 
+              : createdDate;
+            
+            if (createdDateStr === "01/01/1970 01:00:00" || createdDate == null) {
               return "";
             }
-            return applyTooltip(formattedDate);
-          }
+            return applyTooltip(createdDateStr);
+          }                 
           case "DeviceSN": {
             const deviceName =
               devices.find((device) => device.serialNumber === row[field.key])

@@ -450,8 +450,6 @@ export const NclockMovement = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  console.log("filteredDataTable", filteredDataTable);
-
   return (
     <div className="main-container">
       <div className="content-container">

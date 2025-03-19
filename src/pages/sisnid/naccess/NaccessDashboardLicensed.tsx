@@ -358,7 +358,7 @@ export const NaccessDashboardLicensed = () => {
               style={{ height: "26rem" }}
             >
               <h2 className="departments-groups-chart-text">
-                Total de acessos em {currentYear}: {}
+                Total de Acessos em {currentYear}: {}
               </h2>
               <Line
                 className="departments-groups-chart-data"
@@ -388,7 +388,7 @@ export const NaccessDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
             <h2 className="departments-groups-chart-text">
-              Presenças Totais hoje: {}
+              Presenças Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
@@ -401,7 +401,7 @@ export const NaccessDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
             <h2 className="departments-groups-chart-text">
-              Ausências Totais hoje: {}
+              Ausências Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
@@ -414,7 +414,7 @@ export const NaccessDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
             <h2 className="departments-groups-chart-text">
-              Total de visitantes hoje: {}
+              Visitantes Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
@@ -425,7 +425,7 @@ export const NaccessDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
             <h2 className="departments-groups-chart-text">
-              Total de aberturas manuais hoje: {}
+              Aberturas Manuais Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"

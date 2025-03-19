@@ -160,8 +160,8 @@ export const NclockDashboardLicensed = () => {
     const today = format(new Date(), "dd/MM/yyyy", { locale: pt });
 
     const todayAccesses = attendance.filter((item) => {
-      if (!item.eventTime) return false;
-      const eventDate = format(new Date(item.eventTime), "dd/MM/yyyy", {
+      if (!item.attendanceTime) return false;
+      const eventDate = format(new Date(item.attendanceTime), "dd/MM/yyyy", {
         locale: pt,
       });
       return eventDate === today;
@@ -189,8 +189,8 @@ export const NclockDashboardLicensed = () => {
     const today = format(new Date(), "dd/MM/yyyy", { locale: pt });
 
     const todayAccesses = attendance.filter((item) => {
-      if (!item.eventTime) return false;
-      const eventDate = format(new Date(item.eventTime), "dd/MM/yyyy", {
+      if (!item.attendanceTime) return false;
+      const eventDate = format(new Date(item.attendanceTime), "dd/MM/yyyy", {
         locale: pt,
       });
       return eventDate === today;
@@ -270,7 +270,7 @@ export const NclockDashboardLicensed = () => {
       <div className="dashboard-content" style={{ marginTop: 5 }}>
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
-            <h2 className="departments-groups-chart-text">Presenças: {}</h2>
+            <h2 className="departments-groups-chart-text">Presenças Hoje: {}</h2>
             <Bar
               className="departments-groups-chart-data"
               data={presenceBarChartData}
@@ -279,7 +279,7 @@ export const NclockDashboardLicensed = () => {
         </div>
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
-            <h2 className="departments-groups-chart-text">Ausências: {}</h2>
+            <h2 className="departments-groups-chart-text">Ausências Hoje: {}</h2>
             <Bar
               className="departments-groups-chart-data"
               data={noPresenceBarChartData}
