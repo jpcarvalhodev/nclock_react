@@ -43,6 +43,7 @@ export const NkioskListPayments = () => {
     setTotalPayments,
     totalPaymentsPages,
     totalPaymentsTotalRecords,
+    totalPaymentsNoPagination,
   } = useKiosk();
   const { kioskConfig } = useNavbar();
   const [filterText, setFilterText] = useState<string>("");
@@ -291,44 +292,87 @@ export const NkioskListPayments = () => {
     if (!Array.isArray(totalPayments)) {
       return [];
     }
-    return totalPayments
-      .filter(
-        (payTerminals) =>
-          Object.keys(filters).every(
-            (key) =>
-              filters[key] === "" ||
-              (payTerminals[key] != null &&
-                String(payTerminals[key])
-                  .toLowerCase()
-                  .includes(filters[key].toLowerCase()))
-          ) &&
-          Object.entries(payTerminals).some(([key, value]) => {
-            if (selectedColumns.includes(key) && value != null) {
-              if (key === "transactionType") {
-                const typeText = value === 1 ? "Multibanco" : "Moedeiro";
-                return typeText
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              } else if (value instanceof Date) {
-                return value
-                  .toLocaleString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              } else {
+
+    const applyFilter = (paymentsList: KioskTransactionMB[]) => {
+      return paymentsList
+        .filter((payTerminals) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            if (payTerminals[key] == null) return false;
+            return String(payTerminals[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase());
+          })
+        )
+        .filter(
+          (payTerminals) =>
+            Object.entries(payTerminals).some(([key, value]) => {
+              if (selectedColumns.includes(key) && value != null) {
+                if (key === "transactionType") {
+                  const typeText = value === 1 ? "Multibanco" : "Moedeiro";
+                  return typeText
+                    .toLowerCase()
+                    .includes(filterText.toLowerCase());
+                }
+                if (value instanceof Date) {
+                  return value
+                    .toLocaleString()
+                    .toLowerCase()
+                    .includes(filterText.toLowerCase());
+                }
                 return value
                   .toString()
                   .toLowerCase()
                   .includes(filterText.toLowerCase());
               }
-            }
-            return false;
-          })
-      )
-      .sort(
+              return false;
+            })
+        );
+    };
+
+    const mainFiltered = applyFilter(totalPayments);
+
+    if (filterText.trim() === "") {
+      return mainFiltered.sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
-  }, [totalPayments, filters, filterText]);
+    }
+
+    if (Array.isArray(totalPaymentsNoPagination)) {
+      const fallbackFiltered = applyFilter(totalPaymentsNoPagination);
+
+      const combined = [...mainFiltered, ...fallbackFiltered];
+
+      const seen = new Set<string>();
+      const deduplicated: KioskTransactionMB[] = [];
+      for (const item of combined) {
+        const key = `${item.deviceSN}-${item.pin}-${item.timestamp}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(item);
+        }
+      }
+
+      deduplicated.sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+
+      return deduplicated;
+    }
+
+    return mainFiltered.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+  }, [
+    totalPayments,
+    totalPaymentsNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Define as colunas da tabela
   const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields

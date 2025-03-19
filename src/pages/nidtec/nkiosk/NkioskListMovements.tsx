@@ -45,6 +45,7 @@ export const NkioskListMovements = () => {
     fetchAllCardAndKiosk,
     totalMovementsPages,
     totalMovementsTotalRecords,
+    totalMovementsNoPagination,
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -328,39 +329,81 @@ export const NkioskListMovements = () => {
     if (!Array.isArray(totalMovements)) {
       return [];
     }
-    return totalMovements
-      .filter(
-        (moveCards) =>
-          Object.keys(filters).every(
-            (key) =>
-              filters[key] === "" ||
-              (moveCards[key] != null &&
-                String(moveCards[key])
-                  .toLowerCase()
-                  .includes(filters[key].toLowerCase()))
-          ) &&
-          Object.entries(moveCards).some(([key, value]) => {
-            if (selectedColumns.includes(key) && value != null) {
-              if (value instanceof Date) {
-                return value
-                  .toLocaleString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              } else {
+
+    const applyFilter = (movementsList: KioskTransactionCard[]) => {
+      return movementsList
+        .filter((moveCards) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            if (moveCards[key] == null) return false;
+            return String(moveCards[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase());
+          })
+        )
+        .filter(
+          (moveCards) =>
+            Object.entries(moveCards).some(([key, value]) => {
+              if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                  return value
+                    .toLocaleString()
+                    .toLowerCase()
+                    .includes(filterText.toLowerCase());
+                }
                 return value
                   .toString()
                   .toLowerCase()
                   .includes(filterText.toLowerCase());
               }
-            }
-            return false;
-          })
-      )
-      .sort(
+              return false;
+            })
+        );
+    };
+
+    const mainFiltered = applyFilter(totalMovements);
+
+    if (filterText.trim() === "") {
+      return mainFiltered.sort(
         (a, b) =>
           new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-  }, [totalMovements, filters, filterText]);
+    }
+
+    if (Array.isArray(totalMovementsNoPagination)) {
+      const fallbackFiltered = applyFilter(totalMovementsNoPagination);
+
+      const combined = [...mainFiltered, ...fallbackFiltered];
+
+      const seen = new Set<string>();
+      const deduplicated: KioskTransactionCard[] = [];
+      for (const item of combined) {
+        const key = `${item.deviceSN}-${item.pin}-${item.eventTime}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(item);
+        }
+      }
+
+      deduplicated.sort(
+        (a, b) =>
+          new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+      );
+
+      return deduplicated;
+    }
+
+    return mainFiltered.sort(
+      (a, b) =>
+        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+    );
+  }, [
+    totalMovements,
+    totalMovementsNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Combina os dois arrays, removendo duplicatas baseadas na chave 'key'
   const combinedMovements = [

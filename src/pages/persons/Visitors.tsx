@@ -44,6 +44,7 @@ export const Visitors = () => {
     handleDeleteEmployee,
     totalEmployeePages,
     totalEmployeeRecords,
+    employeesNoPagination,
   } = usePersons();
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [filterText, setFilterText] = useState("");
@@ -115,9 +116,11 @@ export const Visitors = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-   // Atualiza a tabela de visitantes ao montar o componente
-   useEffect(() => {
-    setFilteredEmployees(disabledEmployees.filter((emp) => emp.type === "Visitante"));
+  // Atualiza a tabela de visitantes ao montar o componente
+  useEffect(() => {
+    setFilteredEmployees(
+      disabledEmployees.filter((emp) => emp.type === "Visitante")
+    );
     setTotalRows(totalEmployeeRecords);
   }, [disabledEmployees]);
 
@@ -273,37 +276,56 @@ export const Visitors = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredEmployees)) {
+    if (!Array.isArray(disabledEmployees)) {
       return [];
     }
-    return filteredEmployees.filter(
-      (employee) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (employee[key] != null &&
-              String(employee[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(employee).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+
+    const applyFilter = (employeeList: Employee[]) => {
+      return employeeList.filter(
+        (employee) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (employee[key] != null &&
+                String(employee[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(employee).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    );
-  }, [disabledEmployees, filteredEmployees, filters, filterText]);
+            return false;
+          })
+      );
+    };
+
+    const firstFiltered = applyFilter(disabledEmployees);
+
+    if (firstFiltered.length === 0 && filterText.trim() !== "") {
+      if (Array.isArray(employeesNoPagination)) {
+        return applyFilter(employeesNoPagination);
+      }
+    }
+
+    return firstFiltered;
+  }, [
+    disabledEmployees,
+    employeesNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Employee>[] = employeeFields
@@ -317,7 +339,10 @@ export const Visitors = () => {
           case "biValidity":
           case "exitDate": {
             const formattedDate = new Date(row[field.key]).toLocaleString();
-            if (formattedDate === "01/01/1970, 01:00:00" || formattedDate === null) {
+            if (
+              formattedDate === "01/01/1970, 01:00:00" ||
+              formattedDate === null
+            ) {
               return "";
             }
             return formattedDate;

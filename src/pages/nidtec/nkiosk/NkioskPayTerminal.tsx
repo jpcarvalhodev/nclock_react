@@ -44,6 +44,7 @@ export const NkioskPayTerminal = () => {
     fetchAllPayTerminal,
     payTerminalPages,
     payTerminalTotalRecords,
+    payTerminalNoPagination,
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -284,39 +285,81 @@ export const NkioskPayTerminal = () => {
     if (!Array.isArray(payTerminal)) {
       return [];
     }
-    return payTerminal
-      .filter(
-        (payTerminals) =>
-          Object.keys(filters).every(
-            (key) =>
-              filters[key] === "" ||
-              (payTerminals[key] != null &&
-                String(payTerminals[key])
-                  .toLowerCase()
-                  .includes(filters[key].toLowerCase()))
-          ) &&
-          Object.entries(payTerminals).some(([key, value]) => {
-            if (selectedColumns.includes(key) && value != null) {
-              if (value instanceof Date) {
-                return value
-                  .toLocaleString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              } else {
+
+    const applyFilter = (list: KioskTransactionMB[]) => {
+      return list
+        .filter((payTerminals) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            if (payTerminals[key] == null) return false;
+            return String(payTerminals[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase());
+          })
+        )
+        .filter(
+          (payTerminals) =>
+            Object.entries(payTerminals).some(([key, value]) => {
+              if (selectedColumns.includes(key) && value != null) {
+                if (value instanceof Date) {
+                  return value
+                    .toLocaleString()
+                    .toLowerCase()
+                    .includes(filterText.toLowerCase());
+                }
                 return value
                   .toString()
                   .toLowerCase()
                   .includes(filterText.toLowerCase());
               }
-            }
-            return false;
-          })
-      )
-      .sort(
+              return false;
+            })
+        );
+    };
+
+    const mainFiltered = applyFilter(payTerminal);
+
+    if (filterText.trim() === "") {
+      return mainFiltered.sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
-  }, [payTerminal, filters, filterText]);
+    }
+
+    if (Array.isArray(payTerminalNoPagination)) {
+      const fallbackFiltered = applyFilter(payTerminalNoPagination);
+
+      const combined = [...mainFiltered, ...fallbackFiltered];
+
+      const seen = new Set<string>();
+      const deduplicated: KioskTransactionMB[] = [];
+      for (const item of combined) {
+        const key = `${item.deviceSN}-${item.pin}-${item.timestamp}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(item);
+        }
+      }
+
+      deduplicated.sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+
+      return deduplicated;
+    }
+
+    return mainFiltered.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+  }, [
+    payTerminal,
+    payTerminalNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Define as colunas da tabela
   const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields

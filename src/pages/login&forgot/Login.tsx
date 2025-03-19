@@ -38,7 +38,7 @@ type User = {
 export const Login = () => {
   const navigate = useNavigate();
   const { fetchAds } = useAds();
-  const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs } = useEntity();
+  const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs, fetchAllHistoryLogsNoPagination, fetchAllLoginLogsNoPagination } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice } = useAttendance();
   const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones, fetchAllDisabledEmployees, fetchAllEmployeesNoPagination, fetchAllDisabledEmployeesNoPagination, fetchEmployeeVisitor, fetchVisitorsMotive } = usePersons();
@@ -214,8 +214,10 @@ export const Login = () => {
             fetchAllZones(),
             fetchAds(),
             fetchAllEntity(),
-            fetchAllLoginLogs(),
-            fetchAllHistoryLogs(),
+            fetchAllLoginLogsNoPagination(),
+            fetchAllLoginLogs(undefined, undefined, undefined, "1", "20"),
+            fetchAllHistoryLogsNoPagination(),
+            fetchAllHistoryLogs(undefined, undefined, undefined, "1", "20"),
             fetchAllAttendances(),
             fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20"),
             fetchAllAccessesbyDevice(),

@@ -25,7 +25,6 @@ import {
   Register,
   Zone,
 } from "../types/Types";
-import { set } from "date-fns";
 
 // Define a interface para o estado de dados
 interface DataState {

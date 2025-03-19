@@ -110,6 +110,7 @@ export const NaccessAccesses = () => {
     totalRecords,
     fetchAllInitialAccessesbyDevice,
     handleAddAccess,
+    accessForGraph,
   } = useAttendance();
   const currentDate = new Date();
   const pastDate = new Date();
@@ -275,7 +276,7 @@ export const NaccessAccesses = () => {
 
     const seen = new Set<string>();
     const deduplicated: Accesses[] = [];
-  
+
     for (const item of unifiedAccess) {
       const key = `${item.deviceSN}-${item.pin}-${item.eventTime}`;
       if (!seen.has(key)) {
@@ -283,7 +284,7 @@ export const NaccessAccesses = () => {
         deduplicated.push(item);
       }
     }
-  
+
     setFilteredAccess(deduplicated);
   }, [access]);
 
@@ -322,7 +323,7 @@ export const NaccessAccesses = () => {
           undefined,
           undefined,
           undefined,
-          undefined,
+          undefined
         );
         if (foundEmployees.data) {
           setFilteredAccess(foundEmployees.data);
@@ -409,34 +410,58 @@ export const NaccessAccesses = () => {
     if (!Array.isArray(filteredAccess)) {
       return [];
     }
-    return filteredAccess.filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+
+    const applyFilter = (list: Accesses[]) => {
+      return list.filter(
+        (attendances) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            if (attendances[key] == null) return false;
+            return String(attendances[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase());
+          }) &&
+          Object.entries(attendances).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    );
-  }, [filteredAccess, filters, filterText]);
+            return false;
+          })
+      );
+    };
+
+    const filteredMain = applyFilter(filteredAccess);
+
+    if (filterText.trim() !== "" && Array.isArray(accessForGraph)) {
+      const filteredGraph = applyFilter(accessForGraph);
+
+      const combined = [...filteredMain, ...filteredGraph];
+
+      const seen = new Set<string>();
+      const deduplicated: Accesses[] = [];
+      for (const item of combined) {
+        const key = `${item.deviceSN}-${item.pin}-${item.eventTime}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(item);
+        }
+      }
+
+      return deduplicated;
+    }
+
+    return filteredMain;
+  }, [filteredAccess, accessForGraph, filters, filterText, selectedColumns]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
@@ -665,8 +690,6 @@ export const NaccessAccesses = () => {
 
     return () => clearTimeout(timeout);
   }, []);
-
-  
 
   return (
     <div className="main-container">

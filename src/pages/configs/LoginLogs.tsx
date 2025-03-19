@@ -35,8 +35,14 @@ export const LoginLogs = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { loginLogs, setLoginLogs, fetchAllLoginLogs, totalLoginPages, totalLoginRecords } =
-    useEntity();
+  const {
+    loginLogs,
+    setLoginLogs,
+    fetchAllLoginLogs,
+    totalLoginPages,
+    totalLoginRecords,
+    loginLogsNoPagination,
+  } = useEntity();
   const { registeredUsers } = usePersons();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -250,39 +256,78 @@ export const LoginLogs = () => {
     if (!Array.isArray(loginLogs)) {
       return [];
     }
-    return loginLogs
-      .filter(
-        (getCoin) =>
-          Object.keys(filters).every(
-            (key) =>
-              filters[key] === "" ||
-              (getCoin[key] != null &&
-                String(getCoin[key])
+
+    const applyFilter = (logsList: Logs[]) => {
+      return (
+        logsList
+          .filter((item) =>
+            Object.keys(filters).every((key) => {
+              if (filters[key] === "") return true;
+              return (
+                item[key] != null &&
+                String(item[key])
                   .toLowerCase()
-                  .includes(filters[key].toLowerCase()))
-          ) &&
-          Object.entries(getCoin).some(([key, value]) => {
-            if (selectedColumns.includes(key) && value != null) {
-              if (value instanceof Date) {
-                return value
-                  .toLocaleString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              } else {
-                return value
-                  .toString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              }
-            }
-            return false;
-          })
-      )
-      .sort(
+                  .includes(filters[key].toLowerCase())
+              );
+            })
+          )
+          .filter(
+            (item) =>
+              Object.entries(item).some(([key, value]) => {
+                if (selectedColumns.includes(key) && value != null) {
+                  if (value instanceof Date) {
+                    return value
+                      .toLocaleString()
+                      .toLowerCase()
+                      .includes(filterText.toLowerCase());
+                  }
+                  return value
+                    .toString()
+                    .toLowerCase()
+                    .includes(filterText.toLowerCase());
+                }
+                return false;
+              })
+          )
+          .sort(
+            (a, b) =>
+              new Date(b.createdDate).getTime() -
+              new Date(a.createdDate).getTime()
+          )
+      );
+    };
+
+    const mainFiltered = applyFilter(loginLogs);
+
+    if (filterText.trim() === "") {
+      return mainFiltered;
+    }
+
+    if (Array.isArray(loginLogsNoPagination)) {
+      const fallbackFiltered = applyFilter(loginLogsNoPagination);
+
+      const combined = [...mainFiltered, ...fallbackFiltered];
+
+      const seen = new Set<string>();
+      const deduplicated: Logs[] = [];
+      for (const log of combined) {
+        const key = `${log.userName}-${log.createdDate}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(log);
+        }
+      }
+
+      deduplicated.sort(
         (a, b) =>
           new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
       );
-  }, [loginLogs, filters, filterText]);
+
+      return deduplicated;
+    }
+
+    return mainFiltered;
+  }, [loginLogs, loginLogsNoPagination, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Logs>[] = logsFields

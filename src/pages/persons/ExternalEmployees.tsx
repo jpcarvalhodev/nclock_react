@@ -44,6 +44,7 @@ export const ExternalEmployees = () => {
     handleDeleteEmployee,
     totalEmployeePages,
     totalEmployeeRecords,
+    employeesNoPagination,
   } = usePersons();
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [filterText, setFilterText] = useState("");
@@ -114,10 +115,12 @@ export const ExternalEmployees = () => {
     refreshEmployees();
     setClearSelectionToggle((prev) => !prev);
   };
-  
-   // Atualiza a tabela de subcontratados ao montar o componente
-   useEffect(() => {
-    setFilteredEmployees(disabledEmployees.filter((emp) => emp.type === "Subcontratado"));
+
+  // Atualiza a tabela de subcontratados ao montar o componente
+  useEffect(() => {
+    setFilteredEmployees(
+      disabledEmployees.filter((emp) => emp.type === "Subcontratado")
+    );
     setTotalRows(totalEmployeeRecords);
   }, [disabledEmployees]);
 
@@ -273,37 +276,56 @@ export const ExternalEmployees = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredEmployees)) {
+    if (!Array.isArray(disabledEmployees)) {
       return [];
     }
-    return filteredEmployees.filter(
-      (employee) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (employee[key] != null &&
-              String(employee[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(employee).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+
+    const applyFilter = (employeeList: Employee[]) => {
+      return employeeList.filter(
+        (employee) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (employee[key] != null &&
+                String(employee[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(employee).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    );
-  }, [filteredEmployees, filters, filterText]);
+            return false;
+          })
+      );
+    };
+
+    const firstFiltered = applyFilter(disabledEmployees);
+
+    if (firstFiltered.length === 0 && filterText.trim() !== "") {
+      if (Array.isArray(employeesNoPagination)) {
+        return applyFilter(employeesNoPagination);
+      }
+    }
+
+    return firstFiltered;
+  }, [
+    disabledEmployees,
+    employeesNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Seleciona o funcionário anterior
   const handleNextEmployee = () => {
@@ -339,7 +361,10 @@ export const ExternalEmployees = () => {
           case "biValidity":
           case "exitDate": {
             const formattedDate = new Date(row[field.key]).toLocaleString();
-            if (formattedDate === "01/01/1970, 01:00:00" || formattedDate === null) {
+            if (
+              formattedDate === "01/01/1970, 01:00:00" ||
+              formattedDate === null
+            ) {
               return "";
             }
             return formattedDate;

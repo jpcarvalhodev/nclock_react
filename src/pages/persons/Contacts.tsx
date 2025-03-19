@@ -26,7 +26,6 @@ import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
 import { AddEmployeeToPersonFilterModal } from "../../modals/AddEmployeeToPersonFilterModal";
 import { useMediaQuery } from "react-responsive";
-import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -44,7 +43,8 @@ export const Contacts = () => {
     handleUpdateEmployee,
     handleDeleteEmployee,
     totalEmployeePages,
-    totalEmployeeRecords
+    totalEmployeeRecords,
+    employeesNoPagination
   } = usePersons();
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [filterText, setFilterText] = useState("");
@@ -118,7 +118,9 @@ export const Contacts = () => {
 
   // Atualiza a tabela de contactos ao montar o componente
   useEffect(() => {
-    setFilteredEmployees(disabledEmployees.filter((emp) => emp.type === "Contacto"));
+    setFilteredEmployees(
+      disabledEmployees.filter((emp) => emp.type === "Contacto")
+    );
     setTotalRows(totalEmployeeRecords);
   }, [disabledEmployees]);
 
@@ -274,37 +276,56 @@ export const Contacts = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredEmployees)) {
+    if (!Array.isArray(disabledEmployees)) {
       return [];
     }
-    return filteredEmployees.filter(
-      (employee) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (employee[key] != null &&
-              String(employee[key])
-                .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(employee).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+
+    const applyFilter = (employeeList: Employee[]) => {
+      return employeeList.filter(
+        (employee) =>
+          Object.keys(filters).every(
+            (key) =>
+              filters[key] === "" ||
+              (employee[key] != null &&
+                String(employee[key])
+                  .toLowerCase()
+                  .includes(filters[key].toLowerCase()))
+          ) &&
+          Object.entries(employee).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
-    );
-  }, [filteredEmployees, filters, filterText]);
+            return false;
+          })
+      );
+    };
+
+    const firstFiltered = applyFilter(disabledEmployees);
+
+    if (firstFiltered.length === 0 && filterText.trim() !== "") {
+      if (Array.isArray(employeesNoPagination)) {
+        return applyFilter(employeesNoPagination);
+      }
+    }
+
+    return firstFiltered;
+  }, [
+    disabledEmployees,
+    employeesNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Define as colunas
   const columns: TableColumn<Employee>[] = employeeFields
@@ -318,7 +339,10 @@ export const Contacts = () => {
           case "biValidity":
           case "exitDate": {
             const formattedDate = new Date(row[field.key]).toLocaleString();
-            if (formattedDate === "01/01/1970, 01:00:00" || formattedDate === null) {
+            if (
+              formattedDate === "01/01/1970, 01:00:00" ||
+              formattedDate === null
+            ) {
               return "";
             }
             return formattedDate;
