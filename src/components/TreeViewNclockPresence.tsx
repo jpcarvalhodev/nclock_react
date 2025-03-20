@@ -21,7 +21,7 @@ import { SearchBoxContainer } from "./SearchBoxContainer";
 import { CustomSpinner } from "./CustomSpinner";
 
 // Define a interface para as propriedades do componente TreeViewData
-interface TreeViewDataNaccessProps {
+interface TreeViewDataNclockPresenceProps {
   onSelectEmployees: (selectedEmployees: string[]) => void;
 }
 
@@ -69,9 +69,9 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 }
 
 // Define o componente
-export function TreeViewDataNaccess({
+export function TreeViewDataNclockPresence({
   onSelectEmployees,
-}: TreeViewDataNaccessProps) {
+}: TreeViewDataNclockPresenceProps) {
   const { data, fetchAllData } = usePersons();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,270 +83,125 @@ export function TreeViewDataNaccess({
 
   // Busca os dados dos departamentos, grupos e funcionários e mapeia para os itens da árvore
   const memoizedTreeItems = useMemo(() => {
-    const { departments, groups } = data;
-    const allEmployees = data.employees || [];
+    const departments = data.departments;
+    const groups = data.groups;
+    const allEmployees = data.employees;
 
-    const activeEmployees = allEmployees.filter((emp) => emp.status === true);
-    const inactiveEmployees = allEmployees.filter(
-      (emp) => emp.status === false
-    );
-
-    const departmentMapActive = new Map();
-    const deptIdToCodeMapActive = new Map();
+    const departmentMap = new Map();
+    const deptIdToCodeMap = new Map();
 
     departments.forEach((dept: Department) => {
-      deptIdToCodeMapActive.set(dept.departmentID, dept.code);
-      departmentMapActive.set(dept.code, {
+      deptIdToCodeMap.set(dept.departmentID, dept.code);
+      departmentMap.set(dept.code, {
         ...dept,
         children: [],
         employees: [],
       });
     });
 
-    activeEmployees.forEach((emp: Employee) => {
-      if (emp.departmentId && deptIdToCodeMapActive.has(emp.departmentId)) {
-        const deptCode = deptIdToCodeMapActive.get(emp.departmentId);
-        if (departmentMapActive.has(deptCode)) {
-          departmentMapActive.get(deptCode).employees.push({
-            id: `emp-active-${emp.enrollNumber}`,
-            label: `${emp.enrollNumber} - ${emp.shortName}`,
+    allEmployees.forEach((emp: Employee) => {
+      if (emp.departmentId && deptIdToCodeMap.has(emp.departmentId)) {
+        const deptCode = deptIdToCodeMap.get(emp.departmentId);
+        if (departmentMap.has(deptCode)) {
+          departmentMap.get(deptCode).employees.push({
+            id: `emp-${emp.employeeID}` || "Sem ID",
+            label: `${emp.enrollNumber} - ${emp.shortName}` || "Sem Nome",
           });
         }
       }
     });
 
     departments.forEach((dept: Department) => {
-      if (dept.paiId && departmentMapActive.has(dept.paiId)) {
-        departmentMapActive
+      if (dept.paiId && departmentMap.has(dept.paiId)) {
+        departmentMap
           .get(dept.paiId)
-          .children.push(departmentMapActive.get(dept.code));
+          .children.push(departmentMap.get(dept.code));
       }
     });
 
-    const buildDepartmentTreeActive = (dept: Department): TreeViewBaseItem => ({
-      id: `department-active-${dept.departmentID}`,
+    const unassignedDept = allEmployees.filter(
+      (emp: Employee) => emp.departmentId === null
+    );
+
+    const unassignedGroup = allEmployees.filter(
+      (emp: Employee) => emp.groupId === null
+    );
+
+    const topDepartments = Array.from(departmentMap.values()).filter(
+      (dept) => !dept.paiId
+    );
+
+    const buildDepartmentTree = (dept: Department) => ({
+      id: `department-${dept.departmentID}` || "Sem ID",
       label: dept.name || "Sem Nome",
       children: [
-        ...dept.children.map(buildDepartmentTreeActive),
-        ...activeEmployees
+        ...dept.children.map(buildDepartmentTree),
+        ...allEmployees
           .filter((emp: Employee) => emp.departmentId === dept.departmentID)
           .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
           .map((emp: Employee) => ({
-            id: `dept-active-${dept.departmentID}-emp-${emp.enrollNumber}`,
-            label: `${emp.enrollNumber} - ${emp.shortName}`,
+            id: `dept-${dept.departmentID}-emp-${emp.employeeID}` || "Sem ID",
+            label: `${emp.enrollNumber} - ${emp.shortName}` || "Sem Nome",
           })),
       ],
     });
 
-    const topDepartmentsActive = Array.from(
-      departmentMapActive.values()
-    ).filter((d) => !d.paiId);
+    const departmentItems = topDepartments.map(buildDepartmentTree);
 
-    const departmentItemsActive: TreeViewBaseItem[] = topDepartmentsActive.map(
-      (topDept: Department) => buildDepartmentTreeActive(topDept)
-    );
-
-    const unassignedDeptActive = activeEmployees.filter(
-      (emp: Employee) => !emp.departmentId
-    );
-    const unassignedDepartmentItemsActive = unassignedDeptActive.map(
-      (emp: Employee) => ({
-        id: `unassigned-active-empdept-${emp.enrollNumber}`,
-        label: `${emp.enrollNumber} - ${emp.shortName}`,
-      })
-    );
-
-    const groupItemsActive: TreeViewBaseItem[] = groups.map((group: Group) => ({
-      id: `group-active-${group.groupID}`,
+    const groupItems = groups.map((group: Group) => ({
+      id: `group-${group.groupID}` || "Sem ID",
       label: group.name || "Sem Nome",
-      children: activeEmployees
+      children: allEmployees
         .filter((emp: Employee) => emp.groupId === group.groupID)
         .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
         .map((emp: Employee) => ({
-          id: `group-active-${group.groupID}-emp-${emp.enrollNumber}`,
-          label: `${emp.enrollNumber} - ${emp.shortName}`,
+          id: `group-${group.groupID}-emp-${emp.employeeID}` || "Sem ID",
+          label: `${emp.enrollNumber} - ${emp.shortName}` || "Sem Nome",
         })),
     }));
 
-    const unassignedGroupActive = activeEmployees.filter(
-      (emp: Employee) => !emp.groupId
-    );
-    const unassignedGroupItemsActive = unassignedGroupActive.map(
-      (emp: Employee) => ({
-        id: `unassigned-active-empgrp-${emp.enrollNumber}`,
-        label: `${emp.enrollNumber} - ${emp.shortName}`,
-      })
-    );
+    const unassignedDepartmentItems = unassignedDept.map((emp: Employee) => ({
+      id: `unassigned-empdept-${emp.employeeID}`,
+      label: `${emp.enrollNumber} - ${emp.shortName}` || "Sem Nome",
+    }));
 
-    const departmentMapInactive = new Map();
-    const deptIdToCodeMapInactive = new Map();
+    const unassignedGroupItems = unassignedGroup.map((emp: Employee) => ({
+      id: `unassigned-empgrp-${emp.employeeID}`,
+      label: `${emp.enrollNumber} - ${emp.shortName}` || "Sem Nome",
+    }));
 
-    departments.forEach((dept: Department) => {
-      deptIdToCodeMapInactive.set(dept.departmentID, dept.code);
-      departmentMapInactive.set(dept.code, {
-        ...dept,
-        children: [],
-        employees: [],
-      });
-    });
-
-    inactiveEmployees.forEach((emp: Employee) => {
-      if (emp.departmentId && deptIdToCodeMapInactive.has(emp.departmentId)) {
-        const deptCode = deptIdToCodeMapInactive.get(emp.departmentId);
-        if (departmentMapInactive.has(deptCode)) {
-          departmentMapInactive.get(deptCode).employees.push({
-            id: `emp-inactive-${emp.enrollNumber}`,
-            label: `${emp.enrollNumber} - ${emp.shortName}`,
-          });
-        }
-      }
-    });
-
-    departments.forEach((dept: Department) => {
-      if (dept.paiId && departmentMapInactive.has(dept.paiId)) {
-        departmentMapInactive
-          .get(dept.paiId)
-          .children.push(departmentMapInactive.get(dept.code));
-      }
-    });
-
-    const buildDepartmentTreeInactive = (
-      dept: Department
-    ): TreeViewBaseItem => ({
-      id: `department-inactive-${dept.departmentID}`,
-      label: dept.name || "Sem Nome",
-      children: [
-        ...dept.children.map(buildDepartmentTreeInactive),
-        ...inactiveEmployees
-          .filter((emp: Employee) => emp.departmentId === dept.departmentID)
-          .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-          .map((emp: Employee) => ({
-            id: `dept-inactive-${dept.departmentID}-emp-${emp.enrollNumber}`,
-            label: `${emp.enrollNumber} - ${emp.shortName}`,
-          })),
-      ],
-    });
-
-    const topDepartmentsInactive = Array.from(
-      departmentMapInactive.values()
-    ).filter((d) => !d.paiId);
-
-    const departmentItemsInactive: TreeViewBaseItem[] =
-      topDepartmentsInactive.map((topDept: Department) =>
-        buildDepartmentTreeInactive(topDept)
-      );
-
-    const unassignedDeptInactive = inactiveEmployees.filter(
-      (emp: Employee) => !emp.departmentId
-    );
-    const unassignedDepartmentItemsInactive = unassignedDeptInactive.map(
-      (emp: Employee) => ({
-        id: `unassigned-inactive-empdept-${emp.enrollNumber}`,
-        label: `${emp.enrollNumber} - ${emp.shortName}`,
-      })
-    );
-
-    const groupItemsInactive: TreeViewBaseItem[] = groups.map(
-      (group: Group) => ({
-        id: `group-inactive-${group.groupID}`,
-        label: group.name || "Sem Nome",
-        children: inactiveEmployees
-          .filter((emp: Employee) => emp.groupId === group.groupID)
-          .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
-          .map((emp: Employee) => ({
-            id: `group-inactive-${group.groupID}-emp-${emp.enrollNumber}`,
-            label: `${emp.enrollNumber} - ${emp.shortName}`,
-          })),
-      })
-    );
-
-    const unassignedGroupInactive = inactiveEmployees.filter(
-      (emp: Employee) => !emp.groupId
-    );
-    const unassignedGroupItemsInactive = unassignedGroupInactive.map(
-      (emp: Employee) => ({
-        id: `unassigned-inactive-empgrp-${emp.enrollNumber}`,
-        label: `${emp.enrollNumber} - ${emp.shortName}`,
-      })
-    );
-
-    const treeItems: TreeViewBaseItem[] = [
+    const treeItems = [
       {
         id: "nidgroup",
         label: "NIDGROUP",
         children: [
           {
-            id: "activos",
-            label: `ACTIVOS (${activeEmployees.length})`,
-            children: [
-              {
-                id: "departments-active",
-                label: "DEPARTAMENTOS",
-                children: departmentItemsActive,
-              },
-              ...(unassignedDepartmentItemsActive.length > 0
-                ? [
-                    {
-                      id: "unassignedDept-active",
-                      label: "SEM DEPARTAMENTO",
-                      children: unassignedDepartmentItemsActive,
-                    },
-                  ]
-                : []),
-              {
-                id: "groups-active",
-                label: "GRUPOS",
-                children: groupItemsActive,
-              },
-              ...(unassignedGroupItemsActive.length > 0
-                ? [
-                    {
-                      id: "unassignedGroup-active",
-                      label: "SEM GRUPO",
-                      children: unassignedGroupItemsActive,
-                    },
-                  ]
-                : []),
-            ],
+            id: "departments",
+            label: "DEPARTAMENTOS",
+            children: departmentItems,
           },
-          {
-            id: "inactivos",
-            label: `INACTIVOS (${inactiveEmployees.length})`,
-            children: [
-              {
-                id: "departments-inactive",
-                label: "DEPARTAMENTOS",
-                children: departmentItemsInactive,
-              },
-              ...(unassignedDepartmentItemsInactive.length > 0
-                ? [
-                    {
-                      id: "unassignedDept-inactive",
-                      label: "SEM DEPARTAMENTO",
-                      children: unassignedDepartmentItemsInactive,
-                    },
-                  ]
-                : []),
-              {
-                id: "groups-inactive",
-                label: "GRUPOS",
-                children: groupItemsInactive,
-              },
-              ...(unassignedGroupItemsInactive.length > 0
-                ? [
-                    {
-                      id: "unassignedGroup-inactive",
-                      label: "SEM GRUPO",
-                      children: unassignedGroupItemsInactive,
-                    },
-                  ]
-                : []),
-            ],
-          },
+          ...(unassignedDepartmentItems.length > 0
+            ? [
+                {
+                  id: "unassigned",
+                  label: "SEM DEPARTAMENTO",
+                  children: unassignedDepartmentItems,
+                },
+              ]
+            : []),
+          { id: "groups", label: "GRUPOS", children: groupItems },
+          ...(unassignedGroupItems.length > 0
+            ? [
+                {
+                  id: "unassignedGroup",
+                  label: "SEM GRUPO",
+                  children: unassignedGroupItems,
+                },
+              ]
+            : []),
         ],
       },
     ];
-
     return treeItems;
   }, [data]);
 

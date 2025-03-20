@@ -30,8 +30,16 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const NkioskAlerts = () => {
-  const { events, setEvents, fetchEventsDevice, totalEventPages, totalEventRecords } = useTerminals();
+  const { events, setEvents, fetchEventsDevice, totalEventPages, totalEventRecords, eventsNoPagination } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -238,42 +246,64 @@ export const NkioskAlerts = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(events)) {
+    if (!Array.isArray(eventsNoPagination)) {
       return [];
     }
-    return events
-      .filter(
-        (getCoin) =>
-          Object.keys(filters).every(
-            (key) =>
-              filters[key] === "" ||
-              (getCoin[key] != null &&
-                String(getCoin[key])
-                  .toLowerCase()
-                  .includes(filters[key].toLowerCase()))
-          ) &&
-          Object.entries(getCoin).some(([key, value]) => {
-            if (selectedColumns.includes(key) && value != null) {
-              if (value instanceof Date) {
-                return value
-                  .toLocaleString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              } else {
-                return value
-                  .toString()
-                  .toLowerCase()
-                  .includes(filterText.toLowerCase());
-              }
+  
+    const applyFilter = (list: Alerts[]) => {
+      return list.filter((item) =>
+        Object.keys(filters).every((key) => {
+          if (filters[key] === "") return true;
+          if (item[key] == null) return false;
+          return String(item[key])
+            .toLowerCase()
+            .includes(filters[key].toLowerCase());
+        }) &&
+        Object.entries(item).some(([key, value]) => {
+          if (selectedColumns.includes(key) && value != null) {
+            if (key === "eventTime") {
+              const date = new Date(value);
+              const formatted = formatDateDDMMYYYY(date);
+              return formatted.toLowerCase().includes(filterText.toLowerCase());
+            } else if (value instanceof Date) {
+              return value
+                .toLocaleString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            } else {
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
             }
-            return false;
-          })
-      )
-      .sort(
-        (a, b) =>
-          new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+          }
+          return false;
+        })
       );
-  }, [events, filters, filterText]);
+    };
+  
+    const filteredMain = applyFilter(eventsNoPagination);
+  
+    if (filterText.trim() !== "" && Array.isArray(eventsNoPagination)) {
+      const filteredGraph = applyFilter(eventsNoPagination);
+  
+      const combined = [...filteredMain, ...filteredGraph];
+  
+      const seen = new Set<string>();
+      const deduplicated: Alerts[] = [];
+      for (const item of combined) {
+        const key = `${item.deviceSN}-${item.name}-${item.eventTime}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(item);
+        }
+      }
+  
+      return deduplicated;
+    }
+  
+    return filteredMain;
+  }, [eventsNoPagination, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Alerts>[] = alertsFields

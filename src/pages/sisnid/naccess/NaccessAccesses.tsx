@@ -115,7 +115,7 @@ export const NaccessAccesses = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
+  const { disabledEmployeesNoPagination, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [filteredAccess, setFilteredAccess] = useState<Accesses[]>([]);
@@ -465,7 +465,7 @@ export const NaccessAccesses = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {
-    const employeeDetails = employeesNoPagination.find(
+    const employeeDetails = disabledEmployeesNoPagination.find(
       (emp) => emp.shortName === person.nameUser
     );
     if (employeeDetails) {

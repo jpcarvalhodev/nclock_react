@@ -41,10 +41,18 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 // Define a página de acessos
 export const NaccessVisitor = () => {
   const {
-    employeesNoPagination,
+    disabledEmployeesNoPagination,
     employeeVisitor,
     setEmployeeVisitor,
     registeredUsers,
@@ -340,6 +348,11 @@ export const NaccessVisitor = () => {
         ) &&
         Object.entries(emp).some(([key, value]) => {
           if (selectedColumns.includes(key) && value != null) {
+            if (key === "dataInicio" || key === "dataFim" || key === "dataSaida") {
+              const date = new Date(value);
+              const formatted = formatDateDDMMYYYY(date);
+              return formatted.toLowerCase().includes(filterText.toLowerCase());
+            }
             if (value instanceof Date) {
               return value
                 .toLocaleString()
@@ -359,7 +372,7 @@ export const NaccessVisitor = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeVisitor) => {
-    const employeeDetails = employeesNoPagination.find(
+    const employeeDetails = disabledEmployeesNoPagination.find(
       (emp) =>
         emp.employeeID === person.idVisitante ||
         emp.employeeID === person.idPessoa
@@ -500,7 +513,7 @@ export const NaccessVisitor = () => {
             </>
           ),
           cell: (row: EmployeeVisitor) => {
-            const visitor = employeesNoPagination.find(
+            const visitor = disabledEmployeesNoPagination.find(
               (emp) => String(emp.employeeID) === String(row.idVisitante)
             );
             return (
@@ -528,7 +541,7 @@ export const NaccessVisitor = () => {
             </>
           ),
           cell: (row: EmployeeVisitor) => {
-            const person = employeesNoPagination.find(
+            const person = disabledEmployeesNoPagination.find(
               (emp) => String(emp.employeeID) === String(row.idPessoa)
             );
             return (

@@ -35,6 +35,14 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 // Define o componente de terminais
 export const TerminalCloseOpen = () => {
   const { mbDevices, mbCloseOpen, setMbCloseOpen, fetchAllMBCloseOpen } =
@@ -215,6 +223,11 @@ export const TerminalCloseOpen = () => {
         ) &&
         Object.entries(device).some(([key, value]) => {
           if (selectedColumns.includes(key) && value != null) {
+            if (key === "timestamp") {
+              const date = new Date(value);
+              const formatted = formatDateDDMMYYYY(date);
+              return formatted.toLowerCase().includes(filterText.toLowerCase());
+            }
             if (value instanceof Date) {
               return value
                 .toLocaleString()

@@ -18,6 +18,14 @@ import { Entity } from "../../types/Types";
 import { SearchBoxContainer } from "../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../components/CustomSpinner";
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const Entities = () => {
   const { entities, fetchAllEntity, updateEntity } = useEntity();
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -192,6 +200,11 @@ export const Entities = () => {
         ) &&
         Object.entries(user).some(([key, value]) => {
           if (selectedColumns.includes(key) && value != null) {
+            if (key === "eventTime") {
+              const date = new Date(value);
+              const formatted = formatDateDDMMYYYY(date);
+              return formatted.toLowerCase().includes(filterText.toLowerCase());
+            }
             if (value instanceof Date) {
               return value
                 .toLocaleString()

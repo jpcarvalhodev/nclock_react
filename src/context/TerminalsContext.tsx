@@ -16,6 +16,7 @@ export interface DeviceContextType {
     cameras: Cameras[];
     events: Alerts[];
     setEvents: (events: Alerts[]) => void;
+    eventsNoPagination: Alerts[];
     fetchAllDevices: () => Promise<AllDevices[]>;
     fetchAllKioskTransaction: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
     fetchAllKioskTransactionOnDevice: (zktecoDeviceID: Devices) => Promise<KioskTransaction[]>;
@@ -60,6 +61,7 @@ export interface DeviceContextType {
     handleDeletePeriodTimePlan: (planoId: string, id: string[]) => Promise<void>;
     fetchReaders: (deviceId: string) => Promise<Readers[]>;
     handleUpdateReaders: (reader: Readers) => Promise<void>;
+    fetchEventsDeviceNoPagination: (deviceSN?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Events[]>;
     fetchEventsDevice: (deviceSN?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Events[]>;
     fetchEventsAndTransactionDevice: (startDate?: string, endDate?: string) => Promise<Movements[]>;
     fetchDeviceActivities: (sn?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string) => Promise<Activity[]>;
@@ -86,6 +88,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     const [cameras, setCameras] = useState<Cameras[]>([]);
     const [timePlans, setTimePlans] = useState<TimePlan[]>([]);
     const [events, setEvents] = useState<Alerts[]>([]);
+    const [eventsNoPagination, setEventsNoPagination] = useState<Alerts[]>([]);
     const [totalMovementPages, setTotalMovementPages] = useState<number>(1);
     const [totalMovementRows, setTotalMovementRows] = useState<number>(0);
     const [totalEventPages, setTotalEventPages] = useState<number>(1);
@@ -602,6 +605,18 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Função para buscar todos os eventos do dispositivo
+    const fetchEventsDeviceNoPagination = async (deviceSN?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Events[]> => {
+        try {
+            const data = await apiService.fetchAllEventDevice(undefined, undefined, undefined, undefined, undefined);
+            setEventsNoPagination(data.data);
+            return data.data;
+        } catch (error) {
+            console.error('Erro ao buscar eventos sem paginação:', error);
+        }
+        return [];
+    }
+
+    // Função para buscar todos os eventos do dispositivo
     const fetchEventsDevice = async (deviceSN?: string[], startDate?: string, endDate?: string, pageNo?: string, pageSize?: string): Promise<Events[]> => {
         try {
             const data = await apiService.fetchAllEventDevice(deviceSN, startDate, endDate, pageNo, pageSize);
@@ -653,6 +668,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
             fetchAllAuxData();
             fetchTimePlans();
             fetchCameras();
+            fetchEventsDeviceNoPagination();
             fetchEventsDevice();
             fetchEventsAndTransactionDevice();
             fetchDeviceActivities();
@@ -671,6 +687,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         cameras,
         events,
         setEvents,
+        eventsNoPagination,
         fetchAllDevices,
         fetchAllKioskTransaction,
         fetchAllKioskTransactionOnDevice,
@@ -715,6 +732,7 @@ export const TerminalsProvider = ({ children }: { children: ReactNode }) => {
         handleDeletePeriodTimePlan,
         fetchReaders,
         handleUpdateReaders,
+        fetchEventsDeviceNoPagination,
         fetchEventsDevice,
         fetchEventsAndTransactionDevice,
         fetchDeviceActivities,

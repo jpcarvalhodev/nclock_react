@@ -69,11 +69,12 @@ export const UpdateModalDeptGrp = <T extends Entity>({
   const {
     employees,
     setEmployees,
-    fetchAllDepartments,
+    employeesNoPagination,
     departments,
     groups,
-    fetchAllGroups,
     handleUpdateEmployee,
+    fetchAllData,
+    fetchAllEmployeesNoPagination
   } = usePersons();
   const [formData, setFormData] = useState<T>({ ...entity });
   const [employeeData, setEmployeeData] = useState<Employee[]>([]);
@@ -165,24 +166,28 @@ export const UpdateModalDeptGrp = <T extends Entity>({
   const updateEmployeeAndCard = async (employee: Employee) => {
     await handleUpdateEmployee(employee);
     if (entityType === "department") {
-      fetchAllDepartments();
+      await fetchAllData();
+      await fetchAllEmployeesNoPagination();
     } else {
-      fetchAllGroups();
-    }
-    setEmployees(employees);
-
-    if (entityType === "department") {
-      setEmployeeData(
-        employees.filter((emp) => emp.departmentId === formData.departmentID)
-      );
-    } else {
-      setEmployeeData(
-        employees.filter((emp) => emp.groupId === formData.groupID)
-      );
+      await fetchAllData();
+      await fetchAllEmployeesNoPagination();
     }
     setShowUpdateEmployeeModal(false);
     setClearSelectionToggle((prev) => !prev);
   };
+
+  // Função para atualizar um departamento ou grupo após uma operação
+  useEffect(() => {
+    if (entityType === "department") {
+      setEmployeeData(
+        employeesNoPagination.filter((emp) => emp.departmentId === formData.departmentID)
+      );
+    } else {
+      setEmployeeData(
+        employeesNoPagination.filter((emp) => emp.groupId === formData.groupID)
+      );
+    }
+  }, [employeesNoPagination, entity, entityType, formData]);
 
   // Função para lidar com o clique em um funcionário
   const handleEmployeeClick = (employee: Employee) => {
@@ -571,11 +576,11 @@ export const UpdateModalDeptGrp = <T extends Entity>({
                   columns={employeeColumns}
                   data={
                     entityType === "department" && employeeData.length === 0
-                      ? employees.filter(
+                      ? employeesNoPagination.filter(
                           (emp) => emp.departmentId === formData.departmentID
                         )
                       : entityType === "group" && employeeData.length === 0
-                      ? employees.filter(
+                      ? employeesNoPagination.filter(
                           (emp) => emp.groupId === formData.groupID
                         )
                       : employeeData

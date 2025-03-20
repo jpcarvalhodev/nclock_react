@@ -45,6 +45,14 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 // Define a página de pedidos
 export const NclockRequests = () => {
   const {
@@ -57,7 +65,7 @@ export const NclockRequests = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { employeesNoPagination, handleUpdateEmployee } = usePersons();
+  const { disabledEmployeesNoPagination, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [attendanceRequests, setAttendanceRequests] = useState<
@@ -264,7 +272,12 @@ export const NclockRequests = () => {
 
   // Função para resetar as colunas
   const handleResetColumns = () => {
-    setSelectedColumns(["employeeName", "enrollNumber", "observation", "attendanceTime"]);
+    setSelectedColumns([
+      "employeeName",
+      "enrollNumber",
+      "observation",
+      "attendanceTime",
+    ]);
   };
 
   // Função para atualizar os funcionários
@@ -333,6 +346,11 @@ export const NclockRequests = () => {
         ) &&
         Object.entries(attendances).some(([key, value]) => {
           if (selectedColumns.includes(key) && value != null) {
+            if (key === "attendanceTime") {
+              const date = new Date(value);
+              const formatted = formatDateDDMMYYYY(date);
+              return formatted.toLowerCase().includes(filterText.toLowerCase());
+            }
             if (value instanceof Date) {
               return value
                 .toLocaleString()
@@ -358,7 +376,7 @@ export const NclockRequests = () => {
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
-    const employeeDetails = employeesNoPagination.find(
+    const employeeDetails = disabledEmployeesNoPagination.find(
       (emp) => emp.employeeID === person.employeeId
     );
     if (employeeDetails) {
@@ -854,7 +872,11 @@ export const NclockRequests = () => {
           snapOffset={0}
           dragInterval={1}
         >
-          <div className={`treeview-container ${perPage >= 50 ? "treeview-container-full-height" : ""}`}>
+          <div
+            className={`treeview-container ${
+              perPage >= 50 ? "treeview-container-full-height" : ""
+            }`}
+          >
             <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">

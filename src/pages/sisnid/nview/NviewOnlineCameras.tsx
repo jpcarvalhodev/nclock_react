@@ -20,6 +20,14 @@ import { Cameras } from "../../../types/Types";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const NviewOnlineCameras = () => {
   const [cameras, setCameras] = useState<Cameras[]>([]);
   const [filterText, setFilterText] = useState<string>("");
@@ -216,8 +224,12 @@ export const NviewOnlineCameras = () => {
                 .toLowerCase()
                 .includes(filters[key].toLowerCase()))
         ) &&
-        Object.values(getCoin).some((value) => {
-          if (value == null) {
+        Object.values(getCoin).some(([key, value]) => {
+          if (key === "createdDate") {
+            const date = new Date(value);
+            const formatted = formatDateDDMMYYYY(date);
+            return formatted.toLowerCase().includes(filterText.toLowerCase());
+          } else if (value == null) {
             return false;
           } else if (value instanceof Date) {
             return value

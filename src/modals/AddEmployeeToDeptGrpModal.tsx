@@ -158,6 +158,7 @@ export const AddEmployeeToDeptGrpModal = <T extends Record<string, any>>({
         employeeCards && employeeCards.length > 0 ? employeeCards : [],
     };
 
+    console.log(payload);
     onSave(payload as unknown as T);
     handleClose();
   };

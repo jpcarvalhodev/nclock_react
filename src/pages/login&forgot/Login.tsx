@@ -42,7 +42,7 @@ export const Login = () => {
   const { fetchAllLicensesWithoutKey } = useLicense();
   const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice } = useAttendance();
   const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones, fetchAllDisabledEmployees, fetchAllEmployeesNoPagination, fetchAllDisabledEmployeesNoPagination, fetchEmployeeVisitor, fetchVisitorsMotive } = usePersons();
-  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans, fetchCameras, fetchEventsDevice, fetchEventsAndTransactionDevice, fetchDeviceActivities } = useTerminals();
+  const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans, fetchCameras, fetchEventsDevice, fetchEventsAndTransactionDevice, fetchDeviceActivities, fetchEventsDeviceNoPagination } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks, fetchAllMBAndCoin, fetchAllCardAndKiosk, fetchAllChartData } = useKiosk();
   const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
@@ -247,6 +247,7 @@ export const Login = () => {
             fetchAllTasks(),
             fetchCameras(),
             fetchEventsDevice(),
+            fetchEventsDeviceNoPagination(),
             fetchEventsAndTransactionDevice(),
             fetchDeviceActivities(),
           ]);

@@ -68,6 +68,17 @@ const isToday = (dateString: string) => {
   );
 };
 
+// Função auxiliar para extrair apenas o dia (YYYY-MM-DD) de uma string "dd/MM/yyyy HH:mm"
+const getDateOnlyKey = (dateString: string): string => {
+  const isoDateString = convertToISO(dateString);
+  const eventDateTime = new Date(isoDateString);
+
+  const year = eventDateTime.getFullYear();
+  const month = String(eventDateTime.getMonth() + 1).padStart(2, "0");
+  const day = String(eventDateTime.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 // Define a página de presença
 export const NclockAccessPresence = () => {
   const currentDate = new Date();
@@ -101,94 +112,69 @@ export const NclockAccessPresence = () => {
 
   // Função para filtrar as presenças
   useEffect(() => {
-    const sDate = new Date(startDate);
-    const eDate = new Date(endDate);
-
-    const filtered = accessForGraph.filter((acc) => {
-      const isoDateString = convertToISO(acc.eventTime);
-      const eventDateTime = new Date(isoDateString);
-
+    const filteredToday = accessForGraph.filter((acc) => {
       return (
-        Number(acc.pin) !== 0 &&
-        eventDateTime >= sDate &&
-        eventDateTime <= eDate
+        isToday(acc.eventTime) &&
+        acc.eventName !== "Acesso não autorizado" /* &&
+        (acc.readerName === "Entrada Porta Entrada Colaboradores" ||
+          acc.readerName === "Saída Porta Entrada Colaboradores") */
       );
     });
 
-    const latestAccessByPin = new Map<string, Accesses>();
-    filtered.forEach((acc) => {
+    const earliestTodayByPin = new Map<string, Accesses>();
+    filteredToday.forEach((acc) => {
       const pinString = String(acc.pin).trim();
-      const existing = latestAccessByPin.get(pinString);
+      const existing = earliestTodayByPin.get(pinString);
 
       if (!existing) {
-        latestAccessByPin.set(pinString, acc);
+        earliestTodayByPin.set(pinString, acc);
       } else {
-        const existingDate = new Date(convertToISO(existing.eventTime));
-        const currentDate = new Date(convertToISO(acc.eventTime));
-        if (currentDate > existingDate) {
-          latestAccessByPin.set(pinString, acc);
+        const existingDateTime = new Date(convertToISO(existing.eventTime));
+        const currentDateTime = new Date(convertToISO(acc.eventTime));
+        if (currentDateTime < existingDateTime) {
+          earliestTodayByPin.set(pinString, acc);
         }
       }
     });
 
-    const isToday = (date: Date) => {
-      const now = new Date();
-      return (
-        date.getDate() === now.getDate() &&
-        date.getMonth() === now.getMonth() &&
-        date.getFullYear() === now.getFullYear()
-      );
-    };
+    const presenceArray = Array.from(earliestTodayByPin.values()).map(
+      (acc) => ({
+        ...acc,
+        isPresent: true,
+      })
+    );
 
-    const presenceArray: EmployeeAccessWithPresence[] = Array.from(
-      latestAccessByPin.values()
-    ).map((acc) => {
-      const isoDateString = convertToISO(acc.eventTime);
-      const eventDateTime = new Date(isoDateString);
+    const employeesWithoutAccess = employeesNoPagination.filter((emp) => {
+      const pinString = String(emp.enrollNumber).trim();
+      return !earliestTodayByPin.has(pinString);
+    });
 
-      const presentToday =
-        acc.eventName !== "Acesso não autorizado" &&
-        (acc.readerName === "Entrada Porta Entrada Colaboradores" || acc.readerName === "Saída Porta Entrada Colaboradores") &&
-        acc.inOutStatus === 0 &&
-        isToday(eventDateTime);
+    const absentRecords = employeesWithoutAccess.map((emp) => {
+      const defaultCardNo =
+        emp.employeeCards?.length > 0 ? emp.employeeCards[0].cardNumber : "";
 
       return {
-        ...acc,
-        isPresent: presentToday,
+        id: "",
+        cardNo: defaultCardNo,
+        pin: String(emp.enrollNumber).trim(),
+        nameUser: emp.name,
+        eventTime: "",
+        eventName: "",
+        deviceName: "",
+        readerName: "",
+        inOutStatus: null,
+        inOutMode: null,
+        deviceSN: "",
+        eventDoorId: "",
+        eventDoorName: "",
+        isPresent: false,
       };
     });
 
-    const employeesWithoutAccess = employeesNoPagination.filter((emp) => {
-      const enrollString = String(emp.enrollNumber).trim();
-      return !latestAccessByPin.has(enrollString);
-    });
-
-    const absentRecords: EmployeeAccessWithPresence[] =
-      employeesWithoutAccess.map((emp) => {
-        const defaultCardNo =
-          emp.employeeCards?.length > 0 ? emp.employeeCards[0].cardNumber : "";
-
-        return {
-          id: "",
-          cardNo: defaultCardNo,
-          pin: String(emp.enrollNumber).trim(),
-          nameUser: emp.name,
-          eventTime: "",
-          inOutStatus: null,
-          inOutMode: null,
-          deviceSN: "",
-          eventDoorId: "",
-          deviceName: "",
-          eventName: "",
-          eventDoorName: "",
-          readerName: "",
-          isPresent: false,
-        };
-      });
-
     const combinedData = [...presenceArray, ...absentRecords];
+
     setAccessPresence(combinedData);
-  }, [startDate, endDate, accessForGraph, employeesNoPagination]);
+  }, [accessForGraph, employeesNoPagination]);
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresence = () => {

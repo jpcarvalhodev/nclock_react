@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
+import { TreeViewDataNclockPresence } from "../../../components/TreeViewNclockPresence";
 import { useAttendance } from "../../../context/MovementContext";
 
 import { usePersons } from "../../../context/PersonsContext";
@@ -109,60 +109,45 @@ export const NclockPresence = () => {
 
   // Função para filtrar as presenças
   useEffect(() => {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(todayStart);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     fetchAllAttendances({
       filterFunc: (data) => data.filter((att) => att.type !== 3),
     })
       .then((allAttendanceData) => {
-        const sDate = new Date(startDate);
-        const eDate = new Date(endDate);
         const filtered = allAttendanceData.filter((att) => {
           const attDate = new Date(att.attendanceTime);
-          return attDate >= sDate && attDate <= eDate;
+          return attDate >= todayStart && attDate < tomorrow;
         });
 
-        const latestByEmployee = new Map<string, EmployeeAttendanceTimes>();
-
+        const earliestByEmployee = new Map<string, EmployeeAttendanceTimes>();
         filtered.forEach((att) => {
-          const existing = latestByEmployee.get(att.employeeId);
+          const existing = earliestByEmployee.get(att.employeeId);
           if (!existing) {
-            latestByEmployee.set(att.employeeId, att);
+            earliestByEmployee.set(att.employeeId, att);
           } else {
-            const existingDate = new Date(existing.attendanceTime);
-            const currentDate = new Date(att.attendanceTime);
-            if (currentDate > existingDate) {
-              latestByEmployee.set(att.employeeId, att);
+            const existingTime = new Date(existing.attendanceTime).getTime();
+            const currentTime = new Date(att.attendanceTime).getTime();
+            if (currentTime < existingTime) {
+              earliestByEmployee.set(att.employeeId, att);
             }
           }
         });
 
-        const isToday = (date: Date) => {
-          const now = new Date();
-          return (
-            date.getDate() === now.getDate() &&
-            date.getMonth() === now.getMonth() &&
-            date.getFullYear() === now.getFullYear()
-          );
-        };
-
-        const presenceArray: EmployeeAttendanceWithPresence[] = Array.from(
-          latestByEmployee.values()
-        ).map((att) => {
-          const attDate = new Date(att.attendanceTime);
-          const present =
-            isToday(attDate) && [0, 2, 4].includes(Number(att.inOutMode));
-
-          return {
+        const presenceArray = Array.from(earliestByEmployee.values()).map(
+          (att) => ({
             ...att,
-            isPresent: present,
-          };
-        });
-
-        const employeesWithoutAttendance = employeesNoPagination.filter(
-          (emp) => !latestByEmployee.has(emp.employeeID)
+            isPresent: true,
+          })
         );
 
-        const absentRecords: EmployeeAttendanceWithPresence[] =
-          employeesWithoutAttendance.map((emp) => ({
+        const absentRecords = employeesNoPagination
+          .filter((emp) => !earliestByEmployee.has(emp.employeeID))
+          .map((emp) => ({
             id: emp.employeeID,
             employeeId: emp.employeeID,
             employeeName: emp.name,
@@ -179,16 +164,13 @@ export const NclockPresence = () => {
           }));
 
         const combinedData = [...presenceArray, ...absentRecords];
-
-        setAttendancePresence(combinedData as EmployeeAttendanceWithPresence[]);
-        setFilteredAttendances(
-          combinedData as EmployeeAttendanceWithPresence[]
-        );
+        setAttendancePresence(combinedData);
+        setFilteredAttendances(combinedData);
       })
       .catch((error) => {
         console.error("Erro ao tentar buscar os dados:", error);
       });
-  }, [startDate, endDate, employeesNoPagination]);
+  }, [employeesNoPagination]);
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresence = () => {
@@ -760,7 +742,7 @@ export const NclockPresence = () => {
               perPage >= 50 ? "treeview-container-full-height" : ""
             }`}
           >
-            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
+            <TreeViewDataNclockPresence onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">

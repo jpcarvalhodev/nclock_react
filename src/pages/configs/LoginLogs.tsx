@@ -31,6 +31,14 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const LoginLogs = () => {
   const currentDate = new Date();
   const pastDate = new Date();
@@ -258,43 +266,45 @@ export const LoginLogs = () => {
     }
 
     const applyFilter = (logsList: Logs[]) => {
-      return (
-        logsList
-          .filter((item) =>
-            Object.keys(filters).every((key) => {
-              if (filters[key] === "") return true;
-              return (
-                item[key] != null &&
-                String(item[key])
+      return logsList
+        .filter((item) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            return (
+              item[key] != null &&
+              String(item[key])
+                .toLowerCase()
+                .includes(filters[key].toLowerCase())
+            );
+          })
+        )
+        .filter((item) =>
+          Object.entries(item).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (key === "createdDate") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted.toLowerCase().includes(filterText.toLowerCase());
+              }
+              if (value instanceof Date) {
+                return value
+                  .toLocaleString()
                   .toLowerCase()
-                  .includes(filters[key].toLowerCase())
-              );
-            })
-          )
-          .filter(
-            (item) =>
-              Object.entries(item).some(([key, value]) => {
-                if (selectedColumns.includes(key) && value != null) {
-                  if (value instanceof Date) {
-                    return value
-                      .toLocaleString()
-                      .toLowerCase()
-                      .includes(filterText.toLowerCase());
-                  }
-                  return value
-                    .toString()
-                    .toLowerCase()
-                    .includes(filterText.toLowerCase());
-                }
-                return false;
-              })
-          )
-          .sort(
-            (a, b) =>
-              new Date(b.createdDate).getTime() -
-              new Date(a.createdDate).getTime()
-          )
-      );
+                  .includes(filterText.toLowerCase());
+              }
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
+            return false;
+          })
+        )
+        .sort(
+          (a, b) =>
+            new Date(b.createdDate).getTime() -
+            new Date(a.createdDate).getTime()
+        );
     };
 
     const mainFiltered = applyFilter(loginLogs);
