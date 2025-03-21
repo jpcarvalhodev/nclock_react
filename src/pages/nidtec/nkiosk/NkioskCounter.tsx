@@ -20,6 +20,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { Counter } from "../../../types/Types";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 
 // Formata a data para o início do dia às 00:00
 const formatDateToStartOfDay = (date: Date): string => {
@@ -30,11 +31,6 @@ const formatDateToStartOfDay = (date: Date): string => {
 const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
-
-// Define a interface para as propriedades do componente CustomSearchBox
-function CustomSearchBox(props: TextFieldProps) {
-  return <TextField {...props} className="SearchBox" />;
-}
 
 export const NkioskCounter = () => {
   const currentDate = new Date();
@@ -47,6 +43,7 @@ export const NkioskCounter = () => {
     fetchAllCounter,
     counterPages,
     counterTotalRecords,
+    counterNoPagination,
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -254,18 +251,18 @@ export const NkioskCounter = () => {
     if (!Array.isArray(counter)) {
       return [];
     }
-    return counter
-      .filter(
-        (getCoin) =>
-          Object.keys(filters).every(
-            (key) =>
-              filters[key] === "" ||
-              (getCoin[key] != null &&
-                String(getCoin[key])
-                  .toLowerCase()
-                  .includes(filters[key].toLowerCase()))
-          ) &&
-          Object.entries(getCoin).some(([key, value]) => {
+
+    const applyFilter = (list: Counter[]) => {
+      return list.filter(
+        (item) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            if (item[key] == null) return false;
+            return String(item[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase());
+          }) &&
+          Object.entries(item).some(([key, value]) => {
             if (selectedColumns.includes(key) && value != null) {
               if (value instanceof Date) {
                 return value
@@ -281,12 +278,32 @@ export const NkioskCounter = () => {
             }
             return false;
           })
-      )
-      .sort(
+      );
+    };
+
+    const filteredMain = applyFilter(counter);
+
+    if (filterText.trim() !== "" && Array.isArray(counterNoPagination)) {
+      const filteredFallback = applyFilter(counterNoPagination);
+      const combined = [...filteredMain, ...filteredFallback];
+
+      const seen = new Set<string>();
+      const deduplicated: Counter[] = [];
+      for (const item of combined) {
+        const key = `${item.deviceSN}-${item.pin}-${item.eventTime}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(item);
+        }
+      }
+      return deduplicated.sort(
         (a, b) =>
           new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-  }, [counter, filters, filterText]);
+    }
+
+    return filteredMain
+  }, [counter, counterNoPagination, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Counter>[] = counterFields
@@ -313,7 +330,7 @@ export const NkioskCounter = () => {
         name: (
           <>
             {field.label}
-            {field.key !== "dataRecolha" && (
+            {field.key !== "eventTime" && (
               <SelectFilter
                 column={field.key}
                 setFilters={setFilters}
@@ -325,8 +342,8 @@ export const NkioskCounter = () => {
         selector: (row) => formatField(row),
         sortable: true,
         sortFunction: (rowA, rowB) =>
-          new Date(rowB.dataRecolha).getTime() -
-          new Date(rowA.dataRecolha).getTime(),
+          new Date(rowB.eventTime).getTime() -
+          new Date(rowA.eventTime).getTime(),
       };
     });
 
@@ -382,13 +399,8 @@ export const NkioskCounter = () => {
             </div>
             <div className="datatable-header">
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container-others">
@@ -664,13 +676,8 @@ export const NkioskCounter = () => {
             </div>
             <div className="datatable-header">
               <div>
-                <CustomSearchBox
-                  label="Pesquisa"
-                  variant="outlined"
-                  size="small"
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  style={{ marginTop: -5 }}
+                <SearchBoxContainer
+                  onSearch={(value) => setFilterText(value)}
                 />
               </div>
               <div className="buttons-container-others">

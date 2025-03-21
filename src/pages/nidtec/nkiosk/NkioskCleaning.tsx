@@ -34,6 +34,14 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const NkioskCleaning = () => {
   const currentDate = new Date();
   const pastDate = new Date();
@@ -343,6 +351,13 @@ export const NkioskCleaning = () => {
           ) &&
           Object.entries(getCoin).some(([key, value]) => {
             if (selectedColumns.includes(key) && value != null) {
+              if (key === "dataCreate") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
               if (value instanceof Date) {
                 return value
                   .toLocaleString()
@@ -362,7 +377,7 @@ export const NkioskCleaning = () => {
         (a, b) =>
           new Date(b.dataCreate).getTime() - new Date(a.dataCreate).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [filteredDevices, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<LimpezasEOcorrencias>[] =

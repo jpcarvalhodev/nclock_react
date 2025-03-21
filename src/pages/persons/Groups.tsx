@@ -229,7 +229,7 @@ export const Groups = () => {
           return false;
         })
     );
-  }, [groups, filters, filterText]);
+  }, [groups, filters, filterText, selectedColumns]);
 
   // Define os dados iniciais ao duplicar
   const handleDuplicate = (entity: Partial<Group>) => {

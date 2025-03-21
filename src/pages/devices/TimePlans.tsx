@@ -227,7 +227,7 @@ export const TimePlans = () => {
           })
       )
       .sort((a, b) => a.nome.localeCompare(b.nome));
-  }, [timePlans, filters, filterText]);
+  }, [timePlans, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<TimePlan>[] = timePlanFields

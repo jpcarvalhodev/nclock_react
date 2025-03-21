@@ -245,6 +245,11 @@ import { NclockAccess } from './pages/sisnid/nclock/NclockAccess';
 import { NclockAccessPresence } from './pages/sisnid/nclock/NclockAccessPresence';
 import { NaccessVisitor } from './pages/sisnid/naccess/NaccessVisitor';
 import { NaccessMotive } from './pages/sisnid/naccess/NaccessMotive';
+import { NclockTime } from './pages/sisnid/nclock/NclockTime';
+import { NvisitorAccess } from './pages/sisnid/nvisitor/NvisitorAccess';
+import { NvisitorAccessPresence } from './pages/sisnid/nvisitor/NvisitorAccessPresence';
+import { NvisitorVisitors } from './pages/sisnid/nvisitor/NvisitorVisitors';
+import { NvisitorMotive } from './pages/sisnid/nvisitor/NvisitorMotive';
 
 // Define a função de rotas com animação
 function AnimatedRoutes() {
@@ -298,6 +303,7 @@ function AnimatedRoutes() {
           <Route path="/nclock/nclockalerts" element={<PageProtection><NclockAlerts /></PageProtection>} />
           <Route path="/nclock/nclockaccess" element={<PageProtection><NclockAccess /></PageProtection>} />
           <Route path="/nclock/nclockaccesspresence" element={<PageProtection><NclockAccessPresence /></PageProtection>} />
+          <Route path="/nclock/nclocktime" element={<PageProtection><NclockTime /></PageProtection>} />
 
           <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
           <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />
@@ -312,10 +318,14 @@ function AnimatedRoutes() {
           <Route path="/nvisitor/nvisitordashboard" element={<PageProtection><NvisitorDashboard /></PageProtection>} />
           <Route path="/nvisitor/nvisitordashboardlicensed" element={<PageProtection><NvisitorDashboardLicensed /></PageProtection>} />
           <Route path="/nvisitor/nvisitorgraph" element={<PageProtection><NvisitorGraph /></PageProtection>} />
-          <Route path="/nvisitor/nvisitorMoveCard" element={<PageProtection><NvisitorMoveCard /></PageProtection>} />
-          <Route path="/nvisitor/nvisitorMoveKiosk" element={<PageProtection><NvisitorMoveKiosk /></PageProtection>} />
-          <Route path="/nvisitor/nvisitorListMovements" element={<PageProtection><NvisitorListMovements /></PageProtection>} />
+          <Route path="/nvisitor/nvisitormovecard" element={<PageProtection><NvisitorMoveCard /></PageProtection>} />
+          <Route path="/nvisitor/nvisitormovekiosk" element={<PageProtection><NvisitorMoveKiosk /></PageProtection>} />
+          <Route path="/nvisitor/nvisitorlistmovements" element={<PageProtection><NvisitorListMovements /></PageProtection>} />
           <Route path="/nvisitor/nvisitoralerts" element={<PageProtection><NvisitorAlerts /></PageProtection>} />
+          <Route path="/nvisitor/nvisitoraccess" element={<PageProtection><NvisitorAccess /></PageProtection>} />
+          <Route path="/nvisitor/nvisitoraccesspresence" element={<PageProtection><NvisitorAccessPresence /></PageProtection>} />
+          <Route path="/nvisitor/nvisitorvisitors" element={<PageProtection><NvisitorVisitors /></PageProtection>} />
+          <Route path="/nvisitor/nvisitormotive" element={<PageProtection><NvisitorMotive /></PageProtection>} />
 
           <Route path="/nview/nviewdashboard" element={<PageProtection><NviewDashboard /></PageProtection>} />
           <Route path="/nview/nviewdashboardlicensed" element={<PageProtection><NviewDashboardLicensed /></PageProtection>} />
@@ -477,14 +487,14 @@ function AnimatedRoutes() {
 
           <Route path="/nkiosk/nkioskdashboard" element={<PageProtection><NkioskDashboard /></PageProtection>} />
           <Route path="/nkiosk/nkioskdashboardlicensed" element={<PageProtection><NkioskDashboardLicensed /></PageProtection>} />
-          <Route path="/nkiosk/nkioskMap" element={<PageProtection><NkioskMap /></PageProtection>} />
-          <Route path="/nkiosk/nkioskPayTerminal" element={<PageProtection><NkioskPayTerminal /></PageProtection>} />
-          <Route path="/nkiosk/nkioskPayCoins" element={<PageProtection><NkioskPayCoins /></PageProtection>} />
-          <Route path="/nkiosk/nkioskMoveCard" element={<PageProtection><NkioskMoveCard /></PageProtection>} />
-          <Route path="/nkiosk/nkioskMoveKiosk" element={<PageProtection><NkioskMoveKiosk /></PageProtection>} />
-          <Route path="/nkiosk/nkioskMoveVP" element={<PageProtection><NkioskMoveVP /></PageProtection>} />
-          <Route path="/nkiosk/nkioskListPayments" element={<PageProtection><NkioskListPayments /></PageProtection>} />
-          <Route path="/nkiosk/nkioskListMovements" element={<PageProtection><NkioskListMovements /></PageProtection>} />
+          <Route path="/nkiosk/nkioskmap" element={<PageProtection><NkioskMap /></PageProtection>} />
+          <Route path="/nkiosk/nkioskpayterminal" element={<PageProtection><NkioskPayTerminal /></PageProtection>} />
+          <Route path="/nkiosk/nkioskpaycoins" element={<PageProtection><NkioskPayCoins /></PageProtection>} />
+          <Route path="/nkiosk/nkioskmovecard" element={<PageProtection><NkioskMoveCard /></PageProtection>} />
+          <Route path="/nkiosk/nkioskmovekiosk" element={<PageProtection><NkioskMoveKiosk /></PageProtection>} />
+          <Route path="/nkiosk/nkioskmovevp" element={<PageProtection><NkioskMoveVP /></PageProtection>} />
+          <Route path="/nkiosk/nkiosklistpayments" element={<PageProtection><NkioskListPayments /></PageProtection>} />
+          <Route path="/nkiosk/nkiosklistmovements" element={<PageProtection><NkioskListMovements /></PageProtection>} />
           <Route path="/nkiosk/nkioskgraph" element={<PageProtection><NkioskGraph /></PageProtection>} />
           <Route path="/nkiosk/nkioskgetcoins" element={<PageProtection><NkioskGetCoins /></PageProtection>} />
           <Route path="/nkiosk/nkioskdooropen" element={<PageProtection><NkioskDoorOpen /></PageProtection>} />

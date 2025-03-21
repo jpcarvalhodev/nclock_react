@@ -110,6 +110,13 @@ export interface KioskContextType {
   handleDeleteOcurrences: (id: string[]) => void;
   counter: Counter[];
   setCounter: (counter: Counter[]) => void;
+  fetchAllCounterNoPagination: (
+    startDate?: string,
+    endDate?: string,
+    pageNo?: string,
+    pageSize?: string,
+    devSNs?: string[]
+  ) => Promise<Counter[]>;
   fetchAllCounter: (
     startDate?: string,
     endDate?: string,
@@ -145,6 +152,7 @@ export interface KioskContextType {
   totalMovementsTotalRecords: number;
   counterTotalRecords: number;
   counterPages: number;
+  counterNoPagination: Counter[];
 }
 
 // Cria o contexto
@@ -222,6 +230,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     useState<number>(0);
   const [counterTotalRecords, setCounterTotalRecords] = useState<number>(0);
   const [counterPages, setCounterPages] = useState<number>(1);
+  const [counterNoPagination, setCounterNoPagination] = useState<Counter[]>([]);
 
   // Função para buscar os pagamentos dos terminais
   const fetchAllPayTerminal = async (
@@ -629,6 +638,30 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Função para buscar os contadores sem paginação
+  const fetchAllCounterNoPagination = async (
+    startDate?: string,
+    endDate?: string,
+    pageNo?: string,
+    pageSize?: string,
+    devSNs?: string[]
+  ): Promise<Counter[]> => {
+    try {
+      const data = await apiService.fetchAllContador(
+        startDate,
+        endDate,
+        pageNo,
+        pageSize,
+        devSNs
+      );
+      setCounterNoPagination(data.data);
+      return data.data;
+    } catch (error) {
+      console.error("Erro ao buscar os dados do contador:", error);
+    }
+    return [];
+  };
+
   // Função para buscar os contadores
   const fetchAllCounter = async (
     startDate?: string,
@@ -681,13 +714,13 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
         totalMovementRes,
       ] = await Promise.all([
         apiService.fetchKioskTransactionsByMBAndDeviceSN(
-          undefined,
+          "1",
           undefined,
           undefined,
           undefined
         ),
         apiService.fetchKioskTransactionsByPayCoins(
-          undefined,
+          "2",
           undefined,
           undefined,
           undefined
@@ -769,6 +802,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
       fetchAllCoin();
       fetchAllLimpezas();
       fetchAllOcorrencias();
+      fetchAllCounterNoPagination(undefined, undefined, undefined, undefined);
       fetchAllCounter(undefined, undefined, "1", "20");
       fetchAllTasks();
       fetchAllChartData();
@@ -828,6 +862,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     handleDeleteOcurrences,
     counter,
     setCounter,
+    fetchAllCounterNoPagination,
     fetchAllCounter,
     totalPayments,
     setTotalPayments,
@@ -857,6 +892,7 @@ export const KioskProvider = ({ children }: { children: ReactNode }) => {
     totalMovementsTotalRecords,
     counterTotalRecords,
     counterPages,
+    counterNoPagination
   };
 
   return (

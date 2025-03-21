@@ -36,6 +36,14 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const NkioskPayCoins = () => {
   const { kioskConfig } = useNavbar();
   const { devices, mbDevices } = useTerminals();
@@ -337,7 +345,13 @@ export const NkioskPayCoins = () => {
         .filter((payTerminals) =>
           Object.entries(payTerminals).some(([key, value]) => {
             if (selectedColumns.includes(key) && value != null) {
-              if (value instanceof Date) {
+              if (key === "timestamp") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
                 return value
                   .toLocaleString()
                   .toLowerCase()

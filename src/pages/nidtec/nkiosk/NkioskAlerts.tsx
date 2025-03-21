@@ -39,7 +39,14 @@ const formatDateDDMMYYYY = (date: Date): string => {
 };
 
 export const NkioskAlerts = () => {
-  const { events, setEvents, fetchEventsDevice, totalEventPages, totalEventRecords, eventsNoPagination } = useTerminals();
+  const {
+    events,
+    setEvents,
+    fetchEventsDevice,
+    totalEventPages,
+    totalEventRecords,
+    eventsNoPagination,
+  } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -87,7 +94,11 @@ export const NkioskAlerts = () => {
   // Função para buscar os alertas entre datas
   const fetchAlertsBetweenDates = async () => {
     try {
-      const data = await apiService.fetchAllEventDevice(undefined, startDate, endDate);
+      const data = await apiService.fetchAllEventDevice(
+        undefined,
+        startDate,
+        endDate
+      );
       setEvents(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
@@ -208,7 +219,7 @@ export const NkioskAlerts = () => {
           undefined,
           undefined,
           undefined,
-          undefined,
+          undefined
         );
         if (foundDevices.data) {
           setEvents(foundDevices.data);
@@ -249,46 +260,49 @@ export const NkioskAlerts = () => {
     if (!Array.isArray(eventsNoPagination)) {
       return [];
     }
-  
+
     const applyFilter = (list: Alerts[]) => {
-      return list.filter((item) =>
-        Object.keys(filters).every((key) => {
-          if (filters[key] === "") return true;
-          if (item[key] == null) return false;
-          return String(item[key])
-            .toLowerCase()
-            .includes(filters[key].toLowerCase());
-        }) &&
-        Object.entries(item).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (key === "eventTime") {
-              const date = new Date(value);
-              const formatted = formatDateDDMMYYYY(date);
-              return formatted.toLowerCase().includes(filterText.toLowerCase());
-            } else if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+      return list.filter(
+        (item) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            if (item[key] == null) return false;
+            return String(item[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase());
+          }) &&
+          Object.entries(item).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (key === "eventTime") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
+            return false;
+          })
       );
     };
-  
+
     const filteredMain = applyFilter(eventsNoPagination);
-  
+
     if (filterText.trim() !== "" && Array.isArray(eventsNoPagination)) {
       const filteredGraph = applyFilter(eventsNoPagination);
-  
+
       const combined = [...filteredMain, ...filteredGraph];
-  
+
       const seen = new Set<string>();
       const deduplicated: Alerts[] = [];
       for (const item of combined) {
@@ -298,10 +312,10 @@ export const NkioskAlerts = () => {
           deduplicated.push(item);
         }
       }
-  
+
       return deduplicated;
     }
-  
+
     return filteredMain;
   }, [eventsNoPagination, filters, filterText, selectedColumns]);
 

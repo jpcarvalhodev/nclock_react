@@ -215,7 +215,7 @@ export const Professions = () => {
           })
       )
       .sort((a, b) => a.code - b.code);
-  }, [professions, filters, filterText]);
+  }, [professions, filters, filterText, selectedColumns]);
 
   // Seleciona a entidade anterior
   const handleNextProfession = () => {

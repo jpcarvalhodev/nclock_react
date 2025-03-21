@@ -69,7 +69,7 @@ const isToday = (dateString: string) => {
 };
 
 // Define a página de presença
-export const NaccessPresence = () => {
+export const NvisitorAccessPresence = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);

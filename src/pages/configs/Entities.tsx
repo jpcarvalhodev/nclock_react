@@ -200,7 +200,7 @@ export const Entities = () => {
         ) &&
         Object.entries(user).some(([key, value]) => {
           if (selectedColumns.includes(key) && value != null) {
-            if (key === "eventTime") {
+            if (key === "createdDate" || key === "updatedDate") {
               const date = new Date(value);
               const formatted = formatDateDDMMYYYY(date);
               return formatted.toLowerCase().includes(filterText.toLowerCase());
@@ -220,7 +220,7 @@ export const Entities = () => {
           return false;
         })
     );
-  }, [entities, filters, filterText]);
+  }, [entities, filters, filterText, selectedColumns]);
 
   // Define as colunas excluídas
   const excludedColumns = ["logotipo"];

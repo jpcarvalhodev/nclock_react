@@ -244,7 +244,7 @@ export const NviewOnlineCameras = () => {
           }
         })
     );
-  }, [cameras, filters, filterText]);
+  }, [cameras, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Cameras>[] = cameraFields

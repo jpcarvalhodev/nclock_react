@@ -227,7 +227,7 @@ export const Zones = () => {
           return false;
         })
     );
-  }, [zones, filters, filterText]);
+  }, [zones, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Zone>[] = zoneFields

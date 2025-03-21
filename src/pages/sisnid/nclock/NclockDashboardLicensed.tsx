@@ -12,18 +12,18 @@ import {
   Tooltip,
 } from "chart.js";
 import { format, getDay, parse, setYear, startOfWeek } from "date-fns";
-import { pt, ptBR } from "date-fns/locale";
+import { pt } from "date-fns/locale";
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { Line, Bar } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 
-import * as apiService from "../../../api/apiService";
 import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 
-import { Employee } from "../../../types/Types";
 import { usePersons } from "../../../context/PersonsContext";
 import { useAttendance } from "../../../context/MovementContext";
+import { useNavigate } from "react-router-dom";
+import { EmployeeAttendanceTimes } from "../../../types/Types";
 
 // Registra os elementos do ChartJS
 ChartJS.register(
@@ -40,7 +40,7 @@ ChartJS.register(
 
 // Define a linguagem do calendário
 const locales = {
-  pt: ptBR,
+  pt,
 };
 
 // Define o localizador de datas
@@ -85,10 +85,16 @@ const messages = {
 
 // Define a página principal
 export const NclockDashboardLicensed = () => {
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
-  const { employeesNoPagination } = usePersons();
-  const { attendance } = useAttendance();
+  const { employeesNoPagination = [] } = usePersons();
+  const { attendance = [] } = useAttendance();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [assiduityLineChartData, setAssiduityLineChartData] =
+    useState<ChartData>({
+      labels: [],
+      datasets: [],
+    });
   const [presenceBarChartData, setPresenceBarChartData] = useState<ChartData>({
     labels: [],
     datasets: [],
@@ -98,23 +104,11 @@ export const NclockDashboardLicensed = () => {
       labels: [],
       datasets: [],
     });
-  const [lineChartData, setLineChartData] = useState({
-    labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"],
-    datasets: [
-      {
-        label: "Exemplo de Dados 1",
-        data: [0],
-        fill: true,
-        borderColor: "#0050a0",
-        tension: 0.1,
-      },
-    ],
-  });
   const [barChartData, setBarChartData] = useState({
     labels: ["Hoje"],
     datasets: [
       {
-        label: "Exemplo de Dados 3",
+        label: "Sem Dados",
         data: [0],
         backgroundColor: ["#0050a0"],
         borderWidth: 1,
@@ -154,6 +148,70 @@ export const NclockDashboardLicensed = () => {
   const MyEvent = ({ event }: MyEventProps) => {
     return <div className="calendar-event">{event.title}</div>;
   };
+
+  // Função para agrupar os eventos por mês
+  function groupByMonth(data: EmployeeAttendanceTimes[]) {
+    const grouped = data.reduce((acc, item) => {
+      if (!item.attendanceTime) return acc;
+      const date = new Date(item.attendanceTime);
+      const yearMonth = format(date, "yyyy-MM", { locale: pt });
+      if (!acc[yearMonth]) {
+        acc[yearMonth] = [];
+      }
+      acc[yearMonth].push(item);
+      return acc;
+    }, {} as Record<string, EmployeeAttendanceTimes[]>);
+
+    return Object.keys(grouped).map((key) => ({
+      month: key,
+      events: grouped[key],
+    }));
+  }
+
+  // Atualiza os dados do gráfico com base nos acessos anuais
+  useEffect(() => {
+    const groupedAccess = groupByMonth(attendance);
+
+    const dataPerMonth = new Array(12).fill(0);
+
+    groupedAccess.forEach((group) => {
+      const [year, month] = group.month.split("-");
+      const numericYear = Number(year);
+      const numericMonth = Number(month);
+
+      if (numericYear === currentYear) {
+        dataPerMonth[numericMonth - 1] = group.events.length;
+      }
+    });
+
+    const newLineData = {
+      labels: [
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro",
+      ],
+      datasets: [
+        {
+          label: "Total de Assiduidades",
+          data: dataPerMonth,
+          fill: false,
+          borderColor: "#0050a0",
+          tension: 0.1,
+        },
+      ],
+    };
+
+    setAssiduityLineChartData(newLineData);
+  }, [attendance]);
 
   // Define os dados do gráfico de linha para as presenças de hoje
   useEffect(() => {
@@ -250,6 +308,20 @@ export const NclockDashboardLicensed = () => {
             showArrows={false}
             emulateTouch={true}
           >
+            <div
+              className="departments-groups-chart"
+              style={{ height: "26rem" }}
+            >
+              <h2 className="departments-groups-chart-text">
+                Total de Assiduidades em {currentYear}: {}
+              </h2>
+              <Line
+                className="departments-groups-chart-data"
+                data={assiduityLineChartData}
+                onClick={() => navigate("/nclock/nclockmovements")}
+                style={{ cursor: "pointer" }}
+              />
+            </div>
             <div style={{ height: "26rem", maxWidth: "56rem", margin: "auto" }}>
               <Calendar
                 localizer={localizer}
@@ -270,7 +342,9 @@ export const NclockDashboardLicensed = () => {
       <div className="dashboard-content" style={{ marginTop: 5 }}>
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
-            <h2 className="departments-groups-chart-text">Presenças Hoje: {}</h2>
+            <h2 className="departments-groups-chart-text">
+              Presenças Hoje: {}
+            </h2>
             <Bar
               className="departments-groups-chart-data"
               data={presenceBarChartData}
@@ -279,7 +353,9 @@ export const NclockDashboardLicensed = () => {
         </div>
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
-            <h2 className="departments-groups-chart-text">Ausências Hoje: {}</h2>
+            <h2 className="departments-groups-chart-text">
+              Ausências Hoje: {}
+            </h2>
             <Bar
               className="departments-groups-chart-data"
               data={noPresenceBarChartData}
@@ -288,7 +364,9 @@ export const NclockDashboardLicensed = () => {
         </div>
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
-            <h2 className="departments-groups-chart-text">Exemplo 5: {}</h2>
+            <h2 className="departments-groups-chart-text">
+              Ausências Médicas Hoje: {}
+            </h2>
             <Bar
               className="departments-groups-chart-data"
               data={barChartData}
@@ -297,7 +375,7 @@ export const NclockDashboardLicensed = () => {
         </div>
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "16rem" }}>
-            <h2 className="departments-groups-chart-text">Exemplo 6: {}</h2>
+            <h2 className="departments-groups-chart-text">Férias Hoje: {}</h2>
             <Bar
               className="departments-groups-chart-data"
               data={barChartData}

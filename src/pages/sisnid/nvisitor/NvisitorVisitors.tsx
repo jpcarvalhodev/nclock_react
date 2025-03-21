@@ -50,7 +50,7 @@ const formatDateDDMMYYYY = (date: Date): string => {
 };
 
 // Define a página de acessos
-export const NaccessVisitor = () => {
+export const NvisitorVisitors = () => {
   const {
     disabledEmployeesNoPagination,
     employeeVisitor,

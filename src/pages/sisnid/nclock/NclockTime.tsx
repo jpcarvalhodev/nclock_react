@@ -3,27 +3,27 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DataTable, { TableColumn } from "react-data-table-component";
 import Split from "react-split";
 
-import { CustomOutlineButton } from "../../components/CustomOutlineButton";
-import { customStyles } from "../../components/CustomStylesDataTable";
-import { ExportButton } from "../../components/ExportButton";
+import { CustomOutlineButton } from "../../../components/CustomOutlineButton";
+import { customStyles } from "../../../components/CustomStylesDataTable";
+import { ExportButton } from "../../../components/ExportButton";
 
-import { PrintButton } from "../../components/PrintButton";
-import { SelectFilter } from "../../components/SelectFilter";
-import { TreeViewDataPeriods } from "../../components/TreeViewPeriods";
+import { PrintButton } from "../../../components/PrintButton";
+import { SelectFilter } from "../../../components/SelectFilter";
+import { TreeViewDataPeriods } from "../../../components/TreeViewPeriods";
 
-import { useTerminals } from "../../context/TerminalsContext";
-import { timePeriodFields } from "../../fields/Fields";
-import { ColumnSelectorModal } from "../../modals/ColumnSelectorModal";
-import { CreateModalPeriods } from "../../modals/CreateModalPeriods";
-import { DeleteModal } from "../../modals/DeleteModal";
-import { UpdateModalPeriods } from "../../modals/UpdateModalPeriods";
-import { TimePeriod } from "../../types/Types";
+import { useTerminals } from "../../../context/TerminalsContext";
+import { timePeriodFields } from "../../../fields/Fields";
+import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
+import { CreateModalPeriods } from "../../../modals/CreateModalPeriods";
+import { DeleteModal } from "../../../modals/DeleteModal";
+import { UpdateModalPeriods } from "../../../modals/UpdateModalPeriods";
+import { TimePeriod } from "../../../types/Types";
 import { toast } from "react-toastify";
-import { SearchBoxContainer } from "../../components/SearchBoxContainer";
-import { CustomSpinner } from "../../components/CustomSpinner";
+import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
+import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
 
-export const TimePeriods = () => {
+export const NclockTime = () => {
   const {
     period,
     fetchTimePeriods,
@@ -455,7 +455,7 @@ export const TimePeriods = () => {
         {isMobile && (
           <div className="datatable-container">
             <div className="datatable-title-text">
-              <span style={{ color: "#000000" }}>Períodos de Horários</span>
+              <span style={{ color: "#000000" }}>Horários</span>
             </div>
             <div className="datatable-header">
               <div>
@@ -628,7 +628,7 @@ export const TimePeriods = () => {
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">
-              <span style={{ color: "#000000" }}>Períodos de Horários</span>
+              <span style={{ color: "#000000" }}>Horários</span>
             </div>
             <div className="datatable-header">
               <div>

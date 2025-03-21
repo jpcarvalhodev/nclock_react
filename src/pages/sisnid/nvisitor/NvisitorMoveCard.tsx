@@ -51,6 +51,14 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const NvisitorMoveCard = () => {
   const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const { devices } = useTerminals();
@@ -59,11 +67,11 @@ export const NvisitorMoveCard = () => {
   pastDate.setDate(currentDate.getDate() - 30);
   const {
     moveCard,
-    setMoveCard,
     fetchAllMoveCard,
     handleAddNewMoveCard,
     moveCardPages,
     moveCardTotalRecords,
+    moveCardNoPagination,
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -219,7 +227,6 @@ export const NvisitorMoveCard = () => {
         "Erro ao buscar os dados de movimentos de cartões amanhã:",
         error
       );
-      setMoveCard([]);
     }
   };
 
@@ -369,20 +376,26 @@ export const NvisitorMoveCard = () => {
     if (!Array.isArray(filteredDevices)) {
       return [];
     }
-    return filteredDevices
-      .filter(
-        (moveCards) =>
-          Object.keys(filters).every(
-            (key) =>
-              filters[key] === "" ||
-              (moveCards[key] != null &&
-                String(moveCards[key])
-                  .toLowerCase()
-                  .includes(filters[key].toLowerCase()))
-          ) &&
-          Object.entries(moveCards).some(([key, value]) => {
+
+    const applyFilter = (list: KioskTransactionCard[]) => {
+      return list.filter(
+        (item) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            if (item[key] == null) return false;
+            return String(item[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase());
+          }) &&
+          Object.entries(item).some(([key, value]) => {
             if (selectedColumns.includes(key) && value != null) {
-              if (value instanceof Date) {
+              if (key === "eventTime") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
                 return value
                   .toLocaleString()
                   .toLowerCase()
@@ -396,12 +409,41 @@ export const NvisitorMoveCard = () => {
             }
             return false;
           })
-      )
-      .sort(
+      );
+    };
+
+    const filteredMain = applyFilter(filteredDevices);
+
+    if (filterText.trim() !== "" && Array.isArray(moveCardNoPagination)) {
+      const filteredFallback = applyFilter(moveCardNoPagination);
+      const combined = [...filteredMain, ...filteredFallback];
+
+      const seen = new Set<string>();
+      const deduplicated: KioskTransactionCard[] = [];
+      for (const item of combined) {
+        const key = `${item.deviceSN}-${item.pin}-${item.eventTime}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(item);
+        }
+      }
+      return deduplicated.sort(
         (a, b) =>
           new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+    }
+
+    return filteredMain.sort(
+      (a, b) =>
+        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+    );
+  }, [
+    filteredDevices,
+    moveCardNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: KioskTransactionCard) => {

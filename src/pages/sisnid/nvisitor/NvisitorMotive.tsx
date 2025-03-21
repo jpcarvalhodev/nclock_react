@@ -20,7 +20,6 @@ import { CustomSpinner } from "../../../components/CustomSpinner";
 import { DeleteModal } from "../../../modals/DeleteModal";
 import { CreateModalMotive } from "../../../modals/CreateModalMotive";
 import { UpdateModalMotive } from "../../../modals/UpdateModalMotive";
-import { set } from "date-fns";
 
 // Define a interface para os filtros
 interface Filters {
@@ -28,7 +27,7 @@ interface Filters {
 }
 
 // Define a página de acessos
-export const NaccessMotive = () => {
+export const NvisitorMotive = () => {
   const {
     employeeVisitorMotive,
     fetchVisitorsMotive,

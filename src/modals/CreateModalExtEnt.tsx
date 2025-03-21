@@ -5,6 +5,7 @@ import "../css/PagesStyles.css";
 import {
   Col,
   Form,
+  InputGroup,
   Nav,
   OverlayTrigger,
   Row,
@@ -15,6 +16,8 @@ import { toast } from "react-toastify";
 
 import modalAvatar from "../assets/img/navbar/navbar/modalAvatar.png";
 import { usePersons } from "../context/PersonsContext";
+import { CustomOutlineButton } from "../components/CustomOutlineButton";
+import { CircularProgress } from "@mui/material";
 
 // Define a interface para os itens de campo
 type FormControlElement =
@@ -62,6 +65,7 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({
   const [isFormValid, setIsFormValid] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [showValidationErrors, setShowValidationErrors] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Atualiza com a validação do formulário
   useEffect(() => {
@@ -239,6 +243,49 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({
         ...prevState,
         [key]: value,
       }));
+    }
+  };
+
+  // Função para buscar os dados do código postal
+  const handleZipCode = async () => {
+    const cPostal = formData.ziPcode;
+    if (!cPostal) return;
+
+    setIsLoading(true);
+    const [cPostal1, cPostal2] = cPostal.split("-");
+
+    try {
+      const response = await fetch(
+        `https://www.cttcodigopostal.pt/api/v1/4ca3e090c6ba47a29d720ed8cc597648/${cPostal1}-${cPostal2}`
+      );
+      if (!response.ok) {
+        console.error("Falha ao buscar dados de código postal");
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data) && data.length > 0) {
+        const item = data[0];
+
+        setFormData((prev) => ({
+          ...prev,
+          address: item.morada || "",
+          locality: item.localidade || "",
+          village: item.freguesia || "",
+          district: item.distrito || "",
+        }));
+      } else {
+        toast.warn(
+          "A busca pelo código postal informado falhou. Tente novamente ou insira manualmente os dados."
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Não foi possível buscar pelo código postal informado",
+        error
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -515,20 +562,6 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({
             <Tab.Pane eventKey="moradas">
               <Form style={{ marginTop: 10, marginBottom: 10 }}>
                 <Row>
-                  <Col md={12}>
-                    <Form.Group controlId="formAddress">
-                      <Form.Label>Morada</Form.Label>
-                      <Form.Control
-                        type="string"
-                        className="custom-input-height custom-select-font-size"
-                        value={formData["address"] || ""}
-                        onChange={handleChange}
-                        name="address"
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row>
                   {[
                     { label: "Código Postal", key: "ziPcode", type: "string" },
                     { label: "Localidade", key: "locality", type: "string" },
@@ -538,16 +571,67 @@ export const CreateModalExtEnt = <T extends Record<string, any>>({
                     <Col md={3} key={index}>
                       <Form.Group controlId={`form${field.key}`}>
                         <Form.Label>{field.label}</Form.Label>
-                        <Form.Control
-                          type={field.type}
-                          className="custom-input-height custom-select-font-size"
-                          value={formData[field.key] || ""}
-                          onChange={handleChange}
-                          name={field.key}
-                        />
+                        {field.key === "ziPcode" ? (
+                          <InputGroup>
+                            <Form.Control
+                              type="text"
+                              className="custom-input-height custom-select-font-size"
+                              value={formData.ziPcode || ""}
+                              name="ziPcode"
+                              onChange={handleChange}
+                            />
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip className="custom-tooltip">
+                                  Pesquisar Código Postal
+                                </Tooltip>
+                              }
+                            >
+                              <CustomOutlineButton
+                                icon="bi bi-search"
+                                onClick={handleZipCode}
+                                iconSize="1em"
+                                className="custom-input-height"
+                              >
+                                {isLoading ? (
+                                  <CircularProgress
+                                    size={20}
+                                    color="inherit"
+                                    style={{ marginLeft: 5, marginRight: 5 }}
+                                  />
+                                ) : (
+                                  ""
+                                )}
+                              </CustomOutlineButton>
+                            </OverlayTrigger>
+                          </InputGroup>
+                        ) : (
+                          <Form.Control
+                            type={field.type}
+                            className="custom-input-height custom-select-font-size"
+                            value={formData[field.key] || ""}
+                            onChange={handleChange}
+                            name={field.key}
+                          />
+                        )}
                       </Form.Group>
                     </Col>
                   ))}
+                </Row>
+                <Row>
+                  <Col md={12}>
+                    <Form.Group controlId="formAddress">
+                      <Form.Label>Morada</Form.Label>
+                      <Form.Control
+                        type="string"
+                        className="custom-input-height custom-select-font-size"
+                        value={formData.address || ""}
+                        onChange={handleChange}
+                        name="address"
+                      />
+                    </Form.Group>
+                  </Col>
                 </Row>
               </Form>
             </Tab.Pane>

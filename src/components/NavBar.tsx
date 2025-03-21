@@ -3508,18 +3508,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="grid-container-entidades"
                           style={{ width: 120 }}
                         >
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/nclock/nclocktime" type="button"
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nclock/nclocktime" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={time} alt="botão definir horários" />
                             </span>
                             <span className="text">Definir Horários</span>
-                          </Button>
+                          </Link>
                           <Button
                             /* to='#' */ type="button"
                             className={`btn btn-light ribbon-button ${
@@ -4587,26 +4586,24 @@ export const NavBar = ({ style }: NavBarProps) => {
                     {(!isMobile || visibleGroup === "movimentos nvisitor") && (
                       <div className="btn-group" role="group">
                         <div className="icon-text-pessoas">
-                          <Button
-                            /* to="" */ type="button"
+                          <Link
+                            to="/nvisitor/nvisitoraccess" type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nvisitor/nvisitoraccess" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={movement} alt="botão acessos" />
                             </span>
                             <span className="text">Acessos</span>
-                          </Button>
+                          </Link>
                         </div>
                         <div>
-                          <Button
-                            /* to="" */ type="button"
+                          <Link
+                            to="/nvisitor/nvisitoraccesspresence" type="button"
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nvisitor/nvisitoraccesspresence" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img
@@ -4615,7 +4612,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               />
                             </span>
                             <span className="text">Presenças</span>
-                          </Button>
+                          </Link>
                           <Button
                             /* to='' */ type="button"
                             className={`btn btn-light ribbon-button ${
@@ -4628,18 +4625,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                             </span>
                             <span className="text">Totais</span>
                           </Button>
-                          <Button
-                            /* to='' */ type="button"
+                          <Link
+                            to='/nvisitor/nvisitorvisitors' type="button"
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nvisitor/nvisitorvisitors" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
                               <img src={visitorAccess} alt="botão visitantes" />
                             </span>
                             <span className="text">Visitantes</span>
-                          </Button>
+                          </Link>
                         </div>
                       </div>
                     )}
@@ -4649,25 +4645,24 @@ export const NavBar = ({ style }: NavBarProps) => {
                         toggleGroupVisibility("movimentos nvisitor")
                       }
                     >
-                      <span className="title">Movimentos</span>
+                      <span className="title">Acessos</span>
                     </div>
                   </div>
                   <div className="group">
                     {(!isMobile || visibleGroup === "marcacoes nvisitor") && (
                       <div className="btn-group" role="group">
                         <div className="icon-text-pessoas">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/nvisitor/nvisitormotive" type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nvisitor/nvisitormotive" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span className="icon">
-                              <img src={visitorAccess} alt="botão visitantes" />
+                              <img src={motives} alt="botão motivos" />
                             </span>
-                            <span className="text">Visitantes</span>
-                          </Button>
+                            <span className="text">Motivos</span>
+                          </Link>
                         </div>
                         <div className="icon-text-pessoas">
                           <Button

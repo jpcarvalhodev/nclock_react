@@ -64,9 +64,9 @@ const messages = {
 export const NaccessDashboardLicensed = () => {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
-  const { accessForGraph } = useAttendance();
-  const { manualOpenDoor } = useKiosk();
-  const { employeesNoPagination } = usePersons();
+  const { accessForGraph = [] } = useAttendance();
+  const { manualOpenDoor = [] } = useKiosk();
+  const { employeesNoPagination = [] } = usePersons();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [accessLineChartData, setAccessLineChartData] = useState<ChartData>({
     labels: [],
@@ -199,7 +199,7 @@ export const NaccessDashboardLicensed = () => {
       ],
       datasets: [
         {
-          label: "Total de acessos",
+          label: "Total de Acessos",
           data: dataPerMonth,
           fill: false,
           borderColor: "#0050a0",

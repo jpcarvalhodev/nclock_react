@@ -25,6 +25,14 @@ interface Filters {
   [key: string]: string;
 }
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 // Define a página de Entidades Externas
 export const ExternalEntities = () => {
   const {
@@ -193,7 +201,11 @@ export const ExternalEntities = () => {
         ) &&
         Object.entries(externalEntity).some(([key, value]) => {
           if (selectedColumns.includes(key) && value != null) {
-            if (value instanceof Date) {
+            if (key === "dateInserted" || key === "dateUpdated") {
+              const date = new Date(value);
+              const formatted = formatDateDDMMYYYY(date);
+              return formatted.toLowerCase().includes(filterText.toLowerCase());
+            } else if (value instanceof Date) {
               return value
                 .toLocaleString()
                 .toLowerCase()
@@ -208,7 +220,7 @@ export const ExternalEntities = () => {
           return false;
         })
     );
-  }, [dataEE.externalEntity, filters, filterText]);
+  }, [dataEE.externalEntity, filters, filterText, selectedColumns]);
 
   // Define os dados iniciais ao duplicar uma entidade externa
   const handleDuplicate = (entity: Partial<ExternalEntity>) => {

@@ -200,7 +200,7 @@ export const NewUsers = () => {
           return false;
         })
     );
-  }, [filteredData, filters, filterText]);
+  }, [filteredData, filters, filterText, selectedColumns]);
 
   // Define a colunas excluídas
   const excludedColumns = ["id", "password", "confirmPassword"];

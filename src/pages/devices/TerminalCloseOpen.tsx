@@ -243,7 +243,7 @@ export const TerminalCloseOpen = () => {
           return false;
         })
     );
-  }, [filteredDevices, filters, filterText]);
+  }, [filteredDevices, filters, filterText, selectedColumns]);
 
   // Define as colunas de dispositivos
   const columns: TableColumn<MBDeviceCloseOpen>[] = mbDeviceCloseOpenFields

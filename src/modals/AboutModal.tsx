@@ -42,17 +42,17 @@ export const AboutModal = ({ open, onClose }: AboutModalProps) => {
                     alt="logo nidgroup"
                     style={{ width: "250px", marginTop: 10, marginBottom: 20 }}
                   />
-                  <p>NIDGROUP- Business Solutions</p>
+                  <p>NIDGROUP - Business Solutions</p>
                   <p>
-                    Sede Norte: Avenida D. Manuel II n.º 2070, 3º Fração 36,
+                    Sede Norte: Avenida D. Manuel II n.º 2070, 3º Fração 61,
                     4470-334 Maia
                   </p>
                   <p>
                     Sede Sul: Rua Dr. Teófilo Braga n.º 21, 2670-480, Loures
                   </p>
                   <p>Tel: +351 210 992 230</p>
-                  <p>E-Mail: info@nidgroup.pt</p>
-                  <p>https://nidgroup.pt/</p>
+                  <a href="mailto:info@nidgroup.pt" style={{ textDecoration: "none", color: "black", marginBottom: 10 }}>E-Mail: info@nidgroup.pt</a>
+                  <a href="https://nidgroup.pt/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "black" }}>Site: https://nidgroup.pt/</a>
                 </Form>
               </Tab.Pane>
               <Tab.Pane eventKey="license">

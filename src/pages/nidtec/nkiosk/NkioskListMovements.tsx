@@ -33,6 +33,14 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const NkioskListMovements = () => {
   const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const { devices } = useTerminals();
@@ -214,9 +222,6 @@ export const NkioskListMovements = () => {
       "1",
       "20"
     );
-    setTotalRows(totalMovementsTotalRecords);
-    setCurrentPage(1);
-    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -300,7 +305,6 @@ export const NkioskListMovements = () => {
         console.error("Erro ao buscar entidades:", error);
       }
     } else {
-      refreshListMovements();
       setTotalMovements(totalMovements);
     }
   };
@@ -330,50 +334,46 @@ export const NkioskListMovements = () => {
       return [];
     }
 
-    const applyFilter = (movementsList: KioskTransactionCard[]) => {
-      return movementsList
-        .filter((moveCards) =>
+    const applyFilter = (list: KioskTransactionCard[]) => {
+      return list.filter(
+        (item) =>
           Object.keys(filters).every((key) => {
             if (filters[key] === "") return true;
-            if (moveCards[key] == null) return false;
-            return String(moveCards[key])
+            if (item[key] == null) return false;
+            return String(item[key])
               .toLowerCase()
               .includes(filters[key].toLowerCase());
-          })
-        )
-        .filter(
-          (moveCards) =>
-            Object.entries(moveCards).some(([key, value]) => {
-              if (selectedColumns.includes(key) && value != null) {
-                if (value instanceof Date) {
-                  return value
-                    .toLocaleString()
-                    .toLowerCase()
-                    .includes(filterText.toLowerCase());
-                }
+          }) &&
+          Object.entries(item).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (key === "eventTime") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
                 return value
                   .toString()
                   .toLowerCase()
                   .includes(filterText.toLowerCase());
               }
-              return false;
-            })
-        );
+            }
+            return false;
+          })
+      );
     };
 
-    const mainFiltered = applyFilter(totalMovements);
+    const filteredMain = applyFilter(totalMovements);
 
-    if (filterText.trim() === "") {
-      return mainFiltered.sort(
-        (a, b) =>
-          new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
-      );
-    }
-
-    if (Array.isArray(totalMovementsNoPagination)) {
-      const fallbackFiltered = applyFilter(totalMovementsNoPagination);
-
-      const combined = [...mainFiltered, ...fallbackFiltered];
+    if (filterText.trim() !== "" && Array.isArray(totalMovementsNoPagination)) {
+      const filteredFallback = applyFilter(totalMovementsNoPagination);
+      const combined = [...filteredMain, ...filteredFallback];
 
       const seen = new Set<string>();
       const deduplicated: KioskTransactionCard[] = [];
@@ -384,16 +384,13 @@ export const NkioskListMovements = () => {
           deduplicated.push(item);
         }
       }
-
-      deduplicated.sort(
+      return deduplicated.sort(
         (a, b) =>
           new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-
-      return deduplicated;
     }
 
-    return mainFiltered.sort(
+    return filteredMain.sort(
       (a, b) =>
         new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
     );

@@ -366,7 +366,7 @@ export const NclockRequests = () => {
           return false;
         })
     );
-  }, [filteredAttendances, filters, filterText]);
+  }, [filteredAttendances, filters, filterText, selectedColumns]);
 
   // Define os dados iniciais ao duplicar
   const handleDuplicate = (attendance: Partial<EmployeeAttendanceTimes>) => {

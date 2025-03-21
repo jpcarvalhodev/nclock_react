@@ -773,7 +773,22 @@ export const Terminals = () => {
           return false;
         })
     );
-  }, [devices, filters, filterText]);
+  }, [devices, filters, filterText, selectedColumns]);
+
+  // Ordena os dados da tabela de dispositivos
+  const sortedDeviceDataTable = useMemo(() => {
+    if (!Array.isArray(filteredDeviceDataTable)) return [];
+    return [...filteredDeviceDataTable].sort((a, b) => {
+      if (a.deviceNumber != null && b.deviceNumber != null) {
+        return a.deviceNumber - b.deviceNumber;
+      }
+      if (a.deviceNumber != null) return -1;
+      if (b.deviceNumber != null) return 1;
+      return (a.deviceName || a.nomeQuiosque || "").localeCompare(
+        b.deviceName || b.nomeQuiosque || ""
+      );
+    });
+  }, [filteredDeviceDataTable]);
 
   // Ordena os dispositivos por nome com a mesclagem
   const sortedDevices = [...devices].sort((a, b) => {
@@ -782,20 +797,29 @@ export const Terminals = () => {
     return nameA.localeCompare(nameB);
   });
 
+  // Atualizar o dispositivo selecionado quando o índice ou a lista mudarem
+  useEffect(() => {
+    if (sortedDevices.length > 0) {
+      setSelectedDevice(sortedDevices[currentDeviceIndex]);
+    }
+  }, [currentDeviceIndex, sortedDevices]);
+
   // Seleciona a entidade anterior
   const handleNextDevice = () => {
-    if (currentDeviceIndex < sortedDevices.length - 1) {
-      setCurrentDeviceIndex(currentDeviceIndex + 1);
-      setSelectedDevice(sortedDevices[currentDeviceIndex + 1]);
-    }
+    setCurrentDeviceIndex((prevIndex) => {
+      const newIndex = prevIndex + 1;
+      setSelectedDevice(sortedDevices[newIndex]);
+      return newIndex;
+    });
   };
 
   // Seleciona a entidade seguinte
   const handlePrevDevice = () => {
-    if (currentDeviceIndex > 0) {
-      setCurrentDeviceIndex(currentDeviceIndex - 1);
-      setSelectedDevice(sortedDevices[currentDeviceIndex - 1]);
-    }
+    setCurrentDeviceIndex((prevIndex) => {
+      const newIndex = prevIndex - 1;
+      setSelectedDevice(sortedDevices[newIndex]);
+      return newIndex;
+    });
   };
 
   // Junta os campos de dispositivos e de multibanco
@@ -1103,15 +1127,19 @@ export const Terminals = () => {
         switch (field.key) {
           case "CreatedDate": {
             const createdDate = row[field.key];
-            const createdDateStr = createdDate instanceof Date 
-              ? createdDate.toLocaleString() 
-              : createdDate;
-            
-            if (createdDateStr === "01/01/1970 01:00:00" || createdDate == null) {
+            const createdDateStr =
+              createdDate instanceof Date
+                ? createdDate.toLocaleString()
+                : createdDate;
+
+            if (
+              createdDateStr === "01/01/1970 01:00:00" ||
+              createdDate == null
+            ) {
               return "";
             }
             return applyTooltip(createdDateStr);
-          }                 
+          }
           case "DeviceSN": {
             const deviceName =
               devices.find((device) => device.serialNumber === row[field.key])
@@ -2350,7 +2378,7 @@ export const Terminals = () => {
             ) : (
               <DataTable
                 columns={[...deviceColumns, devicesActionColumn]}
-                data={filteredDeviceDataTable}
+                data={sortedDeviceDataTable}
                 onRowDoubleClicked={handleEditDevices}
                 pagination
                 paginationPerPage={20}
@@ -2365,8 +2393,6 @@ export const Terminals = () => {
                 striped
                 responsive
                 persistTableHead={true}
-                defaultSortAsc={true}
-                defaultSortFieldId="name"
               />
             )}
           </div>

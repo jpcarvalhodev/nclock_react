@@ -46,6 +46,14 @@ const convertStringToDate = (dateStr: string) => {
   );
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const NkioskMoveVP = () => {
   const { devices } = useTerminals();
   const currentDate = new Date();
@@ -327,6 +335,13 @@ export const NkioskMoveVP = () => {
           ) &&
           Object.entries(moveCards).some(([key, value]) => {
             if (selectedColumns.includes(key) && value != null) {
+              if (key === "eventTime") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
               if (value instanceof Date) {
                 return value
                   .toLocaleString()
@@ -346,7 +361,7 @@ export const NkioskMoveVP = () => {
         (a, b) =>
           new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [filteredDevices, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<KioskTransactionCard>[] = transactionCardFields

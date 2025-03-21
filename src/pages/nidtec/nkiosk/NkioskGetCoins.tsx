@@ -39,6 +39,14 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const NkioskGetCoins = () => {
   const { devices } = useTerminals();
   const currentDate = new Date();
@@ -311,6 +319,13 @@ export const NkioskGetCoins = () => {
           ) &&
           Object.entries(getCoin).some(([key, value]) => {
             if (selectedColumns.includes(key) && value != null) {
+              if (key === "dataRecolha" || key === "dataFimRecolha") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
               if (value instanceof Date) {
                 return value
                   .toLocaleString()
@@ -330,7 +345,7 @@ export const NkioskGetCoins = () => {
         (a, b) =>
           new Date(b.dataRecolha).getTime() - new Date(a.dataRecolha).getTime()
       );
-  }, [filteredDevices, filters, filterText]);
+  }, [filteredDevices, filters, filterText, selectedColumns]);
 
   // Define a função de duplicar funcionários
   const handleDuplicate = (data: Partial<RecolhaMoedeiroEContador>) => {

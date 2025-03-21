@@ -224,7 +224,7 @@ export const Types = () => {
           })
       )
       .sort((a, b) => a.order - b.order);
-  }, [dataEE.externalEntityTypes, filters, filterText]);
+  }, [dataEE.externalEntityTypes, filters, filterText, selectedColumns]);
 
   // Define os dados iniciais ao duplicar
   const handleDuplicate = (entity: Partial<ExternalEntityTypes>) => {

@@ -43,7 +43,7 @@ export const Login = () => {
   const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice } = useAttendance();
   const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones, fetchAllDisabledEmployees, fetchAllEmployeesNoPagination, fetchAllDisabledEmployeesNoPagination, fetchEmployeeVisitor, fetchVisitorsMotive } = usePersons();
   const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans, fetchCameras, fetchEventsDevice, fetchEventsAndTransactionDevice, fetchDeviceActivities, fetchEventsDeviceNoPagination } = useTerminals();
-  const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks, fetchAllMBAndCoin, fetchAllCardAndKiosk, fetchAllChartData } = useKiosk();
+  const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks, fetchAllMBAndCoin, fetchAllCardAndKiosk, fetchAllChartData, fetchAllCounterNoPagination } = useKiosk();
   const { fetchEmailConfig, fetchKioskConfig } = useNavbar();
   const [username, setUsername] = useState("");
   const [entityLogo, setEntityLogo] = useState<string>(no_entity);
@@ -160,6 +160,11 @@ export const Login = () => {
       password,
     };
 
+    if (!selectedNif) {
+      toast.warn("Por favor, selecione uma empresa.");
+      return;
+    }
+
     try {
       const response = await fetchWithoutAuth("Authentication/Login", {
         method: "POST",
@@ -230,7 +235,8 @@ export const Login = () => {
             fetchAllAuxData(),
             fetchTimePlans(),
             fetchAllCoin(),
-            fetchAllCounter(),
+            fetchAllCounterNoPagination(),
+            fetchAllCounter(undefined, undefined, "1", "20"),
             fetchAllLimpezas(),
             fetchAllManualOpen(),
             fetchAllMoveCard(undefined, "3", undefined, undefined, undefined, undefined, undefined),
@@ -351,7 +357,7 @@ export const Login = () => {
             <Row className="row-username-password">
               <Col className="col-username-password">
                 <Form.Group>
-                  <Form.Label className="username-label">Nome de Utilizador:</Form.Label>
+                  <Form.Label className="username-label">Utilizador:</Form.Label>
                   <Form.Control
                     type="text"
                     name="username"

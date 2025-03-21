@@ -68,17 +68,6 @@ const isToday = (dateString: string) => {
   );
 };
 
-// Função auxiliar para extrair apenas o dia (YYYY-MM-DD) de uma string "dd/MM/yyyy HH:mm"
-const getDateOnlyKey = (dateString: string): string => {
-  const isoDateString = convertToISO(dateString);
-  const eventDateTime = new Date(isoDateString);
-
-  const year = eventDateTime.getFullYear();
-  const month = String(eventDateTime.getMonth() + 1).padStart(2, "0");
-  const day = String(eventDateTime.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
 // Define a página de presença
 export const NclockAccessPresence = () => {
   const currentDate = new Date();
@@ -326,7 +315,7 @@ export const NclockAccessPresence = () => {
           return false;
         })
     );
-  }, [filteredAccess, filters, filterText]);
+  }, [filteredAccess, filters, filterText, selectedColumns]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: Accesses) => {

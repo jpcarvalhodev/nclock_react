@@ -94,12 +94,12 @@ const messages = {
 export const NkioskDashboardLicensed = () => {
   const currentYear = new Date().getFullYear();
   const {
-    payCoinsNoPagination,
-    payTerminalNoPagination,
-    moveCardNoPagination,
-    moveKioskNoPagination,
-    totalMovementsNoPagination,
-    totalPaymentsNoPagination,
+    payCoinsNoPagination = [],
+    payTerminalNoPagination = [],
+    moveCardNoPagination = [],
+    moveKioskNoPagination = [],
+    totalMovementsNoPagination = [],
+    totalPaymentsNoPagination = [],
   } = useKiosk();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [payLineChartData, setPayLineChartData] = useState<ChartData>({

@@ -286,7 +286,7 @@ export const NclockAll = () => {
           return false;
         })
     );
-  }, [filteredAttendances, filters, filterText]);
+  }, [filteredAttendances, filters, filterText, selectedColumns]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {

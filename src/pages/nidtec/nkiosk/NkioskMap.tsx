@@ -32,13 +32,13 @@ export const NkioskMap = () => {
 
     return (
         <div className="main-container">
-            <div className='map-container'>
-                <div className="datatable-title-text">
-                    <span >Mapa do Quiosque</span>
+            <div className='map-container' style={{ marginBottom: '1rem' }}>
+                <div className="datatable-title-text" style={{ textAlign: 'center' }}>
+                    <span >Mapa de Quiosques</span>
                 </div>
             </div>
-            <div className='d-flex justify-content-center' style={{ minHeight: '60vh', flex: 1 }}>
-                <MapContainer center={position} zoom={15} scrollWheelZoom={true} style={{ minWidth: '80vw' }}>
+            <div className='d-flex justify-content-center' style={{ minHeight: '60vh', flex: 1, marginBottom: '1rem' }}>
+                <MapContainer center={position} zoom={13} scrollWheelZoom={true} style={{ minWidth: '80vw' }}>
                     <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

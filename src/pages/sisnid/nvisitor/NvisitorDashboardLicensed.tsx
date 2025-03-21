@@ -20,7 +20,7 @@ import {
   parseISO,
   startOfWeek,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { pt } from "date-fns/locale";
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { Bar, Line } from "react-chartjs-2";
@@ -30,8 +30,13 @@ import { useNavigate } from "react-router-dom";
 import banner_nvisitor from "../../../assets/img/carousel/banner_nvisitor.jpg";
 
 import { useKiosk } from "../../../context/KioskContext";
-import { useTerminals } from "../../../context/TerminalsContext";
-import { KioskTransactionCard } from "../../../types/Types";
+import {
+  Accesses,
+  EmployeeVisitor,
+  KioskTransactionCard,
+} from "../../../types/Types";
+import { useAttendance } from "../../../context/MovementContext";
+import { usePersons } from "../../../context/PersonsContext";
 
 ChartJS.register(
   CategoryScale,
@@ -47,7 +52,7 @@ ChartJS.register(
 
 // Define a linguagem do calendário
 const locales = {
-  pt: ptBR,
+  pt,
 };
 
 // Define o localizador de datas
@@ -93,14 +98,19 @@ const messages = {
 
 export const NvisitorDashboardLicensed = () => {
   const currentYear = new Date().getFullYear();
-  const { devices } = useTerminals();
   const {
-    moveCardNoPagination,
-    moveKioskNoPagination,
-    totalMovementsNoPagination,
+    moveCardNoPagination = [],
+    moveKioskNoPagination = [],
+    totalMovementsNoPagination = [],
   } = useKiosk();
+  const { accessForGraph = [] } = useAttendance();
+  const { employeeVisitor = [] } = usePersons();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [moveLineChartData, setMoveLineChartData] = useState<ChartData>({
+    labels: [],
+    datasets: [],
+  });
+  const [accessLineChartData, setAccessLineChartData] = useState<ChartData>({
     labels: [],
     datasets: [],
   });
@@ -108,24 +118,21 @@ export const NvisitorDashboardLicensed = () => {
     useState<ChartData>({ labels: [], datasets: [] });
   const [todayKioskLineChartData, setTodayKioskLineChartData] =
     useState<ChartData>({ labels: [], datasets: [] });
+  const [todayAccessLineChartData, setTodayAccessLineChartData] =
+    useState<ChartData>({ labels: [], datasets: [] });
+  const [todayVisitorLineChartData, setTodayVisitorLineChartData] =
+    useState<ChartData>({ labels: [], datasets: [] });
   const [todayTotalCard, setTodayTotalCard] = useState<KioskTransactionCard[]>(
     []
   );
   const [todayTotalKiosk, setTodayTotalKiosk] = useState<
     KioskTransactionCard[]
   >([]);
+  const [todayTotalAccess, setTodayTotalAccess] = useState<Accesses[]>([]);
+  const [todayTotalVisitor, setTodayTotalVisitor] = useState<EmployeeVisitor[]>(
+    []
+  );
   const navigate = useNavigate();
-  const [barChartData, setBarChartData] = useState({
-    labels: ["Hoje"],
-    datasets: [
-      {
-        label: "Exemplo de Dados 3",
-        data: [0],
-        backgroundColor: ["#0050a0"],
-        borderWidth: 1,
-      },
-    ],
-  });
 
   // Função para agrupar os movimentos por mês
   const fetchAllData = async () => {
@@ -133,7 +140,9 @@ export const NvisitorDashboardLicensed = () => {
       if (
         !Array.isArray(moveCardNoPagination) ||
         !Array.isArray(moveKioskNoPagination) ||
-        !Array.isArray(totalMovementsNoPagination)
+        !Array.isArray(totalMovementsNoPagination) ||
+        !Array.isArray(accessForGraph) ||
+        !Array.isArray(employeeVisitor)
       ) {
         return;
       }
@@ -151,9 +160,21 @@ export const NvisitorDashboardLicensed = () => {
             : parseISO(item.eventTime)
         )
       );
+      const todayAccess = accessForGraph.filter((item) =>
+        isToday(item.eventTime ? item.eventTime : parseISO(item.eventTime))
+      );
+      const todayVisitor = employeeVisitor.filter((item) =>
+        isToday(
+          item.eventTime instanceof Date
+            ? item.eventTime
+            : parseISO(item.eventTime)
+        )
+      );
 
       setTodayTotalCard(todayCard);
       setTodayTotalKiosk(todayKiosk);
+      setTodayTotalAccess(todayAccess);
+      setTodayTotalVisitor(todayVisitor);
 
       const eventSet = new Set();
       const newEvents = totalMovementsNoPagination.reduce(
@@ -232,6 +253,29 @@ export const NvisitorDashboardLicensed = () => {
     return monthlyCounts;
   };
 
+  // Função para agrupar os eventos por mês
+  function groupAccessByMonth(data: Accesses[]) {
+    const grouped = data.reduce((acc, item) => {
+      if (!item.eventTime) return acc;
+      const date = parse(item.eventTime, "dd/MM/yyyy HH:mm:ss", new Date(), {
+        locale: pt,
+      });
+
+      const yearMonth = format(date, "yyyy-MM");
+
+      if (!acc[yearMonth]) {
+        acc[yearMonth] = [];
+      }
+      acc[yearMonth].push(item);
+
+      return acc;
+    }, {} as Record<string, Accesses[]>);
+    return Object.keys(grouped).map((key) => ({
+      month: key,
+      events: grouped[key],
+    }));
+  }
+
   // Atualiza os dados do gráfico com base nos movimentos anuais
   useEffect(() => {
     const monthlyMoveTotals = calculateMoveMonthlyCounts(
@@ -265,13 +309,58 @@ export const NvisitorDashboardLicensed = () => {
     setMoveLineChartData(newLineData);
   }, [totalMovementsNoPagination]);
 
+  // Atualiza os dados do gráfico com base nos movimentos anuais
+  useEffect(() => {
+    const groupedAccess = groupAccessByMonth(accessForGraph);
+
+    const dataPerMonth = new Array(12).fill(0);
+
+    groupedAccess.forEach((group) => {
+      const [year, month] = group.month.split("-");
+      const numericYear = Number(year);
+      const numericMonth = Number(month);
+
+      if (numericYear === currentYear) {
+        dataPerMonth[numericMonth - 1] = group.events.length;
+      }
+    });
+
+    const newLineData = {
+      labels: [
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro",
+      ],
+      datasets: [
+        {
+          label: "Total de Acessos",
+          data: dataPerMonth,
+          fill: false,
+          borderColor: "#0050a0",
+          tension: 0.1,
+        },
+      ],
+    };
+
+    setAccessLineChartData(newLineData);
+  }, [accessForGraph]);
+
   // Define os dados do gráfico de linha para os torniquetes de hoje
   useEffect(() => {
     const chartData = {
       labels: ["Hoje"],
       datasets: [
         {
-          label: "Movimentos no Torniquete Hoje",
+          label: "Torniquete Hoje",
           data: [todayTotalCard.length],
           backgroundColor: "#0050a0",
         },
@@ -286,7 +375,7 @@ export const NvisitorDashboardLicensed = () => {
       labels: ["Hoje"],
       datasets: [
         {
-          label: "Movimentos no Quiosque Hoje",
+          label: "Quiosque Hoje",
           data: [todayTotalKiosk.length],
           backgroundColor: "#0050a0",
         },
@@ -294,6 +383,36 @@ export const NvisitorDashboardLicensed = () => {
     };
     setTodayKioskLineChartData(chartData);
   }, [todayTotalKiosk]);
+
+  // Define os dados do gráfico de linha para os acessos de hoje
+  useEffect(() => {
+    const chartData = {
+      labels: ["Hoje"],
+      datasets: [
+        {
+          label: "Acessos Hoje",
+          data: [todayTotalAccess.length],
+          backgroundColor: "#0050a0",
+        },
+      ],
+    };
+    setTodayAccessLineChartData(chartData);
+  }, [todayTotalAccess]);
+
+  // Define os dados do gráfico de linha para os acessos de hoje
+  useEffect(() => {
+    const chartData = {
+      labels: ["Hoje"],
+      datasets: [
+        {
+          label: "Visitantes Hoje",
+          data: [todayTotalVisitor.length],
+          backgroundColor: "#0050a0",
+        },
+      ],
+    };
+    setTodayVisitorLineChartData(chartData);
+  }, [todayTotalVisitor]);
 
   return (
     <div className="dashboard-container">
@@ -338,7 +457,21 @@ export const NvisitorDashboardLicensed = () => {
               <Line
                 className="departments-groups-chart-data"
                 data={moveLineChartData}
-                onClick={() => navigate("/nvisitor/nvisitorListMovements")}
+                onClick={() => navigate("/nvisitor/nvisitorlistmovements")}
+                style={{ cursor: "pointer" }}
+              />
+            </div>
+            <div
+              className="departments-groups-chart"
+              style={{ height: "26rem" }}
+            >
+              <h2 className="departments-groups-chart-text">
+                Total de Acessos em {currentYear}: {}
+              </h2>
+              <Line
+                className="departments-groups-chart-data"
+                data={accessLineChartData}
+                onClick={() => navigate("/nvisitor/nvisitoraccess")}
                 style={{ cursor: "pointer" }}
               />
             </div>
@@ -362,31 +495,35 @@ export const NvisitorDashboardLicensed = () => {
       <div className="dashboard-content" style={{ marginTop: 5 }}>
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "15rem" }}>
-            <h2 className="departments-groups-chart-text">Exemplo 3: {}</h2>
-            <Bar
-              className="departments-groups-chart-data"
-              data={barChartData}
-            />
-          </div>
-        </div>
-        <div className="carousel-chart-container-graphs" id="carousel-chart">
-          <div className="departments-groups-chart" style={{ height: "15rem" }}>
-            <h2 className="departments-groups-chart-text">Exemplo 4: {}</h2>
-            <Bar
-              className="departments-groups-chart-data"
-              data={barChartData}
-            />
-          </div>
-        </div>
-        <div className="carousel-chart-container-graphs" id="carousel-chart">
-          <div className="departments-groups-chart" style={{ height: "15rem" }}>
             <h2 className="departments-groups-chart-text">
-              Total do Torniquete Hoje: {}
+              Torniquete Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
               data={todayCardLineChartData}
-              onClick={() => navigate("/nvisitor/nvisitorMoveCard")}
+              onClick={() => navigate("/nvisitor/nvisitormovecard")}
+              style={{ cursor: "pointer" }}
+            />
+          </div>
+        </div>
+        <div className="carousel-chart-container-graphs" id="carousel-chart">
+          <div className="departments-groups-chart" style={{ height: "15rem" }}>
+            <h2 className="departments-groups-chart-text">Quiosque Hoje: {}</h2>
+            <Bar
+              className="departments-groups-chart-data"
+              data={todayKioskLineChartData}
+              onClick={() => navigate("/nvisitor/nvisitormovekiosk")}
+              style={{ cursor: "pointer" }}
+            />
+          </div>
+        </div>
+        <div className="carousel-chart-container-graphs" id="carousel-chart">
+          <div className="departments-groups-chart" style={{ height: "15rem" }}>
+            <h2 className="departments-groups-chart-text">Acessos Hoje: {}</h2>
+            <Bar
+              className="departments-groups-chart-data"
+              data={todayAccessLineChartData}
+              onClick={() => navigate("/nvisitor/nvisitoraccess")}
               style={{ cursor: "pointer" }}
             />
           </div>
@@ -394,12 +531,12 @@ export const NvisitorDashboardLicensed = () => {
         <div className="carousel-chart-container-graphs" id="carousel-chart">
           <div className="departments-groups-chart" style={{ height: "15rem" }}>
             <h2 className="departments-groups-chart-text">
-              Total do Quiosque Hoje: {}
+              Visitantes Hoje: {}
             </h2>
             <Bar
               className="departments-groups-chart-data"
-              data={todayKioskLineChartData}
-              onClick={() => navigate("/nvisitor/nvisitorMoveKiosk")}
+              data={todayVisitorLineChartData}
+              onClick={() => navigate("/nvisitor/nvisitorvisitors")}
               style={{ cursor: "pointer" }}
             />
           </div>

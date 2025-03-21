@@ -210,7 +210,7 @@ export const Departments = () => {
           return false;
         })
     );
-  }, [departments, filters, filterText]);
+  }, [departments, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const tableColumns = selectedColumns.map((columnKey) => ({

@@ -221,7 +221,7 @@ export const AccessControls = () => {
           return false;
         })
     );
-  }, [accessControl, filters, filterText]);
+  }, [accessControl, filters, filterText, selectedColumns]);
 
   // Define a coluna de ações
   const actionColumn: TableColumn<AccessControl> = {

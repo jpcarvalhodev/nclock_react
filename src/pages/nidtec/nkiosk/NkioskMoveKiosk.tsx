@@ -33,6 +33,14 @@ const formatDateToEndOfDay = (date: Date): string => {
   return `${date.toISOString().substring(0, 10)}T23:59`;
 };
 
+// Formata a data para DD/MM/YYYY
+const formatDateDDMMYYYY = (date: Date): string => {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export const NkioskMoveKiosk = () => {
   const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const { devices } = useTerminals();
@@ -45,7 +53,7 @@ export const NkioskMoveKiosk = () => {
     fetchAllMoveKiosk,
     moveKioskPages,
     moveKioskTotalRecords,
-    moveKioskNoPagination,
+    moveKioskNoPagination
   } = useKiosk();
   const [filterText, setFilterText] = useState<string>("");
   const [openColumnSelector, setOpenColumnSelector] = useState(false);
@@ -218,9 +226,6 @@ export const NkioskMoveKiosk = () => {
       "1",
       "20"
     );
-    setTotalRows(moveKioskTotalRecords);
-    setCurrentPage(1);
-    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -304,7 +309,6 @@ export const NkioskMoveKiosk = () => {
         console.error("Erro ao buscar entidades:", error);
       }
     } else {
-      refreshMoveKiosk();
       setMoveKiosk(moveKiosk);
     }
   };
@@ -335,48 +339,45 @@ export const NkioskMoveKiosk = () => {
     }
 
     const applyFilter = (list: KioskTransactionCard[]) => {
-      return list
-        .filter((payTerminals) =>
+      return list.filter(
+        (item) =>
           Object.keys(filters).every((key) => {
             if (filters[key] === "") return true;
-            if (payTerminals[key] == null) return false;
-            return String(payTerminals[key])
+            if (item[key] == null) return false;
+            return String(item[key])
               .toLowerCase()
               .includes(filters[key].toLowerCase());
-          })
-        )
-        .filter((payTerminals) =>
-          Object.entries(payTerminals).some(([key, value]) => {
+          }) &&
+          Object.entries(item).some(([key, value]) => {
             if (selectedColumns.includes(key) && value != null) {
-              if (value instanceof Date) {
+              if (key === "eventTime") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
                 return value
                   .toLocaleString()
                   .toLowerCase()
                   .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
               }
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
             }
             return false;
           })
-        );
+      );
     };
 
-    const mainFiltered = applyFilter(moveKiosk);
+    const filteredMain = applyFilter(moveKiosk);
 
-    if (filterText.trim() === "") {
-      return mainFiltered.sort(
-        (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      );
-    }
-
-    if (Array.isArray(moveKioskNoPagination)) {
-      const fallbackFiltered = applyFilter(moveKioskNoPagination);
-
-      const combined = [...mainFiltered, ...fallbackFiltered];
+    if (filterText.trim() !== "" && Array.isArray(moveKioskNoPagination)) {
+      const filteredFallback = applyFilter(moveKioskNoPagination);
+      const combined = [...filteredMain, ...filteredFallback];
 
       const seen = new Set<string>();
       const deduplicated: KioskTransactionCard[] = [];
@@ -387,20 +388,23 @@ export const NkioskMoveKiosk = () => {
           deduplicated.push(item);
         }
       }
-
-      deduplicated.sort(
+      return deduplicated.sort(
         (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
       );
-
-      return deduplicated;
     }
 
-    return mainFiltered.sort(
+    return filteredMain.sort(
       (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
     );
-  }, [moveKiosk, moveKioskNoPagination, filters, filterText, selectedColumns]);
+  }, [
+    moveKiosk,
+    moveKioskNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: KioskTransactionCard) => {
