@@ -87,7 +87,7 @@ const messages = {
 export const NclockDashboardLicensed = () => {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
-  const { employeesNoPagination = [] } = usePersons();
+  const { employeesNoPagination } = usePersons();
   const { attendance = [] } = useAttendance();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [assiduityLineChartData, setAssiduityLineChartData] =

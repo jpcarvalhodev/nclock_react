@@ -100,14 +100,32 @@ export const NkioskCounter = () => {
     const today = new Date();
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
-    try {
-      const data = await apiService.fetchAllContador(start, end);
-      setCounter(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados do contador hoje:", error);
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllContador(
+          start,
+          end,
+          undefined,
+          undefined,
+          selectedDevicesIds
+        );
+        setCounter(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados do contador hoje:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllContador(start, end);
+        setCounter(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados do contador hoje:", error);
+      }
     }
   };
 
@@ -119,14 +137,32 @@ export const NkioskCounter = () => {
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      const data = await apiService.fetchAllContador(start, end);
-      setCounter(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados do contador ontem:", error);
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllContador(
+          start,
+          end,
+          undefined,
+          undefined,
+          selectedDevicesIds
+        );
+        setCounter(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados do contador ontem:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllContador(start, end);
+        setCounter(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados do contador ontem:", error);
+      }
     }
   };
 
@@ -142,14 +178,32 @@ export const NkioskCounter = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      const data = await apiService.fetchAllContador(start, end);
-      setCounter(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados do contador amanhã:", error);
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllContador(
+          start,
+          end,
+          undefined,
+          undefined,
+          selectedDevicesIds
+        );
+        setCounter(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados do contador amanhã:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllContador(start, end);
+        setCounter(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados do contador amanhã:", error);
+      }
     }
   };
 
@@ -302,7 +356,7 @@ export const NkioskCounter = () => {
       );
     }
 
-    return filteredMain
+    return filteredMain;
   }, [counter, counterNoPagination, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela

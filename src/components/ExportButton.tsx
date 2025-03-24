@@ -113,13 +113,19 @@ const formatField = (
     case "updateDate":
     case "createTime":
     case "updateTime":
-    case "eventTime":
     case "timestamp":
     case "dataRecolha":
     case "dataFimRecolha":
     case "createdTime":
     case "dataCreate":
     case "createdDate":
+    case "eventTime":
+      if (
+        typeof item[fieldKey] === "string" &&
+        /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/.test(item[fieldKey])
+      ) {
+        return item[fieldKey];
+      }
       return validDate(item[fieldKey]);
     case "status":
     case "statusEmail":
@@ -199,6 +205,11 @@ const formatField = (
     case "deviceSN":
       return (
         device.find((device) => device.serialNumber === item.deviceSN)
+          ?.deviceName || ""
+      );
+    case "deviceID":
+      return (
+        device.find((device) => device.zktecoDeviceID === item.deviceID)
           ?.deviceName || ""
       );
     case "tpId":
@@ -416,9 +427,9 @@ const exportToTXT = (
 
 // Define o componente
 export const ExportButton = ({
-  allData,
-  selectedData,
-  fields,
+  allData = [],
+  selectedData = [],
+  fields = [],
 }: ExportButtonProps) => {
   const { devices, mbDevices, accessControl } = useTerminals();
   const { entities } = useEntity();

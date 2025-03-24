@@ -120,22 +120,42 @@ export const NkioskPayCoins = () => {
 
   // Função para buscar os pagamentos do moedeiro de hoje
   const fetchPaymentsCoinToday = async () => {
-    try {
-      const data = await apiService.fetchKioskTransactionsByPayCoins(
-        "2",
-        undefined,
-        formatDateToStartOfDay(currentDate),
-        formatDateToEndOfDay(currentDate)
-      );
-      setPayCoins(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(formatDateToStartOfDay(currentDate));
-      setEndDate(formatDateToEndOfDay(currentDate));
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de pagamento do moedeiro hoje:",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          "2",
+          selectedDevicesIds,
+          formatDateToStartOfDay(currentDate),
+          formatDateToStartOfDay(currentDate)
+        );
+        setPayCoins(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(formatDateToStartOfDay(currentDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento do moedeiro hoje:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByPayCoins(
+          "2",
+          undefined,
+          formatDateToStartOfDay(currentDate),
+          formatDateToEndOfDay(currentDate)
+        );
+        setPayCoins(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(formatDateToStartOfDay(currentDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento do moedeiro hoje:",
+          error
+        );
+      }
     }
   };
 
@@ -147,22 +167,42 @@ export const NkioskPayCoins = () => {
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      const data = await apiService.fetchKioskTransactionsByPayCoins(
-        "2",
-        undefined,
-        start,
-        end
-      );
-      setPayCoins(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de pagamento do moedeiro ontem:",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          "2",
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setPayCoins(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento do moedeiro ontem:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByPayCoins(
+          "2",
+          undefined,
+          start,
+          end
+        );
+        setPayCoins(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento do moedeiro ontem:",
+          error
+        );
+      }
     }
   };
 
@@ -178,22 +218,42 @@ export const NkioskPayCoins = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      const data = await apiService.fetchKioskTransactionsByPayCoins(
-        "2",
-        undefined,
-        start,
-        end
-      );
-      setPayCoins(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de pagamento do moedeiro amanhã:",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          "2",
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setPayCoins(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento do moedeiro amanhã:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByPayCoins(
+          "2",
+          undefined,
+          start,
+          end
+        );
+        setPayCoins(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento do moedeiro amanhã:",
+          error
+        );
+      }
     }
   };
 
@@ -403,13 +463,7 @@ export const NkioskPayCoins = () => {
       (a, b) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
-  }, [
-    payCoins,
-    payCoinsNoPagination,
-    filters,
-    filterText,
-    selectedColumns,
-  ]);
+  }, [payCoins, payCoinsNoPagination, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<KioskTransactionMB>[] = transactionMBFields

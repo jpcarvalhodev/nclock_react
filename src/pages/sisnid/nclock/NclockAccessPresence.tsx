@@ -104,9 +104,11 @@ export const NclockAccessPresence = () => {
     const filteredToday = accessForGraph.filter((acc) => {
       return (
         isToday(acc.eventTime) &&
-        acc.eventName !== "Acesso não autorizado" /* &&
-        (acc.readerName === "Entrada Porta Entrada Colaboradores" ||
-          acc.readerName === "Saída Porta Entrada Colaboradores") */
+        acc.eventName !== "Acesso não autorizado" &&
+        (process.env.REACT_APP_ACCESS_PRESENCE
+          ? acc.readerName === "Entrada Porta Entrada Colaboradores" ||
+            acc.readerName === "Saída Porta Entrada Colaboradores"
+          : true)
       );
     });
 

@@ -161,13 +161,13 @@ type FieldKey =
 
 // Componente para renderizar o documento PDF
 export const PDFDocument = ({
-  data,
-  fields,
-  entity,
-  entityLogo,
-  device,
-  mbDevice,
-  accessControl,
+  data = [],
+  fields = [],
+  entity = [],
+  entityLogo = null,
+  device = [],
+  mbDevice = [],
+  accessControl = [],
 }: PDFDocumentProps) => {
   // Obtém o nome e o logotipo da entidade
   const entityName =
@@ -206,13 +206,19 @@ export const PDFDocument = ({
       case "updateDate":
       case "createTime":
       case "updateTime":
-      case "eventTime":
       case "timestamp":
       case "dataRecolha":
       case "dataFimRecolha":
       case "createdTime":
       case "dataCreate":
       case "createdDate":
+      case "eventTime":
+        if (
+          typeof item[fieldKey] === "string" &&
+          /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/.test(item[fieldKey])
+        ) {
+          return item[fieldKey];
+        }
         return validDate(item[fieldKey]);
       case "status":
       case "statusEmail":
@@ -292,6 +298,11 @@ export const PDFDocument = ({
       case "deviceSN":
         return (
           device.find((device) => device.serialNumber === item.deviceSN)
+            ?.deviceName || ""
+        );
+      case "deviceID":
+        return (
+          device.find((device) => device.zktecoDeviceID === item.deviceID)
             ?.deviceName || ""
         );
       case "tpId":

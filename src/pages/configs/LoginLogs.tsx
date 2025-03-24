@@ -106,14 +106,37 @@ export const LoginLogs = () => {
     const today = new Date();
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
-    try {
-      const data = await apiService.fetchAllLoginLogs(start, end);
-      setLoginLogs(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de logs hoje:", error);
+
+    if (selectedDevicesIds.length > 0) {
+      const rawUsername = selectedDevicesIds[0];
+      const username = rawUsername.replace("user-", "");
+
+      const foundUser = registeredUsers.find(
+        (user) => user.userName === username
+      );
+      if (foundUser) {
+        try {
+          const data = await apiService.fetchAllLoginLogs(start, end, [
+            foundUser.id,
+          ]);
+          setLoginLogs(data.data);
+          setTotalRows(data.totalRecords);
+          setStartDate(start);
+          setEndDate(end);
+        } catch (error) {
+          console.error("Erro ao buscar os dados de logs hoje:", error);
+        }
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllLoginLogs(start, end);
+        setLoginLogs(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de logs hoje:", error);
+      }
     }
   };
 
@@ -125,14 +148,36 @@ export const LoginLogs = () => {
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      const data = await apiService.fetchAllLoginLogs(start, end);
-      setLoginLogs(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de logs ontem:", error);
+    if (selectedDevicesIds.length > 0) {
+      const rawUsername = selectedDevicesIds[0];
+      const username = rawUsername.replace("user-", "");
+
+      const foundUser = registeredUsers.find(
+        (user) => user.userName === username
+      );
+      if (foundUser) {
+        try {
+          const data = await apiService.fetchAllLoginLogs(start, end, [
+            foundUser.id,
+          ]);
+          setLoginLogs(data.data);
+          setTotalRows(data.totalRecords);
+          setStartDate(start);
+          setEndDate(end);
+        } catch (error) {
+          console.error("Erro ao buscar os dados de logs ontem:", error);
+        }
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllLoginLogs(start, end);
+        setLoginLogs(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de logs ontem:", error);
+      }
     }
   };
 
@@ -148,14 +193,36 @@ export const LoginLogs = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      const data = await apiService.fetchAllLoginLogs(start, end);
-      setLoginLogs(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de logs amanhã:", error);
+    if (selectedDevicesIds.length > 0) {
+      const rawUsername = selectedDevicesIds[0];
+      const username = rawUsername.replace("user-", "");
+
+      const foundUser = registeredUsers.find(
+        (user) => user.userName === username
+      );
+      if (foundUser) {
+        try {
+          const data = await apiService.fetchAllLoginLogs(start, end, [
+            foundUser.id,
+          ]);
+          setLoginLogs(data.data);
+          setTotalRows(data.totalRecords);
+          setStartDate(start);
+          setEndDate(end);
+        } catch (error) {
+          console.error("Erro ao buscar os dados de logs amanhã:", error);
+        }
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllLoginLogs(start, end);
+        setLoginLogs(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de logs amanhã:", error);
+      }
     }
   };
 
@@ -284,7 +351,9 @@ export const LoginLogs = () => {
               if (key === "createdDate") {
                 const date = new Date(value);
                 const formatted = formatDateDDMMYYYY(date);
-                return formatted.toLowerCase().includes(filterText.toLowerCase());
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
               }
               if (value instanceof Date) {
                 return value

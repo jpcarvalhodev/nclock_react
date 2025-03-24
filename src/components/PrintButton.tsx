@@ -1,6 +1,13 @@
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
-import { Button, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
+import {
+  Button,
+  FormCheck,
+  Modal,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
+import { toast } from "react-toastify";
 
 import * as apiService from "../api/apiService";
 import { useEntity } from "../context/EntityContext";
@@ -10,18 +17,15 @@ import { CustomOutlineButton } from "./CustomOutlineButton";
 import { CustomSpinner } from "./CustomSpinner";
 import { PDFDocument } from "./PDFDocument";
 
-// Interfaces para os itens de dados e campos
 interface DataItem {
   [key: string]: any;
 }
 
-// Interface para os campos
 interface Field {
   label: string;
   key: string;
 }
 
-// Props para o componente
 interface PrintButtonProps {
   icon?: string;
   iconSize?: string;
@@ -32,16 +36,17 @@ interface PrintButtonProps {
   onClose?: () => void;
 }
 
-// Componente para visualizar e imprimir ou salvar o PDF
 export const PrintButton = ({
-  data,
-  fields,
+  data = [],
+  fields = [],
   renderTimeout,
   showModalOnInit,
   onClose,
 }: PrintButtonProps) => {
   const { devices, mbDevices, accessControl } = useTerminals();
   const { entities } = useEntity();
+
+  // Estados do modal de impressão
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [calculatedTimeout, setCalculatedTimeout] = useState(
@@ -49,8 +54,18 @@ export const PrintButton = ({
   );
   const [entityLogo, setEntityLogo] = useState<Blob | null>(null);
   const [isEntityLogoLoading, setIsEntityLogoLoading] = useState(true);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [columnsConfirmed, setColumnsConfirmed] = useState(false);
+  const [readyToLoad, setReadyToLoad] = useState(false);
 
-  // Obtém o logotipo da entidade
+  // Exibe o modal ao iniciar pela navbar
+  useEffect(() => {
+    if (showModalOnInit) {
+      setShowModal(true);
+    }
+  }, [showModalOnInit]);
+
+  // Função para obter o logotipo da entidade
   const fetchLogo = async () => {
     setIsEntityLogoLoading(true);
     try {
@@ -64,44 +79,62 @@ export const PrintButton = ({
     }
   };
 
-  // Exibe o modal ao iniciar pela navbar
-  useEffect(() => {
-    if (showModalOnInit) {
-      setShowModal(true);
-    }
-  }, [showModalOnInit]);
+  // Ao abrir o modal de impressão, reinicia os estados de seleção e readyToLoad
+  const handleShowModal = () => {
+    setShowModal(true);
+    setColumnsConfirmed(false);
+    setReadyToLoad(false);
+  };
 
-  // Função para calcular o renderTimeout com base na quantidade de dados
+  const handleCloseModal = () => {
+    setShowModal(false);
+    onClose && onClose();
+  };
+
+  // Quando o usuário confirmar a seleção de colunas, atualiza os estados
+  const handleConfirmColumns = () => {
+    if (selectedColumns.length === 0) {
+      toast.warn("Selecione ao menos uma coluna para visualizar o PDF.");
+      return;
+    }
+    setColumnsConfirmed(true);
+    setReadyToLoad(true);
+  };
+
+  // Calcula o tempo de renderização (usado somente após readyToLoad)
   const calculateRenderTimeout = (dataLength: number): number => {
     const baseTimeout = 5000;
-    const timePerItem = 100;
+    const timePerItem = 200;
     return baseTimeout + dataLength * timePerItem;
   };
 
-  // Atualiza o estado de loading quando o modal é exibido
+  // Inicia o carregamento dos dados do PDF somente quando readyToLoad for true
   useEffect(() => {
-    if (showModal) {
+    if (showModal && readyToLoad) {
       fetchLogo();
-      setCalculatedTimeout(calculateRenderTimeout(data.length));
+      setCalculatedTimeout(calculateRenderTimeout(data?.length || 0));
       setLoading(true);
     }
-  }, [showModal, data.length]);
+  }, [showModal, readyToLoad, data?.length]);
 
-  // Remove o loading após o tempo de renderTimeout
+  // Remove o loading após o tempo calculado
   useEffect(() => {
     if (showModal && loading) {
       const timer = setTimeout(() => {
         setLoading(false);
       }, calculatedTimeout);
-
       return () => clearTimeout(timer);
     }
   }, [showModal, loading, calculatedTimeout]);
 
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => {
-    setShowModal(false);
-    onClose && onClose();
+  // Função para alternar a seleção de todas as colunas
+  const handleSelectAllToggle = (checked: boolean) => {
+    if (checked) {
+      const allKeys = fields.map((field) => field.key);
+      setSelectedColumns(allKeys);
+    } else {
+      setSelectedColumns([]);
+    }
   };
 
   return (
@@ -112,12 +145,7 @@ export const PrintButton = ({
         container={document.body}
         popperConfig={{
           modifiers: [
-            {
-              name: "preventOverflow",
-              options: {
-                boundary: "window",
-              },
-            },
+            { name: "preventOverflow", options: { boundary: "window" } },
           ],
         }}
         overlay={<Tooltip className="custom-tooltip">Imprimir</Tooltip>}
@@ -126,7 +154,7 @@ export const PrintButton = ({
           onClick={handleShowModal}
           icon="bi-printer"
           iconSize="1.1em"
-        ></CustomOutlineButton>
+        />
       </OverlayTrigger>
       <Modal
         show={showModal}
@@ -138,62 +166,122 @@ export const PrintButton = ({
           <Modal.Title>Visualizar PDF</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {loading || isEntityLogoLoading ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "600px",
-              }}
-            >
-              <CustomSpinner />
+          {!columnsConfirmed ? (
+            <div style={{ padding: "2rem" }}>
+              <h4>Selecione as colunas desejadas para visualizar no PDF</h4>
+              <div
+                style={{
+                  marginBottom: "2rem",
+                  marginTop: "2rem",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <FormCheck
+                  type="checkbox"
+                  label="Selecionar Todas"
+                  checked={selectedColumns.length === fields.length}
+                  onChange={(e) => handleSelectAllToggle(e.target.checked)}
+                />
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(4, 1fr)",
+                  gap: "10px",
+                  marginTop: "1rem",
+                }}
+              >
+                {fields.map(({ label, key }) => (
+                  <FormCheck
+                    key={key}
+                    type="checkbox"
+                    label={label}
+                    checked={selectedColumns.includes(key)}
+                    onChange={() =>
+                      setSelectedColumns((prev) =>
+                        prev.includes(key)
+                          ? prev.filter((col) => col !== key)
+                          : [...prev, key]
+                      )
+                    }
+                  />
+                ))}
+              </div>
+              <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+                <Button variant="outline-dark" onClick={handleConfirmColumns}>
+                  Confirmar Colunas
+                </Button>
+              </div>
             </div>
-          ) : data.length === 0 ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "600px",
-              }}
-            >
-              <h3>Não existem dados disponíveis para mostrar.</h3>
-            </div>
+          ) : readyToLoad ? (
+            loading || isEntityLogoLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "600px",
+                }}
+              >
+                <CustomSpinner />
+              </div>
+            ) : data.length === 0 ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "600px",
+                }}
+              >
+                <h3>Não existem dados disponíveis para mostrar.</h3>
+              </div>
+            ) : (
+              <PDFViewer width="100%" height="600px">
+                <PDFDocument
+                  data={data}
+                  fields={fields.filter((field) =>
+                    selectedColumns.includes(field.key)
+                  )}
+                  entity={entities}
+                  entityLogo={entityLogo}
+                  device={devices}
+                  mbDevice={mbDevices}
+                  accessControl={accessControl}
+                />
+              </PDFViewer>
+            )
           ) : (
-            <PDFViewer width="100%" height="600px">
-              <PDFDocument
-                data={data}
-                fields={fields}
-                entity={entities}
-                entityLogo={entityLogo}
-                device={devices}
-                mbDevice={mbDevices}
-                accessControl={accessControl}
-              />
-            </PDFViewer>
+            <div style={{ textAlign: "center", padding: "2rem" }}>
+              <h4>Aguardando confirmação das colunas...</h4>
+            </div>
           )}
         </Modal.Body>
         <Modal.Footer style={{ backgroundColor: "#f2f2f2" }}>
           <Button variant="outline-dark" onClick={handleCloseModal}>
             Fechar
           </Button>
-          <PDFDownloadLink
-            document={
-              <PDFDocument
-                data={data}
-                fields={fields}
-                entity={entities}
-                entityLogo={entityLogo}
-                device={devices}
-                mbDevice={mbDevices}
-                accessControl={accessControl}
-              />
-            }
-            fileName="dados_impressos.pdf"
-          >
-            <Button variant="outline-dark">Guardar</Button>
-          </PDFDownloadLink>
+          {columnsConfirmed && !loading && (
+            <PDFDownloadLink
+              document={
+                <PDFDocument
+                  data={data}
+                  fields={fields.filter((field) =>
+                    selectedColumns.includes(field.key)
+                  )}
+                  entity={entities}
+                  entityLogo={entityLogo}
+                  device={devices}
+                  mbDevice={mbDevices}
+                  accessControl={accessControl}
+                />
+              }
+              fileName="dados_impressos.pdf"
+            >
+              <Button variant="outline-dark">Guardar</Button>
+            </PDFDownloadLink>
+          )}
         </Modal.Footer>
       </Modal>
     </>

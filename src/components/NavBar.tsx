@@ -206,6 +206,7 @@ import { usePersons } from "../context/PersonsContext";
 import { useTerminals } from "../context/TerminalsContext";
 import {
   accessControlFields,
+  accessesFields,
   adsFields,
   backupDBFields,
   categoryFields,
@@ -213,7 +214,9 @@ import {
   departmentFields,
   deviceFields,
   emailFields,
+  employeeAttendanceTimesFields,
   employeeFields,
+  employeeVisitorFields,
   externalEntityFields,
   groupFields,
   kioskConfigFields,
@@ -511,8 +514,8 @@ export const NavBar = ({ style }: NavBarProps) => {
   const { setScrollPosition } = useCardScroll();
   const { handleAddAds } = useAds();
   const {
-    loginLogs,
-    historyLogs,
+    loginLogsNoPagination,
+    historyLogsNoPagination,
     exportBackupDB,
     importBackupDB,
     importEmployees,
@@ -530,6 +533,7 @@ export const NavBar = ({ style }: NavBarProps) => {
     professions,
     zones,
     fetchAllDisabledEmployees,
+    employeeVisitor
   } = usePersons();
   const {
     payTerminalNoPagination,
@@ -543,7 +547,7 @@ export const NavBar = ({ style }: NavBarProps) => {
     getCoins,
     cleaning,
     occurrences,
-    counter,
+    counterNoPagination,
     fetchAllPayTerminal,
     fetchAllPayCoins,
     fetchAllMoveCard,
@@ -555,6 +559,8 @@ export const NavBar = ({ style }: NavBarProps) => {
     fetchAllAttendances,
     fetchAllInitialAccessesbyDevice,
     fetchAllAccessesbyDevice,
+    attendance,
+    accessForGraph,
   } = useAttendance();
   const [user, setUser] = useState({ name: "", email: "" });
   const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
@@ -694,6 +700,10 @@ export const NavBar = ({ style }: NavBarProps) => {
   const [menuStructureListing, setMenuStructureListing] =
     useState<MenuStructure>({});
   const [menuStructureListingNKiosk, setMenuStructureListingNKiosk] =
+    useState<MenuStructure>({});
+  const [menuStructureListingNClock, setMenuStructureListingNClock] =
+    useState<MenuStructure>({});
+  const [menuStructureListingNAccess, setMenuStructureListingNAccess] =
     useState<MenuStructure>({});
   const [showContactModal, setShowContactModal] = useState(false);
   const [showKioskDropdown, setShowKioskDropdown] = useState(false);
@@ -1918,12 +1928,12 @@ export const NavBar = ({ style }: NavBarProps) => {
       key: "nkiosk",
       submenu: [
         {
-          label: "Listagem Recebimento Multibanco",
+          label: "Listagem Recebimentos Multibanco",
           key: "recebimento_multibanco",
           alt: "nkiosk",
         },
         {
-          label: "Listagem Recebimento Moedeiro",
+          label: "Listagem Recebimentos Moedeiro",
           key: "recebimento_moedeiro",
           alt: "nkiosk",
         },
@@ -1933,12 +1943,12 @@ export const NavBar = ({ style }: NavBarProps) => {
           alt: "nkiosk",
         },
         {
-          label: "Listagem Movimento Torniquete",
+          label: "Listagem Movimentos Torniquete",
           key: "movimento_torniquete",
           alt: "nkiosk",
         },
         {
-          label: "Listagem Movimento Quiosque",
+          label: "Listagem Movimentos Quiosque",
           key: "movimento_quiosque",
           alt: "nkiosk",
         },
@@ -1953,12 +1963,12 @@ export const NavBar = ({ style }: NavBarProps) => {
           alt: "nkiosk",
         },
         {
-          label: "Listagem Remota Abertura Manual",
+          label: "Listagem Remota Aberturas Manuais",
           key: "remota_abertura",
           alt: "nkiosk",
         },
         {
-          label: "Listagem Registos Recolha Moedas",
+          label: "Listagem Registos Recolhas Moedas",
           key: "registo_recolhas",
           alt: "nkiosk",
         },
@@ -1980,6 +1990,54 @@ export const NavBar = ({ style }: NavBarProps) => {
       ],
     };
 
+    // Estrutura do menu de listagens para o nclock
+    const nclockSubmenu = {
+      label: "Listagem Nclock",
+      alt: "nclock",
+      key: "nclock",
+      submenu: [
+        {
+          label: "Listagem Assiduidades",
+          key: "movimentos_assiduidade",
+          alt: "nclock",
+        },
+        {
+          label: "Listagem Alterações",
+          key: "movimentos_alteracoes",
+          alt: "nclock",
+        },
+        {
+          label: "Listagem Acessos",
+          key: "acessos_acessos",
+          alt: "nclock",
+        },
+      ],
+    };
+
+    // Estrutura do menu de listagens para o nclock
+    const naccessSubmenu = {
+      label: "Listagem Naccess",
+      alt: "naccess",
+      key: "naccess",
+      submenu: [
+        {
+          label: "Listagem Acessos",
+          key: "movimentos_acessos",
+          alt: "naccess",
+        },
+        {
+          label: "Listagem Visitantes",
+          key: "movimentos_visitantes",
+          alt: "naccess",
+        },
+        {
+          label: "Listagem Aberturas Manuais",
+          key: "acessos_aberturas",
+          alt: "naccess",
+        },
+      ],
+    };
+
     // Função para estender o menu de listagens para um software específico
     function extendMenuForSoftware(
       softwareKey: string,
@@ -1996,6 +2054,18 @@ export const NavBar = ({ style }: NavBarProps) => {
 
     setMenuStructureListing(ListingMenuStructure);
     setMenuStructureListingNKiosk(nkioskMenu);
+
+    // Estrutura do menu de listagens para o nclock
+    const nclockMenu = extendMenuForSoftware("nclock", nclockSubmenu);
+
+    setMenuStructureListing(ListingMenuStructure);
+    setMenuStructureListingNClock(nclockMenu);
+
+    // Estrutura do menu de listagens para o naccess
+    const naccessMenu = extendMenuForSoftware("naccess", naccessSubmenu);
+
+    setMenuStructureListing(ListingMenuStructure);
+    setMenuStructureListingNAccess(naccessMenu);
   }, []);
 
   // Define a estrutura do menu do nidgroup
@@ -2107,8 +2177,8 @@ export const NavBar = ({ style }: NavBarProps) => {
     geral_periodos: { data: period, fields: timePeriodFields },
     geral_fecho: { data: mbCloseOpen, fields: mbDeviceCloseOpenFields },
     geral_utilizadores: { data: registeredUsers, fields: registerFields },
-    geral_logins: { data: loginLogs, fields: logsFields },
-    geral_historico: { data: historyLogs, fields: logsFields },
+    geral_logins: { data: loginLogsNoPagination, fields: logsFields },
+    geral_historico: { data: historyLogsNoPagination, fields: logsFields },
     recebimento_multibanco: {
       data: payTerminalNoPagination,
       fields: transactionMBFields,
@@ -2140,11 +2210,23 @@ export const NavBar = ({ style }: NavBarProps) => {
       fields: recolhaMoedeiroEContadorFields,
     },
     registo_limpeza: { data: cleaning, fields: limpezasEOcorrenciasFields },
-    registo_contador: { data: counter, fields: counterFields },
+    registo_contador: { data: counterNoPagination, fields: counterFields },
     registo_ocorrencias: {
       data: occurrences,
       fields: limpezasEOcorrenciasFields,
     },
+    movimentos_assiduidade: {
+      data: attendance.filter((item) => item.type !== 3),
+      fields: employeeAttendanceTimesFields,
+    },
+    movimentos_alteracoes: {
+      data: attendance.filter((item) => item.type === 3),
+      fields: employeeAttendanceTimesFields,
+    },
+    acessos_acessos: { data: accessForGraph, fields: accessesFields },
+    movimentos_acessos: { data: accessForGraph, fields: accessesFields },
+    movimentos_visitantes: { data: employeeVisitor, fields: employeeVisitorFields },
+    acessos_aberturas: { data: manualOpenDoor, fields: manualOpenDoorFields },
   };
 
   // Função para lidar com o clique do menu
@@ -2226,7 +2308,9 @@ export const NavBar = ({ style }: NavBarProps) => {
       menuKey === "pessoas" ||
       menuKey === "dispositivos" ||
       menuKey === "configuracao" ||
-      menuKey === "nkiosk";
+      menuKey === "nkiosk" ||
+      menuKey === "nclock" ||
+      menuKey === "naccess";
     const isWideSubmenuMain =
       menuKey === "cliente" ||
       menuKey === "sisnid" ||
@@ -2262,7 +2346,7 @@ export const NavBar = ({ style }: NavBarProps) => {
           <div
             className="submenu"
             style={{
-              minWidth: isWideSubmenu || isWideSubmenuMain ? "230px" : "auto",
+              minWidth: isWideSubmenu || isWideSubmenuMain ? "240px" : "auto",
               right: isWideSubmenu && !isPageNotRequired ? "100%" : "auto",
               left: isWideSubmenu && !isPageNotRequired ? "auto" : "100%",
             }}
@@ -3509,9 +3593,12 @@ export const NavBar = ({ style }: NavBarProps) => {
                           style={{ width: 120 }}
                         >
                           <Link
-                            to="/nclock/nclocktime" type="button"
+                            to="/nclock/nclocktime"
+                            type="button"
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "/nclock/nclocktime" ? "current-active" : ""
+                              currentRoute === "/nclock/nclocktime"
+                                ? "current-active"
+                                : ""
                             }`}
                           >
                             <span className="icon">
@@ -3868,12 +3955,12 @@ export const NavBar = ({ style }: NavBarProps) => {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
-                                {Object.keys(menuStructureListing).map(
+                                {Object.keys(menuStructureListingNClock).map(
                                   (menuKey) => (
                                     <div key={menuKey}>
                                       {renderMenu(
                                         menuKey,
-                                        menuStructureListing
+                                        menuStructureListingNClock
                                       )}
                                     </div>
                                   )
@@ -4331,12 +4418,12 @@ export const NavBar = ({ style }: NavBarProps) => {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
-                                {Object.keys(menuStructureListing).map(
+                                {Object.keys(menuStructureListingNAccess).map(
                                   (menuKey) => (
                                     <div key={menuKey}>
                                       {renderMenu(
                                         menuKey,
-                                        menuStructureListing
+                                        menuStructureListingNAccess
                                       )}
                                     </div>
                                   )
@@ -4587,9 +4674,12 @@ export const NavBar = ({ style }: NavBarProps) => {
                       <div className="btn-group" role="group">
                         <div className="icon-text-pessoas">
                           <Link
-                            to="/nvisitor/nvisitoraccess" type="button"
+                            to="/nvisitor/nvisitoraccess"
+                            type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "/nvisitor/nvisitoraccess" ? "current-active" : ""
+                              currentRoute === "/nvisitor/nvisitoraccess"
+                                ? "current-active"
+                                : ""
                             }`}
                           >
                             <span className="icon">
@@ -4600,9 +4690,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                         </div>
                         <div>
                           <Link
-                            to="/nvisitor/nvisitoraccesspresence" type="button"
+                            to="/nvisitor/nvisitoraccesspresence"
+                            type="button"
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "/nvisitor/nvisitoraccesspresence" ? "current-active" : ""
+                              currentRoute ===
+                              "/nvisitor/nvisitoraccesspresence"
+                                ? "current-active"
+                                : ""
                             }`}
                           >
                             <span className="icon">
@@ -4626,9 +4720,12 @@ export const NavBar = ({ style }: NavBarProps) => {
                             <span className="text">Totais</span>
                           </Button>
                           <Link
-                            to='/nvisitor/nvisitorvisitors' type="button"
+                            to="/nvisitor/nvisitorvisitors"
+                            type="button"
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "/nvisitor/nvisitorvisitors" ? "current-active" : ""
+                              currentRoute === "/nvisitor/nvisitorvisitors"
+                                ? "current-active"
+                                : ""
                             }`}
                           >
                             <span className="icon">
@@ -4653,9 +4750,12 @@ export const NavBar = ({ style }: NavBarProps) => {
                       <div className="btn-group" role="group">
                         <div className="icon-text-pessoas">
                           <Link
-                            to="/nvisitor/nvisitormotive" type="button"
+                            to="/nvisitor/nvisitormotive"
+                            type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
-                              currentRoute === "/nvisitor/nvisitormotive" ? "current-active" : ""
+                              currentRoute === "/nvisitor/nvisitormotive"
+                                ? "current-active"
+                                : ""
                             }`}
                           >
                             <span className="icon">
@@ -19559,9 +19659,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                         <Link
                           to="/persons/Persons"
                           type="button"
-                          onClick={() =>
-                            fetchAllDisabledEmployees("1", "20")
-                          }
+                          onClick={() => fetchAllDisabledEmployees("1", "20")}
                           className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                             currentRoute === "/persons/Persons"
                               ? "current-active"
@@ -19994,7 +20092,9 @@ export const NavBar = ({ style }: NavBarProps) => {
                           to="/devices/timeplans"
                           type="button"
                           className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                            currentRoute === "/devices/timeplans" ? "current-active" : ""
+                            currentRoute === "/devices/timeplans"
+                              ? "current-active"
+                              : ""
                           }`}
                         >
                           <span className="icon">

@@ -116,20 +116,40 @@ export const NkioskPayTerminal = () => {
 
   // Função para buscar os pagamentos dos terminais de hoje
   const fetchPaymentsToday = async () => {
-    try {
-      const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(
-        formatDateToStartOfDay(currentDate),
-        formatDateToStartOfDay(currentDate)
-      );
-      setPayTerminal(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(formatDateToStartOfDay(currentDate));
-      setEndDate(formatDateToStartOfDay(currentDate));
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de pagamento dos terminais hoje:",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          "1",
+          selectedDevicesIds,
+          formatDateToStartOfDay(currentDate),
+          formatDateToStartOfDay(currentDate)
+        );
+        setPayTerminal(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(formatDateToStartOfDay(currentDate));
+        setEndDate(formatDateToStartOfDay(currentDate));
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento dos terminais hoje:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(
+          formatDateToStartOfDay(currentDate),
+          formatDateToStartOfDay(currentDate)
+        );
+        setPayTerminal(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(formatDateToStartOfDay(currentDate));
+        setEndDate(formatDateToStartOfDay(currentDate));
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento dos terminais hoje:",
+          error
+        );
+      }
     }
   };
 
@@ -141,20 +161,40 @@ export const NkioskPayTerminal = () => {
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(
-        start,
-        end
-      );
-      setPayTerminal(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de pagamento dos terminais de ontem:",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          "1",
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setPayTerminal(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento dos terminais de ontem:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(
+          start,
+          end
+        );
+        setPayTerminal(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento dos terminais de ontem:",
+          error
+        );
+      }
     }
   };
 
@@ -170,20 +210,40 @@ export const NkioskPayTerminal = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(
-        start,
-        end
-      );
-      setPayTerminal(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de pagamento dos terminais de amanhã:",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          "1",
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setPayTerminal(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento dos terminais de amanhã:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBAndDeviceSN(
+          start,
+          end
+        );
+        setPayTerminal(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de pagamento dos terminais de amanhã:",
+          error
+        );
+      }
     }
   };
 
@@ -305,29 +365,28 @@ export const NkioskPayTerminal = () => {
               .includes(filters[key].toLowerCase());
           })
         )
-        .filter(
-          (payTerminals) =>
-            Object.entries(payTerminals).some(([key, value]) => {
-              if (selectedColumns.includes(key) && value != null) {
-                if (key === "timestamp") {
-                  const date = new Date(value);
-                  const formatted = formatDateDDMMYYYY(date);
-                  return formatted
-                    .toLowerCase()
-                    .includes(filterText.toLowerCase());
-                } else if (value instanceof Date) {
-                  return value
-                    .toLocaleString()
-                    .toLowerCase()
-                    .includes(filterText.toLowerCase());
-                }
+        .filter((payTerminals) =>
+          Object.entries(payTerminals).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (key === "timestamp") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
                 return value
-                  .toString()
+                  .toLocaleString()
                   .toLowerCase()
                   .includes(filterText.toLowerCase());
               }
-              return false;
-            })
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
+            return false;
+          })
         );
     };
 

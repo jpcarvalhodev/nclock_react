@@ -93,7 +93,7 @@ export function TreeViewDataNkioskMove({
     const buildUserTree = employeesNoPagination
       .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
       .map((employee) => ({
-        id: employee.employeeID || "Sem ID",
+        id: employee.enrollNumber || "Sem Número",
         label: `${employee.enrollNumber} - ${employee.shortName}` || "Sem Nome",
         children: [],
       }));

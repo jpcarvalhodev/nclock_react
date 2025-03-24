@@ -69,7 +69,7 @@ function collectAllExpandableItemIds(items: TreeViewBaseItem[]): string[] {
 export function TreeViewDataHistory({
   onSelectDevices,
 }: TreeViewDataHistoryProps) {
-  const { historyLogs, fetchAllHistoryLogs } = useEntity();
+  const { historyLogsNoPagination, fetchAllHistoryLogs } = useEntity();
   const [items, setItems] = useState<TreeViewBaseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredItems, setFilteredItems] = useState<TreeViewBaseItem[]>([]);
@@ -82,7 +82,7 @@ export function TreeViewDataHistory({
   const memoizedTreeItems = useMemo(() => {
     const usersMap = new Map();
 
-    historyLogs.forEach((log) => {
+    historyLogsNoPagination.forEach((log) => {
       const userName = log.userName || "Sem Nome";
       if (!usersMap.has(userName)) {
         usersMap.set(userName, {
@@ -111,14 +111,14 @@ export function TreeViewDataHistory({
     ];
 
     return treeItems;
-  }, [historyLogs]);
+  }, [historyLogsNoPagination]);
 
   // Atualiza os itens da árvore
   useEffect(() => {
     setItems(memoizedTreeItems);
     setFilteredItems(memoizedTreeItems);
     const allExpandableIds = collectAllExpandableItemIds(memoizedTreeItems);
-    setExpandedIds(["nidgroup", "utilizadores"]);
+    setExpandedIds(allExpandableIds);
   }, [memoizedTreeItems]);
 
   // Atualiza o estado de carregamento ao expandir os itens
@@ -203,7 +203,7 @@ export function TreeViewDataHistory({
     if (searchTerm.trim()) {
       setExpandedIds([...newExpandedIds]);
     } else {
-      setExpandedIds(["nidgroup", "utilizadores"]);
+      setExpandedIds(collectAllExpandableItemIds(items));
     }
   }, [items, searchTerm]);
 

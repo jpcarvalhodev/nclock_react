@@ -26,6 +26,7 @@ import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { se } from "date-fns/locale";
 
 // Define a interface para os filtros
 interface Filters {
@@ -188,17 +189,35 @@ export const NaccessAccesses = () => {
     const today = new Date();
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
-    try {
-      const data = await apiService.fetchAllAccessesByDevice(
-        undefined,
-        start,
-        end
-      );
-      setFilteredAccess(data.data);
-      setTotalRows(data.totalRecords);
-    } catch (error) {
-      console.error("Erro ao buscar acessos hoje:", error);
-      setFilteredAccess([]);
+    if (selectedEmployeeIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllAccessesByEnrollNumber(
+          undefined,
+          selectedEmployeeIds,
+          start,
+          end,
+          "1",
+          "20"
+        );
+        setFilteredAccess(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar acessos hoje:", error);
+        setFilteredAccess([]);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllAccessesByDevice(
+          undefined,
+          start,
+          end
+        );
+        setFilteredAccess(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar acessos hoje:", error);
+        setFilteredAccess([]);
+      }
     }
     setStartDate(start);
     setEndDate(end);
@@ -212,17 +231,35 @@ export const NaccessAccesses = () => {
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      const data = await apiService.fetchAllAccessesByDevice(
-        undefined,
-        start,
-        end
-      );
-      setFilteredAccess(data.data);
-      setTotalRows(data.totalRecords);
-    } catch (error) {
-      console.error("Erro ao buscar acessos ontem:", error);
-      setFilteredAccess([]);
+    if (selectedEmployeeIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllAccessesByEnrollNumber(
+          undefined,
+          selectedEmployeeIds,
+          start,
+          end,
+          "1",
+          "20"
+        );
+        setFilteredAccess(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar acessos ontem:", error);
+        setFilteredAccess([]);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllAccessesByDevice(
+          undefined,
+          start,
+          end
+        );
+        setFilteredAccess(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar acessos ontem:", error);
+        setFilteredAccess([]);
+      }
     }
     setStartDate(start);
     setEndDate(end);
@@ -240,17 +277,35 @@ export const NaccessAccesses = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      const data = await apiService.fetchAllAccessesByDevice(
-        undefined,
-        start,
-        end
-      );
-      setFilteredAccess(data.data);
-      setTotalRows(data.totalRecords);
-    } catch (error) {
-      console.error("Erro ao buscar acessos amanhã:", error);
-      setFilteredAccess([]);
+    if (selectedEmployeeIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllAccessesByEnrollNumber(
+          undefined,
+          selectedEmployeeIds,
+          start,
+          end,
+          "1",
+          "20"
+        );
+        setFilteredAccess(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar acessos amanhã:", error);
+        setFilteredAccess([]);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllAccessesByDevice(
+          undefined,
+          start,
+          end
+        );
+        setFilteredAccess(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar acessos amanhã:", error);
+        setFilteredAccess([]);
+      }
     }
     setStartDate(start);
     setEndDate(end);

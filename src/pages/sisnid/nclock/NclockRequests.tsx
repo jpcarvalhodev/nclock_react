@@ -136,7 +136,7 @@ export const NclockRequests = () => {
     const end = formatDateToEndOfDay(today);
     try {
       await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type !== 3),
+        filterFunc: (data) => data.filter((att) => att.type === 3),
         postFetch: (filteredData) => {
           setFilteredAttendances(filteredData);
           setStartDate(start);
@@ -158,7 +158,7 @@ export const NclockRequests = () => {
 
     try {
       await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type !== 3),
+        filterFunc: (data) => data.filter((att) => att.type === 3),
         postFetch: (filteredData) => {
           setFilteredAttendances(filteredData);
           setStartDate(start);
@@ -184,7 +184,7 @@ export const NclockRequests = () => {
 
     try {
       await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type !== 3),
+        filterFunc: (data) => data.filter((att) => att.type === 3),
         postFetch: (filteredData) => {
           setFilteredAttendances(filteredData);
           setStartDate(start);

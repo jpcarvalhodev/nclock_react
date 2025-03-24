@@ -59,6 +59,7 @@ export const NclockMovement = () => {
     fetchAllAttendances,
     fetchAllAttendancesBetweenDates,
     handleAddAttendance,
+    attendance
   } = useAttendance();
   const { devices } = useTerminals();
   const currentDate = new Date();

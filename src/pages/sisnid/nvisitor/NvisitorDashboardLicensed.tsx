@@ -99,9 +99,9 @@ const messages = {
 export const NvisitorDashboardLicensed = () => {
   const currentYear = new Date().getFullYear();
   const {
-    moveCardNoPagination = [],
-    moveKioskNoPagination = [],
-    totalMovementsNoPagination = [],
+    moveCardNoPagination,
+    moveKioskNoPagination,
+    totalMovementsNoPagination,
   } = useKiosk();
   const { accessForGraph = [] } = useAttendance();
   const { employeeVisitor = [] } = usePersons();
@@ -179,7 +179,11 @@ export const NvisitorDashboardLicensed = () => {
       const eventSet = new Set();
       const newEvents = totalMovementsNoPagination.reduce(
         (acc: CalendarEvent[], item: KioskTransactionCard) => {
+          if (!item.eventTime) return acc;
+
           const eventDate = new Date(item.eventTime);
+          if (isNaN(eventDate.getTime())) return acc;
+
           const dateKey = eventDate.toISOString().split("T")[0];
           const eventKey =
             dateKey + "|" + item.eventName + "|" + item.eventDoorId;

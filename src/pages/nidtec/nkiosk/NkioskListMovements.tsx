@@ -121,23 +121,53 @@ export const NkioskListMovements = () => {
 
   // Função para buscar os movimentos entre datas
   const fetchTotalMovementsToday = async () => {
-    try {
-      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
-        ["3", "4"],
-        undefined,
-        undefined,
-        formatDateToStartOfDay(currentDate),
-        formatDateToEndOfDay(currentDate)
-      );
-      setTotalMovements(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(formatDateToStartOfDay(currentDate));
-      setEndDate(formatDateToEndOfDay(currentDate));
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de listagem de movimentos hoje",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      const deviceIds: string[] = [];
+      const personIds: string[] = [];
+      selectedDevicesIds.forEach((id) => {
+        if (/^[A-Z0-9]+$/.test(id)) {
+          deviceIds.push(id);
+        } else if (/^\d+$/.test(id)) {
+          personIds.push(id);
+        }
+      });
+      try {
+        const data = await apiService.fetchAllKioskTransactionByEnrollNumber(
+          personIds.length > 0 ? personIds : undefined,
+          undefined,
+          deviceIds.length > 0 ? deviceIds : undefined,
+          formatDateToStartOfDay(currentDate),
+          formatDateToEndOfDay(currentDate)
+        );
+        setTotalMovements(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(formatDateToStartOfDay(currentDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de movimentos hoje:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          ["3", "4"],
+          undefined,
+          undefined,
+          formatDateToStartOfDay(currentDate),
+          formatDateToEndOfDay(currentDate)
+        );
+        setTotalMovements(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(formatDateToStartOfDay(currentDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de movimentos hoje",
+          error
+        );
+      }
     }
   };
 
@@ -149,23 +179,53 @@ export const NkioskListMovements = () => {
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
-        ["3", "4"],
-        undefined,
-        undefined,
-        start,
-        end
-      );
-      setTotalMovements(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de listagem de movimentos hoje",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      const deviceIds: string[] = [];
+      const personIds: string[] = [];
+      selectedDevicesIds.forEach((id) => {
+        if (/^[A-Z0-9]+$/.test(id)) {
+          deviceIds.push(id);
+        } else if (/^\d+$/.test(id)) {
+          personIds.push(id);
+        }
+      });
+      try {
+        const data = await apiService.fetchAllKioskTransactionByEnrollNumber(
+          personIds.length > 0 ? personIds : undefined,
+          undefined,
+          deviceIds.length > 0 ? deviceIds : undefined,
+          start,
+          end
+        );
+        setTotalMovements(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de movimentos ontem:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          ["3", "4"],
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setTotalMovements(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de movimentos ontem",
+          error
+        );
+      }
     }
   };
 
@@ -181,23 +241,53 @@ export const NkioskListMovements = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
-        ["3", "4"],
-        undefined,
-        undefined,
-        start,
-        end
-      );
-      setTotalMovements(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de listagem de movimentos hoje",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      const deviceIds: string[] = [];
+      const personIds: string[] = [];
+      selectedDevicesIds.forEach((id) => {
+        if (/^[A-Z0-9]+$/.test(id)) {
+          deviceIds.push(id);
+        } else if (/^\d+$/.test(id)) {
+          personIds.push(id);
+        }
+      });
+      try {
+        const data = await apiService.fetchAllKioskTransactionByEnrollNumber(
+          personIds.length > 0 ? personIds : undefined,
+          undefined,
+          deviceIds.length > 0 ? deviceIds : undefined,
+          start,
+          end
+        );
+        setTotalMovements(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de movimentos amanhã:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByCardAndDeviceSN(
+          ["3", "4"],
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setTotalMovements(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de movimentos amanhã",
+          error
+        );
+      }
     }
   };
 
@@ -276,11 +366,7 @@ export const NkioskListMovements = () => {
       selectedIds.forEach((id) => {
         if (/^[A-Z0-9]+$/.test(id)) {
           deviceIds.push(id);
-        } else if (
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-            id
-          )
-        ) {
+        } else if (/^\d+$/.test(id)) {
           personIds.push(id);
         }
       });

@@ -117,22 +117,42 @@ export const NkioskListPayments = () => {
 
   // Função para buscar as listagens de pagamentos hoje
   const fetchTotalPaymentsToday = async () => {
-    try {
-      const data = await apiService.fetchKioskTransactionsByMBPayCoins(
-        undefined,
-        undefined,
-        startDate,
-        endDate
-      );
-      setTotalPayments(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(formatDateToStartOfDay(currentDate));
-      setEndDate(formatDateToEndOfDay(currentDate));
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de listagem de pagamentos hoje:",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          undefined,
+          selectedDevicesIds,
+          formatDateToStartOfDay(currentDate),
+          formatDateToStartOfDay(currentDate)
+        );
+        setTotalPayments(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(formatDateToStartOfDay(currentDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de pagamentos hoje:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          undefined,
+          undefined,
+          startDate,
+          endDate
+        );
+        setTotalPayments(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(formatDateToStartOfDay(currentDate));
+        setEndDate(formatDateToEndOfDay(currentDate));
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de pagamentos hoje:",
+          error
+        );
+      }
     }
   };
 
@@ -144,22 +164,42 @@ export const NkioskListPayments = () => {
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      const data = await apiService.fetchKioskTransactionsByMBPayCoins(
-        undefined,
-        undefined,
-        start,
-        end
-      );
-      setTotalPayments(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de listagem de pagamento de ontem:",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          undefined,
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setTotalPayments(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de pagamentos de ontem:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setTotalPayments(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de pagamento de ontem:",
+          error
+        );
+      }
     }
   };
 
@@ -175,22 +215,42 @@ export const NkioskListPayments = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      const data = await apiService.fetchKioskTransactionsByMBPayCoins(
-        undefined,
-        undefined,
-        start,
-        end
-      );
-      setTotalPayments(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error(
-        "Erro ao buscar os dados de listagem de pagamentos de amanhã:",
-        error
-      );
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          undefined,
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setTotalPayments(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de pagamentos de amanhã:",
+          error
+        );
+      }
+    } else {
+      try {
+        const data = await apiService.fetchKioskTransactionsByMBPayCoins(
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setTotalPayments(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error(
+          "Erro ao buscar os dados de listagem de pagamentos de amanhã:",
+          error
+        );
+      }
     }
   };
 
@@ -312,35 +372,34 @@ export const NkioskListPayments = () => {
               .includes(filters[key].toLowerCase());
           })
         )
-        .filter(
-          (payTerminals) =>
-            Object.entries(payTerminals).some(([key, value]) => {
-              if (selectedColumns.includes(key) && value != null) {
-                if (key === "transactionType") {
-                  const typeText = value === 1 ? "Multibanco" : "Moedeiro";
-                  return typeText
-                    .toLowerCase()
-                    .includes(filterText.toLowerCase());
-                }
-                if (key === "timestamp") {
-                  const date = new Date(value);
-                  const formatted = formatDateDDMMYYYY(date);
-                  return formatted
-                    .toLowerCase()
-                    .includes(filterText.toLowerCase());
-                } else if (value instanceof Date) {
-                  return value
-                    .toLocaleString()
-                    .toLowerCase()
-                    .includes(filterText.toLowerCase());
-                }
-                return value
-                  .toString()
+        .filter((payTerminals) =>
+          Object.entries(payTerminals).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (key === "transactionType") {
+                const typeText = value === 1 ? "Multibanco" : "Moedeiro";
+                return typeText
                   .toLowerCase()
                   .includes(filterText.toLowerCase());
               }
-              return false;
-            })
+              if (key === "timestamp") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
+              return value
+                .toString()
+                .toLowerCase()
+                .includes(filterText.toLowerCase());
+            }
+            return false;
+          })
         );
     };
 

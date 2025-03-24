@@ -102,7 +102,10 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         if (options?.postFetch) {
           options.postFetch(data);
         }
-        setAttendance(data);
+        const sortedData = data.sort((a: { attendanceTime: string | number | Date; }, b: { attendanceTime: string | number | Date; }) => {
+          return new Date(b.attendanceTime).getTime() - new Date(a.attendanceTime).getTime();
+        });
+        setAttendance(sortedData);
         setStartDate(formatDateToStartOfDay(pastDate));
         setEndDate(formatDateToEndOfDay(currentDate));
         return data;

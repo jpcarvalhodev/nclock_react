@@ -94,12 +94,12 @@ const messages = {
 export const NkioskDashboardLicensed = () => {
   const currentYear = new Date().getFullYear();
   const {
-    payCoinsNoPagination = [],
-    payTerminalNoPagination = [],
-    moveCardNoPagination = [],
-    moveKioskNoPagination = [],
-    totalMovementsNoPagination = [],
-    totalPaymentsNoPagination = [],
+    payCoinsNoPagination,
+    payTerminalNoPagination,
+    moveCardNoPagination,
+    moveKioskNoPagination,
+    totalMovementsNoPagination,
+    totalPaymentsNoPagination,
   } = useKiosk();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [payLineChartData, setPayLineChartData] = useState<ChartData>({
@@ -457,7 +457,7 @@ export const NkioskDashboardLicensed = () => {
               <Line
                 className="departments-groups-chart-data"
                 data={payLineChartData}
-                onClick={() => navigate("/nkiosk/nkioskListPayments")}
+                onClick={() => navigate("/nkiosk/nkiosklistpayments")}
                 style={{ cursor: "pointer" }}
               />
             </div>
@@ -471,7 +471,7 @@ export const NkioskDashboardLicensed = () => {
               <Line
                 className="departments-groups-chart-data"
                 data={moveLineChartData}
-                onClick={() => navigate("/nkiosk/nkioskListMovements")}
+                onClick={() => navigate("/nkiosk/nkiosklistmovements")}
                 style={{ cursor: "pointer" }}
               />
             </div>
@@ -501,7 +501,7 @@ export const NkioskDashboardLicensed = () => {
             <Bar
               className="departments-groups-chart-data"
               data={todayMbLineChartData}
-              onClick={() => navigate("/nkiosk/nkioskPayTerminal")}
+              onClick={() => navigate("/nkiosk/nkioskpayterminal")}
               style={{ cursor: "pointer" }}
             />
           </div>
@@ -514,7 +514,7 @@ export const NkioskDashboardLicensed = () => {
             <Bar
               className="departments-groups-chart-data"
               data={todayCoinLineChartData}
-              onClick={() => navigate("/nkiosk/nkioskPayCoins")}
+              onClick={() => navigate("/nkiosk/nkioskpaycoins")}
               style={{ cursor: "pointer" }}
             />
           </div>
@@ -527,7 +527,7 @@ export const NkioskDashboardLicensed = () => {
             <Bar
               className="departments-groups-chart-data"
               data={todayCardLineChartData}
-              onClick={() => navigate("/nkiosk/nkioskMoveCard")}
+              onClick={() => navigate("/nkiosk/nkioskmovecard")}
               style={{ cursor: "pointer" }}
             />
           </div>
@@ -540,7 +540,7 @@ export const NkioskDashboardLicensed = () => {
             <Bar
               className="departments-groups-chart-data"
               data={todayKioskLineChartData}
-              onClick={() => navigate("/nkiosk/nkioskMoveKiosk")}
+              onClick={() => navigate("/nkiosk/nkioskmovekiosk")}
               style={{ cursor: "pointer" }}
             />
           </div>

@@ -799,10 +799,10 @@ export const Terminals = () => {
 
   // Atualizar o dispositivo selecionado quando o índice ou a lista mudarem
   useEffect(() => {
-    if (sortedDevices.length > 0) {
+    if (!showUpdateModal && sortedDevices.length > 0) {
       setSelectedDevice(sortedDevices[currentDeviceIndex]);
     }
-  }, [currentDeviceIndex, sortedDevices]);
+  }, [currentDeviceIndex, sortedDevices, showUpdateModal]);
 
   // Seleciona a entidade anterior
   const handleNextDevice = () => {

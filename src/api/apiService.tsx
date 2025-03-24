@@ -3083,8 +3083,8 @@ export const fetchKioskTransactionsByMBAndDeviceSN = async (
   const params: string[] = [];
 
   if (startDate && endDate) {
-    params.push(`startTime=${startDate}`);
-    params.push(`endTime=${endDate}`);
+    params.push(`startDate=${startDate}`);
+    params.push(`endDate=${endDate}`);
   }
 
   if (pageNo && pageSize) {
@@ -4852,8 +4852,8 @@ export const fetchAllContador = async (
   }
 
   if (startDate && endDate) {
-    params.push(`startTime=${startDate}`);
-    params.push(`endTime=${endDate}`);
+    params.push(`startDate=${startDate}`);
+    params.push(`endDate=${endDate}`);
   }
 
   if (devSNs) {
@@ -4932,8 +4932,8 @@ export const fetchAllHistoryLogs = async (
   const params: string[] = [];
 
   if (startDate && endDate) {
-    params.push(`startTime=${startDate}`);
-    params.push(`endTime=${endDate}`);
+    params.push(`startDate=${startDate}`);
+    params.push(`endDate=${endDate}`);
   }
 
   if (userIds) {
@@ -4985,8 +4985,8 @@ export const fetchAllLoginLogs = async (
   const params: string[] = [];
 
   if (startDate && endDate) {
-    params.push(`startTime=${startDate}`);
-    params.push(`endTime=${endDate}`);
+    params.push(`startDate=${startDate}`);
+    params.push(`endDate=${endDate}`);
   }
 
   if (userIds) {
