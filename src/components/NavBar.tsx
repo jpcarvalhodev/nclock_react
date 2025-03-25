@@ -195,6 +195,7 @@ import profession from "../assets/img/navbar/pessoas/professions.png";
 import types from "../assets/img/navbar/pessoas/types.png";
 import zone from "../assets/img/navbar/pessoas/zones.png";
 import mail from "../assets/img/navbar/navbar/mail.svg";
+import blueprint from "../assets/img/navbar/ajuda/blueprint.png";
 import { useAds } from "../context/AdsContext";
 import { useCardScroll } from "../context/CardScrollContext";
 import { useEntity } from "../context/EntityContext";
@@ -246,6 +247,7 @@ import { EmailUser, KioskConfig } from "../types/Types";
 import { fetchWithAuth } from "./FetchWithAuth";
 import { PrintButton } from "./PrintButton";
 import { NavbarNotifications } from "./NavbarNotifications";
+import { TechInfoModal } from "../modals/TechInfoModal";
 
 // Define a interface para o payload do token
 interface MyTokenPayload extends JwtPayload {
@@ -533,7 +535,7 @@ export const NavBar = ({ style }: NavBarProps) => {
     professions,
     zones,
     fetchAllDisabledEmployees,
-    employeeVisitor
+    employeeVisitor,
   } = usePersons();
   const {
     payTerminalNoPagination,
@@ -705,6 +707,8 @@ export const NavBar = ({ style }: NavBarProps) => {
     useState<MenuStructure>({});
   const [menuStructureListingNAccess, setMenuStructureListingNAccess] =
     useState<MenuStructure>({});
+  const [menuStructureListingNVisitor, setMenuStructureListingNVisitor] =
+    useState<MenuStructure>({});
   const [showContactModal, setShowContactModal] = useState(false);
   const [showKioskDropdown, setShowKioskDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -719,6 +723,7 @@ export const NavBar = ({ style }: NavBarProps) => {
   const [showTaskDropdown, setShowTaskDropdown] = useState(false);
   const [showImportEmployeesModal, setShowImportEmployeesModal] =
     useState(false);
+  const [showTechInfoModal, setShowTechInfoModal] = useState(false);
 
   // Função para atualizar o estado da aba
   const ribbonSetters = {
@@ -2014,7 +2019,7 @@ export const NavBar = ({ style }: NavBarProps) => {
       ],
     };
 
-    // Estrutura do menu de listagens para o nclock
+    // Estrutura do menu de listagens para o naccess
     const naccessSubmenu = {
       label: "Listagem Naccess",
       alt: "naccess",
@@ -2034,6 +2039,40 @@ export const NavBar = ({ style }: NavBarProps) => {
           label: "Listagem Aberturas Manuais",
           key: "acessos_aberturas",
           alt: "naccess",
+        },
+      ],
+    };
+
+    // Estrutura do menu de listagens para o nvisitor
+    const nvisitorSubmenu = {
+      label: "Listagem Nvisitor",
+      alt: "nvisitor",
+      key: "nvisitor",
+      submenu: [
+        {
+          label: "Listagem Torniquete",
+          key: "movimentos_visitor_torniquete",
+          alt: "nvisitor",
+        },
+        {
+          label: "Listagem Quiosque",
+          key: "movimentos_visitor_quiosque",
+          alt: "nvisitor",
+        },
+        {
+          label: "Listagem Movimento Totais",
+          key: "movimentos_visitor_totais",
+          alt: "nvisitor",
+        },
+        {
+          label: "Listagem Acessos",
+          key: "acessos_visitor_acessos",
+          alt: "nvisitor",
+        },
+        {
+          label: "Listagem Visitantes",
+          key: "acessos_visitor_visitantes",
+          alt: "nvisitor",
         },
       ],
     };
@@ -2066,6 +2105,12 @@ export const NavBar = ({ style }: NavBarProps) => {
 
     setMenuStructureListing(ListingMenuStructure);
     setMenuStructureListingNAccess(naccessMenu);
+
+    // Estrutura do menu de listagens para o nvisitor
+    const nvisitorMenu = extendMenuForSoftware("nvisitor", nvisitorSubmenu);
+
+    setMenuStructureListing(ListingMenuStructure);
+    setMenuStructureListingNVisitor(nvisitorMenu);
   }, []);
 
   // Define a estrutura do menu do nidgroup
@@ -2225,8 +2270,16 @@ export const NavBar = ({ style }: NavBarProps) => {
     },
     acessos_acessos: { data: accessForGraph, fields: accessesFields },
     movimentos_acessos: { data: accessForGraph, fields: accessesFields },
-    movimentos_visitantes: { data: employeeVisitor, fields: employeeVisitorFields },
+    movimentos_visitantes: {
+      data: employeeVisitor,
+      fields: employeeVisitorFields,
+    },
     acessos_aberturas: { data: manualOpenDoor, fields: manualOpenDoorFields },
+    movimentos_visitor_torniquete: { data: moveCardNoPagination, fields: transactionCardFields },
+    movimentos_visitor_quiosque: { data: moveKioskNoPagination, fields: transactionCardFields },
+    movimentos_visitor_totais: { data: totalMovementsNoPagination, fields: transactionCardFields },
+    acessos_visitor_acessos: { data: accessForGraph, fields: accessesFields },
+    acessos_visitor_visitantes: { data: employeeVisitor, fields: employeeVisitorFields },
   };
 
   // Função para lidar com o clique do menu
@@ -2310,7 +2363,8 @@ export const NavBar = ({ style }: NavBarProps) => {
       menuKey === "configuracao" ||
       menuKey === "nkiosk" ||
       menuKey === "nclock" ||
-      menuKey === "naccess";
+      menuKey === "naccess" ||
+      menuKey === "nvisitor";
     const isWideSubmenuMain =
       menuKey === "cliente" ||
       menuKey === "sisnid" ||
@@ -2572,6 +2626,9 @@ export const NavBar = ({ style }: NavBarProps) => {
   // Função para abrir o modal de importação de funcionários
   const toggleImportEmployees = () =>
     setShowImportEmployeesModal(!showImportEmployeesModal);
+
+  // Função para abrir o modal de informações técnicas
+  const toggleTechInfoModal = () => setShowTechInfoModal(!showTechInfoModal);
 
   // Função para abrir o anydesk em uma nova janela
   const handleAnydeskWindow = () => {
@@ -4843,12 +4900,12 @@ export const NavBar = ({ style }: NavBarProps) => {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
-                                {Object.keys(menuStructureListing).map(
+                                {Object.keys(menuStructureListingNVisitor).map(
                                   (menuKey) => (
                                     <div key={menuKey}>
                                       {renderMenu(
                                         menuKey,
-                                        menuStructureListing
+                                        menuStructureListingNVisitor
                                       )}
                                     </div>
                                   )
@@ -20566,6 +20623,21 @@ export const NavBar = ({ style }: NavBarProps) => {
                       </div>
                       <div className="icon-text-pessoas">
                         <Button
+                          onClick={toggleTechInfoModal}
+                          type="button"
+                          className="btn btn-light ribbon-button ribbon-button-pessoas"
+                        >
+                          <span className="icon">
+                            <img
+                              src={blueprint}
+                              alt="botão informações técnicas"
+                            />
+                          </span>
+                          <span className="text">Informações Técnicas</span>
+                        </Button>
+                      </div>
+                      <div className="icon-text-pessoas">
+                        <Button
                           /* to="#" */ type="button"
                           className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                             currentRoute === "#" ? "current-active" : ""
@@ -20748,6 +20820,12 @@ export const NavBar = ({ style }: NavBarProps) => {
         }
         title="Importar Pessoas"
       />
+      {showTechInfoModal && (
+        <TechInfoModal
+          open={showTechInfoModal}
+          onClose={() => setShowTechInfoModal(false)}
+        />
+      )}
     </nav>
   );
 };

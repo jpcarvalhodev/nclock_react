@@ -180,7 +180,6 @@ export const NaccessAccesses = () => {
       setTotalRows(data.totalRecords);
     } catch (error) {
       console.error("Erro ao buscar acessos entre datas:", error);
-      setFilteredAccess([]);
     }
   };
 
@@ -203,7 +202,6 @@ export const NaccessAccesses = () => {
         setTotalRows(data.totalRecords);
       } catch (error) {
         console.error("Erro ao buscar acessos hoje:", error);
-        setFilteredAccess([]);
       }
     } else {
       try {
@@ -216,7 +214,6 @@ export const NaccessAccesses = () => {
         setTotalRows(data.totalRecords);
       } catch (error) {
         console.error("Erro ao buscar acessos hoje:", error);
-        setFilteredAccess([]);
       }
     }
     setStartDate(start);
@@ -245,7 +242,6 @@ export const NaccessAccesses = () => {
         setTotalRows(data.totalRecords);
       } catch (error) {
         console.error("Erro ao buscar acessos ontem:", error);
-        setFilteredAccess([]);
       }
     } else {
       try {
@@ -258,7 +254,6 @@ export const NaccessAccesses = () => {
         setTotalRows(data.totalRecords);
       } catch (error) {
         console.error("Erro ao buscar acessos ontem:", error);
-        setFilteredAccess([]);
       }
     }
     setStartDate(start);
@@ -291,7 +286,6 @@ export const NaccessAccesses = () => {
         setTotalRows(data.totalRecords);
       } catch (error) {
         console.error("Erro ao buscar acessos amanhã:", error);
-        setFilteredAccess([]);
       }
     } else {
       try {
@@ -304,7 +298,6 @@ export const NaccessAccesses = () => {
         setTotalRows(data.totalRecords);
       } catch (error) {
         console.error("Erro ao buscar acessos amanhã:", error);
-        setFilteredAccess([]);
       }
     }
     setStartDate(start);

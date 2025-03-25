@@ -10,7 +10,7 @@ export const verifyModeOptions = [
     { value: 7, label: "Cartão ou Password" },
     { value: 8, label: "ID Utilizador + Digital" },
     { value: 9, label: "Digital + Password" },
-    { value: 10, label: "Cartão + Password" },
+    { value: 10, label: "Cartão + Digital" },
     { value: 11, label: "Cartão + Password" },
     { value: 12, label: "Digital + Password + Cartão" },
     { value: 13, label: "ID Utilizador + Digital + Password" },

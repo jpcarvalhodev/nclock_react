@@ -252,7 +252,7 @@ export const Login = () => {
             fetchKioskConfig(),
             fetchAllTasks(),
             fetchCameras(),
-            fetchEventsDevice(),
+            fetchEventsDevice(undefined, undefined, undefined, "1", "20"),
             fetchEventsDeviceNoPagination(),
             fetchEventsAndTransactionDevice(),
             fetchDeviceActivities(),

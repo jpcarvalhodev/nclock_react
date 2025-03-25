@@ -12,6 +12,7 @@ import { AccessControl, Devices, MBDevice } from "../types/Types";
 
 import { CustomOutlineButton } from "./CustomOutlineButton";
 import { PDFDocument } from "./PDFDocument";
+import { usePersons } from "../context/PersonsContext";
 
 // Define a interface para os itens de dados
 interface DataItem {
@@ -433,6 +434,7 @@ export const ExportButton = ({
 }: ExportButtonProps) => {
   const { devices, mbDevices, accessControl } = useTerminals();
   const { entities } = useEntity();
+  const { employeesNoPagination, registeredUsers } = usePersons();
   const fileName = "dados_exportados";
   const dataToExport = selectedData.length > 0 ? selectedData : allData;
   const [entityLogo, setEntityLogo] = useState<Blob | null>(null);
@@ -519,6 +521,8 @@ export const ExportButton = ({
                 device={devices}
                 mbDevice={mbDevices}
                 accessControl={accessControl}
+                employee={employeesNoPagination}
+                registeredUser={registeredUsers}
               />
             }
             fileName={`${fileName}.pdf`}

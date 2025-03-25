@@ -2,6 +2,7 @@ import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
 import {
   Button,
+  Col,
   FormCheck,
   Modal,
   OverlayTrigger,
@@ -16,6 +17,7 @@ import { useTerminals } from "../context/TerminalsContext";
 import { CustomOutlineButton } from "./CustomOutlineButton";
 import { CustomSpinner } from "./CustomSpinner";
 import { PDFDocument } from "./PDFDocument";
+import { usePersons } from "../context/PersonsContext";
 
 interface DataItem {
   [key: string]: any;
@@ -45,8 +47,7 @@ export const PrintButton = ({
 }: PrintButtonProps) => {
   const { devices, mbDevices, accessControl } = useTerminals();
   const { entities } = useEntity();
-
-  // Estados do modal de impressão
+  const { employeesNoPagination, registeredUsers } = usePersons();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [calculatedTimeout, setCalculatedTimeout] = useState(
@@ -137,6 +138,21 @@ export const PrintButton = ({
     }
   };
 
+  // Filtra os campos que não devem ser exibidos no modal de seleção de colunas
+  const selectableFields = fields.filter(
+    (field) =>
+      ![
+        "rem",
+        "photo",
+        "password",
+        "confirmPassword",
+        "profileImage",
+        "eventDoorId",
+        "clientTicket",
+        "merchantTicket",
+      ].includes(field.key)
+  );
+
   return (
     <>
       <OverlayTrigger
@@ -192,7 +208,7 @@ export const PrintButton = ({
                   marginTop: "1rem",
                 }}
               >
-                {fields.map(({ label, key }) => (
+                {selectableFields.map(({ label, key }) => (
                   <FormCheck
                     key={key}
                     type="checkbox"
@@ -219,12 +235,21 @@ export const PrintButton = ({
               <div
                 style={{
                   display: "flex",
+                  flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
                   height: "600px",
                 }}
               >
-                <CustomSpinner />
+                <div>
+                  <CustomSpinner />
+                </div>
+                <div style={{ marginTop: "20px", textAlign: "center" }}>
+                  <p>
+                    Processando o PDF, aguarde
+                    <span className="dots-animation"></span>
+                  </p>
+                </div>
               </div>
             ) : data.length === 0 ? (
               <div
@@ -249,6 +274,8 @@ export const PrintButton = ({
                   device={devices}
                   mbDevice={mbDevices}
                   accessControl={accessControl}
+                  employee={employeesNoPagination}
+                  registeredUser={registeredUsers}
                 />
               </PDFViewer>
             )
@@ -275,6 +302,8 @@ export const PrintButton = ({
                   device={devices}
                   mbDevice={mbDevices}
                   accessControl={accessControl}
+                  employee={employeesNoPagination}
+                  registeredUser={registeredUsers}
                 />
               }
               fileName="dados_impressos.pdf"

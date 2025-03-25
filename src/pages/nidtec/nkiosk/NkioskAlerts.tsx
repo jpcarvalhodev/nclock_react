@@ -96,8 +96,8 @@ export const NkioskAlerts = () => {
     try {
       const data = await apiService.fetchAllEventDevice(
         undefined,
-        startDate,
-        endDate
+        formatDateToEndOfDay(currentDate),
+        formatDateToEndOfDay(currentDate)
       );
       setEvents(data.data);
       setTotalRows(data.totalRecords);
@@ -111,14 +111,35 @@ export const NkioskAlerts = () => {
     const today = new Date();
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
-    try {
-      const data = await apiService.fetchAllEventDevice(undefined, start, end);
-      setEvents(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de alertas hoje:", error);
+
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas hoje:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          undefined,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas hoje:", error);
+      }
     }
   };
 
@@ -130,14 +151,34 @@ export const NkioskAlerts = () => {
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      const data = await apiService.fetchAllEventDevice(undefined, start, end);
-      setEvents(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de alertas ontem:", error);
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas ontem:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          undefined,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas ontem:", error);
+      }
     }
   };
 
@@ -153,14 +194,34 @@ export const NkioskAlerts = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      const data = await apiService.fetchAllEventDevice(undefined, start, end);
-      setEvents(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de alertas amanhã:", error);
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas amanhã:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          undefined,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas amanhã:", error);
+      }
     }
   };
 
@@ -257,7 +318,7 @@ export const NkioskAlerts = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(eventsNoPagination)) {
+    if (!Array.isArray(events)) {
       return [];
     }
 
@@ -296,7 +357,7 @@ export const NkioskAlerts = () => {
       );
     };
 
-    const filteredMain = applyFilter(eventsNoPagination);
+    const filteredMain = applyFilter(events);
 
     if (filterText.trim() !== "" && Array.isArray(eventsNoPagination)) {
       const filteredGraph = applyFilter(eventsNoPagination);
@@ -306,7 +367,7 @@ export const NkioskAlerts = () => {
       const seen = new Set<string>();
       const deduplicated: Alerts[] = [];
       for (const item of combined) {
-        const key = `${item.deviceSN}-${item.name}-${item.eventTime}`;
+        const key = `${item.id}-${item.name}-${item.eventTime}`;
         if (!seen.has(key)) {
           seen.add(key);
           deduplicated.push(item);
@@ -317,7 +378,7 @@ export const NkioskAlerts = () => {
     }
 
     return filteredMain;
-  }, [eventsNoPagination, filters, filterText, selectedColumns]);
+  }, [events, eventsNoPagination, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Alerts>[] = alertsFields

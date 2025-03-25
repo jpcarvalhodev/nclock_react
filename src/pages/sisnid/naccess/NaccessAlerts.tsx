@@ -39,7 +39,14 @@ const formatDateDDMMYYYY = (date: Date): string => {
 };
 
 export const NaccessAlerts = () => {
-  const { events, setEvents, fetchEventsDevice, totalEventPages, totalEventRecords, eventsNoPagination } = useTerminals();
+  const {
+    events,
+    setEvents,
+    fetchEventsDevice,
+    totalEventPages,
+    totalEventRecords,
+    eventsNoPagination,
+  } = useTerminals();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
@@ -87,7 +94,11 @@ export const NaccessAlerts = () => {
   // Função para buscar os alertas entre datas
   const fetchAlertsBetweenDates = async () => {
     try {
-      const data = await apiService.fetchAllEventDevice(undefined, startDate, endDate);
+      const data = await apiService.fetchAllEventDevice(
+        undefined,
+        formatDateToEndOfDay(currentDate),
+        formatDateToEndOfDay(currentDate)
+      );
       setEvents(data.data);
       setTotalRows(data.totalRecords);
     } catch (error) {
@@ -100,14 +111,35 @@ export const NaccessAlerts = () => {
     const today = new Date();
     const start = formatDateToStartOfDay(today);
     const end = formatDateToEndOfDay(today);
-    try {
-      const data = await apiService.fetchAllEventDevice(undefined, start, end);
-      setEvents(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de alertas hoje:", error);
+
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas hoje:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          undefined,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas hoje:", error);
+      }
     }
   };
 
@@ -119,14 +151,34 @@ export const NaccessAlerts = () => {
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      const data = await apiService.fetchAllEventDevice(undefined, start, end);
-      setEvents(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de alertas ontem:", error);
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas ontem:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          undefined,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas ontem:", error);
+      }
     }
   };
 
@@ -142,14 +194,34 @@ export const NaccessAlerts = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      const data = await apiService.fetchAllEventDevice(undefined, start, end);
-      setEvents(data.data);
-      setTotalRows(data.totalRecords);
-      setStartDate(start);
-      setEndDate(end);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de alertas amanhã:", error);
+    if (selectedDevicesIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          selectedDevicesIds,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas amanhã:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllEventDevice(
+          undefined,
+          start,
+          end
+        );
+        setEvents(data.data);
+        setTotalRows(data.totalRecords);
+        setStartDate(start);
+        setEndDate(end);
+      } catch (error) {
+        console.error("Erro ao buscar os dados de alertas amanhã:", error);
+      }
     }
   };
 
@@ -208,7 +280,7 @@ export const NaccessAlerts = () => {
           undefined,
           undefined,
           undefined,
-          undefined,
+          undefined
         );
         if (foundDevices.data) {
           setEvents(foundDevices.data);
@@ -246,64 +318,67 @@ export const NaccessAlerts = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(eventsNoPagination)) {
+    if (!Array.isArray(events)) {
       return [];
     }
-  
+
     const applyFilter = (list: Alerts[]) => {
-      return list.filter((item) =>
-        Object.keys(filters).every((key) => {
-          if (filters[key] === "") return true;
-          if (item[key] == null) return false;
-          return String(item[key])
-            .toLowerCase()
-            .includes(filters[key].toLowerCase());
-        }) &&
-        Object.entries(item).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (key === "eventTime") {
-              const date = new Date(value);
-              const formatted = formatDateDDMMYYYY(date);
-              return formatted.toLowerCase().includes(filterText.toLowerCase());
-            } else if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
+      return list.filter(
+        (item) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            if (item[key] == null) return false;
+            return String(item[key])
+              .toLowerCase()
+              .includes(filters[key].toLowerCase());
+          }) &&
+          Object.entries(item).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (key === "eventTime") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-          }
-          return false;
-        })
+            return false;
+          })
       );
     };
-  
-    const filteredMain = applyFilter(eventsNoPagination);
-  
+
+    const filteredMain = applyFilter(events);
+
     if (filterText.trim() !== "" && Array.isArray(eventsNoPagination)) {
       const filteredGraph = applyFilter(eventsNoPagination);
-  
+
       const combined = [...filteredMain, ...filteredGraph];
-  
+
       const seen = new Set<string>();
       const deduplicated: Alerts[] = [];
       for (const item of combined) {
-        const key = `${item.deviceSN}-${item.name}-${item.eventTime}`;
+        const key = `${item.id}-${item.name}-${item.eventTime}`;
         if (!seen.has(key)) {
           seen.add(key);
           deduplicated.push(item);
         }
       }
-  
+
       return deduplicated;
     }
-  
+
     return filteredMain;
-  }, [eventsNoPagination, filters, filterText, selectedColumns]);
+  }, [events, eventsNoPagination, filters, filterText, selectedColumns]);
 
   // Define as colunas da tabela
   const columns: TableColumn<Alerts>[] = alertsFields

@@ -8,7 +8,7 @@ import {
 } from "@react-pdf/renderer";
 import React from "react";
 
-import { AccessControl, Devices, Entity, MBDevice } from "../types/Types";
+import { AccessControl, Devices, Employee, Entity, MBDevice, Register } from "../types/Types";
 
 // Estilos para o documento PDF
 const styles = StyleSheet.create({
@@ -104,6 +104,8 @@ interface PDFDocumentProps {
   device: Devices[];
   mbDevice: MBDevice[];
   accessControl: AccessControl[];
+  employee: Employee[];
+  registeredUser: Register[];
 }
 
 // Define a interface para os itens de dados
@@ -168,6 +170,8 @@ export const PDFDocument = ({
   device = [],
   mbDevice = [],
   accessControl = [],
+  employee = [],
+  registeredUser = [],
 }: PDFDocumentProps) => {
   // Obtém o nome e o logotipo da entidade
   const entityName =
@@ -213,6 +217,9 @@ export const PDFDocument = ({
       case "dataCreate":
       case "createdDate":
       case "eventTime":
+      case "dataInicio":
+      case "dataFim":
+      case "dataSaida":
         if (
           typeof item[fieldKey] === "string" &&
           /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/.test(item[fieldKey])
@@ -243,6 +250,20 @@ export const PDFDocument = ({
         return item.entidadeName || "";
       case "accPlanoAcessoId":
         return item.accPlanoAcessoName || "";
+      case "idVisitante":
+        return (
+          employee.find((visitor) => visitor.employeeID === item.idVisitante)
+            ?.name || ""
+        );
+      case "idPessoa":
+        return (
+          employee.find((visitor) => visitor.employeeID === item.idPessoa)
+            ?.name || ""
+        );
+      case "idInserido":
+        return (
+          registeredUser.find((user) => user.id === item.idInserido)?.name || ""
+        );
       case "inOutMode":
         if (item.inOutModeDescription) {
           return item.inOutModeDescription || "";
