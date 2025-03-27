@@ -8,194 +8,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/NavBar.css";
 import { toast } from "react-toastify";
 import * as apiService from "../api/apiService";
-import about from "../assets/img/navbar/ajuda/about.png";
-import anydesk from "../assets/img/navbar/ajuda/anydesk.png";
-import contact from "../assets/img/navbar/ajuda/contact.png";
-import helpdesk from "../assets/img/navbar/ajuda/helpdesk.png";
-import manual from "../assets/img/navbar/ajuda/manual.png";
-import version from "../assets/img/navbar/ajuda/version.png";
-import whatsapp from "../assets/img/navbar/ajuda/whatsapp.png";
-import backup from "../assets/img/navbar/configuracao/backup.png";
-import consult from "../assets/img/navbar/configuracao/consult.png";
-import database from "../assets/img/navbar/configuracao/database.png";
-import document from "../assets/img/navbar/configuracao/document.png";
-import dpoConsult from "../assets/img/navbar/configuracao/dpoConsult.png";
-import entity from "../assets/img/navbar/configuracao/entity.png";
-import licenses from "../assets/img/navbar/configuracao/license.png";
-import nacionalities from "../assets/img/navbar/configuracao/nacionalities.png";
-import profiles from "../assets/img/navbar/configuracao/profiles.png";
-import timeZone from "../assets/img/navbar/configuracao/timeZone.png";
-import typeConfig from "../assets/img/navbar/configuracao/typeConfig.png";
-import users from "../assets/img/navbar/configuracao/users.png";
-import accessControls from "../assets/img/navbar/dispositivos/accessControls.png";
-import camera from "../assets/img/navbar/dispositivos/camera.png";
-import terminal from "../assets/img/navbar/dispositivos/terminal.png";
-import timePlan from "../assets/img/navbar/dispositivos/timePlan.png";
-import home from "../assets/img/navbar/home.png";
-import controlPanel from "../assets/img/navbar/naccess/controlPanel.png";
-import formation from "../assets/img/navbar/naccess/formation.png";
-import imports from "../assets/img/navbar/naccess/imports.png";
-import motives from "../assets/img/navbar/naccess/motives.png";
-import search from "../assets/img/navbar/naccess/search.png";
-import visitorAccess from "../assets/img/navbar/naccess/visitorAccess.png";
-import hardware from "../assets/img/navbar/naut/hardware.png";
-import software from "../assets/img/navbar/naut/software.png";
 import favourite from "../assets/img/navbar/navbar/favourite.svg";
 import profileAvatar from "../assets/img/navbar/navbar/profileAvatar.png";
 import ribbonControl from "../assets/img/navbar/navbar/ribbonControl.png";
 import ribbonControlLock from "../assets/img/navbar/navbar/ribbonControlLock.png";
-import points from "../assets/img/navbar/ncard/points.png";
-import article from "../assets/img/navbar/ncity/article.png";
-import interactive from "../assets/img/navbar/ncity/interactive.png";
-import museum from "../assets/img/navbar/ncity/museum.png";
-import newsSearch from "../assets/img/navbar/ncity/newsSearch.png";
-import rent from "../assets/img/navbar/ncity/rent.png";
-import sugestion from "../assets/img/navbar/ncity/sugestion.png";
-import transportation from "../assets/img/navbar/ncity/transportation.png";
-import absent from "../assets/img/navbar/nclock/absent.png";
-import addHour from "../assets/img/navbar/nclock/addHour.png";
-import all from "../assets/img/navbar/nclock/all.png";
-import autorization from "../assets/img/navbar/nclock/autorization.png";
-import availability from "../assets/img/navbar/nclock/availability.png";
-import battery from "../assets/img/navbar/nclock/battery.png";
-import calendar from "../assets/img/navbar/nclock/calendar.png";
-import clipboard from "../assets/img/navbar/nclock/clipboard.png";
-import clock from "../assets/img/navbar/nclock/clock.png";
-import exchange from "../assets/img/navbar/nclock/exchange.png";
-import extra from "../assets/img/navbar/nclock/extra.png";
-import holidays from "../assets/img/navbar/nclock/holidays.png";
-import hourDatabase from "../assets/img/navbar/nclock/hourDatabase.png";
-import limit from "../assets/img/navbar/nclock/limit.png";
-import medicalLeave from "../assets/img/navbar/nclock/medicalLeave.png";
-import monthly from "../assets/img/navbar/nclock/monthly.png";
-import movement from "../assets/img/navbar/nclock/movement.png";
-import plans from "../assets/img/navbar/nclock/plans.png";
-import plusMinus from "../assets/img/navbar/nclock/plusMinus.png";
-import presence from "../assets/img/navbar/nclock/presence.png";
-import processing from "../assets/img/navbar/nclock/processing.png";
-import request from "../assets/img/navbar/nclock/request.png";
-import rules from "../assets/img/navbar/nclock/rules.png";
-import segmentation from "../assets/img/navbar/nclock/segmentation.png";
-import settings from "../assets/img/navbar/nclock/settings.png";
-import time from "../assets/img/navbar/nclock/time.png";
-import unknown from "../assets/img/navbar/nclock/unknown.png";
-import vacation from "../assets/img/navbar/nclock/vacation.png";
-import work from "../assets/img/navbar/nclock/work.png";
-import workPlan from "../assets/img/navbar/nclock/workPlan.png";
-import price from "../assets/img/navbar/nconnect/price.png";
-import summary from "../assets/img/navbar/ncount/summary.png";
-import recovery from "../assets/img/navbar/ncyber/recovery.png";
-import shield from "../assets/img/navbar/ncyber/shield.png";
-import library from "../assets/img/navbar/ndecor/library.png";
-import threeDimension from "../assets/img/navbar/ndecor/threeDimension.png";
-import bonus from "../assets/img/navbar/ndigital/bonus.png";
-import efficiency from "../assets/img/navbar/ndigital/efficiency.png";
-import simple from "../assets/img/navbar/ndigital/simple.png";
-import deadFiles from "../assets/img/navbar/ndoc/deadFiles.png";
-import digitalFile from "../assets/img/navbar/ndoc/digitalFile.png";
-import file from "../assets/img/navbar/ndoc/file.png";
-import folder from "../assets/img/navbar/ndoc/folder.png";
-import onlineConsulting from "../assets/img/navbar/ndoc/onlineConsulting.png";
-import doorIn from "../assets/img/navbar/ndoor/doorIn.png";
-import doorRoom from "../assets/img/navbar/ndoor/doorRoom.png";
-import inOut from "../assets/img/navbar/ndoor/inOut.png";
-import reservation from "../assets/img/navbar/ndoor/reservation.png";
-import broken from "../assets/img/navbar/nequip/broken.png";
-import extinguish from "../assets/img/navbar/nfire/extinguish.png";
-import firePrevention from "../assets/img/navbar/nfire/firePrevention.png";
-import down from "../assets/img/navbar/nfurniture/down.png";
-import up from "../assets/img/navbar/nfurniture/up.png";
-import account from "../assets/img/navbar/ninvoice/account.png";
-import credit from "../assets/img/navbar/ninvoice/credit.png";
-import deal from "../assets/img/navbar/ninvoice/deal.png";
-import eBill from "../assets/img/navbar/ninvoice/eBill.png";
-import invoice from "../assets/img/navbar/ninvoice/invoice.png";
-import point from "../assets/img/navbar/ninvoice/point.png";
-import receipt from "../assets/img/navbar/ninvoice/receipt.png";
-import supplier from "../assets/img/navbar/ninvoice/supplier.png";
-import alert from "../assets/img/navbar/nkiosk/alert.png";
-import barrier from "../assets/img/navbar/nkiosk/barrier.png";
-import bell from "../assets/img/navbar/nkiosk/bell.png";
-import card_report from "../assets/img/navbar/nkiosk/card_report.png";
-import cleanings from "../assets/img/navbar/nkiosk/cleaning.png";
-import coin from "../assets/img/navbar/nkiosk/coin.png";
-import coin_report from "../assets/img/navbar/nkiosk/coin_report.png";
-import count from "../assets/img/navbar/nkiosk/count.png";
-import graphs from "../assets/img/navbar/nkiosk/graphs.png";
-import intercom from "../assets/img/navbar/nkiosk/intercom.png";
-import kiosk from "../assets/img/navbar/nkiosk/kiosk.png";
-import log from "../assets/img/navbar/nkiosk/logs.png";
-import maps from "../assets/img/navbar/nkiosk/maps.png";
-import module from "../assets/img/navbar/nkiosk/module.png";
-import offline from "../assets/img/navbar/nkiosk/offline.png";
-import online from "../assets/img/navbar/nkiosk/online.png";
-import open from "../assets/img/navbar/nkiosk/open.png";
-import open_door from "../assets/img/navbar/nkiosk/open_door.png";
-import payment_card from "../assets/img/navbar/nkiosk/payment_card.png";
-import print from "../assets/img/navbar/nkiosk/print.png";
-import registry from "../assets/img/navbar/nkiosk/registry.png";
-import ads from "../assets/img/navbar/nled/ads.png";
-import image from "../assets/img/navbar/nled/image.png";
-import ledMonitor from "../assets/img/navbar/nled/ledMonitor.png";
-import video from "../assets/img/navbar/nled/video.png";
-import cars from "../assets/img/navbar/npark/cars.png";
-import payBooth from "../assets/img/navbar/npark/payBooth.png";
-import close from "../assets/img/navbar/npartition/close.png";
-import tick from "../assets/img/navbar/npartition/tick.png";
-import analysis from "../assets/img/navbar/npatrol/analysis.png";
-import patrols from "../assets/img/navbar/npatrol/patrols.png";
-import routes from "../assets/img/navbar/npatrol/routes.png";
-import bandwidth from "../assets/img/navbar/nping/bandwidth.png";
-import network from "../assets/img/navbar/nping/network.png";
-import test from "../assets/img/navbar/nping/test.png";
-import biphase from "../assets/img/navbar/npower/biphase.png";
-import energy from "../assets/img/navbar/npower/energy.png";
-import eolic from "../assets/img/navbar/npower/eolic.png";
-import fisical from "../assets/img/navbar/npower/fisical.png";
-import hourglass from "../assets/img/navbar/npower/hourglass.png";
-import monophase from "../assets/img/navbar/npower/monophase.png";
-import power from "../assets/img/navbar/npower/power.png";
-import renewable from "../assets/img/navbar/npower/renewable.png";
-import solar from "../assets/img/navbar/npower/solar.png";
-import triphase from "../assets/img/navbar/npower/triphase.png";
-import year from "../assets/img/navbar/npower/year.png";
-import making from "../assets/img/navbar/nproject/making.png";
-import production from "../assets/img/navbar/nproject/production.png";
-import simulation from "../assets/img/navbar/nreality/simulation.png";
-import arm from "../assets/img/navbar/nsecur/arm.png";
-import disarm from "../assets/img/navbar/nsecur/disarm.png";
-import division from "../assets/img/navbar/nsecur/division.png";
-import night from "../assets/img/navbar/nsecur/night.png";
-import panic from "../assets/img/navbar/nsecur/panic.png";
-import securityDevice from "../assets/img/navbar/nsecur/securityDevice.png";
-import automation from "../assets/img/navbar/nserver/automation.png";
-import feedback from "../assets/img/navbar/nserver/feedback.png";
-import monitoring from "../assets/img/navbar/nsmart/monitoring.png";
-import realTime from "../assets/img/navbar/nsmart/realTime.png";
-import cost from "../assets/img/navbar/nsoftware/cost.png";
-import create from "../assets/img/navbar/nsoftware/create.png";
-import optimization from "../assets/img/navbar/nsoftware/optimization.png";
-import flow from "../assets/img/navbar/nsystem/flow.png";
-import integration from "../assets/img/navbar/nsystem/integration.png";
-import management from "../assets/img/navbar/nsystem/management.png";
-import ticket from "../assets/img/navbar/nticket/ticket.png";
-import programming from "../assets/img/navbar/nvisitor/programming.png";
-import businessAreas from "../assets/img/navbar/pessoas/businessAreas.png";
-import category from "../assets/img/navbar/pessoas/categories.png";
-import department from "../assets/img/navbar/pessoas/departments.png";
-import employee from "../assets/img/navbar/pessoas/employee.png";
-import externalEntities from "../assets/img/navbar/pessoas/externalEntities.png";
-import fonts from "../assets/img/navbar/pessoas/fonts.png";
-import fraccoes from "../assets/img/navbar/pessoas/fraccoes.png";
-import group from "../assets/img/navbar/pessoas/groups.png";
-import internalContacts from "../assets/img/navbar/pessoas/internalContacts.png";
-import interventionAreas from "../assets/img/navbar/pessoas/interventionAreas.png";
-import person from "../assets/img/navbar/pessoas/person.png";
-import profession from "../assets/img/navbar/pessoas/professions.png";
-import types from "../assets/img/navbar/pessoas/types.png";
-import zone from "../assets/img/navbar/pessoas/zones.png";
 import mail from "../assets/img/navbar/navbar/mail.svg";
-import blueprint from "../assets/img/navbar/ajuda/blueprint.png";
 import { useAds } from "../context/AdsContext";
 import { useCardScroll } from "../context/CardScrollContext";
 import { useEntity } from "../context/EntityContext";
@@ -1843,7 +1660,6 @@ export const NavBar = ({ style }: NavBarProps) => {
     const ListingMenuStructure = {
       pessoas: {
         label: "Listagem Pessoas",
-        image: visitorAccess,
         alt: "pessoas",
         key: "pessoas",
         submenu: [
@@ -1875,7 +1691,6 @@ export const NavBar = ({ style }: NavBarProps) => {
       },
       dispositivos: {
         label: "Listagem Dispositivos",
-        image: terminal,
         alt: "dispositivos",
         key: "dispositivos",
         submenu: [
@@ -1903,7 +1718,6 @@ export const NavBar = ({ style }: NavBarProps) => {
       },
       configuracao: {
         label: "Listagem Configuração",
-        image: settings,
         alt: "configuração",
         key: "configuracao",
         submenu: [
@@ -3421,7 +3235,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                             <span
+                            <span
                               className="fi fi-rr-user-time"
                               style={{ fontSize: "2rem" }}
                             ></span>
@@ -3780,7 +3594,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                           <span
+                            <span
                               className="fi fi-rr-back-up"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
@@ -3936,7 +3750,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                           <span
+                            <span
                               className="fi fi-rr-calendar-lines"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
@@ -4334,7 +4148,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                             <span
+                            <span
                               className="fi fi-rr-digital-tachograph"
                               style={{ fontSize: "2rem" }}
                             ></span>
@@ -4351,7 +4165,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                             <span
+                            <span
                               className="fi fi-rr-door-open"
                               style={{ fontSize: "2rem" }}
                             ></span>
@@ -4794,7 +4608,10 @@ export const NavBar = ({ style }: NavBarProps) => {
                             <span>Acessos</span>
                           </Link>
                         </div>
-                        <div className="grid-container" style={{ gridTemplateColumns: "1fr" }}>
+                        <div
+                          className="grid-container"
+                          style={{ gridTemplateColumns: "1fr" }}
+                        >
                           <Link
                             to="/nvisitor/nvisitoraccesspresence"
                             type="button"
@@ -6259,9 +6076,10 @@ export const NavBar = ({ style }: NavBarProps) => {
                               id="dropdown-basic-4"
                               style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={module} alt="botão opcionais" />
-                              </span>
+                              <span
+                                className="fi fi-rr-grid"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
                               <span className="text">Opcionais</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
@@ -11358,9 +11176,10 @@ export const NavBar = ({ style }: NavBarProps) => {
                               id="dropdown-basic-4"
                               style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={module} alt="botão opcionais" />
-                              </span>
+                              <span
+                                className="fi fi-rr-grid"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
                               <span className="text">Opcionais</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
@@ -17259,9 +17078,10 @@ export const NavBar = ({ style }: NavBarProps) => {
                               id="dropdown-basic-4"
                               style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={module} alt="botão opcionais" />
-                              </span>
+                              <span
+                                className="fi fi-rr-grid"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
                               <span className="text">Opcionais</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
