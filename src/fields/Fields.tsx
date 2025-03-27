@@ -814,6 +814,7 @@ export const accessesFields = [
   { key: "eventDoorName", label: "Porta", type: "string" },
   { key: "readerName", label: "Leitor", type: "string" },
   { key: "eventName", label: "Evento", type: "string" },
+  { key: "verifyModeNo", label: "Modo de Verificação", type: "number" },
 ];
 
 export const readersFields = [

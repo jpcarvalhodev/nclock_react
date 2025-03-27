@@ -441,7 +441,7 @@ export const NaccessAlerts = () => {
         {isMobile && (
           <div className="datatable-container">
             <div className="datatable-title-text">
-              <span>Alertas</span>
+              <span>Avisos</span>
             </div>
             <div className="datatable-header">
               <div>
@@ -709,7 +709,7 @@ export const NaccessAlerts = () => {
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">
-              <span>Alertas</span>
+              <span>Avisos</span>
             </div>
             <div className="datatable-header">
               <div>

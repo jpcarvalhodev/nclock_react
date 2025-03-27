@@ -2275,11 +2275,23 @@ export const NavBar = ({ style }: NavBarProps) => {
       fields: employeeVisitorFields,
     },
     acessos_aberturas: { data: manualOpenDoor, fields: manualOpenDoorFields },
-    movimentos_visitor_torniquete: { data: moveCardNoPagination, fields: transactionCardFields },
-    movimentos_visitor_quiosque: { data: moveKioskNoPagination, fields: transactionCardFields },
-    movimentos_visitor_totais: { data: totalMovementsNoPagination, fields: transactionCardFields },
+    movimentos_visitor_torniquete: {
+      data: moveCardNoPagination,
+      fields: transactionCardFields,
+    },
+    movimentos_visitor_quiosque: {
+      data: moveKioskNoPagination,
+      fields: transactionCardFields,
+    },
+    movimentos_visitor_totais: {
+      data: totalMovementsNoPagination,
+      fields: transactionCardFields,
+    },
     acessos_visitor_acessos: { data: accessForGraph, fields: accessesFields },
-    acessos_visitor_visitantes: { data: employeeVisitor, fields: employeeVisitorFields },
+    acessos_visitor_visitantes: {
+      data: employeeVisitor,
+      fields: employeeVisitorFields,
+    },
   };
 
   // Função para lidar com o clique do menu
@@ -3374,10 +3386,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -3408,10 +3421,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={hourDatabase} alt="botão assiduidade" />
-                            </span>
-                            <span className="text">Assiduidade</span>
+                             <span
+                              className="fi fi-rr-user-time"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Assiduidade</span>
                           </Link>
                         </div>
                         <div>
@@ -3424,13 +3438,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={presence}
-                                alt="botão movimentos presenças"
-                              />
-                            </span>
-                            <span className="text">Presenças</span>
+                            <span
+                              className="fi fi-rr-team-check-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Presenças</span>
                           </Link>
                           <Link
                             to="/nclock/nclockrequests"
@@ -3447,10 +3459,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={request} alt="botão alterações" />
-                            </span>
-                            <span className="text">Alterações</span>
+                            <span
+                              className="fi fi-rr-replace"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Alterações</span>
                           </Link>
                           <Link
                             to="/nclock/nclockall"
@@ -3462,10 +3475,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={all} alt="botão totais" />
-                            </span>
-                            <span className="text">Totais</span>
+                            <span
+                              className="fi fi-rr-chart-line-up"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Totais</span>
                           </Link>
                         </div>
                       </div>
@@ -3500,10 +3514,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={movement} alt="botão acessos" />
-                            </span>
-                            <span className="text">Acessos</span>
+                            <span
+                              className="fi fi-rr-exit-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Acessos</span>
                           </Link>
                           <Link
                             to="/nclock/nclockaccesspresence"
@@ -3515,13 +3530,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={presence}
-                                alt="botão acessos presenças"
-                              />
-                            </span>
-                            <span className="text">Presenças</span>
+                            <span
+                              className="fi fi-rr-team-check-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Presenças</span>
                           </Link>
                         </div>
                       </div>
@@ -3546,10 +3559,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={clipboard} alt="botão resultados" />
-                            </span>
-                            <span className="text">Resultados</span>
+                            <span
+                              className="fi fi-rr-career-growth"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Resultados</span>
                           </Button>
                         </div>
                         <div className="grid-container" style={{ width: 240 }}>
@@ -3560,10 +3574,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={processing} alt="botão atualizações" />
-                            </span>
-                            <span className="text">Atualizações</span>
+                            <span
+                              className="fi fi-rr-refresh"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Atualizações</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3572,10 +3587,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={segmentation} alt="botão segmentos" />
-                            </span>
-                            <span className="text">Segmentos</span>
+                            <span
+                              className="fi fi-rr-time-quarter-to"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Segmentos</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3584,10 +3600,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plusMinus} alt="botão compensações" />
-                            </span>
-                            <span className="text">Compensações</span>
+                            <span
+                              className="fi fi-rr-plus-minus"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Compensações</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3596,10 +3613,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={battery} alt="botão acumulados" />
-                            </span>
-                            <span className="text">Acumulados</span>
+                            <span
+                              className="fi fi-rr-battery-three-quarters"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Acumulados</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3608,13 +3626,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={hourDatabase}
-                                alt="botão banco de horas"
-                              />
-                            </span>
-                            <span className="text">Banco de Horas</span>
+                            <span
+                              className="fi fi-rr-hourglass-end"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Banco de Horas</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3623,13 +3639,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={clock}
-                                alt="botão trabalho horas extras"
-                              />
-                            </span>
-                            <span className="text">Horas Extras</span>
+                            <span
+                              className="fi fi-rr-time-add"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Horas Extras</span>
                           </Button>
                         </div>
                       </div>
@@ -3658,10 +3672,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={time} alt="botão definir horários" />
-                            </span>
-                            <span className="text">Definir Horários</span>
+                            <span
+                              className="fi fi-rr-time-check"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Definir Horários</span>
                           </Link>
                           <Button
                             /* to='#' */ type="button"
@@ -3670,9 +3685,10 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={workPlan} alt="botão definir planos" />
-                            </span>
+                            <span
+                              className="fi fi-rr-master-plan"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
                             <span className="text">Definir Planos</span>
                           </Button>
                         </div>
@@ -3699,10 +3715,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={absent} alt="botão ausências" />
-                            </span>
-                            <span className="text">Ausências</span>
+                            <span
+                              className="fi fi-rr-ban"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Ausências</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3711,10 +3728,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={unknown} alt="botão indefinido" />
-                            </span>
-                            <span className="text">Indefinido</span>
+                            <span
+                              className="fi fi-rr-interrogation"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Indefinido</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3723,10 +3741,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={work} alt="botão normal" />
-                            </span>
-                            <span className="text">Normal</span>
+                            <span
+                              className="fi fi-rr-briefcase"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Normal</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3735,10 +3754,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={extra} alt="botão extraordinário" />
-                            </span>
-                            <span className="text">Extraordinário</span>
+                            <span
+                              className="fi fi-rr-add"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Extraordinário</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3747,10 +3767,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={limit} alt="botão tolerâncias" />
-                            </span>
-                            <span className="text">Tolerâncias</span>
+                            <span
+                              className="fi fi-rr-limit-speedometer"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Tolerâncias</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3759,10 +3780,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={addHour} alt="botão banco de horas" />
-                            </span>
-                            <span className="text">Banco de Horas</span>
+                           <span
+                              className="fi fi-rr-back-up"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Banco de Horas</span>
                           </Button>
                         </div>
                         <div>
@@ -3773,10 +3795,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={rules} alt="botão regras" />
-                            </span>
-                            <span className="text">Regras</span>
+                            <span
+                              className="fi fi-rr-rules-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Regras</span>
                           </Button>
                         </div>
                       </div>
@@ -3802,10 +3825,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={medicalLeave} alt="botão ausências" />
-                            </span>
-                            <span className="text">Ausências</span>
+                            <span
+                              className="fi fi-rr-doctor"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Ausências</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -3816,10 +3840,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={vacation} alt="botão férias" />
-                            </span>
-                            <span className="text">Férias</span>
+                            <span
+                              className="fi fi-rr-umbrella-beach"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Férias</span>
                           </Button>
                         </div>
                         <div style={{ width: 130 }}>
@@ -3830,10 +3855,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={calendar} alt="botão alterações" />
-                            </span>
-                            <span className="text">Alterações</span>
+                            <span
+                              className="fi fi-rr-calendar"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Alterações</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3842,10 +3868,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={holidays} alt="botão feriados" />
-                            </span>
-                            <span className="text">Feriados</span>
+                            <span
+                              className="fi fi-rr-suitcase-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Feriados</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3854,10 +3881,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={autorization} alt="botão validações" />
-                            </span>
-                            <span className="text">Validações</span>
+                            <span
+                              className="fi fi-rr-list-check"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Validações</span>
                           </Button>
                         </div>
                       </div>
@@ -3882,10 +3910,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={calendar} alt="botão calendário" />
-                            </span>
-                            <span className="text">Calendário</span>
+                            <span
+                              className="fi fi-rr-calendar"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Calendário</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3894,10 +3923,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={segmentation} alt="botão segmentada" />
-                            </span>
-                            <span className="text">Segmentada</span>
+                            <span
+                              className="fi fi-rr-time-quarter-past"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Segmentada</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3906,10 +3936,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={monthly} alt="botão mensal" />
-                            </span>
-                            <span className="text">Mensal</span>
+                           <span
+                              className="fi fi-rr-calendar-lines"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Mensal</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3918,10 +3949,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={exchange} alt="botão planos" />
-                            </span>
-                            <span className="text">Trocas</span>
+                            <span
+                              className="fi fi-rr-exchange-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Trocas</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3930,10 +3962,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={availability} alt="botão disponível" />
-                            </span>
-                            <span className="text">Disponível</span>
+                            <span
+                              className="fi fi-rr-person-circle-question"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Disponível</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -3942,10 +3975,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planos" />
-                            </span>
-                            <span className="text">Planos</span>
+                            <span
+                              className="fi fi-rr-map-location-track"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Planos</span>
                           </Button>
                         </div>
                       </div>
@@ -3970,10 +4004,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Link>
                         </div>
                       </div>
@@ -4003,12 +4038,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
-                              style={{ position: "relative" }}
+                              style={{ position: "relative", padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -4036,10 +4072,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -4062,10 +4099,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -4091,10 +4129,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -4145,10 +4184,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -4182,10 +4222,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={movement} alt="botão acessos" />
-                            </span>
-                            <span className="text">Acessos</span>
+                            <span
+                              className="fi fi-rr-exit-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Acessos</span>
                           </Link>
                         </div>
                         <div className="icon-text-pessoas">
@@ -4199,10 +4240,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={presence} alt="botão presença" />
-                            </span>
-                            <span className="text">Presenças</span>
+                            <span
+                              className="fi fi-rr-team-check-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Presenças</span>
                           </Link>
                         </div>
                         <div>
@@ -4213,10 +4255,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={all} alt="botão totais" />
-                            </span>
-                            <span className="text">Totais</span>
+                            <span
+                              className="fi fi-rr-chart-line-up"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Totais</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -4227,10 +4270,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={formation} alt="botão formações" />
-                            </span>
-                            <span className="text">Formações</span>
+                            <span
+                              className="fi fi-rr-lesson-class"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Formações</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -4243,10 +4287,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={visitorAccess} alt="botão visitantes" />
-                            </span>
-                            <span className="text">Visitantes</span>
+                            <span
+                              className="fi fi-rr-users-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Visitantes</span>
                           </Link>
                         </div>
                         <div>
@@ -4259,10 +4304,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={motives} alt="botão motivos" />
-                            </span>
-                            <span className="text">Motivos</span>
+                            <span
+                              className="fi fi-rr-question-square"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Motivos</span>
                           </Link>
                         </div>
                       </div>
@@ -4288,10 +4334,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={intercom} alt="botão vídeo porteiro" />
-                            </span>
-                            <span className="text">Video Porteiro</span>
+                             <span
+                              className="fi fi-rr-digital-tachograph"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Video Porteiro</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -4304,13 +4351,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={open_door}
-                                alt="botão abertura manual"
-                              />
-                            </span>
-                            <span className="text">Abertura Manual</span>
+                             <span
+                              className="fi fi-rr-door-open"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Abertura Manual</span>
                           </Link>
                         </div>
                       </div>
@@ -4333,10 +4378,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={search} alt="botão revistas" />
-                            </span>
-                            <span className="text">Revistas</span>
+                            <span
+                              className="fi fi-rr-analyse"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Revistas</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -4347,10 +4393,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planos" />
-                            </span>
-                            <span className="text">Planos</span>
+                            <span
+                              className="fi fi-rr-car-journey"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planos</span>
                           </Button>
                         </div>
                       </div>
@@ -4373,10 +4420,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={imports} alt="botão importar" />
-                            </span>
-                            <span className="text">Importar</span>
+                            <span
+                              className="fi fi-rr-download"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Importar</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -4387,13 +4435,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={controlPanel}
-                                alt="botão gestão de planos"
-                              />
-                            </span>
-                            <span className="text">Gestão de Planos</span>
+                            <span
+                              className="fi fi-rr-settings-sliders"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão de Planos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -4404,10 +4450,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -4434,10 +4481,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Link>
                         </div>
                       </div>
@@ -4467,11 +4515,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -4499,10 +4549,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -4525,10 +4576,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -4552,10 +4604,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -4595,7 +4648,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                   <div className="group group-start">
                     {(!isMobile || visibleGroup === "inicio nvisitor") && (
                       <div className="btn-group" role="group">
-                        <div className="icon-text-pessoas mt-2">
+                        <div className="icon-text-pessoas">
                           <Link
                             to="/nvisitor/nvisitordashboardlicensed"
                             type="button"
@@ -4606,10 +4659,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -4642,19 +4696,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                               )
                             }
                             type="button"
-                            className={`btn btn-light ribbon-button mt-2 ${
+                            className={`btn btn-light ribbon-button ${
                               currentRoute === "/nvisitor/nvisitormovecard"
                                 ? "current-active"
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={barrier}
-                                alt="botão movimentos cartão"
-                              />
-                            </span>
-                            <span className="text">Torniquete</span>
+                            <span
+                              className="fi fi-rr-walking"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Torniquete</span>
                           </Link>
                           <Link
                             to="/nvisitor/nvisitormovekiosk"
@@ -4670,19 +4722,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                               )
                             }
                             type="button"
-                            className={`btn btn-light ribbon-button mt-2 ${
+                            className={`btn btn-light ribbon-button ${
                               currentRoute === "/nvisitor/nvisitormovekiosk"
                                 ? "current-active"
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={kiosk}
-                                alt="botão movimentos porteiro"
-                              />
-                            </span>
-                            <span className="text">Quiosque</span>
+                            <span
+                              className="fi fi-rr-door-closed"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Quiosque</span>
                           </Link>
                         </div>
                         <div className="icon-text-pessoas">
@@ -4700,19 +4750,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                               )
                             }
                             type="button"
-                            className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "/nvisitor/nvisitorlistmovements"
                                 ? "current-active"
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={coin_report}
-                                alt="botão movimentos totais"
-                              />
-                            </span>
-                            <span className="text">Totais</span>
+                            <span
+                              className="fi fi-rr-chart-line-up"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Totais</span>
                           </Link>
                         </div>
                       </div>
@@ -4739,13 +4787,14 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={movement} alt="botão acessos" />
-                            </span>
-                            <span className="text">Acessos</span>
+                            <span
+                              className="fi fi-rr-exit-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Acessos</span>
                           </Link>
                         </div>
-                        <div>
+                        <div className="grid-container" style={{ gridTemplateColumns: "1fr" }}>
                           <Link
                             to="/nvisitor/nvisitoraccesspresence"
                             type="button"
@@ -4756,26 +4805,12 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={presence}
-                                alt="botão movimentos presenças"
-                              />
-                            </span>
-                            <span className="text">Presenças</span>
+                            <span
+                              className="fi fi-rr-team-check-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Presenças</span>
                           </Link>
-                          <Button
-                            /* to='' */ type="button"
-                            className={`btn btn-light ribbon-button ${
-                              currentRoute === "#" ? "current-active" : ""
-                            }`}
-                            disabled
-                          >
-                            <span className="icon">
-                              <img src={coin_report} alt="botão totais" />
-                            </span>
-                            <span className="text">Totais</span>
-                          </Button>
                           <Link
                             to="/nvisitor/nvisitorvisitors"
                             type="button"
@@ -4785,10 +4820,28 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={visitorAccess} alt="botão visitantes" />
-                            </span>
-                            <span className="text">Visitantes</span>
+                            <span
+                              className="fi fi-rr-users-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Visitantes</span>
+                          </Link>
+                        </div>
+                        <div className="icon-text-pessoas">
+                          <Link
+                            to="/nvisitor/nvisitoraccess"
+                            type="button"
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
+                              currentRoute === "/nvisitor/nvisitoraccess"
+                                ? "current-active"
+                                : ""
+                            }`}
+                          >
+                            <span
+                              className="fi fi-rr-chart-line-up"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Totais</span>
                           </Link>
                         </div>
                       </div>
@@ -4809,30 +4862,32 @@ export const NavBar = ({ style }: NavBarProps) => {
                           <Link
                             to="/nvisitor/nvisitormotive"
                             type="button"
-                            className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "/nvisitor/nvisitormotive"
                                 ? "current-active"
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={motives} alt="botão motivos" />
-                            </span>
-                            <span className="text">Motivos</span>
+                            <span
+                              className="fi fi-rr-question-square"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Motivos</span>
                           </Link>
                         </div>
                         <div className="icon-text-pessoas">
                           <Button
                             /* to="#" */ type="button"
-                            className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "#" ? "current-active" : ""
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -4853,16 +4908,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                           <Link
                             to="/nvisitor/nvisitoralerts"
                             type="button"
-                            className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "/nvisitor/nvisitoralerts"
                                 ? "current-active"
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Link>
                         </div>
                       </div>
@@ -4890,13 +4946,14 @@ export const NavBar = ({ style }: NavBarProps) => {
                             <Dropdown.Toggle
                               as={Button}
                               variant="light"
-                              className="ribbon-button ribbon-button-pessoas mt-2"
+                              className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -4918,16 +4975,17 @@ export const NavBar = ({ style }: NavBarProps) => {
                           <Link
                             to="/nvisitor/nvisitorgraph"
                             type="button"
-                            className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "/nvisitor/nvisitorgraph"
                                 ? "current-active"
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -4947,15 +5005,16 @@ export const NavBar = ({ style }: NavBarProps) => {
                         <div className="icon-text-pessoas">
                           <Button
                             /* to="#" */ type="button"
-                            className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "#" ? "current-active" : ""
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -4974,15 +5033,16 @@ export const NavBar = ({ style }: NavBarProps) => {
                         <div className="icon-text-pessoas">
                           <Button
                             /* to="#" */ type="button"
-                            className={`btn btn-light ribbon-button ribbon-button-pessoas mt-2 ${
+                            className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "#" ? "current-active" : ""
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -5031,10 +5091,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -5060,13 +5121,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={payment_card}
-                                alt="botão pagamento terminal"
-                              />
-                            </span>
-                            <span className="text">Multibanco</span>
+                            <span
+                              className="fi fi-rr-credit-card"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Multibanco</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -5075,10 +5134,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={coin} alt="botão pagamento moedas" />
-                            </span>
-                            <span className="text">Moedeiro</span>
+                            <span
+                              className="fi fi-rr-coins"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Moedeiro</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -5089,13 +5149,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={card_report}
-                                alt="botão pagamentos totais"
-                              />
-                            </span>
-                            <span className="text">Totais</span>
+                            <span
+                              className="fi fi-rr-chart-line-up"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Totais</span>
                           </Button>
                         </div>
                       </div>
@@ -5123,13 +5181,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={barrier}
-                                alt="botão movimentos barreiras"
-                              />
-                            </span>
-                            <span className="text">Barreiras</span>
+                            <span
+                              className="fi fi-rr-traffic-light-stop"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Barreiras</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -5138,13 +5194,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={payBooth}
-                                alt="botão movimentos caixa pagamentos"
-                              />
-                            </span>
-                            <span className="text">Caixa Pagamentos</span>
+                            <span
+                              className="fi fi-rr-cash-register"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Caixa Pagamentos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -5155,13 +5209,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={coin_report}
-                                alt="botão movimentos totais"
-                              />
-                            </span>
-                            <span className="text">Totais</span>
+                            <span
+                              className="fi fi-rr-chart-line-up"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Totais</span>
                           </Button>
                         </div>
                       </div>
@@ -5184,10 +5236,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={cars} alt="botão viaturas" />
-                            </span>
-                            <span className="text">Viaturas</span>
+                            <span
+                              className="fi fi-rr-car-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Viaturas</span>
                           </Button>
                         </div>
                         <div>
@@ -5198,10 +5251,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={movement} alt="botão movimentos" />
-                            </span>
-                            <span className="text">Movimentos</span>
+                            <span
+                              className="fi fi-rr-exit-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Movimentos</span>
                           </Button>
                         </div>
                       </div>
@@ -5224,10 +5278,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={search} alt="botão revistas" />
-                            </span>
-                            <span className="text">Revistas</span>
+                            <span
+                              className="fi fi-rr-analyse"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Revistas</span>
                           </Button>
                         </div>
                         <div>
@@ -5238,10 +5293,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planos" />
-                            </span>
-                            <span className="text">Planos</span>
+                            <span
+                              className="fi fi-rr-car-journey"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planos</span>
                           </Button>
                         </div>
                       </div>
@@ -5264,10 +5320,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -5297,11 +5354,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -5329,10 +5388,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -5355,10 +5415,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -5381,10 +5442,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -5433,10 +5495,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -5462,10 +5525,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={doorIn} alt="botão porta entrada" />
-                            </span>
-                            <span className="text">Porta Entrada</span>
+                            <span
+                              className="fi fi-rr-door-open"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Porta Entrada</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -5474,10 +5538,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={doorRoom} alt="botão porta quarto" />
-                            </span>
-                            <span className="text">Porta Quarto</span>
+                            <span
+                              className="fi fi-rr-bed"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Porta Quarto</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -5488,13 +5553,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={coin_report}
-                                alt="botão movimentos totais"
-                              />
-                            </span>
-                            <span className="text">Totais</span>
+                            <span
+                              className="fi fi-rr-chart-line-up"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Totais</span>
                           </Button>
                         </div>
                       </div>
@@ -5517,10 +5580,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={inOut} alt="botão entrada e saída" />
-                            </span>
-                            <span className="text">Entrada e Saída</span>
+                            <span
+                              className="fi fi-rr-leave"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Entrada e Saída</span>
                           </Button>
                         </div>
                         <div>
@@ -5531,13 +5595,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={reservation}
-                                alt="botão reserva online"
-                              />
-                            </span>
-                            <span className="text">Reservas Online</span>
+                            <span
+                              className="fi fi-rr-reservation-table"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Reservas Online</span>
                           </Button>
                         </div>
                       </div>
@@ -5560,10 +5622,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -5593,11 +5656,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -5625,10 +5690,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -5651,10 +5717,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -5677,10 +5744,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -5731,10 +5799,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -5757,13 +5826,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={patrols}
-                                alt="botão movimentos rondas"
-                              />
-                            </span>
-                            <span className="text">Movimentos Rondas</span>
+                            <span
+                              className="fi fi-rr-user-police"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Movimentos Rondas</span>
                           </Button>
                         </div>
                         <div>
@@ -5774,13 +5841,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={analysis}
-                                alt="botão análise movimentos"
-                              />
-                            </span>
-                            <span className="text">Análise Movimentos</span>
+                            <span
+                              className="fi fi-rr-chart-histogram"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Análise Movimentos</span>
                           </Button>
                         </div>
                       </div>
@@ -5803,10 +5868,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={clock} alt="botão entrada e saída" />
-                            </span>
-                            <span className="text">Definir Horários</span>
+                            <span
+                              className="fi fi-rr-time-watch-calendar"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Definir Horários</span>
                           </Button>
                         </div>
                         <div>
@@ -5817,10 +5883,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={routes} alt="botão reserva online" />
-                            </span>
-                            <span className="text">Definir Rotas</span>
+                            <span
+                              className="fi fi-rr-route"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Definir Rotas</span>
                           </Button>
                         </div>
                       </div>
@@ -5843,10 +5910,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -5876,11 +5944,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -5908,10 +5978,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -5934,10 +6005,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -5961,10 +6033,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -6013,10 +6086,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -6039,10 +6113,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={points} alt="botão movimentos pontos" />
-                            </span>
-                            <span className="text">Movimentos Pontos</span>
+                            <span
+                              className="fi fi-rr-rectangle-list"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Movimentos Pontos</span>
                           </Button>
                         </div>
                         <div>
@@ -6053,13 +6128,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={analysis}
-                                alt="botão análise movimentos"
-                              />
-                            </span>
-                            <span className="text">Análise Movimentos</span>
+                            <span
+                              className="fi fi-rr-chart-histogram"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Análise Movimentos</span>
                           </Button>
                         </div>
                       </div>
@@ -6082,10 +6155,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -6115,11 +6189,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -6147,10 +6223,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -6180,6 +6257,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
                               <span className="icon">
                                 <img src={module} alt="botão opcionais" />
@@ -6222,10 +6300,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -6274,10 +6353,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -6303,10 +6383,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={online} alt="botão online" />
-                            </span>
-                            <span className="text">Online</span>
+                            <span
+                              className="fi fi-rr-wifi"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Online</span>
                           </Link>
                         </div>
                         <div>
@@ -6317,10 +6398,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={offline} alt="botão offline" />
-                            </span>
-                            <span className="text">Offline</span>
+                            <span
+                              className="fi fi-rr-wifi-slash"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Offline</span>
                           </Button>
                         </div>
                       </div>
@@ -6347,10 +6429,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Link>
                         </div>
                       </div>
@@ -6380,11 +6463,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -6412,10 +6497,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -6438,10 +6524,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -6464,10 +6551,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -6517,10 +6605,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -6543,10 +6632,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={alert} alt="botão intrusão" />
-                            </span>
-                            <span className="text">Intrusão</span>
+                            <span
+                              className="fi fi-rr-light-emergency-on"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Intrusão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -6557,10 +6647,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={division} alt="botão divisões" />
-                            </span>
-                            <span className="text">Divisões</span>
+                            <span
+                              className="fi fi-rr-split"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Divisões</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -6571,13 +6662,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={securityDevice}
-                                alt="botão dispositivos"
-                              />
-                            </span>
-                            <span className="text">Dispositivos</span>
+                            <span
+                              className="fi fi-rr-tablet-android"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Dispositivos</span>
                           </Button>
                         </div>
                       </div>
@@ -6600,10 +6689,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={movement} alt="botão movimentos" />
-                            </span>
-                            <span className="text">Movimentos</span>
+                            <span
+                              className="fi fi-rr-exit-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Movimentos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -6614,10 +6704,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={registry} alt="botão registos" />
-                            </span>
-                            <span className="text">Registos</span>
+                            <span
+                              className="fi fi-rr-envelope-dot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Registos</span>
                           </Button>
                         </div>
                       </div>
@@ -6642,10 +6733,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={arm} alt="botão armar" />
-                            </span>
-                            <span className="text">Armar</span>
+                            <span
+                              className="fi fi-rr-lock"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Armar</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -6654,10 +6746,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={disarm} alt="botão desarmar" />
-                            </span>
-                            <span className="text">Desarmar</span>
+                            <span
+                              className="fi fi-rr-unlock"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Desarmar</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -6666,10 +6759,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={panic} alt="botão pânico" />
-                            </span>
-                            <span className="text">Pânico</span>
+                            <span
+                              className="fi fi-rr-bell-school"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Pânico</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -6678,10 +6772,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={night} alt="botão noturno" />
-                            </span>
-                            <span className="text">Noturno</span>
+                            <span
+                              className="fi fi-rr-moon-stars"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Noturno</span>
                           </Button>
                         </div>
                       </div>
@@ -6704,10 +6799,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -6737,11 +6833,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -6769,10 +6867,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -6795,10 +6894,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -6821,10 +6921,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -6875,10 +6976,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -6902,10 +7004,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={create} alt="botão criação" />
-                            </span>
-                            <span className="text">Criação</span>
+                            <span
+                              className="fi fi-rr-add-document"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Criação</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -6916,10 +7019,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={optimization} alt="botão optimização" />
-                            </span>
-                            <span className="text">Optimização</span>
+                            <span
+                              className="fi fi-rr-url"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Optimização</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -6930,10 +7034,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={cost} alt="botão rentabilização" />
-                            </span>
-                            <span className="text">Rentabilização</span>
+                            <span
+                              className="fi fi-rr-balance-scale-left"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Rentabilização</span>
                           </Button>
                         </div>
                       </div>
@@ -6958,10 +7063,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -6991,11 +7097,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -7023,10 +7131,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -7051,10 +7160,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -7078,10 +7188,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -7132,10 +7243,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -7158,10 +7270,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -7172,10 +7285,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={cars} alt="botão parquemanto" />
-                            </span>
-                            <span className="text">Parqueamento</span>
+                            <span
+                              className="fi fi-rr-parking-circle"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Parqueamento</span>
                           </Button>
                         </div>
                       </div>
@@ -7198,10 +7312,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -7210,10 +7325,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={integration} alt="botão integração" />
-                            </span>
-                            <span className="text">Integração</span>
+                            <span
+                              className="fi fi-rr-master-plan-integrate"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Integração</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -7222,10 +7338,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={flow} alt="botão fluxo" />
-                            </span>
-                            <span className="text">Fluxo</span>
+                            <span
+                              className="fi fi-rr-workflow-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Fluxo</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -7234,10 +7351,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={controlPanel} alt="botão controlo" />
-                            </span>
-                            <span className="text">Controlo</span>
+                            <span
+                              className="fi fi-rr-settings-sliders"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Controlo</span>
                           </Button>
                         </div>
                       </div>
@@ -7262,10 +7380,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -7295,11 +7414,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -7327,10 +7448,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -7353,10 +7475,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -7380,10 +7503,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -7430,10 +7554,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -7456,10 +7581,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={movement} alt="botão acessos" />
-                            </span>
-                            <span className="text">Acessos</span>
+                            <span
+                              className="fi fi-rr-exit-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Acessos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -7470,10 +7596,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -7484,10 +7611,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -7510,10 +7638,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -7543,11 +7672,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -7575,10 +7706,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -7601,10 +7733,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -7627,10 +7760,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -7680,10 +7814,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -7706,10 +7841,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={securityDevice} alt="botão segurança" />
-                            </span>
-                            <span className="text">Segurança</span>
+                            <span
+                              className="fi fi-rr-padlock-check"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Segurança</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -7720,10 +7856,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={shield} alt="botão proteção dados" />
-                            </span>
-                            <span className="text">Proteção Dados</span>
+                            <span
+                              className="fi fi-rr-shield-check"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Proteção Dados</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -7734,10 +7871,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={network} alt="botão dados redes" />
-                            </span>
-                            <span className="text">Dados Redes</span>
+                            <span
+                              className="fi fi-rr-sitemap"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Dados Redes</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -7748,10 +7886,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={recovery} alt="botão recuperação" />
-                            </span>
-                            <span className="text">Recuperação</span>
+                            <span
+                              className="fi fi-rr-pharmacy"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Recuperação</span>
                           </Button>
                         </div>
                       </div>
@@ -7776,10 +7915,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -7809,11 +7949,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -7841,10 +7983,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -7867,10 +8010,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -7893,10 +8037,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -7947,10 +8092,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -7974,10 +8120,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={efficiency} alt="botão eficiência" />
-                            </span>
-                            <span className="text">Eficiência</span>
+                            <span
+                              className="fi fi-rr-clock-up-arrow"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Eficiência</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -7988,10 +8135,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={controlPanel} alt="botão controlo" />
-                            </span>
-                            <span className="text">Controlo</span>
+                            <span
+                              className="fi fi-rr-settings-sliders"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Controlo</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8002,10 +8150,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bonus} alt="botão vantagens" />
-                            </span>
-                            <span className="text">Vantagens</span>
+                            <span
+                              className="fi fi-rr-talent-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Vantagens</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8016,10 +8165,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={simple} alt="botão simplificar" />
-                            </span>
-                            <span className="text">Simplificar</span>
+                            <span
+                              className="fi fi-rr-code-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Simplificar</span>
                           </Button>
                         </div>
                       </div>
@@ -8044,10 +8194,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -8077,11 +8228,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -8109,10 +8262,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -8137,10 +8291,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -8164,10 +8319,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -8218,10 +8374,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -8244,10 +8401,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={registry} alt="botão conversão" />
-                            </span>
-                            <span className="text">Conversão</span>
+                            <span
+                              className="fi fi-rr-ballot-check"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Conversão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8258,10 +8416,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={automation} alt="botão automatização" />
-                            </span>
-                            <span className="text">Automatização</span>
+                            <span
+                              className="fi fi-rr-robotic-arm"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Automatização</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8272,10 +8431,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={feedback} alt="botão monotorização" />
-                            </span>
-                            <span className="text">Monotorização</span>
+                            <span
+                              className="fi fi-rr-pulse"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Monotorização</span>
                           </Button>
                         </div>
                       </div>
@@ -8300,10 +8460,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -8333,11 +8494,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -8365,10 +8528,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -8391,10 +8555,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -8418,10 +8583,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -8468,10 +8634,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -8494,10 +8661,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={hardware} alt="botão hardware" />
-                            </span>
-                            <span className="text">Hardware</span>
+                            <span
+                              className="fi fi-rr-microchip"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Hardware</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8508,10 +8676,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={software} alt="botão firmware" />
-                            </span>
-                            <span className="text">Firmware</span>
+                            <span
+                              className="fi fi-rr-display-code"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Firmware</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8522,10 +8691,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -8548,10 +8718,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -8581,11 +8752,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -8613,10 +8786,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -8639,10 +8813,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -8665,10 +8840,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -8718,10 +8894,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -8744,10 +8921,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão manutenção" />
-                            </span>
-                            <span className="text">Manutenção</span>
+                            <span
+                              className="fi fi-rr-it-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Manutenção</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8758,10 +8936,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8772,10 +8951,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={visitorAccess} alt="botão visitas" />
-                            </span>
-                            <span className="text">Visitas</span>
+                            <span
+                              className="fi fi-rr-users-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Visitas</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8786,10 +8966,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={document} alt="botão contratos" />
-                            </span>
-                            <span className="text">Contratos</span>
+                            <span
+                              className="fi fi-rr-multiple-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Contratos</span>
                           </Button>
                         </div>
                       </div>
@@ -8814,10 +8995,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={broken} alt="botão avarias" />
-                            </span>
-                            <span className="text">Avarias</span>
+                            <span
+                              className="fi fi-rr-broken-chain-link-wrong"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avarias</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8828,10 +9010,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={registry} alt="botão substituições" />
-                            </span>
-                            <span className="text">Substituições</span>
+                            <span
+                              className="fi fi-rr-ballot-check"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Substituições</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8842,10 +9025,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={analysis} alt="botão análises" />
-                            </span>
-                            <span className="text">Análises</span>
+                            <span
+                              className="fi fi-rr-curve-arrow"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Análises</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8856,10 +9040,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={monitoring} alt="botão monitorizar" />
-                            </span>
-                            <span className="text">Monitorizar</span>
+                            <span
+                              className="fi fi-rr-overview"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Monitorizar</span>
                           </Button>
                         </div>
                       </div>
@@ -8882,10 +9067,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={monthly} alt="botão mensal" />
-                            </span>
-                            <span className="text">Mensal</span>
+                            <span
+                              className="fi fi-rr-calendar-lines"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Mensal</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -8896,10 +9082,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={year} alt="botão anual" />
-                            </span>
-                            <span className="text">Anual</span>
+                            <span
+                              className="fi fi-rr-calendar-days"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Anual</span>
                           </Button>
                         </div>
                       </div>
@@ -8924,10 +9111,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -8957,11 +9145,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -8989,10 +9179,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -9015,10 +9206,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -9041,10 +9233,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -9095,10 +9288,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -9121,10 +9315,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={production} alt="botão produção" />
-                            </span>
-                            <span className="text">Produção</span>
+                            <span
+                              className="fi fi-rr-module"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Produção</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9135,10 +9330,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={processing} alt="botão processos" />
-                            </span>
-                            <span className="text">Processos</span>
+                            <span
+                              className="fi fi-rr-operation"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Processos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9149,10 +9345,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={making} alt="botão realização" />
-                            </span>
-                            <span className="text">Realização</span>
+                            <span
+                              className="fi fi-rr-condition-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Realização</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9163,10 +9360,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={clock} alt="botão estimativa" />
-                            </span>
-                            <span className="text">Estimativa</span>
+                            <span
+                              className="fi fi-rr-duration-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Estimativa</span>
                           </Button>
                         </div>
                       </div>
@@ -9189,10 +9387,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -9222,11 +9421,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -9254,10 +9455,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -9282,10 +9484,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -9309,10 +9512,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -9362,10 +9566,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -9388,13 +9593,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={visitorAccess}
-                                alt="botão contador pessoas"
-                              />
-                            </span>
-                            <span className="text">Contador Pessoas</span>
+                            <span
+                              className="fi fi-rr-users-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Contador Pessoas</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9405,10 +9608,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={summary} alt="botão resumo diário" />
-                            </span>
-                            <span className="text">Resumo Diário</span>
+                            <span
+                              className="fi fi-rr-summary-check"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Resumo Diário</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9419,10 +9623,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={realTime} alt="botão tempo real" />
-                            </span>
-                            <span className="text">Tempo Real</span>
+                            <span
+                              className="fi fi-rr-system-cloud"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Tempo Real</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9433,10 +9638,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={clock} alt="botão horas de pico" />
-                            </span>
-                            <span className="text">Hora de Pico</span>
+                            <span
+                              className="fi fi-rr-time-fast"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Hora de Pico</span>
                           </Button>
                         </div>
                       </div>
@@ -9459,13 +9665,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={profiles}
-                                alt="botão equipas trabalho"
-                              />
-                            </span>
-                            <span className="text">Equipas Trabalho</span>
+                            <span
+                              className="fi fi-rr-users"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Equipas Trabalho</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9476,13 +9680,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={processing}
-                                alt="botão ajuste de equipas"
-                              />
-                            </span>
-                            <span className="text">Ajuste Equipas</span>
+                            <span
+                              className="fi fi-rr-gears"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Ajuste Equipas</span>
                           </Button>
                         </div>
                       </div>
@@ -9507,10 +9709,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={price} alt="botão vendas" />
-                            </span>
-                            <span className="text">Vendas</span>
+                            <span
+                              className="fi fi-rr-growth-chart-invest"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Vendas</span>
                           </Button>
                         </div>
                       </div>
@@ -9533,10 +9736,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -9566,11 +9770,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -9598,10 +9804,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -9624,10 +9831,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -9650,10 +9858,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -9703,10 +9912,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -9729,10 +9939,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={registry} alt="botão registar" />
-                            </span>
-                            <span className="text">Registar</span>
+                            <span
+                              className="fi fi-rr-to-do"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Registar</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9743,10 +9954,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={controlPanel} alt="botão controlar" />
-                            </span>
-                            <span className="text">Controlar</span>
+                            <span
+                              className="fi fi-rr-dial"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Controlar</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9757,10 +9969,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={production} alt="botão produzir" />
-                            </span>
-                            <span className="text">Produzir</span>
+                            <span
+                              className="fi fi-rr-digging"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Produzir</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -9771,10 +9984,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gerir" />
-                            </span>
-                            <span className="text">Gerir</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gerir</span>
                           </Button>
                         </div>
                       </div>
@@ -9797,10 +10011,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -9830,11 +10045,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -9862,10 +10079,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -9888,10 +10106,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -9914,10 +10133,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -9968,10 +10188,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -9995,10 +10216,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -10009,10 +10231,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={cars} alt="botão parqueamento" />
-                            </span>
-                            <span className="text">Parqueamento</span>
+                            <span
+                              className="fi fi-rr-parking-circle"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Parqueamento</span>
                           </Button>
                         </div>
                       </div>
@@ -10037,10 +10260,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -10070,11 +10294,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -10102,10 +10328,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -10130,10 +10357,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -10157,10 +10385,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -10211,10 +10440,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -10237,10 +10467,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -10251,10 +10482,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -10279,10 +10511,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -10312,11 +10545,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -10344,10 +10579,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -10372,10 +10608,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -10399,10 +10636,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -10453,10 +10691,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -10479,10 +10718,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -10493,10 +10733,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -10519,10 +10760,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -10552,11 +10794,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -10584,10 +10828,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -10610,10 +10855,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -10637,10 +10883,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -10691,10 +10938,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -10717,10 +10965,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -10731,10 +10980,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -10757,10 +11007,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -10790,11 +11041,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -10822,10 +11075,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -10850,10 +11104,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -10877,10 +11132,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -10929,10 +11185,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -10955,10 +11212,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -10969,10 +11227,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -10995,10 +11254,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -11028,11 +11288,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -11060,10 +11322,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -11093,6 +11356,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
                               <span className="icon">
                                 <img src={module} alt="botão opcionais" />
@@ -11135,10 +11399,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -11189,10 +11454,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -11218,10 +11484,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -11232,10 +11499,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -11260,10 +11528,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -11296,11 +11565,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -11328,10 +11599,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -11356,10 +11628,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -11385,10 +11658,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -11439,10 +11713,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -11465,10 +11740,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={ticket} alt="botão emitir" />
-                            </span>
-                            <span className="text">Emitir</span>
+                            <span
+                              className="fi fi-rr-ticket"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Emitir</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -11479,10 +11755,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={print} alt="botão imprimir" />
-                            </span>
-                            <span className="text">Imprimir</span>
+                            <span
+                              className="fi fi-rr-print"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Imprimir</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -11493,10 +11770,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -11519,10 +11797,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -11552,11 +11831,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -11584,10 +11865,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -11610,10 +11892,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -11637,10 +11920,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -11690,10 +11974,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -11716,10 +12001,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -11730,10 +12016,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -11756,10 +12043,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -11789,11 +12077,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -11821,10 +12111,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -11847,10 +12138,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -11873,10 +12165,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -11927,10 +12220,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -11955,10 +12249,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={visitorAccess} alt="botão clientes" />
-                            </span>
-                            <span className="text">Clientes</span>
+                            <span
+                              className="fi fi-rr-users-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Clientes</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -11969,10 +12264,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={supplier} alt="botão fornecedores" />
-                            </span>
-                            <span className="text">Fornecedores</span>
+                            <span
+                              className="fi fi-rr-industry-windows"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Fornecedores</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -11983,10 +12279,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={entity} alt="botão entidades" />
-                            </span>
-                            <span className="text">Entidades</span>
+                            <span
+                              className="fi fi-rr-corporate"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Entidades</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -11997,10 +12294,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={price} alt="botão Produtos" />
-                            </span>
-                            <span className="text">Produtos</span>
+                            <span
+                              className="fi fi-rr-brand"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Produtos</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12011,10 +12309,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={exchange} alt="botão exportações" />
-                            </span>
-                            <span className="text">Exportações</span>
+                            <span
+                              className="fi fi-rr-exchange-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Exportações</span>
                           </Button>
                         </div>
                       </div>
@@ -12039,10 +12338,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={invoice} alt="botão faturas" />
-                            </span>
-                            <span className="text">Faturas</span>
+                            <span
+                              className="fi fi-rr-calculator-bill"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Faturas</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12053,10 +12353,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={credit} alt="botão notas crédito" />
-                            </span>
-                            <span className="text">Notas Crédito</span>
+                            <span
+                              className="fi fi-rr-document-paid"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Notas Crédito</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12067,10 +12368,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={receipt} alt="botão recibos" />
-                            </span>
-                            <span className="text">Recibos</span>
+                            <span
+                              className="fi fi-rr-receipt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Recibos</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12081,10 +12383,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={deal} alt="botão avenças" />
-                            </span>
-                            <span className="text">Avenças</span>
+                            <span
+                              className="fi fi-rr-handshake"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Avenças</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12095,10 +12398,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={maps} alt="botão guia transporte" />
-                            </span>
-                            <span className="text">Guia Transporte</span>
+                            <span
+                              className="fi fi-rr-airplane-journey"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Guia Transporte</span>
                           </Button>
                         </div>
                       </div>
@@ -12123,10 +12427,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={invoice} alt="botão faturas" />
-                            </span>
-                            <span className="text">Faturas</span>
+                            <span
+                              className="fi fi-rr-calculator-bill"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Faturas</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12137,10 +12442,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={credit} alt="botão notas crédito" />
-                            </span>
-                            <span className="text">Notas Crédito</span>
+                            <span
+                              className="fi fi-rr-document-paid"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Notas Crédito</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12151,10 +12457,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={coin} alt="botão pagamentos" />
-                            </span>
-                            <span className="text">Pagamentos</span>
+                            <span
+                              className="fi fi-rr-piggy-bank"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Pagamentos</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12165,10 +12472,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={eBill} alt="botão e-fatura" />
-                            </span>
-                            <span className="text">E-fatura</span>
+                            <span
+                              className="fi fi-rr-hand-bill"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>E-fatura</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12179,10 +12487,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={maps} alt="botão guia transporte" />
-                            </span>
-                            <span className="text">Guia Transporte</span>
+                            <span
+                              className="fi fi-rr-airplane-journey"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Guia Transporte</span>
                           </Button>
                         </div>
                       </div>
@@ -12207,10 +12516,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={account} alt="botão contas" />
-                            </span>
-                            <span className="text">Contas</span>
+                            <span
+                              className="fi fi-rr-portrait"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Contas</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12221,10 +12531,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={count} alt="botão contabilidade" />
-                            </span>
-                            <span className="text">Contabilidade</span>
+                            <span
+                              className="fi fi-rr-calculator-money"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Contabilidade</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12235,10 +12546,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={invoice} alt="botão extratos" />
-                            </span>
-                            <span className="text">Extratos</span>
+                            <span
+                              className="fi fi-rr-point-of-sale-bill"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Extratos</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12249,10 +12561,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={deal} alt="botão reconciliações" />
-                            </span>
-                            <span className="text">Reconciliações</span>
+                            <span
+                              className="fi fi-rr-handshake"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Reconciliações</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12263,10 +12576,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={point} alt="botão posição" />
-                            </span>
-                            <span className="text">Posição</span>
+                            <span
+                              className="fi fi-rr-exclamation"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Posição</span>
                           </Button>
                         </div>
                       </div>
@@ -12291,10 +12605,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={visitorAccess} alt="botão pessoal" />
-                            </span>
-                            <span className="text">Pessoal</span>
+                            <span
+                              className="fi fi-rr-users-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Pessoal</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12305,10 +12620,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={vacation} alt="botão mapa férias" />
-                            </span>
-                            <span className="text">Mapa Férias</span>
+                            <span
+                              className="fi fi-rr-umbrella-beach"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Mapa Férias</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12319,10 +12635,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={coin} alt="botão vencimentos" />
-                            </span>
-                            <span className="text">Vencimentos</span>
+                            <span
+                              className="fi fi-rr-coins"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Vencimentos</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12333,10 +12650,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={profiles} alt="botão organigrama" />
-                            </span>
-                            <span className="text">Organigrama</span>
+                            <span
+                              className="fi fi-rr-users"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Organigrama</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -12347,10 +12665,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={autorization} alt="botão abonos" />
-                            </span>
-                            <span className="text">Abonos</span>
+                            <span
+                              className="fi fi-rr-memo-circle-check"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Abonos</span>
                           </Button>
                         </div>
                       </div>
@@ -12373,10 +12692,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -12407,10 +12727,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               className="ribbon-button ribbon-button-pessoas mt-2"
                               id="dropdown-basic-4"
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -12438,10 +12759,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -12466,10 +12788,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -12493,10 +12816,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -12543,10 +12867,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -12569,10 +12894,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={folder} alt="botão pastas subpastas" />
-                            </span>
-                            <span className="text">Pastas/Subpastas</span>
+                            <span
+                              className="fi fi-rr-folder"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Pastas/Subpastas</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -12583,10 +12909,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={processing} alt="botão processos" />
-                            </span>
-                            <span className="text">Processos</span>
+                            <span
+                              className="fi fi-rr-process"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Processos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -12597,10 +12924,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={file} alt="botão arquivo geral" />
-                            </span>
-                            <span className="text">Arquivo Geral</span>
+                            <span
+                              className="fi fi-rr-books"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Arquivo Geral</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -12611,10 +12939,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={deadFiles} alt="botão arquivo morto" />
-                            </span>
-                            <span className="text">Arquivo Morto</span>
+                            <span
+                              className="fi fi-rr-remove-folder"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Arquivo Morto</span>
                           </Button>
                         </div>
                       </div>
@@ -12637,13 +12966,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={digitalFile}
-                                alt="botão arquivo digital"
-                              />
-                            </span>
-                            <span className="text">Arquivo Digital</span>
+                            <span
+                              className="i fi-rr-folder-tree"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Arquivo Digital</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -12654,10 +12981,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={flow} alt="botão workflow" />
-                            </span>
-                            <span className="text">Workflow</span>
+                            <span
+                              className="fi fi-rr-workflow-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Workflow</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -12668,10 +12996,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={exchange} alt="botão trânsito" />
-                            </span>
-                            <span className="text">Trânsito</span>
+                            <span
+                              className="fi fi-rr-cars"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Trânsito</span>
                           </Button>
                         </div>
                       </div>
@@ -12694,13 +13023,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={onlineConsulting}
-                                alt="botão consulta online"
-                              />
-                            </span>
-                            <span className="text">Consulta Online</span>
+                            <span
+                              className="fi fi-rr-cursor"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Consulta Online</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -12711,13 +13038,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={monitoring}
-                                alt="botão visualização rápida"
-                              />
-                            </span>
-                            <span className="text">Visualização Rápida</span>
+                            <span
+                              className="fi fi-rr-overview"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Visualização Rápida</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -12728,10 +13053,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={entity} alt="botão entidades" />
-                            </span>
-                            <span className="text">Entidades</span>
+                            <span
+                              className="fi fi-rr-corporate"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Entidades</span>
                           </Button>
                         </div>
                       </div>
@@ -12754,10 +13080,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -12787,11 +13114,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -12819,10 +13148,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -12845,10 +13175,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -12871,10 +13202,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -12925,10 +13257,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -12951,10 +13284,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -12965,10 +13299,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -12991,10 +13326,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -13024,11 +13360,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -13056,10 +13394,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -13082,10 +13421,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -13109,10 +13449,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -13159,10 +13500,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -13185,10 +13527,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -13199,10 +13542,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -13225,10 +13569,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -13258,11 +13603,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -13290,10 +13637,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -13316,10 +13664,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -13342,10 +13691,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -13396,10 +13746,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -13422,10 +13773,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -13436,10 +13788,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -13462,10 +13815,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -13495,11 +13849,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -13527,10 +13883,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -13553,10 +13910,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -13580,10 +13938,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -13634,10 +13993,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -13660,10 +14020,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -13674,10 +14035,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -13700,10 +14062,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -13733,11 +14096,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -13765,10 +14130,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -13791,10 +14157,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -13818,10 +14185,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -13872,10 +14240,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -13898,10 +14267,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -13912,10 +14282,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -13938,10 +14309,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -13971,11 +14343,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -14003,10 +14377,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -14029,10 +14404,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -14056,10 +14432,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -14108,10 +14485,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -14134,10 +14512,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={management} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-lead-management"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -14148,10 +14527,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={plans} alt="botão planeamento" />
-                            </span>
-                            <span className="text">Planeamento</span>
+                            <span
+                              className="fi fi-rr-career-path"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Planeamento</span>
                           </Button>
                         </div>
                       </div>
@@ -14174,10 +14554,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -14207,11 +14588,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -14239,10 +14622,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -14265,10 +14649,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -14291,10 +14676,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -14344,10 +14730,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -14370,10 +14757,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -14384,10 +14772,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={realTime} alt="botão tempo real" />
-                            </span>
-                            <span className="text">Tempo Real</span>
+                            <span
+                              className="fi fi-rr-wifi-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Tempo Real</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -14398,10 +14787,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={maps} alt="botão localização" />
-                            </span>
-                            <span className="text">Localização</span>
+                            <span
+                              className="fi fi-rr-map-marker"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Localização</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -14412,10 +14802,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={monitoring} alt="botão monitorização" />
-                            </span>
-                            <span className="text">Monitorização</span>
+                            <span
+                              className="fi fi-rr-overview"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Monitorização</span>
                           </Button>
                         </div>
                       </div>
@@ -14440,10 +14831,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -14473,11 +14865,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -14505,10 +14899,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -14531,10 +14926,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -14557,10 +14953,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -14611,10 +15008,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -14637,9 +15035,10 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={simulation} alt="botão simulação" />
-                            </span>
+                            <span
+                              className="fi fi-rr-head-vr"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
                             <span className="text">Simulação</span>
                           </Button>
                         </div>
@@ -14651,10 +15050,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -14677,10 +15077,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -14710,11 +15111,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -14742,10 +15145,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -14770,10 +15174,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -14797,10 +15202,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -14851,10 +15257,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -14877,10 +15284,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={image} alt="botão imagens" />
-                            </span>
-                            <span className="text">Imagens</span>
+                            <span
+                              className="fi fi-rr-picture"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Imagens</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -14891,10 +15299,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={video} alt="botão vídeos" />
-                            </span>
-                            <span className="text">Vídeos</span>
+                            <span
+                              className="fi fi-rr-play-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Vídeos</span>
                           </Button>
                         </div>
                       </div>
@@ -14919,10 +15328,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -14952,11 +15362,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -14984,10 +15396,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -15012,10 +15425,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -15039,10 +15453,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -15092,10 +15507,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -15118,10 +15534,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={power} alt="botão consumos" />
-                            </span>
-                            <span className="text">Consumos</span>
+                            <span
+                              className="fi fi-rr-bolt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Consumos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15132,10 +15549,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -15158,10 +15576,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={eolic} alt="botão eólicos" />
-                            </span>
-                            <span className="text">Eólicos</span>
+                            <span
+                              className="fi fi-rr-wind-turbine"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Eólicos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15172,10 +15591,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={solar} alt="botão solares" />
-                            </span>
-                            <span className="text">Solares</span>
+                            <span
+                              className="fi fi-rr-solar-panel-sun"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Solares</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15186,10 +15606,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={fisical} alt="botão fisica" />
-                            </span>
-                            <span className="text">Fisica</span>
+                            <span
+                              className="fi fi-rr-utility-pole-double"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Fisica</span>
                           </Button>
                         </div>
                       </div>
@@ -15212,10 +15633,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={hourglass} alt="botão hora" />
-                            </span>
-                            <span className="text">Hora</span>
+                            <span
+                              className="fi fi-rr-hourglass-end"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Hora</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -15224,10 +15646,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={clock} alt="botão dia" />
-                            </span>
-                            <span className="text">Dia</span>
+                            <span
+                              className="fi fi-rr-clock"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Dia</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -15236,10 +15659,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={calendar} alt="botão meses" />
-                            </span>
-                            <span className="text">Meses</span>
+                            <span
+                              className="fi fi-rr-calendar"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Meses</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -15248,10 +15672,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={year} alt="botão ano" />
-                            </span>
-                            <span className="text">Ano</span>
+                            <span
+                              className="fi fi-rr-calendar-days"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Ano</span>
                           </Button>
                         </div>
                       </div>
@@ -15274,10 +15699,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={energy} alt="botão energia" />
-                            </span>
-                            <span className="text">Energia</span>
+                            <span
+                              className="fi fi-rr-plug-connection"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Energia</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15288,10 +15714,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={renewable} alt="botão renovável" />
-                            </span>
-                            <span className="text">Renovável</span>
+                            <span
+                              className="fi fi-rr-eco-electric"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Renovável</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15302,10 +15729,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={time} alt="botão horários" />
-                            </span>
-                            <span className="text">Horários</span>
+                            <span
+                              className="fi fi-rr-clock-future-past"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Horários</span>
                           </Button>
                         </div>
                       </div>
@@ -15328,10 +15756,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={monophase} alt="botão monofásicos" />
-                            </span>
-                            <span className="text">Monofásicos</span>
+                            <span
+                              className="fi fi-rr-tally-1"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Monofásicos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15342,10 +15771,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={biphase} alt="botão bifásicos" />
-                            </span>
-                            <span className="text">Bifásicos</span>
+                            <span
+                              className="fi fi-rr-tally-2"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Bifásicos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15356,10 +15786,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={triphase} alt="botão trifásicos" />
-                            </span>
-                            <span className="text">Trifásicos</span>
+                            <span
+                              className="fi fi-rr-tally-3"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Trifásicos</span>
                           </Button>
                         </div>
                       </div>
@@ -15384,10 +15815,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -15417,11 +15849,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -15449,10 +15883,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -15475,10 +15910,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -15501,10 +15937,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -15555,10 +15992,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -15582,10 +16020,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={movement} alt="botão movimentos" />
-                            </span>
-                            <span className="text">Movimentos</span>
+                            <span
+                              className="fi fi-rr-swap"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Movimentos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15596,10 +16035,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -15624,10 +16064,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={registry} alt="botão registos" />
-                            </span>
-                            <span className="text">Registos</span>
+                            <span
+                              className="fi fi-rr-ballot-check"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Registos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15638,10 +16079,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={analysis} alt="botão análises" />
-                            </span>
-                            <span className="text">Análises</span>
+                            <span
+                              className="fi fi-rr-curve-arrow"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Análises</span>
                           </Button>
                         </div>
                       </div>
@@ -15664,10 +16106,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -15697,11 +16140,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -15729,10 +16174,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -15755,10 +16201,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -15782,10 +16229,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -15834,10 +16282,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -15860,10 +16309,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={cars} alt="botão veículo" />
-                            </span>
-                            <span className="text">Veículo</span>
+                            <span
+                              className="fi fi-rr-car-alt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Veículo</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15874,10 +16324,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={time} alt="botão horário" />
-                            </span>
-                            <span className="text">Horário</span>
+                            <span
+                              className="fi fi-rr-clock-future-past"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Horário</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15888,10 +16339,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={calendar} alt="botão calendário" />
-                            </span>
-                            <span className="text">Calendário</span>
+                            <span
+                              className="fi fi-rr-calendar"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Calendário</span>
                           </Button>
                         </div>
                       </div>
@@ -15914,10 +16366,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={online} alt="botão remota" />
-                            </span>
-                            <span className="text">Remota</span>
+                            <span
+                              className="fi fi-rr-wifi"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Remota</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -15926,10 +16379,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={clipboard} alt="botão conteúdos" />
-                            </span>
-                            <span className="text">Conteúdos</span>
+                            <span
+                              className="fi fi-rr-completed"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Conteúdos</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -15938,10 +16392,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={interactive} alt="botão interativa" />
-                            </span>
-                            <span className="text">Interativa</span>
+                            <span
+                              className="fi fi-rr-dashboard-monitor"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Interativa</span>
                           </Button>
                           <Button
                             /* to='#' */ type="button"
@@ -15950,10 +16405,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={rent} alt="botão aluguer" />
-                            </span>
-                            <span className="text">Aluguer</span>
+                            <span
+                              className="fi fi-rr-hand-key"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Aluguer</span>
                           </Button>
                         </div>
                       </div>
@@ -15976,10 +16432,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={article} alt="botão artigos" />
-                            </span>
-                            <span className="text">Artigos</span>
+                            <span
+                              className="fi fi-rr-newspaper"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Artigos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -15990,10 +16447,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={newsSearch} alt="botão pesquisas" />
-                            </span>
-                            <span className="text">Pesquisas</span>
+                            <span
+                              className="fi fi-rr-search"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Pesquisas</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16004,10 +16462,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={sugestion} alt="botão sugestões" />
-                            </span>
-                            <span className="text">Sugestões</span>
+                            <span
+                              className="fi fi-rr-comment-pen"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Sugestões</span>
                           </Button>
                         </div>
                       </div>
@@ -16030,10 +16489,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={museum} alt="botão museus" />
-                            </span>
-                            <span className="text">Museus</span>
+                            <span
+                              className="fi fi-rr-bank"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Museus</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16044,10 +16504,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={entity} alt="botão comércio" />
-                            </span>
-                            <span className="text">Comércio</span>
+                            <span
+                              className="fi fi-rr-corporate"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Comércio</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16058,10 +16519,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão serviços" />
-                            </span>
-                            <span className="text">Serviços</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Serviços</span>
                           </Button>
                         </div>
                       </div>
@@ -16084,10 +16546,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={maps} alt="botão mapas" />
-                            </span>
-                            <span className="text">Mapas</span>
+                            <span
+                              className="fi fi-rr-map-marker"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Mapas</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16098,13 +16561,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={transportation}
-                                alt="botão transportes"
-                              />
-                            </span>
-                            <span className="text">Transportes</span>
+                            <span
+                              className="fi fi-rr-subway"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Transportes</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16115,10 +16576,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={routes} alt="botão rotas" />
-                            </span>
-                            <span className="text">Rotas</span>
+                            <span
+                              className="fi fi-rr-route"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Rotas</span>
                           </Button>
                         </div>
                       </div>
@@ -16141,10 +16603,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -16174,11 +16637,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -16206,10 +16671,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -16232,10 +16698,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -16258,10 +16725,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -16311,10 +16779,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -16350,13 +16819,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={payment_card}
-                                alt="botão pagamento terminal"
-                              />
-                            </span>
-                            <span className="text">Multibanco</span>
+                            <span
+                              className="fi fi-rr-credit-card"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Multibanco</span>
                           </Link>
                           <Link
                             to="/nkiosk/nkioskpaycoins"
@@ -16377,10 +16844,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={coin} alt="botão pagamento moedas" />
-                            </span>
-                            <span className="text">Moedeiro</span>
+                            <span
+                              className="fi fi-rr-coins"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Moedeiro</span>
                           </Link>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16403,13 +16871,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={card_report}
-                                alt="botão pagamentos totais"
-                              />
-                            </span>
-                            <span className="text">Totais</span>
+                            <span
+                              className="fi fi-rr-chart-line-up"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Totais</span>
                           </Link>
                         </div>
                       </div>
@@ -16450,13 +16916,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={barrier}
-                                alt="botão movimentos cartão"
-                              />
-                            </span>
-                            <span className="text">Torniquete</span>
+                            <span
+                              className="fi fi-rr-running"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Torniquete</span>
                           </Link>
                           <Link
                             to="/nkiosk/nkioskmovekiosk"
@@ -16478,13 +16942,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={kiosk}
-                                alt="botão movimentos porteiro"
-                              />
-                            </span>
-                            <span className="text">Quiosque</span>
+                            <span
+                              className="fi fi-rr-door-closed"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Quiosque</span>
                           </Link>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16508,13 +16970,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={coin_report}
-                                alt="botão movimentos totais"
-                              />
-                            </span>
-                            <span className="text">Totais</span>
+                            <span
+                              className="fi fi-rr-chart-line-up"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Totais</span>
                           </Link>
                         </div>
                       </div>
@@ -16539,10 +16999,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={intercom} alt="botão vídeo porteiro" />
-                            </span>
-                            <span className="text">Video Porteiro</span>
+                            <span
+                              className="fi fi-rr-digital-tachograph"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Video Porteiro</span>
                           </Link>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16555,13 +17016,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img
-                                src={open_door}
-                                alt="botão abertura manual"
-                              />
-                            </span>
-                            <span className="text">Abertura Manual</span>
+                            <span
+                              className="fi fi-rr-door-open"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Abertura Manual</span>
                           </Link>
                         </div>
                       </div>
@@ -16589,10 +17048,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={coin} alt="botão recolha moedeiro" />
-                            </span>
-                            <span className="text">Recolha Moedas</span>
+                            <span
+                              className="fi fi-rr-coins"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Recolha Moedas</span>
                           </Link>
                           <Link
                             to="/nkiosk/nkioskcleaning"
@@ -16603,10 +17063,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={cleanings} alt="botão limpeza wc" />
-                            </span>
-                            <span className="text">Limpeza Geral</span>
+                            <span
+                              className="fi fi-rr-broom"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Limpeza Geral</span>
                           </Link>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16619,10 +17080,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={count} alt="botão contador" />
-                            </span>
-                            <span className="text">Contador</span>
+                            <span
+                              className="fi fi-rr-calculator-money"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Contador</span>
                           </Link>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16635,10 +17097,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={registry} alt="botão ocorrências" />
-                            </span>
-                            <span className="text">Ocorrências</span>
+                            <span
+                              className="fi fi-rr-ballot-check"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Ocorrências</span>
                           </Link>
                         </div>
                       </div>
@@ -16663,10 +17126,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={maps} alt="botão mapa" />
-                            </span>
-                            <span className="text">Mapa</span>
+                            <span
+                              className="fi fi-rr-map-marker"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Mapa</span>
                           </Link>
                         </div>
                       </div>
@@ -16691,10 +17155,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Link>
                         </div>
                       </div>
@@ -16724,11 +17189,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -16756,10 +17223,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -16789,6 +17257,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
                               <span className="icon">
                                 <img src={module} alt="botão opcionais" />
@@ -16829,10 +17298,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             type="button"
                             className="btn btn-light ribbon-button ribbon-button-pessoas"
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -16877,10 +17347,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -16903,10 +17374,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={ledMonitor} alt="botão leds" />
-                            </span>
-                            <span className="text">Leds</span>
+                            <span
+                              className="fi fi-rr-desktop-wallpaper"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Leds</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -16917,10 +17389,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -16944,20 +17417,22 @@ export const NavBar = ({ style }: NavBarProps) => {
                             type="button"
                             className="btn btn-light ribbon-button"
                           >
-                            <span className="icon">
-                              <img src={video} alt="botão vídeo" />
-                            </span>
-                            <span className="text">Vídeo</span>
+                            <span
+                              className="fi fi-rr-play-alt"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Vídeo</span>
                           </Button>
                           <Button
                             onClick={togglePhotoAdsModal}
                             type="button"
                             className="btn btn-light ribbon-button"
                           >
-                            <span className="icon">
-                              <img src={image} alt="botão imagem" />
-                            </span>
-                            <span className="text">Imagem</span>
+                            <span
+                              className="fi fi-rr-picture"
+                              style={{ fontSize: "1rem", marginRight: 5 }}
+                            ></span>
+                            <span>Imagem</span>
                           </Button>
                         </div>
                         <div>
@@ -16970,10 +17445,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={ads} alt="botão publicidade" />
-                            </span>
-                            <span className="text">Publicidade</span>
+                            <span
+                              className="fi fi-rr-ad"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Publicidade</span>
                           </Link>
                         </div>
                         <div>
@@ -16984,10 +17460,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -17012,10 +17489,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Link>
                         </div>
                       </div>
@@ -17045,11 +17523,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -17077,10 +17557,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -17103,10 +17584,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -17129,10 +17611,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -17181,10 +17664,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -17207,10 +17691,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={firePrevention} alt="botão prevenção" />
-                            </span>
-                            <span className="text">Prevenção</span>
+                            <span
+                              className="fi fi-rr-meter-fire"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Prevenção</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -17221,10 +17706,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={extinguish} alt="botão extinção" />
-                            </span>
-                            <span className="text">Extinção</span>
+                            <span
+                              className="fi fi-rr-fire-extinguisher"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Extinção</span>
                           </Button>
                         </div>
                       </div>
@@ -17247,10 +17733,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -17280,11 +17767,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -17312,10 +17801,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -17338,10 +17828,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -17364,10 +17855,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -17418,10 +17910,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -17445,10 +17938,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={up} alt="botão subir" />
-                            </span>
-                            <span className="text">Subir</span>
+                            <span
+                              className="fi fi-rr-arrow-small-up"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Subir</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -17459,10 +17953,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={down} alt="botão descer" />
-                            </span>
-                            <span className="text">Descer</span>
+                            <span
+                              className="fi fi-rr-arrow-small-down"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Descer</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -17473,10 +17968,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -17501,10 +17997,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -17536,11 +18033,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -17568,10 +18067,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -17596,10 +18096,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -17625,10 +18126,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -17679,10 +18181,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -17706,10 +18209,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={tick} alt="botão abrir" />
-                            </span>
-                            <span className="text">Abrir</span>
+                            <span
+                              className="fi fi-rr-check"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Abrir</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -17720,10 +18224,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={close} alt="botão fechar" />
-                            </span>
-                            <span className="text">Fechar</span>
+                            <span
+                              className="fi fi-rr-cross-small"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Fechar</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -17734,10 +18239,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -17762,10 +18268,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={up} alt="botão subir" />
-                            </span>
-                            <span className="text">Subir</span>
+                            <span
+                              className="fi fi-rr-arrow-small-up"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Subir</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -17776,10 +18283,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={down} alt="botão descer" />
-                            </span>
-                            <span className="text">Descer</span>
+                            <span
+                              className="fi fi-rr-arrow-small-down"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Descer</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -17790,10 +18298,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -17818,10 +18327,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -17853,11 +18363,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -17885,10 +18397,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -17913,10 +18426,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -17942,10 +18456,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -17995,10 +18510,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -18021,13 +18537,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={simulation}
-                                alt="botão realidade virtual"
-                              />
-                            </span>
-                            <span className="text">Realidade Virtual</span>
+                            <span
+                              className="fi fi-rr-head-vr"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Realidade Virtual</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -18038,13 +18552,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={threeDimension}
-                                alt="botão imagens 3d"
-                              />
-                            </span>
-                            <span className="text">Imagens 3D</span>
+                            <span
+                              className="fi fi-rr-model-cube-arrows"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Imagens 3D</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -18055,13 +18567,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={library}
-                                alt="botão biblioteca virtual"
-                              />
-                            </span>
-                            <span className="text">Biblioteca Virtual</span>
+                            <span
+                              className="fi fi-rr-books"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Biblioteca Virtual</span>
                           </Button>
                         </div>
                       </div>
@@ -18084,10 +18594,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -18117,11 +18628,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -18149,10 +18662,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -18175,10 +18689,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -18201,10 +18716,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -18253,10 +18769,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -18279,10 +18796,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={network} alt="botão rede informática" />
-                            </span>
-                            <span className="text">Rede Informática</span>
+                            <span
+                              className="fi fi-rr-sitemap"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Rede Informática</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -18293,13 +18811,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img
-                                src={bandwidth}
-                                alt="botão largura de banda"
-                              />
-                            </span>
-                            <span className="text">Largura de Banda</span>
+                            <span
+                              className="fi fi-rr-ethernet"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Largura de Banda</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -18310,10 +18826,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={test} alt="botão teste de rede" />
-                            </span>
-                            <span className="text">Teste de Rede</span>
+                            <span
+                              className="fi fi-rr-tachometer-alt-fastest"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Teste de Rede</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -18324,10 +18841,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -18350,10 +18868,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -18383,11 +18902,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -18415,10 +18936,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -18441,10 +18963,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -18467,10 +18990,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -18521,10 +19045,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -18548,10 +19073,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={power} alt="botão testes consumos" />
-                            </span>
-                            <span className="text">Testes Consumos</span>
+                            <span
+                              className="fi fi-rr-bolt"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Testes Consumos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -18562,10 +19088,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={price} alt="botão valores consumos" />
-                            </span>
-                            <span className="text">Valores Consumos</span>
+                            <span
+                              className="fi fi-rr-usd-circle"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Valores Consumos</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -18576,10 +19103,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -18604,10 +19132,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -18637,11 +19166,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -18669,10 +19200,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -18697,10 +19229,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -18724,10 +19257,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -18777,10 +19311,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -18803,10 +19338,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={controlPanel} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-settings-sliders"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -18817,10 +19353,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão Programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -18843,10 +19380,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -18876,11 +19414,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="light"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -18908,10 +19448,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -18934,10 +19475,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -18960,10 +19502,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -19014,10 +19557,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -19041,10 +19585,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={controlPanel} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-settings-sliders"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -19055,10 +19600,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão Programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -19083,10 +19629,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -19116,11 +19663,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="comfort"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -19148,10 +19697,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -19176,10 +19726,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -19203,10 +19754,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -19256,10 +19808,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -19282,10 +19835,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={controlPanel} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-settings-sliders"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -19296,10 +19850,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão Programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -19322,10 +19877,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -19355,11 +19911,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="sound"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -19387,10 +19945,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -19413,10 +19972,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -19439,10 +19999,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -19491,10 +20052,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={home} alt="botão início" />
-                            </span>
-                            <span className="text">Destaques</span>
+                            <span
+                              className="fi fi-rr-home"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Destaques</span>
                           </Link>
                         </div>
                       </div>
@@ -19517,10 +20079,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={controlPanel} alt="botão gestão" />
-                            </span>
-                            <span className="text">Gestão</span>
+                            <span
+                              className="fi fi-rr-settings-sliders"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gestão</span>
                           </Button>
                         </div>
                         <div className="icon-text-pessoas">
@@ -19531,10 +20094,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={programming} alt="botão Programação" />
-                            </span>
-                            <span className="text">Programação</span>
+                            <span
+                              className="fi fi-rr-ballot"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Programação</span>
                           </Button>
                         </div>
                       </div>
@@ -19557,10 +20121,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={bell} alt="botão avisos" />
-                            </span>
-                            <span className="text">Avisos</span>
+                            <span
+                              className="fi fi-rr-bell"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Avisos</span>
                           </Button>
                         </div>
                       </div>
@@ -19590,11 +20155,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                               variant="home"
                               className="ribbon-button ribbon-button-pessoas"
                               id="dropdown-basic-4"
+                              style={{ padding: 5 }}
                             >
-                              <span className="icon">
-                                <img src={print} alt="botão listagens" />
-                              </span>
-                              <span className="text">Listagens</span>
+                              <span
+                                className="fi fi-rr-print"
+                                style={{ fontSize: "2rem" }}
+                              ></span>
+                              <span>Listagens</span>
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                               <div style={{ position: "relative" }}>
@@ -19622,10 +20189,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                                 : ""
                             }`}
                           >
-                            <span className="icon">
-                              <img src={graphs} alt="botão gráficos" />
-                            </span>
-                            <span className="text">Gráficos</span>
+                            <span
+                              className="fi fi-rr-chart-simple"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Gráficos</span>
                           </Link>
                         </div>
                       </div>
@@ -19648,10 +20216,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={module} alt="botão opcionais" />
-                            </span>
-                            <span className="text">Opcionais</span>
+                            <span
+                              className="fi fi-rr-grid"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opcionais</span>
                           </Button>
                         </div>
                       </div>
@@ -19674,10 +20243,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                             disabled
                           >
-                            <span className="icon">
-                              <img src={settings} alt="botão opções" />
-                            </span>
-                            <span className="text">Opções</span>
+                            <span
+                              className="fi fi-rr-tools"
+                              style={{ fontSize: "2rem" }}
+                            ></span>
+                            <span>Opções</span>
                           </Button>
                         </div>
                       </div>
@@ -19723,10 +20293,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={person} alt="botão pessoas" />
-                          </span>
-                          <span className="text">Pessoas</span>
+                          <span
+                            className="fi fi-rr-users-alt"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Pessoas</span>
                         </Link>
                       </div>
                       <div className="grid-container">
@@ -19742,10 +20313,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={employee} alt="botão funcionários" />
-                          </span>
-                          <span className="text">Funcionários</span>
+                          <span
+                            className="fi fi-rr-user"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Funcionários</span>
                         </Link>
                         <Link
                           to="/persons/Visitors"
@@ -19759,10 +20331,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={employee} alt="botão visitantes" />
-                          </span>
-                          <span className="text">Visitantes</span>
+                          <span
+                            className="fi fi-rr-user"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Visitantes</span>
                         </Link>
                         <Link
                           to="/persons/ExternalEmployees"
@@ -19780,10 +20353,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={employee} alt="botão subcontratados" />
-                          </span>
-                          <span className="text">Subcontratados</span>
+                          <span
+                            className="fi fi-rr-user"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Subcontratados</span>
                         </Link>
                         <Link
                           to="/persons/Contacts"
@@ -19797,10 +20371,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={employee} alt="botão contactos" />
-                          </span>
-                          <span className="text">Contactos</span>
+                          <span
+                            className="fi fi-rr-user"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Contactos</span>
                         </Link>
                         <Link
                           to="/persons/User"
@@ -19814,10 +20389,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={employee} alt="botão utentes" />
-                          </span>
-                          <span className="text">Utentes</span>
+                          <span
+                            className="fi fi-rr-user"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Utentes</span>
                         </Link>
                         <Link
                           to="/persons/Temporaries"
@@ -19831,10 +20407,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={employee} alt="botão provisórios" />
-                          </span>
-                          <span className="text">Provisórios</span>
+                          <span
+                            className="fi fi-rr-user"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Provisórios</span>
                         </Link>
                       </div>
                     </div>
@@ -19859,10 +20436,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={department} alt="botão funcionários" />
-                          </span>
-                          <span className="text">Departamentos</span>
+                          <span
+                            className="fi fi-rr-industry-windows"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Departamentos</span>
                         </Link>
                         <Link
                           to="/persons/Professions"
@@ -19873,10 +20451,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={profession} alt="botão visitantes" />
-                          </span>
-                          <span className="text">Profissões</span>
+                          <span
+                            className="fi fi-rr-user-helmet-safety"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Profissões</span>
                         </Link>
                         <Link
                           to="/persons/Groups"
@@ -19887,13 +20466,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img
-                              src={group}
-                              alt="botão funcionários externos"
-                            />
-                          </span>
-                          <span className="text">Grupos</span>
+                          <span
+                            className="fi fi-rr-users"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Grupos</span>
                         </Link>
                         <Link
                           to="/persons/Zones"
@@ -19904,10 +20481,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={zone} alt="botão contactos" />
-                          </span>
-                          <span className="text">Zonas</span>
+                          <span
+                            className="fi fi-rr-land-layer-location"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Zonas</span>
                         </Link>
                         <Link
                           to="/persons/Categories"
@@ -19918,10 +20496,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={category} alt="botão utentes" />
-                          </span>
-                          <span className="text">Categorias</span>
+                          <span
+                            className="fi fi-rr-category"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Categorias</span>
                         </Link>
                         <Button
                           /* to="#" */ type="button"
@@ -19930,10 +20509,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={fraccoes} alt="botão provisórios" />
-                          </span>
-                          <span className="text">Fracções</span>
+                          <span
+                            className="fi fi-rr-car-side"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Fracções</span>
                         </Button>
                       </div>
                     </div>
@@ -19958,13 +20538,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img
-                              src={externalEntities}
-                              alt="botão entidades externas"
-                            />
-                          </span>
-                          <span className="text">Entidades Externas</span>
+                          <span
+                            className="fi fi-rr-corporate"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Entidades Externas</span>
                         </Link>
                         <Button
                           /* to="#" */ type="button"
@@ -19973,13 +20551,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img
-                              src={interventionAreas}
-                              alt="botão áreas de intervenção"
-                            />
-                          </span>
-                          <span className="text">Áreas Intervenção</span>
+                          <span
+                            className="fi fi-rr-id-badge"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Áreas Intervenção</span>
                         </Button>
                         <Button
                           /* to="#" */ type="button"
@@ -19988,13 +20564,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img
-                              src={businessAreas}
-                              alt="botão áreas de negócios"
-                            />
-                          </span>
-                          <span className="text">Áreas Negócios</span>
+                          <span
+                            className="fi fi-rr-credit-card"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Áreas Negócios</span>
                         </Button>
                       </div>
                       <div>
@@ -20007,10 +20581,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={types} alt="botão tipos" />
-                          </span>
-                          <span className="text">Tipos Entidades</span>
+                          <span
+                            className="fi fi-rr-corporate-alt"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Tipos Entidades</span>
                         </Link>
                         <Button
                           /* to='#' */ type="button"
@@ -20019,10 +20594,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={fonts} alt="botão fontes" />
-                          </span>
-                          <span className="text">Origem Entidade</span>
+                          <span
+                            className="fi fi-rr-building"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Origem Entidade</span>
                         </Button>
                       </div>
                     </div>
@@ -20045,13 +20621,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img
-                              src={internalContacts}
-                              alt="botão contactos internos"
-                            />
-                          </span>
-                          <span className="text">Contactos Internos</span>
+                          <span
+                            className="fi fi-rr-address-book"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Contactos Internos</span>
                         </Button>
                       </div>
                     </div>
@@ -20074,10 +20648,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             currentRoute === "#" ? "current-active" : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={imports} alt="botão importar pessoas" />
-                          </span>
-                          <span className="text">Importar Pessoas</span>
+                          <span
+                            className="fi fi-rr-download"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Importar Pessoas</span>
                         </Button>
                       </div>
                     </div>
@@ -20122,10 +20697,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={terminal} alt="botão terminais" />
-                          </span>
-                          <span className="text">Equipamentos</span>
+                          <span
+                            className="fi fi-rr-devices"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Equipamentos</span>
                         </Link>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20138,10 +20714,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={clock} alt="botão períodos" />
-                          </span>
-                          <span className="text">Períodos Horários</span>
+                          <span
+                            className="fi fi-rr-clock"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Períodos Horários</span>
                         </Link>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20154,13 +20731,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img
-                              src={timePlan}
-                              alt="botão planos de horários"
-                            />
-                          </span>
-                          <span className="text">Planos Horários</span>
+                          <span
+                            className="fi fi-rr-calendar-clock"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Planos Horários</span>
                         </Link>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20173,13 +20748,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img
-                              src={accessControls}
-                              alt="botão controle de acesso "
-                            />
-                          </span>
-                          <span className="text">Planos Acessos</span>
+                          <span
+                            className="fi fi-rr-enter"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Planos Acessos</span>
                         </Link>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20188,10 +20761,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                           disabled
                         >
-                          <span className="icon">
-                            <img src={settings} alt="botão opções" />
-                          </span>
-                          <span className="text">Opções</span>
+                          <span
+                            className="fi fi-rr-tools"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Opções</span>
                         </Button>
                       </div>
                     </div>
@@ -20216,13 +20790,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img
-                              src={open}
-                              alt="botão fecho/abertura pagamentos"
-                            />
-                          </span>
-                          <span className="text">Fecho/Abertura</span>
+                          <span
+                            className="fi fi-rr-wallet-income"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Fecho/Abertura</span>
                         </Link>
                       </div>
                     </div>
@@ -20245,10 +20817,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={camera} alt="botão câmeras" />
-                          </span>
-                          <span className="text">Câmeras</span>
+                          <span
+                            className="fi fi-rr-camera-cctv"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Câmeras</span>
                         </Button>
                       </div>
                     </div>
@@ -20289,10 +20862,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={database} alt="botão base de dados" />
-                          </span>
-                          <span className="text">Base de Dados</span>
+                          <span
+                            className="fi fi-rr-sql-server"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Base de Dados</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20303,10 +20877,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                             currentRoute === "#" ? "current-active" : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={backup} alt="botão backup bd" />
-                          </span>
-                          <span className="text">Backup BD</span>
+                          <span
+                            className="fi fi-rr-file-download"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Backup BD</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20319,10 +20894,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={entity} alt="botão entidade" />
-                          </span>
-                          <span className="text">Entidade</span>
+                          <span
+                            className="fi fi-rr-corporate"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Entidade</span>
                         </Link>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20331,10 +20907,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           type="button"
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
-                          <span className="icon">
-                            <img src={licenses} alt="botão licença" />
-                          </span>
-                          <span className="text">Licença</span>
+                          <span
+                            className="fi fi-rr-license"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Licença</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20343,10 +20920,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           type="button"
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
-                          <span className="icon">
-                            <img src={settings} alt="botão opções" />
-                          </span>
-                          <span className="text">Opções</span>
+                          <span
+                            className="fi fi-rr-tools"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Opções</span>
                         </Button>
                       </div>
                     </div>
@@ -20369,10 +20947,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={timeZone} alt="botão fusos horários" />
-                          </span>
-                          <span className="text">Fusos Horários</span>
+                          <span
+                            className="fi fi-rr-globe"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Fusos Horários</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20383,13 +20962,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img
-                              src={nacionalities}
-                              alt="botão nacionalidades"
-                            />
-                          </span>
-                          <span className="text">Nacionalidades</span>
+                          <span
+                            className="fi fi-rr-flag-alt"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Nacionalidades</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20400,10 +20977,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={settings} alt="botão opções" />
-                          </span>
-                          <span className="text">Opções</span>
+                          <span
+                            className="fi fi-rr-tools"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Opções</span>
                         </Button>
                       </div>
                     </div>
@@ -20427,10 +21005,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={profiles} alt="botão perfis" />
-                          </span>
-                          <span className="text">Perfis</span>
+                          <span
+                            className="fi fi-rr-users"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Perfis</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20443,10 +21022,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={users} alt="botão utilizadores" />
-                          </span>
-                          <span className="text">Utilizadores</span>
+                          <span
+                            className="fi fi-rr-users-alt"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Utilizadores</span>
                         </Link>
                       </div>
                     </div>
@@ -20472,10 +21052,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={document} alt="botão documentos" />
-                          </span>
-                          <span className="text">Documentos</span>
+                          <span
+                            className="fi fi-rr-inbox"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Documentos</span>
                         </Button>
                       </div>
                       <div>
@@ -20484,10 +21065,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="btn btn-light ribbon-button-ent"
                           disabled
                         >
-                          <span className="icon">
-                            <img src={typeConfig} alt="botão tipos" />
-                          </span>
-                          <span className="text">Tipos</span>
+                          <span
+                            className="fi fi-rr-corporate-alt"
+                            style={{ fontSize: "1rem", marginRight: 5 }}
+                          ></span>
+                          <span>Tipos</span>
                         </Button>
                       </div>
                     </div>
@@ -20515,10 +21097,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={log} alt="botão log de logins" />
-                          </span>
-                          <span className="text">Logins</span>
+                          <span
+                            className="fi fi-rr-clipboard-list"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Logins</span>
                         </Link>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20531,10 +21114,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                               : ""
                           }`}
                         >
-                          <span className="icon">
-                            <img src={log} alt="botão log de histórico" />
-                          </span>
-                          <span className="text">Histórico</span>
+                          <span
+                            className="fi fi-rr-clipboard-list"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Histórico</span>
                         </Link>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20545,10 +21129,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={consult} alt="botão consultar" />
-                          </span>
-                          <span className="text">Consultar</span>
+                          <span
+                            className="fi fi-rr-search-alt"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Consultar</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20559,10 +21144,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={dpoConsult} alt="botão consultar dpo" />
-                          </span>
-                          <span className="text">Consultar DPO</span>
+                          <span
+                            className="fi fi-rr-file-invoice"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Consultar DPO</span>
                         </Button>
                       </div>
                     </div>
@@ -20601,10 +21187,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           type="button"
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
-                          <span className="icon">
-                            <img src={about} alt="botão acerca de" />
-                          </span>
-                          <span className="text">Acerca de</span>
+                          <span
+                            className="fi fi-rr-book-bookmark"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Acerca de</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20615,10 +21202,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={manual} alt="botão manual" />
-                          </span>
-                          <span className="text">Manual</span>
+                          <span
+                            className="fi fi-rr-employee-handbook"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Manual</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20627,12 +21215,10 @@ export const NavBar = ({ style }: NavBarProps) => {
                           type="button"
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
-                          <span className="icon">
-                            <img
-                              src={blueprint}
-                              alt="botão informações técnicas"
-                            />
-                          </span>
+                          <span
+                            className="fi fi-rr-blueprint"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
                           <span className="text">Informações Técnicas</span>
                         </Button>
                       </div>
@@ -20644,10 +21230,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={version} alt="botão versão" />
-                          </span>
-                          <span className="text">Versão</span>
+                          <span
+                            className="fi fi-rr-code-compare"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Versão</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20658,10 +21245,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                           disabled
                         >
-                          <span className="icon">
-                            <img src={helpdesk} alt="botão helpdesk" />
-                          </span>
-                          <span className="text">Helpdesk</span>
+                          <span
+                            className="fi fi-rr-user-headset"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Helpdesk</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20670,10 +21258,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           type="button"
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
-                          <span className="icon">
-                            <img src={contact} alt="botão contacto" />
-                          </span>
-                          <span className="text">Contacto</span>
+                          <span
+                            className="fi fi-rr-phone-call"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Contacto</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20682,10 +21271,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           type="button"
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
-                          <span className="icon">
-                            <img src={anydesk} alt="botão anydesk" />
-                          </span>
-                          <span className="text">Anydesk</span>
+                          <span
+                            className="fi fi-rr-computer"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Anydesk</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -20694,10 +21284,11 @@ export const NavBar = ({ style }: NavBarProps) => {
                           type="button"
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
-                          <span className="icon">
-                            <img src={whatsapp} alt="botão whatsapp" />
-                          </span>
-                          <span className="text">Whatsapp</span>
+                          <span
+                            className="fi fi-brands-whatsapp"
+                            style={{ fontSize: "2rem" }}
+                          ></span>
+                          <span>Whatsapp</span>
                         </Button>
                       </div>
                     </div>

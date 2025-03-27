@@ -27,6 +27,7 @@ import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
 import { se } from "date-fns/locale";
+import { getVerificationIcons } from "../../../utils/verifyModesForDoors";
 
 // Define a interface para os filtros
 interface Filters {
@@ -684,6 +685,8 @@ export const NaccessAccesses = () => {
                 </span>
               </OverlayTrigger>
             );
+          case "verifyModeNo":
+            return <>{getVerificationIcons(row.verifyModeNo, row.cardNo)}</>;
           default:
             return row[field.key] || "";
         }
