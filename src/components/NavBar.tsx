@@ -3366,19 +3366,21 @@ export const NavBar = ({ style }: NavBarProps) => {
                     {(!isMobile || visibleGroup === "trabalho nclock") && (
                       <div className="btn-group" role="group">
                         <div className="icon-text-pessoas">
-                          <Button
-                            /* to="#" */ type="button"
+                          <Link
+                            to="/nclock/nclockresults"
+                            type="button"
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nclock/nclockresults"
+                                ? "current-active"
+                                : ""
                             }`}
-                            disabled
                           >
                             <span
                               className="fi fi-rr-career-growth"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Resultados</span>
-                          </Button>
+                          </Link>
                         </div>
                         <div className="grid-container" style={{ width: 240 }}>
                           <Button

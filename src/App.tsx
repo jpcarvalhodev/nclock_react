@@ -250,6 +250,7 @@ import { NvisitorMotive } from './pages/sisnid/nvisitor/NvisitorMotive';
 import { NvisitorMoveCard } from './pages/sisnid/nvisitor/NvisitorMoveCard';
 import { NvisitorMoveKiosk } from './pages/sisnid/nvisitor/NvisitorMoveKiosk';
 import { NvisitorVisitors } from './pages/sisnid/nvisitor/NvisitorVisitors';
+import { NclockResults } from './pages/sisnid/nclock/NclockResults';
 
 // Define a função de rotas com animação
 function AnimatedRoutes() {
@@ -304,6 +305,7 @@ function AnimatedRoutes() {
           <Route path="/nclock/nclockaccess" element={<PageProtection><NclockAccess /></PageProtection>} />
           <Route path="/nclock/nclockaccesspresence" element={<PageProtection><NclockAccessPresence /></PageProtection>} />
           <Route path="/nclock/nclocktime" element={<PageProtection><NclockTime /></PageProtection>} />
+          <Route path="/nclock/nclockresults" element={<PageProtection><NclockResults /></PageProtection>} />
 
           <Route path="/naccess/naccessdashboard" element={<PageProtection><NaccessDashboard /></PageProtection>} />
           <Route path="/naccess/naccessdashboardlicensed" element={<PageProtection><NaccessDashboardLicensed /></PageProtection>} />

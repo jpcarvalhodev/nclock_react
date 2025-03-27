@@ -886,3 +886,42 @@ export type EmployeeVisitorMotive = {
   created_at: Date;
   rem: boolean;
 };
+
+export type AttendanceResults = {
+  [key: string]: any;
+  id: string;
+  enrollNumber: string;
+  employeeName: string;
+  date: Date;
+  E1: Date;
+  S1: Date;
+  E2: Date;
+  S2: Date;
+  E3: Date;
+  S3: Date;
+  E4: Date;
+  S4: Date;
+  objectivo: string;
+  ausencia: string;
+  falta: string;
+  efectivo: string;
+  extra: string;
+  naoDefinido: string;
+  tolerancia: string;
+  compCredTmp: string;
+  compDebTmp: string;
+  compCred: string;
+  compDeb: string;
+  compCredTrans: string;
+  saldo: string;
+  justificacao: string;
+  observacao: string;
+  notas: string;
+  ausPagar: string;
+  estado: number;
+  tipo: string;
+  alterado: string;
+  creditos: string;
+  debito: string;
+  custoHora: string;
+}

@@ -235,6 +235,94 @@ export const deleteAttendance = async (attendanceTimeId: string) => {
   return response.json();
 };
 
+export const fetchAllDailyTransactions = async (
+  startDate?: string,
+  endDate?: string,
+  enrollNumbers?: string[],
+  pageNo?: string,
+  pageSize?: string
+) => {
+  const params: string[] = [];
+
+  if (enrollNumbers) {
+    enrollNumbers.forEach((enrollNumbers) => {
+      params.push(`enrollNumbers=${enrollNumbers}`);
+    });
+  }
+
+  if (startDate && endDate) {
+    params.push(`startDate=${startDate}`);
+    params.push(`endDate=${endDate}`);
+  }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  let url = `Attendances/GetDailyTransactions`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
+  const response = await fetchWithAuth(url);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const AddAttendanceResults = async (
+  startDate: string,
+  endDate: string
+) => {
+  const response = await fetchWithAuth(
+    `Attendances/GerarResultados?fromDate=${startDate}&toDate=${endDate}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    }
+  );
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DO CONTEXTO DAS PESSOAS///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const fetchAllData = async () => {
@@ -3350,7 +3438,7 @@ export const fetchAllKioskTransactionByEnrollNumber = async (
 
   if (deviceSNs) {
     deviceSNs.forEach((deviceSNs) => {
-    params.push(`deviceSNs=${deviceSNs}`);
+      params.push(`deviceSNs=${deviceSNs}`);
     });
   }
 
@@ -4858,7 +4946,7 @@ export const fetchAllContador = async (
 
   if (devSNs) {
     devSNs.forEach((devSNs) => {
-    params.push(`devSNs=${devSNs}`);
+      params.push(`devSNs=${devSNs}`);
     });
   }
 
@@ -4938,7 +5026,7 @@ export const fetchAllHistoryLogs = async (
 
   if (userIds) {
     userIds.forEach((userIds) => {
-    params.push(`userIds=${userIds}`);
+      params.push(`userIds=${userIds}`);
     });
   }
 
@@ -4991,7 +5079,7 @@ export const fetchAllLoginLogs = async (
 
   if (userIds) {
     userIds.forEach((userIds) => {
-    params.push(`userIds=${userIds}`);
+      params.push(`userIds=${userIds}`);
     });
   }
 
@@ -5592,13 +5680,13 @@ export const fetchAllAccessesByEnrollNumber = async (
 
   if (deviceSNList) {
     deviceSNList.forEach((deviceSNList) => {
-    params.push(`deviceSNList=${deviceSNList}`);
+      params.push(`deviceSNList=${deviceSNList}`);
     });
   }
 
   if (enrollNumbers) {
     enrollNumbers.forEach((enrollNumbers) => {
-    params.push(`enrollNumbers=${enrollNumbers}`);
+      params.push(`enrollNumbers=${enrollNumbers}`);
     });
   }
 

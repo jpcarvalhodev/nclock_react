@@ -9,7 +9,6 @@ import hidepass from "../../assets/img/login/hidepass.png";
 import showpass from "../../assets/img/login/showpass.png";
 import profileAvatar from "../../assets/img/navbar/navbar/profileAvatar.png";
 import no_entity from "../../assets/img/navbar/no_entity.png";
-import { CustomSpinner } from "../../components/CustomSpinner";
 import { fetchWithoutAuth } from "../../components/FetchWithoutAuth";
 import { useAds } from "../../context/AdsContext";
 import { useEntity } from "../../context/EntityContext";
@@ -40,7 +39,7 @@ export const Login = () => {
   const { fetchAds } = useAds();
   const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs, fetchAllHistoryLogsNoPagination, fetchAllLoginLogsNoPagination } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
-  const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice } = useAttendance();
+  const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice, fetchDailyTransactions, fetchDailyTransactionsNoPagination } = useAttendance();
   const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones, fetchAllDisabledEmployees, fetchAllEmployeesNoPagination, fetchAllDisabledEmployeesNoPagination, fetchEmployeeVisitor, fetchVisitorsMotive } = usePersons();
   const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans, fetchCameras, fetchEventsDevice, fetchEventsAndTransactionDevice, fetchDeviceActivities, fetchEventsDeviceNoPagination } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks, fetchAllMBAndCoin, fetchAllCardAndKiosk, fetchAllChartData, fetchAllCounterNoPagination } = useKiosk();
@@ -256,6 +255,8 @@ export const Login = () => {
             fetchEventsDeviceNoPagination(),
             fetchEventsAndTransactionDevice(),
             fetchDeviceActivities(),
+            fetchDailyTransactions(undefined, undefined, undefined, "1", "20"),
+            fetchDailyTransactionsNoPagination()
           ]);
           setLoading(false);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);

@@ -9,7 +9,11 @@ import {
 import { toast } from "react-toastify";
 
 import * as apiService from "../api/apiService";
-import { Accesses, EmployeeAttendanceTimes } from "../types/Types";
+import {
+  Accesses,
+  AttendanceResults,
+  EmployeeAttendanceTimes,
+} from "../types/Types";
 
 // Definindo o tipo de contexto
 export interface AttendanceContextType {
@@ -55,6 +59,27 @@ export interface AttendanceContextType {
     attendance: EmployeeAttendanceTimes
   ) => Promise<void>;
   handleDeleteAttendance: (attendanceTimeId: string) => Promise<void>;
+  fetchDailyTransactions: (
+    startDate?: string,
+    endDate?: string,
+    enrollNumbers?: string[],
+    pageNo?: string,
+    pageSize?: string
+  ) => Promise<AttendanceResults[]>;
+  handleProcessResults: (startDate: string, endDate: string) => Promise<void>;
+  attendanceResults: AttendanceResults[];
+  setAttendanceResults: (attendanceResults: AttendanceResults[]) => void;
+  fetchDailyTransactionsNoPagination: (
+    startDate?: string,
+    endDate?: string,
+    enrollNumbers?: string[],
+    pageNo?: string,
+    pageSize?: string
+  ) => Promise<AttendanceResults[]>
+  attendanceResultsNoPagination: AttendanceResults[];
+  setAttendanceResultsNoPagination: (attendanceResults: AttendanceResults[]) => void;
+  resultsTotalPages: number;
+  resultsTotalRecords: number;
 }
 
 // Expandindo as opções de busca
@@ -90,6 +115,10 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
   const [accessForGraph, setAccessForGraph] = useState<Accesses[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalRecords, setTotalRecords] = useState<number>(0);
+  const [attendanceResults, setAttendanceResults] = useState<AttendanceResults[]>([]);
+  const [attendanceResultsNoPagination, setAttendanceResultsNoPagination] = useState<AttendanceResults[]>([]);
+  const [resultsTotalPages, setResultsTotalPages] = useState<number>(1);
+  const [resultsTotalRecords, setResultsTotalRecords] = useState<number>(0);
 
   // Função para buscar todas as assiduidades
   const fetchAllAttendances = useCallback(
@@ -102,9 +131,17 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         if (options?.postFetch) {
           options.postFetch(data);
         }
-        const sortedData = data.sort((a: { attendanceTime: string | number | Date; }, b: { attendanceTime: string | number | Date; }) => {
-          return new Date(b.attendanceTime).getTime() - new Date(a.attendanceTime).getTime();
-        });
+        const sortedData = data.sort(
+          (
+            a: { attendanceTime: string | number | Date },
+            b: { attendanceTime: string | number | Date }
+          ) => {
+            return (
+              new Date(b.attendanceTime).getTime() -
+              new Date(a.attendanceTime).getTime()
+            );
+          }
+        );
         setAttendance(sortedData);
         setStartDate(formatDateToStartOfDay(pastDate));
         setEndDate(formatDateToEndOfDay(currentDate));
@@ -318,6 +355,66 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Função para buscar todos os acessos
+  const fetchDailyTransactionsNoPagination = async (
+    startDate?: string,
+    endDate?: string,
+    enrollNumbers?: string[],
+    pageNo?: string,
+    pageSize?: string
+  ): Promise<AttendanceResults[]> => {
+    try {
+      const data = await apiService.fetchAllDailyTransactions(
+        startDate,
+        endDate,
+        enrollNumbers,
+        pageNo,
+        pageSize
+      );
+      setAttendanceResultsNoPagination(data.data);
+      return data.data;
+    } catch (error) {
+      console.error("Erro ao buscar resultados:", error);
+    }
+    return [];
+  };
+
+  // Função para buscar todos os acessos
+  const fetchDailyTransactions = async (
+    startDate?: string,
+    endDate?: string,
+    enrollNumbers?: string[],
+    pageNo?: string,
+    pageSize?: string
+  ): Promise<AttendanceResults[]> => {
+    try {
+      const data = await apiService.fetchAllDailyTransactions(
+        startDate,
+        endDate,
+        enrollNumbers,
+        pageNo,
+        pageSize
+      );
+      setAttendanceResults(data.data);
+      setResultsTotalPages(data.totalPages);
+      setResultsTotalRecords(data.totalRecords);
+      return data.data;
+    } catch (error) {
+      console.error("Erro ao buscar resultados:", error);
+    }
+    return [];
+  };
+
+  // Função para processar os resultados
+  const handleProcessResults = async (startDate: string, endDate: string) => {
+    try {
+      const data = await apiService.AddAttendanceResults(startDate, endDate);
+      toast.success(data.value || "Processamento realizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao realizar novo processamento:", error);
+    }
+  };
+
   // Busca todas as assiduidades ao carregar a página
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -331,6 +428,8 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
         "20"
       );
       fetchAllAccessesbyDevice();
+      fetchDailyTransactions(undefined, undefined, undefined, "1", "20");
+      fetchDailyTransactionsNoPagination();
     }
   }, []);
 
@@ -355,6 +454,15 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     handleAddImportedAttendance,
     handleUpdateAttendance,
     handleDeleteAttendance,
+    fetchDailyTransactions,
+    handleProcessResults,
+    attendanceResults,
+    setAttendanceResults,
+    fetchDailyTransactionsNoPagination,
+    attendanceResultsNoPagination,
+    setAttendanceResultsNoPagination,
+    resultsTotalPages,
+    resultsTotalRecords,
   };
 
   return (
