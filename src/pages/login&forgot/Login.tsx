@@ -72,6 +72,7 @@ export const Login = () => {
       const data = await apiService.fetchLicensesWithoutKey();
       setCompany(data);
       setSelectedNif(Number(data[0].nif));
+      setCompanyName(data[0].name);
     } catch (error) {
       console.error("Erro ao buscar licenças:", error);
     }
@@ -91,6 +92,7 @@ export const Login = () => {
   // Obtém os dados da entidade selecionada ao montar o componente
   useEffect(() => {
     fetchLicenseData();
+    document.title = "NSOFTWARES";
   }, []);
 
   // Obtém o logo da entidade selecionada ao montar o componente
@@ -261,6 +263,7 @@ export const Login = () => {
           setLoading(false);
           toast.info(`Seja bem vindo ${username.toUpperCase()} aos Nsoftwares do NIDGROUP`);
           navigate("/dashboard");
+          document.title = `NSOFTWARES - ${companyName}`;
           const userName = localStorage.getItem('username');
           const checkUser = registeredUsers.filter(user => user.userName === userName)
           if (checkUser) {

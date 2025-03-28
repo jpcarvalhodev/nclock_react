@@ -955,6 +955,10 @@ body {
   transition: none;
 }
 
+.rdrDefinedRangesWrapper {
+  display: none !important;
+}
+
 @media (max-width: 380px) {
   .chart-container,
   .calendar-container,

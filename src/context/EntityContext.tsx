@@ -302,6 +302,15 @@ export const EntityProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  // Atualiza o título da página com o nome da entidade
+  useEffect(() => {
+    if (entities.length > 0) {
+      document.title = `NSOFTWARES - ${entities[0].nome}`;
+    } else {
+      document.title = "NSOFTWARES";
+    }
+  }, [entities]);
+
   return (
     <EntityContext.Provider
       value={{

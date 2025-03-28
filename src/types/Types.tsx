@@ -925,3 +925,10 @@ export type AttendanceResults = {
   debito: string;
   custoHora: string;
 }
+
+export type AttendanceUpdates = {
+  [key: string]: any;
+  id: string;
+  startDate: Date;
+  endDate: Date;
+}

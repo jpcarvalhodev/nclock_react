@@ -887,6 +887,7 @@ export const employeeVisitorMotiveFields = [
 
 export const attendanceResultsFields = [
   { key: "estado", label: "Estado", type: "number" },
+  { key: "tipo", label: "Tipo", type: "string" },
   { key: "date", label: "Data", type: "Date" },
   { key: "enrollNumber", label: "Número", type: "string" },
   { key: "employeeName", label: "Nome", type: "string" },
@@ -915,9 +916,13 @@ export const attendanceResultsFields = [
   { key: "observacao", label: "Observação", type: "string" },
   { key: "notas", label: "Notas", type: "string" },
   { key: "ausPagar", label: "Ausências a Pagar", type: "string" },
-  { key: "tipo", label: "Tipo", type: "string" },
   { key: "alterado", label: "Alterado", type: "string" },
   { key: "creditos", label: "Créditos", type: "string" },
   { key: "debito", label: "Débito", type: "string" },
   { key: "custoHora", label: "Custo/Hora", type: "string" },
+];
+
+export const attendanceUpdatesFields = [
+  { key: "startDate", label: "Data de Início", type: "date" },
+  { key: "endDate", label: "Data de Fim", type: "date" },
 ];

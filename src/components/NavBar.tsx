@@ -380,6 +380,7 @@ export const NavBar = ({ style }: NavBarProps) => {
     fetchAllAccessesbyDevice,
     attendance,
     accessForGraph,
+    fetchDailyTransactions,
   } = useAttendance();
   const [user, setUser] = useState({ name: "", email: "" });
   const [showPessoasRibbon, setShowPessoasRibbon] = useState(false);
@@ -3201,7 +3202,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -3236,7 +3237,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-user-time"
+                              className="fi fi-tr-user-time"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Assiduidade</span>
@@ -3253,7 +3254,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-team-check-alt"
+                              className="fi fi-tr-team-check-alt"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Presenças</span>
@@ -3274,7 +3275,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-replace"
+                              className="fi fi-tr-replace"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Alterações</span>
@@ -3290,7 +3291,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-line-up"
+                              className="fi fi-tr-chart-line-up"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Totais</span>
@@ -3329,7 +3330,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-exit-alt"
+                              className="fi fi-tr-exit-alt"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Acessos</span>
@@ -3345,7 +3346,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-team-check-alt"
+                              className="fi fi-tr-person-circle-check"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Presenças</span>
@@ -3369,6 +3370,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           <Link
                             to="/nclock/nclockresults"
                             type="button"
+                            onClick={() => fetchDailyTransactions()}
                             className={`btn btn-light ribbon-button ribbon-button-pessoas ${
                               currentRoute === "/nclock/nclockresults"
                                 ? "current-active"
@@ -3376,26 +3378,26 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-career-growth"
+                              className="fi fi-tr-career-growth"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Resultados</span>
                           </Link>
                         </div>
-                        <div className="grid-container" style={{ width: 240 }}>
-                          <Button
-                            /* to="#" */ type="button"
+                        <div className="grid-container">
+                          <Link
+                            to="/nclock/nclockupdates" type="button"
+                            //onClick={() => fetchDailyTransactions()}
                             className={`btn btn-light ribbon-button ${
-                              currentRoute === "#" ? "current-active" : ""
+                              currentRoute === "/nclock/nclockupdates" ? "current-active" : ""
                             }`}
-                            disabled
                           >
                             <span
-                              className="fi fi-rr-refresh"
+                              className="fi fi-tr-rotate-square"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Atualizações</span>
-                          </Button>
+                          </Link>
                           <Button
                             /* to='#' */ type="button"
                             className={`btn btn-light ribbon-button ${
@@ -3404,7 +3406,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-time-quarter-to"
+                              className="fi fi-tr-time-quarter-to"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Segmentos</span>
@@ -3417,7 +3419,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-plus-minus"
+                              className="fi fi-tr-plus-minus"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Compensações</span>
@@ -3430,7 +3432,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-battery-three-quarters"
+                              className="fi fi-tr-battery-three-quarters"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Acumulados</span>
@@ -3443,7 +3445,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-hourglass-end"
+                              className="fi fi-tr-hourglass-end"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Banco de Horas</span>
@@ -3456,7 +3458,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-time-add"
+                              className="fi fi-tr-time-add"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Horas Extras</span>
@@ -3476,9 +3478,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                       visibleGroup === "parametrizacoes nclock") && (
                       <div className="btn-group" role="group">
                         <div
-                          className="grid-container-entidades"
-                          style={{ width: 120 }}
-                        >
+                          className="grid-container-entidades">
                           <Link
                             to="/nclock/nclocktime"
                             type="button"
@@ -3489,7 +3489,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-time-check"
+                              className="fi fi-tr-time-check"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Definir Horários</span>
@@ -3502,7 +3502,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-master-plan"
+                              className="fi fi-tr-master-plan"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span className="text">Definir Planos</span>
@@ -3523,7 +3523,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                     {(!isMobile ||
                       visibleGroup === "codigos trabalho nclock") && (
                       <div className="btn-group" role="group">
-                        <div className="grid-container" style={{ width: 250 }}>
+                        <div className="grid-container">
                           <Button
                             /* to="#" */ type="button"
                             className={`btn btn-light ribbon-button ${
@@ -3532,7 +3532,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-ban"
+                              className="fi fi-tr-user-forbidden"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Ausências</span>
@@ -3545,7 +3545,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-interrogation"
+                              className="fi fi-tr-question-square"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Indefinido</span>
@@ -3558,7 +3558,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-briefcase"
+                              className="fi fi-tr-business-time"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Normal</span>
@@ -3571,7 +3571,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-add"
+                              className="fi fi-tr-add"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Extraordinário</span>
@@ -3584,7 +3584,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-limit-speedometer"
+                              className="fi fi-tr-limit-speedometer"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Tolerâncias</span>
@@ -3597,7 +3597,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-back-up"
+                              className="fi fi-tr-back-up"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Banco de Horas</span>
@@ -3612,7 +3612,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-rules-alt"
+                              className="fi fi-tr-rules-alt"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Regras</span>
@@ -3642,7 +3642,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-doctor"
+                              className="fi fi-tr-doctor"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Ausências</span>
@@ -3657,13 +3657,13 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-umbrella-beach"
+                              className="fi fi-tr-umbrella-beach"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Férias</span>
                           </Button>
                         </div>
-                        <div style={{ width: 130 }}>
+                        <div>
                           <Button
                             /* to="#" */ type="button"
                             className={`btn btn-light ribbon-button ${
@@ -3672,7 +3672,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-calendar"
+                              className="fi fi-tr-web-design"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Alterações</span>
@@ -3685,7 +3685,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-suitcase-alt"
+                              className="fi fi-tr-suitcase-alt"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Feriados</span>
@@ -3698,7 +3698,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-list-check"
+                              className="fi fi-tr-list-check"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Validações</span>
@@ -3727,7 +3727,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-calendar"
+                              className="fi fi-tr-calendar"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Calendário</span>
@@ -3740,7 +3740,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-time-quarter-past"
+                              className="fi fi-tr-time-quarter-past"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Segmentada</span>
@@ -3753,7 +3753,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-calendar-lines"
+                              className="fi fi-tr-calendar-lines"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Mensal</span>
@@ -3766,7 +3766,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-exchange-alt"
+                              className="fi fi-tr-exchange-alt"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Trocas</span>
@@ -3779,7 +3779,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-person-circle-question"
+                              className="fi fi-tr-person-circle-question"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Disponível</span>
@@ -3792,7 +3792,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-map-location-track"
+                              className="fi fi-tr-map-location-track"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Planos</span>
@@ -3821,7 +3821,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -3857,7 +3857,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ position: "relative", padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -3889,7 +3889,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -3916,7 +3916,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -3946,7 +3946,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -4001,7 +4001,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -4039,7 +4039,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-exit-alt"
+                              className="fi fi-tr-exit-alt"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Acessos</span>
@@ -4057,7 +4057,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-team-check-alt"
+                              className="fi fi-tr-person-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Presenças</span>
@@ -4072,7 +4072,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-chart-line-up"
+                              className="fi fi-tr-chart-line-up"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Totais</span>
@@ -4087,7 +4087,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-lesson-class"
+                              className="fi fi-tr-lesson-class"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Formações</span>
@@ -4104,10 +4104,10 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-users-alt"
+                              className="fi fi-tr-person-circle-plus"
                               style={{ fontSize: "2rem" }}
                             ></span>
-                            <span>Visitantes</span>
+                            <span>Visitas</span>
                           </Link>
                         </div>
                         <div>
@@ -4121,7 +4121,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-question-square"
+                              className="fi fi-tr-question-square"
                               style={{ fontSize: "1rem", marginRight: 5 }}
                             ></span>
                             <span>Motivos</span>
@@ -4151,7 +4151,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-digital-tachograph"
+                              className="fi fi-tr-digital-tachograph"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Video Porteiro</span>
@@ -4168,7 +4168,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-door-open"
+                              className="fi fi-tr-door-open"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Abertura Manual</span>
@@ -4195,7 +4195,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-analyse"
+                              className="fi fi-tr-analyse"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Revistas</span>
@@ -4210,7 +4210,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-car-journey"
+                              className="fi fi-tr-car-journey"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Planos</span>
@@ -4237,7 +4237,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-download"
+                              className="fi fi-tr-progress-download"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Importar</span>
@@ -4252,7 +4252,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-settings-sliders"
+                              className="fi fi-tr-assessment-alt"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gestão de Planos</span>
@@ -4267,7 +4267,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -4298,7 +4298,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -4334,7 +4334,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -4366,7 +4366,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -4393,7 +4393,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -4421,7 +4421,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -4476,7 +4476,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -4734,7 +4734,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -4769,7 +4769,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               id="dropdown-basic-4"
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -4801,7 +4801,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -4830,7 +4830,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -4858,7 +4858,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -4911,7 +4911,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -5140,7 +5140,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -5176,7 +5176,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -5208,7 +5208,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -5235,7 +5235,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -5262,7 +5262,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -5315,7 +5315,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -5442,7 +5442,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -5478,7 +5478,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -5510,7 +5510,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -5537,7 +5537,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -5564,7 +5564,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -5619,7 +5619,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -5730,7 +5730,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -5766,7 +5766,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -5798,7 +5798,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -5825,7 +5825,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -5853,7 +5853,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -5906,7 +5906,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -5975,7 +5975,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -6011,7 +6011,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -6043,7 +6043,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -6079,7 +6079,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-grid"
+                                className="fi fi-tr-module"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span className="text">Opcionais</span>
@@ -6121,7 +6121,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -6174,7 +6174,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -6250,7 +6250,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -6286,7 +6286,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -6318,7 +6318,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -6345,7 +6345,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -6372,7 +6372,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -6426,7 +6426,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -6620,7 +6620,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -6656,7 +6656,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -6688,7 +6688,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -6715,7 +6715,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -6742,7 +6742,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -6797,7 +6797,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -6884,7 +6884,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -6920,7 +6920,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -6952,7 +6952,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -6981,7 +6981,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -7009,7 +7009,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -7064,7 +7064,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -7201,7 +7201,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -7237,7 +7237,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -7269,7 +7269,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -7296,7 +7296,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -7324,7 +7324,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -7375,7 +7375,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -7459,7 +7459,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -7495,7 +7495,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -7527,7 +7527,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -7554,7 +7554,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -7581,7 +7581,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -7635,7 +7635,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -7736,7 +7736,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -7772,7 +7772,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -7804,7 +7804,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -7831,7 +7831,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -7858,7 +7858,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -7913,7 +7913,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -8015,7 +8015,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -8051,7 +8051,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -8083,7 +8083,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -8112,7 +8112,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -8140,7 +8140,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -8195,7 +8195,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -8281,7 +8281,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -8317,7 +8317,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -8349,7 +8349,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -8376,7 +8376,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -8404,7 +8404,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -8455,7 +8455,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -8539,7 +8539,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -8575,7 +8575,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -8607,7 +8607,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -8634,7 +8634,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -8661,7 +8661,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -8715,7 +8715,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -8932,7 +8932,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -8968,7 +8968,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -9000,7 +9000,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -9027,7 +9027,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -9054,7 +9054,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -9109,7 +9109,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -9208,7 +9208,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -9244,7 +9244,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -9276,7 +9276,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -9305,7 +9305,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -9333,7 +9333,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -9387,7 +9387,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -9557,7 +9557,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -9593,7 +9593,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -9625,7 +9625,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -9652,7 +9652,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -9679,7 +9679,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -9733,7 +9733,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -9832,7 +9832,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -9868,7 +9868,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -9900,7 +9900,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -9927,7 +9927,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -9954,7 +9954,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -10009,7 +10009,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -10081,7 +10081,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -10117,7 +10117,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -10149,7 +10149,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -10178,7 +10178,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -10206,7 +10206,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -10261,7 +10261,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -10332,7 +10332,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -10368,7 +10368,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -10400,7 +10400,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -10429,7 +10429,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -10457,7 +10457,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -10512,7 +10512,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -10581,7 +10581,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -10617,7 +10617,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -10649,7 +10649,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -10676,7 +10676,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -10704,7 +10704,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -10759,7 +10759,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -10828,7 +10828,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -10864,7 +10864,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -10896,7 +10896,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -10925,7 +10925,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -10953,7 +10953,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -11006,7 +11006,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -11075,7 +11075,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -11111,7 +11111,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -11143,7 +11143,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -11179,7 +11179,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-grid"
+                                className="fi fi-tr-module"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span className="text">Opcionais</span>
@@ -11221,7 +11221,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -11276,7 +11276,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -11350,7 +11350,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -11389,7 +11389,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -11421,7 +11421,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -11450,7 +11450,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -11480,7 +11480,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -11535,7 +11535,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -11577,7 +11577,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-print"
+                              className="fi fi-tr-print"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Imprimir</span>
@@ -11619,7 +11619,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -11655,7 +11655,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -11687,7 +11687,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -11714,7 +11714,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -11742,7 +11742,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -11796,7 +11796,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -11865,7 +11865,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -11901,7 +11901,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -11933,7 +11933,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -11960,7 +11960,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -11987,7 +11987,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -12042,7 +12042,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -12514,7 +12514,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -12549,7 +12549,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               id="dropdown-basic-4"
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -12581,7 +12581,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -12610,7 +12610,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -12638,7 +12638,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -12689,7 +12689,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -12902,7 +12902,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -12938,7 +12938,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -12970,7 +12970,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -12997,7 +12997,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -13024,7 +13024,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -13079,7 +13079,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -13148,7 +13148,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -13184,7 +13184,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -13216,7 +13216,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -13243,7 +13243,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -13271,7 +13271,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -13322,7 +13322,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -13391,7 +13391,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -13427,7 +13427,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -13459,7 +13459,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -13486,7 +13486,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -13513,7 +13513,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -13568,7 +13568,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -13637,7 +13637,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -13673,7 +13673,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -13705,7 +13705,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -13732,7 +13732,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -13760,7 +13760,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -13815,7 +13815,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -13884,7 +13884,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -13920,7 +13920,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -13952,7 +13952,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -13979,7 +13979,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -14007,7 +14007,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -14062,7 +14062,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -14131,7 +14131,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -14167,7 +14167,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -14199,7 +14199,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -14226,7 +14226,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -14254,7 +14254,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -14307,7 +14307,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -14376,7 +14376,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -14412,7 +14412,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -14444,7 +14444,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -14471,7 +14471,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -14498,7 +14498,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -14552,7 +14552,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -14653,7 +14653,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -14689,7 +14689,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -14721,7 +14721,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -14748,7 +14748,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -14775,7 +14775,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -14830,7 +14830,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -14899,7 +14899,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -14935,7 +14935,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -14967,7 +14967,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -14996,7 +14996,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -15024,7 +15024,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -15079,7 +15079,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -15150,7 +15150,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -15186,7 +15186,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -15218,7 +15218,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -15247,7 +15247,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -15275,7 +15275,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -15329,7 +15329,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -15637,7 +15637,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -15673,7 +15673,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -15705,7 +15705,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -15732,7 +15732,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -15759,7 +15759,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -15814,7 +15814,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -15928,7 +15928,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -15964,7 +15964,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -15996,7 +15996,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -16023,7 +16023,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -16051,7 +16051,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -16104,7 +16104,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -16341,7 +16341,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Serviços</span>
@@ -16425,7 +16425,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -16461,7 +16461,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -16493,7 +16493,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -16520,7 +16520,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -16547,7 +16547,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -16601,7 +16601,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -16977,7 +16977,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -17013,7 +17013,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -17045,7 +17045,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -17081,7 +17081,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-grid"
+                                className="fi fi-tr-module"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span className="text">Opcionais</span>
@@ -17121,7 +17121,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             className="btn btn-light ribbon-button ribbon-button-pessoas"
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -17170,7 +17170,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -17312,7 +17312,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -17348,7 +17348,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -17380,7 +17380,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -17407,7 +17407,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -17434,7 +17434,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -17487,7 +17487,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -17556,7 +17556,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -17592,7 +17592,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -17624,7 +17624,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -17651,7 +17651,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -17678,7 +17678,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -17733,7 +17733,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -17820,7 +17820,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -17858,7 +17858,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -17890,7 +17890,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -17919,7 +17919,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -17949,7 +17949,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -18004,7 +18004,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -18150,7 +18150,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -18188,7 +18188,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -18220,7 +18220,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -18249,7 +18249,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -18279,7 +18279,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -18333,7 +18333,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -18417,7 +18417,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -18453,7 +18453,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -18485,7 +18485,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -18512,7 +18512,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -18539,7 +18539,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -18592,7 +18592,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -18691,7 +18691,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -18727,7 +18727,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -18759,7 +18759,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -18786,7 +18786,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -18813,7 +18813,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -18868,7 +18868,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -18955,7 +18955,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -18991,7 +18991,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -19023,7 +19023,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -19052,7 +19052,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -19080,7 +19080,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -19134,7 +19134,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -19203,7 +19203,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -19239,7 +19239,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -19271,7 +19271,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -19298,7 +19298,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -19325,7 +19325,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -19380,7 +19380,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -19452,7 +19452,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -19488,7 +19488,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -19520,7 +19520,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -19549,7 +19549,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -19577,7 +19577,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -19631,7 +19631,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -19700,7 +19700,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -19736,7 +19736,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -19768,7 +19768,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -19795,7 +19795,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -19822,7 +19822,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -19875,7 +19875,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-home"
+                              className="fi fi-tr-house-circle-check"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Destaques</span>
@@ -19944,7 +19944,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-bell"
+                              className="fi fi-tr-bell"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Avisos</span>
@@ -19980,7 +19980,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                               style={{ padding: 5 }}
                             >
                               <span
-                                className="fi fi-rr-print"
+                                className="fi fi-tr-print"
                                 style={{ fontSize: "2rem" }}
                               ></span>
                               <span>Listagens</span>
@@ -20012,7 +20012,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             }`}
                           >
                             <span
-                              className="fi fi-rr-chart-simple"
+                              className="fi fi-tr-chart-simple"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Gráficos</span>
@@ -20039,7 +20039,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-grid"
+                              className="fi fi-tr-module"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opcionais</span>
@@ -20066,7 +20066,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                             disabled
                           >
                             <span
-                              className="fi fi-rr-tools"
+                              className="fi fi-tr-customize"
                               style={{ fontSize: "2rem" }}
                             ></span>
                             <span>Opções</span>
@@ -20116,7 +20116,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-users-alt"
+                            className="fi fi-tr-users-alt"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Pessoas</span>
@@ -20136,7 +20136,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-user"
+                            className="fi fi-tr-employee-man"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Funcionários</span>
@@ -20154,7 +20154,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-user"
+                            className="fi fi-tr-employee-man-alt"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Visitantes</span>
@@ -20176,7 +20176,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-user"
+                            className="fi fi-tr-driver-man"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Subcontratados</span>
@@ -20194,7 +20194,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-user"
+                            className="fi fi-tr-member-list"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Contactos</span>
@@ -20212,7 +20212,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-user"
+                            className="fi fi-tr-user-pen"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Utentes</span>
@@ -20230,7 +20230,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-user"
+                            className="fi fi-tr-remove-user"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Provisórios</span>
@@ -20259,7 +20259,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-industry-windows"
+                            className="fi fi-tr-industry-windows"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Departamentos</span>
@@ -20274,7 +20274,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-user-helmet-safety"
+                            className="fi fi-tr-user-helmet-safety"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Profissões</span>
@@ -20289,7 +20289,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-users"
+                            className="fi fi-tr-users"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Grupos</span>
@@ -20304,7 +20304,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-land-layer-location"
+                            className="fi fi-tr-land-layer-location"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Zonas</span>
@@ -20319,7 +20319,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-category"
+                            className="fi fi-tr-category"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Categorias</span>
@@ -20332,7 +20332,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-car-side"
+                            className="fi fi-tr-car-side"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Fracções</span>
@@ -20361,7 +20361,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-corporate"
+                            className="fi fi-tr-corporate"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Entidades Externas</span>
@@ -20374,7 +20374,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-id-badge"
+                            className="fi fi-tr-id-badge"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Áreas Intervenção</span>
@@ -20387,7 +20387,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-credit-card"
+                            className="fi fi-tr-credit-card-buyer"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Áreas Negócios</span>
@@ -20404,7 +20404,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-corporate-alt"
+                            className="fi fi-tr-corporate-alt"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Tipos Entidades</span>
@@ -20417,7 +20417,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-building"
+                            className="fi fi-tr-building"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Origem Entidade</span>
@@ -20444,7 +20444,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-address-book"
+                            className="fi fi-tr-address-book"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Contactos Internos</span>
@@ -20471,7 +20471,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-download"
+                            className="fi fi-tr-cloud-download-alt"
                             style={{ fontSize: "1rem", marginRight: 5 }}
                           ></span>
                           <span>Importar Pessoas</span>
@@ -20520,7 +20520,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-devices"
+                            className="fi fi-tr-devices"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Equipamentos</span>
@@ -20537,7 +20537,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-clock"
+                            className="fi fi-tr-clock"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Períodos Horários</span>
@@ -20554,7 +20554,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-calendar-clock"
+                            className="fi fi-tr-calendar-clock"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Planos Horários</span>
@@ -20571,7 +20571,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-enter"
+                            className="fi fi-tr-check-in-calendar"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Planos Acessos</span>
@@ -20584,7 +20584,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-tools"
+                            className="fi fi-tr-customize"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Opções</span>
@@ -20613,7 +20613,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-wallet-income"
+                            className="fi fi-tr-wallet-income"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Fecho/Abertura</span>
@@ -20640,7 +20640,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-camera-cctv"
+                            className="fi fi-tr-camera-cctv"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Câmeras</span>
@@ -20685,7 +20685,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-sql-server"
+                            className="fi fi-tr-sql-server"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Base de Dados</span>
@@ -20700,7 +20700,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-file-download"
+                            className="fi fi-tr-file-download"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Backup BD</span>
@@ -20717,7 +20717,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-corporate"
+                            className="fi fi-tr-corporate"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Entidade</span>
@@ -20730,7 +20730,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
                           <span
-                            className="fi fi-rr-license"
+                            className="fi fi-tr-license"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Licença</span>
@@ -20743,7 +20743,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
                           <span
-                            className="fi fi-rr-tools"
+                            className="fi fi-tr-customize"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Opções</span>
@@ -20770,7 +20770,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-globe"
+                            className="fi fi-tr-globe"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Fusos Horários</span>
@@ -20785,7 +20785,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-flag-alt"
+                            className="fi fi-tr-government-flag"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Nacionalidades</span>
@@ -20800,7 +20800,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-tools"
+                            className="fi fi-tr-customize"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Opções</span>
@@ -20828,7 +20828,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-users"
+                            className="fi fi-tr-admin-alt"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Perfis</span>
@@ -20845,7 +20845,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-users-alt"
+                            className="fi fi-tr-user-key"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Utilizadores</span>
@@ -20875,7 +20875,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-inbox"
+                            className="fi fi-tr-clip-file"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Documentos</span>
@@ -20920,7 +20920,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-clipboard-list"
+                            className="fi fi-tr-hand-key"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Logins</span>
@@ -20937,7 +20937,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           }`}
                         >
                           <span
-                            className="fi fi-rr-clipboard-list"
+                            className="fi fi-tr-rectangle-history-circle-plus"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Histórico</span>
@@ -20952,7 +20952,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-search-alt"
+                            className="fi fi-tr-search-alt"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Consultar</span>
@@ -20967,7 +20967,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-file-invoice"
+                            className="fi fi-tr-file-invoice"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Consultar DPO</span>
@@ -21010,7 +21010,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
                           <span
-                            className="fi fi-rr-book-bookmark"
+                            className="fi fi-tr-id-card-clip-alt"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Acerca de</span>
@@ -21025,7 +21025,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-employee-handbook"
+                            className="fi fi-tr-employee-handbook"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Manual</span>
@@ -21038,10 +21038,10 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
                           <span
-                            className="fi fi-rr-blueprint"
+                            className="fi fi-tr-sitemap"
                             style={{ fontSize: "2rem" }}
                           ></span>
-                          <span className="text">Informações Técnicas</span>
+                          <span className="text">Rede</span>
                         </Button>
                       </div>
                       <div className="icon-text-pessoas">
@@ -21053,7 +21053,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-code-compare"
+                            className="fi fi-tr-code-compare"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Versão</span>
@@ -21068,7 +21068,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           disabled
                         >
                           <span
-                            className="fi fi-rr-user-headset"
+                            className="fi fi-tr-customer-service"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Helpdesk</span>
@@ -21081,7 +21081,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
                           <span
-                            className="fi fi-rr-phone-call"
+                            className="fi fi-tr-phone-call"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Contacto</span>
@@ -21094,7 +21094,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
                           <span
-                            className="fi fi-rr-computer"
+                            className="fi fi-tr-computer"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Anydesk</span>
@@ -21107,7 +21107,7 @@ export const NavBar = ({ style }: NavBarProps) => {
                           className="btn btn-light ribbon-button ribbon-button-pessoas"
                         >
                           <span
-                            className="fi fi-brands-whatsapp"
+                            className="fi fi-tr-circle-phone"
                             style={{ fontSize: "2rem" }}
                           ></span>
                           <span>Whatsapp</span>

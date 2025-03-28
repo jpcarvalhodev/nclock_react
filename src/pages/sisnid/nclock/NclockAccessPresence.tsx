@@ -162,7 +162,11 @@ export const NclockAccessPresence = () => {
       };
     });
 
-    const combinedData = [...presenceArray, ...absentRecords];
+    let combinedData = [...presenceArray, ...absentRecords];
+    
+    combinedData = combinedData.filter(
+      (item) => item.nameUser !== "Sem Nome"
+    );
 
     setAccessPresence(combinedData);
   }, [accessForGraph, employeesNoPagination]);

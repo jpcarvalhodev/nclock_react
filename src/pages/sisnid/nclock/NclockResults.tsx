@@ -27,7 +27,6 @@ import {
 } from "../../../fields/Fields";
 import { usePersons } from "../../../context/PersonsContext";
 import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
-import { de } from "date-fns/locale";
 
 // Define a interface para os filtros
 interface Filters {
@@ -78,6 +77,7 @@ export const NclockResults = () => {
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "estado",
+    "tipo",
     "enrollNumber",
     "employeeName",
     "date",
@@ -85,6 +85,12 @@ export const NclockResults = () => {
     "S1",
     "E2",
     "S2",
+    "objectivo",
+    "ausencia",
+    "falta",
+    "efectivo",
+    "extra",
+    "naoDefinido",
   ]);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [resetSelection, setResetSelection] = useState(false);
@@ -312,6 +318,7 @@ export const NclockResults = () => {
   const handleResetColumns = () => {
     setSelectedColumns([
       "estado",
+      "tipo",
       "enrollNumber",
       "employeeName",
       "date",
@@ -319,6 +326,12 @@ export const NclockResults = () => {
       "S1",
       "E2",
       "S2",
+      "objectivo",
+      "ausencia",
+      "falta",
+      "efectivo",
+      "extra",
+      "naoDefinido",
     ]);
   };
 
@@ -481,6 +494,22 @@ export const NclockResults = () => {
                   </div>
                 );
               case 2:
+                return (
+                  <div style={{ display: "inline-flex", alignItems: "center" }}>
+                    <div
+                      style={{
+                        height: "10px",
+                        width: "10px",
+                        backgroundColor: "yellow",
+                        borderRadius: "50%",
+                        marginRight: "5px",
+                      }}
+                      title="Em curso"
+                    />
+                    Em curso
+                  </div>
+                );
+              case 3:
                 return (
                   <div style={{ display: "inline-flex", alignItems: "center" }}>
                     <div
@@ -651,6 +680,58 @@ export const NclockResults = () => {
                   }
                   fields={getSelectedFields()}
                 />
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">Validar</Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-check-circle"
+                    onClick={() => setShowColumnSelector(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Remover Validação
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-ban"
+                    onClick={() => setShowColumnSelector(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
               </div>
               <div className="buttons-container-data-range">
                 <OverlayTrigger
@@ -949,7 +1030,34 @@ export const NclockResults = () => {
                   }
                 >
                   <CustomOutlineButton
-                    icon="bi bi-check"
+                    icon="bi bi-check-circle"
+                    onClick={() => setShowColumnSelector(true)}
+                    iconSize="1.1em"
+                  />
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  delay={0}
+                  container={document.body}
+                  popperConfig={{
+                    strategy: "fixed",
+                    modifiers: [
+                      {
+                        name: "preventOverflow",
+                        options: {
+                          boundary: "window",
+                        },
+                      },
+                    ],
+                  }}
+                  overlay={
+                    <Tooltip className="custom-tooltip">
+                      Remover Validação
+                    </Tooltip>
+                  }
+                >
+                  <CustomOutlineButton
+                    icon="bi bi-ban"
                     onClick={() => setShowColumnSelector(true)}
                     iconSize="1.1em"
                   />

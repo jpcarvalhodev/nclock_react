@@ -293,7 +293,7 @@ export const AddAttendanceResults = async (
   endDate: string
 ) => {
   const response = await fetchWithAuth(
-    `Attendances/GerarResultados?fromDate=${startDate}&toDate=${endDate}`,
+    `Attendances/GerarResultados?startDate=${startDate}&endDate=${endDate}`,
     {
       method: "POST",
       headers: {
