@@ -17,7 +17,7 @@ import { useKiosk } from "../../../context/KioskContext";
 import { useEffect, useState } from "react";
 import { Accesses, KioskTransactionCard } from "../../../types/Types";
 import { format, parse } from "date-fns";
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 import { usePersons } from "../../../context/PersonsContext";
 import { Carousel } from "react-responsive-carousel";
 import { pt } from "date-fns/locale";

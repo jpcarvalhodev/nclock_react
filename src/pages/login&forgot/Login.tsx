@@ -14,7 +14,7 @@ import { useAds } from "../../context/AdsContext";
 import { useEntity } from "../../context/EntityContext";
 import { useKiosk } from "../../context/KioskContext";
 import { useLicense } from "../../context/LicenseContext";
-import { useAttendance } from "../../context/MovementContext";
+import { useAttendance } from "../../context/AttendanceContext";
 
 import { useNavbar } from "../../context/NavbarContext";
 import { usePersons } from "../../context/PersonsContext";
@@ -39,7 +39,7 @@ export const Login = () => {
   const { fetchAds } = useAds();
   const { fetchAllEntity, fetchAllLoginLogs, fetchAllHistoryLogs, fetchAllHistoryLogsNoPagination, fetchAllLoginLogsNoPagination } = useEntity();
   const { fetchAllLicensesWithoutKey } = useLicense();
-  const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice, fetchDailyTransactions, fetchDailyTransactionsNoPagination } = useAttendance();
+  const { fetchAllAttendances, fetchAllInitialAccessesbyDevice, fetchAllAccessesbyDevice, fetchDailyTransactions, fetchDailyTransactionsNoPagination, fetchAllAttendancesNoPagination } = useAttendance();
   const { registeredUsers, fetchAllData, fetchAllEmployees, fetchAllDepartments, fetchAllGroups, fetchAllRegisteredUsers, fetchAllCardData, fetchAllCategories, fetchAllExternalEntitiesData, fetchAllProfessions, fetchAllZones, fetchAllDisabledEmployees, fetchAllEmployeesNoPagination, fetchAllDisabledEmployeesNoPagination, fetchEmployeeVisitor, fetchVisitorsMotive } = usePersons();
   const { fetchAllDevices, fetchAllMBDevices, fetchAccessControl, fetchAllMBCloseOpen, fetchTimePeriods, fetchAllDoorData, fetchAllAux, fetchAllAuxData, fetchTimePlans, fetchCameras, fetchEventsDevice, fetchEventsAndTransactionDevice, fetchDeviceActivities, fetchEventsDeviceNoPagination } = useTerminals();
   const { fetchAllCoin, fetchAllCounter, fetchAllLimpezas, fetchAllManualOpen, fetchAllMoveCard, fetchAllMoveKiosk, fetchAllMoveVP, fetchAllOcorrencias, fetchAllPayCoins, fetchAllPayTerminal, fetchAllTasks, fetchAllMBAndCoin, fetchAllCardAndKiosk, fetchAllChartData, fetchAllCounterNoPagination } = useKiosk();
@@ -224,7 +224,8 @@ export const Login = () => {
             fetchAllLoginLogs(undefined, undefined, undefined, "1", "20"),
             fetchAllHistoryLogsNoPagination(),
             fetchAllHistoryLogs(undefined, undefined, undefined, "1", "20"),
-            fetchAllAttendances(),
+            fetchAllAttendancesNoPagination(),
+            fetchAllAttendances(undefined, "1", "20", undefined, undefined, undefined),
             fetchAllInitialAccessesbyDevice(undefined, undefined, undefined, "1", "20"),
             fetchAllAccessesbyDevice(),
             fetchAllMBDevices(),

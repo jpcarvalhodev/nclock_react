@@ -149,6 +149,13 @@ export const TerminalCloseOpen = () => {
     fetchAllMBCloseOpen();
   }, []);
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchAllDevicesBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Atualiza a seleção ao resetar
   useEffect(() => {
     if (resetSelection) {

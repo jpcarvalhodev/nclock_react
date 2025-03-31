@@ -252,6 +252,13 @@ export const NkioskPayTerminal = () => {
     fetchPaginationPayTerminal(String(currentPage), String(perPage));
   }, [currentPage, perPage]);
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchPaymentsBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Função para atualizar os pagamentos dos terminais
   const refreshPayTerminal = () => {
     fetchAllPayTerminal(undefined, undefined, "1", "20");

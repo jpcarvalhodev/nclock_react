@@ -7,6 +7,8 @@ import {
   Accesses,
   Ads,
   AllDevices,
+  AttendanceTime,
+  AttendanceTimePeriod,
   Auxiliaries,
   BackupDB,
   Cameras,
@@ -55,8 +57,43 @@ let hasShown403 = false;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DO CONTEXTO DOS MOVIMENTOS////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const fetchAllAttendances = async () => {
-  const response = await fetchWithAuth(`Attendances/GetAllAttendances`);
+export const fetchAllAttendances = async (
+  type?: number,
+  pageNo?: string,
+  pageSize?: string,
+  enrollNumbers?: string[],
+  startDate?: string,
+  endDate?: string
+) => {
+  const params: string[] = [];
+
+  if (enrollNumbers) {
+    enrollNumbers.forEach((enrollNumbers) => {
+      params.push(`enrollNumbers=${enrollNumbers}`);
+    });
+  }
+
+  if (startDate && endDate) {
+    params.push(`startDate=${startDate}`);
+    params.push(`endDate=${endDate}`);
+  }
+
+  if (pageNo && pageSize) {
+    params.push(`pageNumber=${pageNo}`);
+    params.push(`pageSize=${pageSize}`);
+  }
+
+  if (type) {
+    params.push(`type=${type}`);
+  }
+
+  let url = `Attendances/GetAllAttendances`;
+  if (params.length > 0) {
+    url += `?${params.join("&")}`;
+  }
+
+  console.log("URL:", url);
+  const response = await fetchWithAuth(url)
   if (response.status === 403) {
     if (!hasShown403) {
       toast.error(
@@ -298,7 +335,7 @@ export const AddAttendanceResults = async (
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-      }
+      },
     }
   );
   if (response.status === 403) {
@@ -5731,6 +5768,241 @@ export const addAccessTransaction = async (access: Partial<Accesses>) => {
     },
     body: JSON.stringify(access),
   });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////APIs DE HORÁRIOS E PLANOS DE HORÁRIOS DA ASSIDUIDADE/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const fetchAllAttendanceTimes = async () => {
+  const response = await fetchWithAuth(`AttHorarios/GetAllHorarios`);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const addAttendanceTimes = async (attendanceTime: AttendanceTime) => {
+  const response = await fetchWithAuth(`AttHorarios/CreateHorario`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(attendanceTime),
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const updateAttendanceTimes = async (attendanceTime: AttendanceTime) => {
+  const response = await fetchWithAuth(
+    `AttHorarios/UpdateHorario?id=${attendanceTime.id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(attendanceTime),
+    }
+  );
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const deleteAttendanceTimes = async (id: string) => {
+  const response = await fetchWithAuth(`AttHorarios/DeleteHorario?id=${id}`, {
+    method: "DELETE",
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const fetchAllAttendanceTimesPeriods = async () => {
+  const response = await fetchWithAuth(`AttHorarios/GetAllHorariosPeriodos`);
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const addAttendanceTimesPeriods = async (
+  attendanceTime: AttendanceTimePeriod
+) => {
+  const response = await fetchWithAuth(`AttHorarios/CreateHorarioPeriodo`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(attendanceTime),
+  });
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const updateAttendanceTimesPeriods = async (
+  attendanceTime: AttendanceTimePeriod
+) => {
+  const response = await fetchWithAuth(
+    `AttHorarios/UpdateHorarioPeriodo?id=${attendanceTime.id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(attendanceTime),
+    }
+  );
+  if (response.status === 403) {
+    if (!hasShown403) {
+      toast.error(
+        "Você não tem permissão para visualizar o conteúdo desta página"
+      );
+      hasShown403 = true;
+      throw new Error();
+    }
+  }
+  if (!response.ok) {
+    const errorData = await response.json();
+    const message = errorData?.error?.[""]?.errors?.[0]?.errorMessage;
+    if (message) {
+      toast.error(message);
+    } else {
+      toast.error(errorData.message || errorData.error);
+    }
+    throw new Error();
+  }
+  return response.json();
+};
+
+export const deleteAttendanceTimesPeriods = async (id: string) => {
+  const response = await fetchWithAuth(
+    `AttHorarios/DeleteHorarioPeriodo?id=${id}`,
+    {
+      method: "DELETE",
+    }
+  );
   if (response.status === 403) {
     if (!hasShown403) {
       toast.error(

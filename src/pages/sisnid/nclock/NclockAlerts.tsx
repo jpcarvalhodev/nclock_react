@@ -225,6 +225,13 @@ export const NclockAlerts = () => {
     }
   };
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchAlertsBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Busca os dados se a paginação mudar
   useEffect(() => {
     fetchPaginationAlerts(String(currentPage), String(perPage));

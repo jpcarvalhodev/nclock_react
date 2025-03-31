@@ -230,6 +230,13 @@ export const NviewAlerts = () => {
     fetchPaginationAlerts(String(currentPage), String(perPage));
   }, [currentPage, perPage]);
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchAlertsBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Função para atualizar os alertas
   const refreshTasks = () => {
     fetchEventsDevice(undefined, undefined, undefined, "1", "20");

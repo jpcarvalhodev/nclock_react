@@ -14,7 +14,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import "../../../css/PagesStyles.css";
 import { Nav, OverlayTrigger, Tab, Tooltip } from "react-bootstrap";
 
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 
 import { usePersons } from "../../../context/PersonsContext";
 import { CreateModalAccess } from "../../../modals/CreateModalAccess";
@@ -287,6 +287,13 @@ export const NvisitorAccess = () => {
 
     setFilteredAccess(deduplicated);
   }, [access]);
+
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchAccessesBetweenDates();
+    }
+  }, [startDate, endDate]); 
 
   // Busca os dados se a paginação mudar
   useEffect(() => {

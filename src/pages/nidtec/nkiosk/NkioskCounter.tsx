@@ -212,6 +212,13 @@ export const NkioskCounter = () => {
     fetchPaginationCounter(String(currentPage), String(perPage));
   }, [currentPage, perPage]);
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchAllCounterBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Função para atualizar as recolhas do moedeiro
   const refreshCounter = () => {
     fetchAllCounter(undefined, undefined, "1", "20");

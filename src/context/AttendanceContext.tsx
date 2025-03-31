@@ -12,25 +12,34 @@ import * as apiService from "../api/apiService";
 import {
   Accesses,
   AttendanceResults,
+  AttendanceTime,
   EmployeeAttendanceTimes,
 } from "../types/Types";
 
 // Definindo o tipo de contexto
 export interface AttendanceContextType {
   attendance: EmployeeAttendanceTimes[];
+  setAttendance: (attendance: EmployeeAttendanceTimes[]) => void;
   access: Accesses[];
   accessForGraph: Accesses[];
   totalPages: number;
   totalRecords: number;
-  startDate: string;
-  endDate: string;
-  setStartDate: (date: string) => void;
-  setEndDate: (date: string) => void;
-  fetchAllAttendances: (
-    options?: FetchOptions
+  attendanceNoPagination: EmployeeAttendanceTimes[];
+  fetchAllAttendancesNoPagination: (
+    type?: number,
+    pageNo?: string,
+    pageSize?: string,
+    enrollNumbers?: string[],
+    startDate?: string,
+    endDate?: string
   ) => Promise<EmployeeAttendanceTimes[]>;
-  fetchAllAttendancesBetweenDates: (
-    options?: FetchOptions
+  fetchAllAttendances: (
+    type?: number,
+    pageNo?: "1",
+    pageSize?: "20",
+    enrollNumbers?: string[],
+    startDate?: string,
+    endDate?: string
   ) => Promise<EmployeeAttendanceTimes[]>;
   fetchAllInitialAccessesbyDevice: (
     sn?: string[],
@@ -75,28 +84,17 @@ export interface AttendanceContextType {
     enrollNumbers?: string[],
     pageNo?: string,
     pageSize?: string
-  ) => Promise<AttendanceResults[]>
+  ) => Promise<AttendanceResults[]>;
   attendanceResultsNoPagination: AttendanceResults[];
-  setAttendanceResultsNoPagination: (attendanceResults: AttendanceResults[]) => void;
+  setAttendanceResultsNoPagination: (
+    attendanceResults: AttendanceResults[]
+  ) => void;
   resultsTotalPages: number;
   resultsTotalRecords: number;
+  attendanceTotalPages: number;
+  attendanceTotalRecords: number;
+  attendanceTimes: AttendanceTime[];
 }
-
-// Expandindo as opções de busca
-interface FetchOptions {
-  filterFunc?: (data: EmployeeAttendanceTimes[]) => EmployeeAttendanceTimes[];
-  postFetch?: (data: EmployeeAttendanceTimes[]) => void;
-}
-
-// Formata a data para o início do dia às 00:00
-const formatDateToStartOfDay = (date: Date): string => {
-  return `${date.toISOString().substring(0, 10)}T00:00`;
-};
-
-// Formata a data para o final do dia às 23:59
-const formatDateToEndOfDay = (date: Date): string => {
-  return `${date.toISOString().substring(0, 10)}T23:59`;
-};
 
 // Criando o contexto
 export const AttendanceContext = createContext<
@@ -109,73 +107,78 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
   const [attendance, setAttendance] = useState<EmployeeAttendanceTimes[]>([]);
-  const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
-  const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
   const [access, setAccess] = useState<Accesses[]>([]);
   const [accessForGraph, setAccessForGraph] = useState<Accesses[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalRecords, setTotalRecords] = useState<number>(0);
-  const [attendanceResults, setAttendanceResults] = useState<AttendanceResults[]>([]);
-  const [attendanceResultsNoPagination, setAttendanceResultsNoPagination] = useState<AttendanceResults[]>([]);
+  const [attendanceResults, setAttendanceResults] = useState<
+    AttendanceResults[]
+  >([]);
+  const [attendanceResultsNoPagination, setAttendanceResultsNoPagination] =
+    useState<AttendanceResults[]>([]);
   const [resultsTotalPages, setResultsTotalPages] = useState<number>(1);
   const [resultsTotalRecords, setResultsTotalRecords] = useState<number>(0);
+  const [attendanceTotalPages, setAttendancesTotalPages] = useState<number>(1);
+  const [attendanceTotalRecords, setAttendancesTotalRecords] =
+    useState<number>(0);
+  const [attendanceNoPagination, setAttendanceNoPagination] = useState<
+    EmployeeAttendanceTimes[]
+  >([]);
+  const [attendanceTimes, setAttendanceTimes] = useState<AttendanceTime[]>([]);
+
+  // Função para buscar todas as assiduidades sem paginação
+  const fetchAllAttendancesNoPagination = async (
+    type?: number,
+    pageNo?: string,
+    pageSize?: string,
+    enrollNumbers?: string[],
+    startDate?: string,
+    endDate?: string
+  ): Promise<EmployeeAttendanceTimes[]> => {
+    try {
+      const data = await apiService.fetchAllAttendances(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        pageNo,
+        pageSize
+      );
+      setAttendanceNoPagination(data.data);
+      return data.data;
+    } catch (error) {
+      console.error("Erro ao buscar assiduidades:", error);
+    }
+    return [];
+  };
 
   // Função para buscar todas as assiduidades
-  const fetchAllAttendances = useCallback(
-    async (options?: FetchOptions): Promise<EmployeeAttendanceTimes[]> => {
-      try {
-        let data = await apiService.fetchAllAttendances();
-        if (options?.filterFunc) {
-          data = options.filterFunc(data);
-        }
-        if (options?.postFetch) {
-          options.postFetch(data);
-        }
-        const sortedData = data.sort(
-          (
-            a: { attendanceTime: string | number | Date },
-            b: { attendanceTime: string | number | Date }
-          ) => {
-            return (
-              new Date(b.attendanceTime).getTime() -
-              new Date(a.attendanceTime).getTime()
-            );
-          }
-        );
-        setAttendance(sortedData);
-        setStartDate(formatDateToStartOfDay(pastDate));
-        setEndDate(formatDateToEndOfDay(currentDate));
-        return data;
-      } catch (error) {
-        console.error("Erro ao buscar assiduidades:", error);
-        return [];
-      }
-    },
-    []
-  );
-
-  // Função para buscar as assiduidades entre datas
-  const fetchAllAttendancesBetweenDates = useCallback(
-    async (options?: FetchOptions): Promise<EmployeeAttendanceTimes[]> => {
-      try {
-        let data = await apiService.fetchAllAttendancesBetweenDates(
-          startDate,
-          endDate
-        );
-        if (options?.filterFunc) {
-          data = options.filterFunc(data);
-        }
-        if (options?.postFetch) {
-          options.postFetch(data);
-        }
-        return data;
-      } catch (error) {
-        console.error("Erro ao buscar assiduidades:", error);
-        return [];
-      }
-    },
-    [startDate, endDate]
-  );
+  const fetchAllAttendances = async (
+    type?: number,
+    pageNo?: "1",
+    pageSize?: "20",
+    enrollNumbers?: string[],
+    startDate?: string,
+    endDate?: string
+  ): Promise<EmployeeAttendanceTimes[]> => {
+    try {
+      const data = await apiService.fetchAllAttendances(
+        undefined,
+        pageNo,
+        pageSize,
+        undefined,
+        undefined,
+        undefined,
+      );
+      setAttendance(data.data);
+      setAttendancesTotalPages(data.totalPages);
+      setAttendancesTotalRecords(data.totalRecords);
+      return data.data;
+    } catch (error) {
+      console.error("Erro ao buscar assiduidades:", error);
+    }
+    return [];
+  };
 
   // Função para buscar todos os acessos por dispositivo
   const fetchAllInitialAccessesbyDevice = async (
@@ -415,11 +418,23 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  /* // Função para buscar todos os horários
+  const fetchAllAttendanceTimes = async () => {
+    try {
+      const data = await apiService.fetchAllAttendanceTimes();
+      setAttendanceTimes(response.message.data);
+    } catch (error) {
+      console.error("Erro ao buscar todos os horários:", error);
+    }
+    return [];
+  } */
+
   // Busca todas as assiduidades ao carregar a página
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetchAllAttendances();
+      fetchAllAttendancesNoPagination();
+      fetchAllAttendances(undefined, "1", "20", undefined, undefined, undefined);
       fetchAllInitialAccessesbyDevice(
         undefined,
         undefined,
@@ -436,16 +451,13 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
   // Definindo o valor do contexto
   const contextValue = {
     attendance,
+    setAttendance,
     access,
     accessForGraph,
     totalPages,
     totalRecords,
-    startDate,
-    endDate,
-    setStartDate,
-    setEndDate,
+    fetchAllAttendancesNoPagination,
     fetchAllAttendances,
-    fetchAllAttendancesBetweenDates,
     fetchAllInitialAccessesbyDevice,
     fetchAllAccessesbyDevice,
     fetchAllAccessesbyDoor,
@@ -463,6 +475,10 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
     setAttendanceResultsNoPagination,
     resultsTotalPages,
     resultsTotalRecords,
+    attendanceTotalPages,
+    attendanceTotalRecords,
+    attendanceNoPagination,
+    attendanceTimes
   };
 
   return (

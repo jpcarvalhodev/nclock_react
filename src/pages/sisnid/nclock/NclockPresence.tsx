@@ -10,8 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { TreeViewDataNclockPresence } from "../../../components/TreeViewNclockPresence";
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 
 import { usePersons } from "../../../context/PersonsContext";
 import {
@@ -28,6 +27,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
+import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
 
 // Define a interface para os filtros
 interface Filters {
@@ -78,7 +78,7 @@ export const NclockPresence = () => {
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
-  const { fetchAllAttendances } = useAttendance();
+  const { fetchAllAttendancesNoPagination } = useAttendance();
   const { employeesNoPagination, handleUpdateEmployee } = usePersons();
   const [attendancePresence, setAttendancePresence] = useState<
     EmployeeAttendanceWithPresence[]
@@ -111,19 +111,17 @@ export const NclockPresence = () => {
   useEffect(() => {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
-
+  
     const tomorrow = new Date(todayStart);
     tomorrow.setDate(tomorrow.getDate() + 1);
-
-    fetchAllAttendances({
-      filterFunc: (data) => data.filter((att) => att.type !== 3),
-    })
+  
+    fetchAllAttendancesNoPagination()
       .then((allAttendanceData) => {
         const filtered = allAttendanceData.filter((att) => {
           const attDate = new Date(att.attendanceTime);
           return attDate >= todayStart && attDate < tomorrow;
         });
-
+  
         const earliestByEmployee = new Map<string, EmployeeAttendanceTimes>();
         filtered.forEach((att) => {
           const existing = earliestByEmployee.get(att.employeeId);
@@ -137,14 +135,14 @@ export const NclockPresence = () => {
             }
           }
         });
-
+  
         const presenceArray = Array.from(earliestByEmployee.values()).map(
           (att) => ({
             ...att,
             isPresent: true,
           })
         );
-
+  
         const absentRecords = employeesNoPagination
           .filter((emp) => !earliestByEmployee.has(emp.employeeID))
           .map((emp) => ({
@@ -162,7 +160,7 @@ export const NclockPresence = () => {
             workCode: 0,
             isPresent: false,
           }));
-
+  
         const combinedData = [...presenceArray, ...absentRecords];
         setAttendancePresence(combinedData);
         setFilteredAttendances(combinedData);
@@ -170,7 +168,7 @@ export const NclockPresence = () => {
       .catch((error) => {
         console.error("Erro ao tentar buscar os dados:", error);
       });
-  }, [employeesNoPagination]);
+  }, [employeesNoPagination]);  
 
   // Handler para filtrar pela data de hoje
   const handleTodayPresence = () => {
@@ -206,10 +204,7 @@ export const NclockPresence = () => {
 
   // Função para atualizar os dados da tabela
   const refreshAttendance = () => {
-    fetchAllAttendances({
-      filterFunc: (data: EmployeeAttendanceTimes[]) =>
-        data.filter((att: EmployeeAttendanceTimes) => att.type !== 3),
-    });
+    fetchAllAttendancesNoPagination();
     setClearSelectionToggle((prev) => !prev);
   };
 
@@ -742,7 +737,7 @@ export const NclockPresence = () => {
               perPage >= 50 ? "treeview-container-full-height" : ""
             }`}
           >
-            <TreeViewDataNclockPresence onSelectEmployees={handleSelectFromTreeView} />
+            <TreeViewDataNclock onSelectEmployees={handleSelectFromTreeView} />
           </div>
           <div className="datatable-container">
             <div className="datatable-title-text">

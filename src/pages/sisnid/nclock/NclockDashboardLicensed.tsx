@@ -21,7 +21,7 @@ import { Carousel } from "react-responsive-carousel";
 import banner_nclock from "../../../assets/img/carousel/banner_nclock.jpg";
 
 import { usePersons } from "../../../context/PersonsContext";
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 import { useNavigate } from "react-router-dom";
 import { EmployeeAttendanceTimes } from "../../../types/Types";
 

@@ -27,7 +27,7 @@ import {
 import * as apiService from "../../api/apiService";
 import { PrintButton } from "../../components/PrintButton";
 import { SelectFilter } from "../../components/SelectFilter";
-import { useAttendance } from "../../context/MovementContext";
+import { useAttendance } from "../../context/AttendanceContext";
 
 import { usePersons } from "../../context/PersonsContext";
 import { useTerminals } from "../../context/TerminalsContext";

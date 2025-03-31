@@ -19,13 +19,14 @@ import { DeleteModal } from "../../../modals/DeleteModal";
 import { UpdateModalAttendance } from "../../../modals/UpdateModalAttendance";
 import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 
+import * as apiService from "../../../api/apiService";
 import "../../../css/PagesStyles.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
 import { usePersons } from "../../../context/PersonsContext";
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
@@ -56,11 +57,15 @@ const formatDateDDMMYYYY = (date: Date): string => {
 // Define a página de pedidos
 export const NclockRequests = () => {
   const {
+    attendance,
+    setAttendance,
+    attendanceNoPagination,
     fetchAllAttendances,
-    fetchAllAttendancesBetweenDates,
     handleAddAttendance,
     handleUpdateAttendance,
     handleDeleteAttendance,
+    attendanceTotalPages,
+    attendanceTotalRecords,
   } = useAttendance();
   const currentDate = new Date();
   const pastDate = new Date();
@@ -68,12 +73,6 @@ export const NclockRequests = () => {
   const { disabledEmployeesNoPagination, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-  const [attendanceRequests, setAttendanceRequests] = useState<
-    EmployeeAttendanceTimes[]
-  >([]);
-  const [filteredAttendances, setFilteredAttendances] = useState<
-    EmployeeAttendanceTimes[]
-  >([]);
   const [selectedAttendances, setSelectedAttendances] = useState<
     EmployeeAttendanceTimes[]
   >([]);
@@ -108,70 +107,133 @@ export const NclockRequests = () => {
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
   const [perPage, setPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
 
-  // Função para buscar todos as assiduidades
-  const fetchRequests = () => {
-    fetchAllAttendances({
-      filterFunc: (data) => data.filter((att) => att.type === 3),
-      postFetch: (filteredData) => {
-        setAttendanceRequests(filteredData);
-      },
-    });
-  };
-
-  // Função para buscar todos as assiduidades entre datas
-  const fetchRequestsBetweenDates = () => {
-    fetchAllAttendancesBetweenDates({
-      filterFunc: (data) => data.filter((att) => att.type === 3),
-      postFetch: (filteredData) => {
-        setFilteredAttendances(filteredData);
-      },
-    });
-  };
-
-  // Função para buscar os pagamentos dos terminais de hoje
-  const fetchMovementsToday = async () => {
-    const today = new Date();
-    const start = formatDateToStartOfDay(today);
-    const end = formatDateToEndOfDay(today);
+  // Função para buscar os dados da paginação
+  const fetchPaginationRequests = async (pageNo: string, perPage: string) => {
+    setLoading(true);
     try {
-      await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type === 3),
-        postFetch: (filteredData) => {
-          setFilteredAttendances(filteredData);
-          setStartDate(start);
-          setEndDate(end);
-        },
-      });
+      const data = await apiService.fetchAllAttendances(
+        3,
+        pageNo,
+        perPage,
+        undefined,
+        undefined,
+        undefined
+      );
+      setAttendance(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
     } catch (error) {
-      console.error("Erro ao buscar movimentos de hoje:", error);
+      console.error("Erro ao buscar pedidos paginados:", error);
+      setLoading(false);
     }
   };
 
-  // Função para buscar os pagamentos dos terminais de ontem
-  const fetchMovementsForPreviousDay = async () => {
+  // Função para buscar todos os pedidos entre datas
+  const fetchRequestsBetweenDates = async () => {
+    try {
+      const data = await apiService.fetchAllAttendances(
+        3,
+        undefined,
+        undefined,
+        undefined,
+        startDate,
+        endDate
+      );
+      setAttendance(data.data);
+      setTotalRows(data.totalRecords);
+    } catch (error) {
+      console.error("Erro ao buscar pedidos entre datas:", error);
+    }
+  };
+
+  // Função para buscar os pedidos de hoje
+  const fetchRequestsToday = async () => {
+    const today = new Date();
+    const start = formatDateToStartOfDay(today);
+    const end = formatDateToEndOfDay(today);
+    if (selectedEmployeeIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          3,
+          undefined,
+          undefined,
+          selectedEmployeeIds,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar pedidos hoje:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          3,
+          undefined,
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar pedidos hoje:", error);
+      }
+    }
+    setStartDate(start);
+    setEndDate(end);
+  };
+
+  // Função para buscar os pedidos de ontem
+  const fetchRequestsForPreviousDay = async () => {
     const prevDate = new Date(startDate);
     prevDate.setDate(prevDate.getDate() - 1);
 
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type === 3),
-        postFetch: (filteredData) => {
-          setFilteredAttendances(filteredData);
-          setStartDate(start);
-          setEndDate(end);
-        },
-      });
-    } catch (error) {
-      console.error("Erro ao buscar movimentos do dia anterior:", error);
+    if (selectedEmployeeIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          3,
+          undefined,
+          undefined,
+          selectedEmployeeIds,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar pedidos ontem:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          3,
+          undefined,
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar pedidos ontem:", error);
+      }
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
-  // Função para buscar os pagamentos dos terminais de amanhã
-  const fetchMovementsForNextDay = async () => {
+  // Função para buscar os pedidos de amanhã
+  const fetchRequestsForNextDay = async () => {
     const newDate = new Date(endDate);
     newDate.setDate(newDate.getDate() + 1);
 
@@ -182,18 +244,39 @@ export const NclockRequests = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type === 3),
-        postFetch: (filteredData) => {
-          setFilteredAttendances(filteredData);
-          setStartDate(start);
-          setEndDate(end);
-        },
-      });
-    } catch (error) {
-      console.error("Erro ao buscar movimentos do dia seguinte:", error);
+    if (selectedEmployeeIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          ~3,
+          undefined,
+          undefined,
+          selectedEmployeeIds,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar pedidos amanhã:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          3,
+          undefined,
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar pedidos amanhã:", error);
+      }
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
   // Função para adicionar um movimento
@@ -224,10 +307,17 @@ export const NclockRequests = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Busca os movimentos ao carregar a página
+  // Busca os dados se a paginação mudar
   useEffect(() => {
-    fetchRequests();
-  }, []);
+    fetchPaginationRequests(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
+
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchRequestsBetweenDates();
+    }
+  }, [startDate, endDate]);
 
   // Atualiza a seleção ao resetar
   useEffect(() => {
@@ -236,21 +326,46 @@ export const NclockRequests = () => {
     }
   }, [resetSelection]);
 
-  // Atualiza a seleção ao mudar o filtro
-  useEffect(() => {
-    if (selectedEmployeeIds.length > 0) {
-      const newFilteredAttendances = attendanceRequests.filter((att) =>
-        selectedEmployeeIds.includes(att.employeeId)
-      );
-      setFilteredAttendances(newFilteredAttendances);
-    } else if (attendanceRequests.length > 0) {
-      setFilteredAttendances(attendanceRequests);
-    }
-  }, [attendanceRequests, selectedEmployeeIds]);
-
   // Define a seleção de funcionários
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      try {
+        const foundEmployees = await apiService.fetchAllAttendances(
+          3,
+          undefined,
+          undefined,
+          selectedIds,
+          undefined,
+          undefined
+        );
+        if (foundEmployees.data) {
+          setAttendance(
+            foundEmployees.data.filter((item: any) => item.type === 3)
+          );
+          setTotalRows(foundEmployees.totalRecords);
+        } else {
+          setAttendance([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar funcionários por número:", error);
+      }
+    } else {
+      refreshAttendance();
+      setAttendance(attendance);
+    }
+  };
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
   };
 
   // Função para alternar a visibilidade das colunas
@@ -282,7 +397,10 @@ export const NclockRequests = () => {
 
   // Função para atualizar os funcionários
   const refreshAttendance = () => {
-    fetchRequests();
+    fetchAllAttendances(3, "1", "20", undefined, undefined, undefined);
+    setTotalRows(attendanceTotalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
@@ -303,9 +421,9 @@ export const NclockRequests = () => {
 
   // Seleciona a assiduidade anterior
   const handleNextAttendance = () => {
-    if (currentAttendanceIndex < filteredAttendances.length - 1) {
+    if (currentAttendanceIndex < attendance.length - 1) {
       setCurrentAttendanceIndex(currentAttendanceIndex + 1);
-      setSelectedAttendances([filteredAttendances[currentAttendanceIndex + 1]]);
+      setSelectedAttendances([attendance[currentAttendanceIndex + 1]]);
     }
   };
 
@@ -313,7 +431,7 @@ export const NclockRequests = () => {
   const handlePrevDepartment = () => {
     if (currentAttendanceIndex > 0) {
       setCurrentAttendanceIndex(currentAttendanceIndex - 1);
-      setSelectedAttendances([filteredAttendances[currentAttendanceIndex - 1]]);
+      setSelectedAttendances([attendance[currentAttendanceIndex - 1]]);
     }
   };
 
@@ -331,42 +449,74 @@ export const NclockRequests = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredAttendances)) {
+    if (!Array.isArray(attendance)) {
       return [];
     }
-    return filteredAttendances.filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
+
+    const applyFilter = (list: EmployeeAttendanceTimes[]) => {
+      return list.filter(
+        (item) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            return (
+              item[key] != null &&
+              String(item[key])
                 .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (key === "attendanceTime") {
-              const date = new Date(value);
-              const formatted = formatDateDDMMYYYY(date);
-              return formatted.toLowerCase().includes(filterText.toLowerCase());
+                .includes(filters[key].toLowerCase())
+            );
+          }) &&
+          Object.entries(item).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (key === "attendanceTime") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            }
-          }
-          return false;
-        })
-    );
-  }, [filteredAttendances, filters, filterText, selectedColumns]);
+            return false;
+          })
+      );
+    };
+
+    if (filterText.trim() === "") {
+      return applyFilter(attendance);
+    }
+
+    if (Array.isArray(attendanceNoPagination)) {
+      const filteredFull = applyFilter(attendanceNoPagination);
+      const combined = [...applyFilter(attendance), ...filteredFull];
+      const seen = new Set<string>();
+      const deduplicated: EmployeeAttendanceTimes[] = [];
+      for (const item of combined) {
+        const key = `${item.employeeId}-${item.deviceId}-${item.attendanceTime}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(item);
+        }
+      }
+      return deduplicated;
+    }
+
+    return applyFilter(attendance);
+  }, [
+    attendance,
+    attendanceNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Define os dados iniciais ao duplicar
   const handleDuplicate = (attendance: Partial<EmployeeAttendanceTimes>) => {
@@ -401,7 +551,7 @@ export const NclockRequests = () => {
                 <SelectFilter
                   column={field.key}
                   setFilters={setFilters}
-                  data={filteredAttendances}
+                  data={attendance}
                 />
               </>
             ),
@@ -715,7 +865,7 @@ export const NclockRequests = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-calendar-event"
-                    onClick={fetchMovementsToday}
+                    onClick={fetchRequestsToday}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -742,7 +892,7 @@ export const NclockRequests = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-left-circle"
-                    onClick={fetchMovementsForPreviousDay}
+                    onClick={fetchRequestsForPreviousDay}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -769,7 +919,7 @@ export const NclockRequests = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-right-circle"
-                    onClick={fetchMovementsForNextDay}
+                    onClick={fetchRequestsForNextDay}
                     iconSize="1.1em"
                     disabled={
                       new Date(endDate) >=
@@ -841,11 +991,7 @@ export const NclockRequests = () => {
                     pagination
                     paginationComponentOptions={paginationOptions}
                     selectableRows
-                    paginationPerPage={perPage}
                     paginationRowsPerPageOptions={[20, 50]}
-                    onChangeRowsPerPage={(newPerPage, page) => {
-                      setPerPage(newPerPage);
-                    }}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
@@ -856,6 +1002,29 @@ export const NclockRequests = () => {
                     persistTableHead={true}
                     defaultSortAsc={true}
                     defaultSortFieldId="attendanceTime"
+                    paginationIconFirstPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(1)}
+                      >
+                        <i className="bi bi-chevron-double-left" />
+                      </span>
+                    }
+                    paginationIconLastPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(attendanceTotalPages)}
+                      >
+                        <i className="bi bi-chevron-double-right" />
+                      </span>
+                    }
+                    progressPending={loading}
+                    onChangePage={handlePageChange}
+                    onChangeRowsPerPage={handleRowsPerPageChange}
+                    paginationServer
+                    paginationTotalRows={totalRows}
+                    paginationDefaultPage={currentPage}
+                    paginationPerPage={perPage}
                   />
                 )}
               </div>
@@ -1001,7 +1170,7 @@ export const NclockRequests = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-calendar-event"
-                    onClick={fetchMovementsToday}
+                    onClick={fetchRequestsToday}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -1028,7 +1197,7 @@ export const NclockRequests = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-left-circle"
-                    onClick={fetchMovementsForPreviousDay}
+                    onClick={fetchRequestsForPreviousDay}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -1055,7 +1224,7 @@ export const NclockRequests = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-right-circle"
-                    onClick={fetchMovementsForNextDay}
+                    onClick={fetchRequestsForNextDay}
                     iconSize="1.1em"
                     disabled={
                       new Date(endDate) >=
@@ -1127,11 +1296,7 @@ export const NclockRequests = () => {
                     pagination
                     paginationComponentOptions={paginationOptions}
                     selectableRows
-                    paginationPerPage={perPage}
                     paginationRowsPerPageOptions={[20, 50]}
-                    onChangeRowsPerPage={(newPerPage, page) => {
-                      setPerPage(newPerPage);
-                    }}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
@@ -1142,6 +1307,29 @@ export const NclockRequests = () => {
                     persistTableHead={true}
                     defaultSortAsc={true}
                     defaultSortFieldId="attendanceTime"
+                    paginationIconFirstPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(1)}
+                      >
+                        <i className="bi bi-chevron-double-left" />
+                      </span>
+                    }
+                    paginationIconLastPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(attendanceTotalPages)}
+                      >
+                        <i className="bi bi-chevron-double-right" />
+                      </span>
+                    }
+                    progressPending={loading}
+                    onChangePage={handlePageChange}
+                    onChangeRowsPerPage={handleRowsPerPageChange}
+                    paginationServer
+                    paginationTotalRows={totalRows}
+                    paginationDefaultPage={currentPage}
+                    paginationPerPage={perPage}
                   />
                 )}
               </div>
@@ -1173,7 +1361,7 @@ export const NclockRequests = () => {
           onNext={handlePrevDepartment}
           onPrev={handleNextAttendance}
           canMoveNext={currentAttendanceIndex > 0}
-          canMovePrev={currentAttendanceIndex < filteredAttendances.length - 1}
+          canMovePrev={currentAttendanceIndex < attendance.length - 1}
         />
       )}
       {selectedAttendanceToDelete && showDeleteModal && (

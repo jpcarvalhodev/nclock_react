@@ -167,6 +167,13 @@ export const NledAds = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchAds(startDate, endDate)
+    }
+  }, [startDate, endDate]); 
+
   // Atualiza os dispositivos filtrados com base nos dispositivos selecionados
   useEffect(() => {
     if (selectedDevicesIds.length > 0) {

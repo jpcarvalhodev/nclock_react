@@ -231,6 +231,13 @@ export const LoginLogs = () => {
     fetchPaginationLogin(currentPage.toString(), perPage.toString());
   }, [currentPage, perPage]);
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchLogsBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Função para atualizar os logs
   const refreshLogs = () => {
     fetchAllLoginLogs(undefined, undefined, undefined, "1", "20");

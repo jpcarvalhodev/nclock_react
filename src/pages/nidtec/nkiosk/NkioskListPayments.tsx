@@ -259,6 +259,13 @@ export const NkioskListPayments = () => {
     fetchPaginationTotalPay(String(currentPage), String(perPage));
   }, [currentPage, perPage]);
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchPaymentsBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Função para atualizar as listagens de pagamentos
   const refreshListPayments = () => {
     fetchAllMBAndCoin(undefined, undefined, undefined, undefined, "1", "20");

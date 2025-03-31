@@ -218,6 +218,13 @@ export const NvisitorMoveKiosk = () => {
     fetchPaginationMoveKiosk(String(currentPage), String(perPage));
   }, [currentPage, perPage]);
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchMovementsKioskBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Função para atualizar os movimentos de quiosque
   const refreshMoveKiosk = () => {
     fetchAllMoveKiosk(

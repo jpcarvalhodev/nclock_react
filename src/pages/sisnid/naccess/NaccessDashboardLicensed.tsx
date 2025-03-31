@@ -10,7 +10,7 @@ import { Bar, Line } from "react-chartjs-2";
 import { Carousel } from "react-responsive-carousel";
 import banner_naccess from "../../../assets/img/carousel/banner_naccess.jpg";
 import { ChartData } from "chart.js";
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 import { useKiosk } from "../../../context/KioskContext";
 import { usePersons } from "../../../context/PersonsContext";
 import { useNavigate } from "react-router-dom";

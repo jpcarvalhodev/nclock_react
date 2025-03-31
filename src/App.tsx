@@ -17,7 +17,7 @@ import { CardScrollProvider } from './context/CardScrollContext';
 import { EntityProvider } from './context/EntityContext';
 import { KioskProvider } from './context/KioskContext';
 import { LicenseProvider } from './context/LicenseContext';
-import { AttendanceProvider } from './context/MovementContext';
+import { AttendanceProvider } from './context/AttendanceContext';
 import { NavbarProvider } from './context/NavbarContext';
 import { PersonsProvider } from './context/PersonsContext';
 import { TerminalsProvider } from './context/TerminalsContext';

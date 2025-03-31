@@ -301,6 +301,13 @@ export const NkioskListMovements = () => {
     fetchPaginationTotalMove(String(currentPage), String(perPage));
   }, [currentPage, perPage]);
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchMovementCardBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Função para atualizar as listagens de movimentos
   const refreshListMovements = () => {
     fetchAllCardAndKiosk(

@@ -10,7 +10,7 @@ import {
 import "../css/TreeView.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { AttendanceProvider } from "../context/MovementContext";
+import { AttendanceProvider } from "../context/AttendanceContext";
 import { usePersons } from "../context/PersonsContext";
 import { Department, Employee, Group } from "../types/Types";
 

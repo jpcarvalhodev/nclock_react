@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 
 import { usePersons } from "../../../context/PersonsContext";
 import { accessesFields, employeeFields } from "../../../fields/Fields";
@@ -24,7 +24,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { SearchBoxContainer } from "../../../components/SearchBoxContainer";
 import { CustomSpinner } from "../../../components/CustomSpinner";
 import { useMediaQuery } from "react-responsive";
-import { TreeViewDataNaccessPresence } from "../../../components/TreeViewNaccessPresence";
+import { TreeViewDataNaccess } from "../../../components/TreeViewNaccess";
 
 // Define a interface para os filtros
 interface Filters {
@@ -717,7 +717,7 @@ export const NaccessPresence = () => {
               perPage >= 50 ? "treeview-container-full-height" : ""
             }`}
           >
-            <TreeViewDataNaccessPresence
+            <TreeViewDataNaccess
               onSelectEmployees={handleSelectFromTreeView}
             />
           </div>

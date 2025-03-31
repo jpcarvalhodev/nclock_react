@@ -17,7 +17,7 @@ import { PolarArea } from "react-chartjs-2";
 import { Accesses } from "../../../types/Types";
 import { format, parse } from "date-fns";
 import { pt } from "date-fns/locale";
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 import { usePersons } from "../../../context/PersonsContext";
 import { useKiosk } from "../../../context/KioskContext";
 import { Bar } from "react-chartjs-2";

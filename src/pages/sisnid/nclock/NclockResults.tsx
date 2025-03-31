@@ -12,7 +12,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import "../../../css/PagesStyles.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 
@@ -249,6 +249,13 @@ export const NclockResults = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchResultsBetweenDates();
+    }
+  }, [startDate, endDate]);
+
   // Busca os dados se a paginação mudar
   useEffect(() => {
     fetchPaginationResults(String(currentPage), String(perPage));
@@ -403,12 +410,12 @@ export const NclockResults = () => {
 
     const filteredMain = applyFilter(attendanceResults);
 
-    if (
-      filterText.trim() !== "" &&
-      Array.isArray(attendanceResultsNoPagination)
-    ) {
-      const filteredGraph = applyFilter(attendanceResultsNoPagination);
+    if (filterText.trim() === "") {
+      return filteredMain;
+    }
 
+    if (Array.isArray(attendanceResultsNoPagination)) {
+      const filteredGraph = applyFilter(attendanceResultsNoPagination);
       const combined = [...filteredMain, ...filteredGraph];
 
       const seen = new Set<string>();

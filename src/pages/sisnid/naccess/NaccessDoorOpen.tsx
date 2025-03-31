@@ -75,7 +75,7 @@ export const NaccessDoorOpen = () => {
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
-  
+
   // Função para buscar os dados de aberturas manuais entre datas
   const fetchManualOpenBetweenDates = async () => {
     try {
@@ -165,6 +165,13 @@ export const NaccessDoorOpen = () => {
       );
     }
   };
+
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchManualOpenBetweenDates();
+    }
+  }, [startDate, endDate]);
 
   // Função para atualizar os dados de aberura manual
   const refreshAllManualOpen = () => {

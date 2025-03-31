@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PrintButton } from "../../../components/PrintButton";
 import { SelectFilter } from "../../../components/SelectFilter";
 import { TreeViewDataNclock } from "../../../components/TreeViewNclock";
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 
 import { usePersons } from "../../../context/PersonsContext";
 import {
@@ -22,6 +22,7 @@ import { ColumnSelectorModal } from "../../../modals/ColumnSelectorModal";
 import { UpdateModalEmployees } from "../../../modals/UpdateModalEmployees";
 import { Employee, EmployeeAttendanceTimes } from "../../../types/Types";
 
+import * as apiService from "../../../api/apiService";
 import Split from "react-split";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
@@ -54,17 +55,20 @@ const formatDateDDMMYYYY = (date: Date): string => {
 
 // Define a página de todas as assiduidades
 export const NclockAll = () => {
-  const { fetchAllAttendances, fetchAllAttendancesBetweenDates } =
-    useAttendance();
+  const {
+    fetchAllAttendances,
+    attendance,
+    setAttendance,
+    attendanceNoPagination,
+    attendanceTotalPages,
+    attendanceTotalRecords,
+  } = useAttendance();
   const currentDate = new Date();
   const pastDate = new Date();
   pastDate.setDate(currentDate.getDate() - 30);
   const { disabledEmployeesNoPagination, handleUpdateEmployee } = usePersons();
   const [startDate, setStartDate] = useState(formatDateToStartOfDay(pastDate));
   const [endDate, setEndDate] = useState(formatDateToEndOfDay(currentDate));
-  const [attendanceAll, setAttendanceAll] = useState<EmployeeAttendanceTimes[]>(
-    []
-  );
   const [filterText, setFilterText] = useState("");
   const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [clearSelectionToggle, setClearSelectionToggle] = useState(false);
@@ -79,77 +83,139 @@ export const NclockAll = () => {
     []
   );
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
-  const [filteredAttendances, setFilteredAttendances] = useState<
-    EmployeeAttendanceTimes[]
-  >([]);
   const [filters, setFilters] = useState<Filters>({});
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee>();
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 500 });
   const [perPage, setPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
 
-  // Função para buscar todos as assiduidades
-  const fetchAll = () => {
-    fetchAllAttendances({
-      postFetch: (filteredData) => {
-        setAttendanceAll(filteredData);
-      },
-    });
-  };
-
-  // Função para buscar todas as assiduidades entre datas
-  const fetchAllBetweenDates = () => {
-    fetchAllAttendancesBetweenDates({
-      postFetch: (filteredData) => {
-        setFilteredAttendances(filteredData);
-      },
-    });
-  };
-
-  // Função para buscar os pagamentos dos terminais de hoje
-  const fetchMovementsToday = async () => {
-    const today = new Date();
-    const start = formatDateToStartOfDay(today);
-    const end = formatDateToEndOfDay(today);
+  // Função para buscar os dados da paginação
+  const fetchPaginationAll = async (pageNo: string, perPage: string) => {
+    setLoading(true);
     try {
-      await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type !== 3),
-        postFetch: (filteredData) => {
-          setFilteredAttendances(filteredData);
-          setStartDate(start);
-          setEndDate(end);
-        },
-      });
+      const data = await apiService.fetchAllAttendances(
+        undefined,
+        pageNo,
+        perPage,
+        undefined,
+        undefined,
+        undefined
+      );
+      setAttendance(data.data);
+      setTotalRows(data.totalRecords);
+      setLoading(false);
     } catch (error) {
-      console.error("Erro ao buscar movimentos de hoje:", error);
+      console.error("Erro ao buscar todos os paginados:", error);
+      setLoading(false);
     }
   };
 
-  // Função para buscar os pagamentos dos terminais de ontem
-  const fetchMovementsForPreviousDay = async () => {
+  // Função para buscar todos entre datas
+  const fetchAllBetweenDates = async () => {
+    try {
+      const data = await apiService.fetchAllAttendances(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        startDate,
+        endDate
+      );
+      setAttendance(data.data);
+      setTotalRows(data.totalRecords);
+    } catch (error) {
+      console.error("Erro ao buscar todos entre datas:", error);
+    }
+  };
+
+  // Função para buscar todos de hoje
+  const fetchAllToday = async () => {
+    const today = new Date();
+    const start = formatDateToStartOfDay(today);
+    const end = formatDateToEndOfDay(today);
+    if (selectedEmployeeIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          undefined,
+          undefined,
+          undefined,
+          selectedEmployeeIds,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar todos hoje:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar todos hoje:", error);
+      }
+    }
+    setStartDate(start);
+    setEndDate(end);
+  };
+
+  // Função para buscar todos de ontem
+  const fetchAllForPreviousDay = async () => {
     const prevDate = new Date(startDate);
     prevDate.setDate(prevDate.getDate() - 1);
 
     const start = formatDateToStartOfDay(prevDate);
     const end = formatDateToEndOfDay(prevDate);
 
-    try {
-      await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type !== 3),
-        postFetch: (filteredData) => {
-          setFilteredAttendances(filteredData);
-          setStartDate(start);
-          setEndDate(end);
-        },
-      });
-    } catch (error) {
-      console.error("Erro ao buscar movimentos do dia anterior:", error);
+    if (selectedEmployeeIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          undefined,
+          undefined,
+          undefined,
+          selectedEmployeeIds,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar todos ontem:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar todos ontem:", error);
+      }
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
-  // Função para buscar os pagamentos dos terminais de amanhã
-  const fetchMovementsForNextDay = async () => {
+  // Função para buscar todos de amanhã
+  const fetchAllForNextDay = async () => {
     const newDate = new Date(endDate);
     newDate.setDate(newDate.getDate() + 1);
 
@@ -160,18 +226,39 @@ export const NclockAll = () => {
     const start = formatDateToStartOfDay(newDate);
     const end = formatDateToEndOfDay(newDate);
 
-    try {
-      await fetchAllAttendancesBetweenDates({
-        filterFunc: (data) => data.filter((att) => att.type !== 3),
-        postFetch: (filteredData) => {
-          setFilteredAttendances(filteredData);
-          setStartDate(start);
-          setEndDate(end);
-        },
-      });
-    } catch (error) {
-      console.error("Erro ao buscar movimentos do dia seguinte:", error);
+    if (selectedEmployeeIds.length > 0) {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          undefined,
+          undefined,
+          undefined,
+          selectedEmployeeIds,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar todos amanhã:", error);
+      }
+    } else {
+      try {
+        const data = await apiService.fetchAllAttendances(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          start,
+          end
+        );
+        setAttendance(data.data);
+        setTotalRows(data.totalRecords);
+      } catch (error) {
+        console.error("Erro ao buscar todos amanhã:", error);
+      }
     }
+    setStartDate(start);
+    setEndDate(end);
   };
 
   // Função para atualizar um funcionário e um cartão
@@ -181,34 +268,67 @@ export const NclockAll = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Busca os movimentos ao carregar a página
+  // Busca os dados conforme o filtro de data mudar
   useEffect(() => {
-    fetchAll();
-  }, []);
+    if (startDate && endDate) {
+      fetchAllBetweenDates();
+    }
+  }, [startDate, endDate]);
+
+  // Busca os dados se a paginação mudar
+  useEffect(() => {
+    fetchPaginationAll(String(currentPage), String(perPage));
+  }, [currentPage, perPage]);
 
   // Função para atualizar os dados da tabela
   const refreshAttendance = () => {
-    fetchAll();
+    fetchAllAttendances(undefined, "1", "20", undefined, undefined, undefined);
+    setTotalRows(attendanceTotalRecords);
+    setCurrentPage(1);
+    setPerPage(20);
     setStartDate(formatDateToStartOfDay(pastDate));
     setEndDate(formatDateToEndOfDay(currentDate));
     setClearSelectionToggle((prev) => !prev);
   };
 
-  // Atualiza a seleção ao mudar o filtro
-  useEffect(() => {
-    if (selectedEmployeeIds.length > 0) {
-      const newFilteredAttendances = attendanceAll.filter((att) =>
-        selectedEmployeeIds.includes(att.employeeId)
-      );
-      setFilteredAttendances(newFilteredAttendances);
-    } else if (attendanceAll.length > 0) {
-      setFilteredAttendances(attendanceAll);
-    }
-  }, [attendanceAll, selectedEmployeeIds]);
-
   // Define a seleção de funcionários
-  const handleSelectFromTreeView = (selectedIds: string[]) => {
+  const handleSelectFromTreeView = async (selectedIds: string[]) => {
     setSelectedEmployeeIds(selectedIds);
+
+    if (selectedIds.length > 0) {
+      try {
+        const foundEmployees = await apiService.fetchAllAttendances(
+          undefined,
+          undefined,
+          undefined,
+          selectedIds,
+          undefined,
+          undefined
+        );
+        if (foundEmployees.data) {
+          setAttendance(foundEmployees.data);
+          setTotalRows(foundEmployees.totalRecords);
+        } else {
+          setAttendance([]);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar funcionários por número:", error);
+      }
+    } else {
+      refreshAttendance();
+      setAttendance(attendance);
+    }
+  };
+
+  // Callback disparado ao mudar a página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Callback disparado ao mudar o tamanho da página
+  const handleRowsPerPageChange = (newPerPage: number, page: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(page);
   };
 
   // Função para alternar a visibilidade das colunas
@@ -251,42 +371,74 @@ export const NclockAll = () => {
 
   // Filtra os dados da tabela
   const filteredDataTable = useMemo(() => {
-    if (!Array.isArray(filteredAttendances)) {
+    if (!Array.isArray(attendance)) {
       return [];
     }
-    return filteredAttendances.filter(
-      (attendances) =>
-        Object.keys(filters).every(
-          (key) =>
-            filters[key] === "" ||
-            (attendances[key] != null &&
-              String(attendances[key])
+
+    const applyFilter = (list: EmployeeAttendanceTimes[]) => {
+      return list.filter(
+        (item) =>
+          Object.keys(filters).every((key) => {
+            if (filters[key] === "") return true;
+            return (
+              item[key] != null &&
+              String(item[key])
                 .toLowerCase()
-                .includes(filters[key].toLowerCase()))
-        ) &&
-        Object.entries(attendances).some(([key, value]) => {
-          if (selectedColumns.includes(key) && value != null) {
-            if (key === "attendanceTime") {
-              const date = new Date(value);
-              const formatted = formatDateDDMMYYYY(date);
-              return formatted.toLowerCase().includes(filterText.toLowerCase());
+                .includes(filters[key].toLowerCase())
+            );
+          }) &&
+          Object.entries(item).some(([key, value]) => {
+            if (selectedColumns.includes(key) && value != null) {
+              if (key === "attendanceTime") {
+                const date = new Date(value);
+                const formatted = formatDateDDMMYYYY(date);
+                return formatted
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else if (value instanceof Date) {
+                return value
+                  .toLocaleString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              } else {
+                return value
+                  .toString()
+                  .toLowerCase()
+                  .includes(filterText.toLowerCase());
+              }
             }
-            if (value instanceof Date) {
-              return value
-                .toLocaleString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            } else {
-              return value
-                .toString()
-                .toLowerCase()
-                .includes(filterText.toLowerCase());
-            }
-          }
-          return false;
-        })
-    );
-  }, [filteredAttendances, filters, filterText, selectedColumns]);
+            return false;
+          })
+      );
+    };
+
+    if (filterText.trim() === "") {
+      return applyFilter(attendance);
+    }
+
+    if (Array.isArray(attendanceNoPagination)) {
+      const filteredFull = applyFilter(attendanceNoPagination);
+      const combined = [...applyFilter(attendance), ...filteredFull];
+      const seen = new Set<string>();
+      const deduplicated: EmployeeAttendanceTimes[] = [];
+      for (const item of combined) {
+        const key = `${item.employeeId}-${item.deviceId}-${item.attendanceTime}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.push(item);
+        }
+      }
+      return deduplicated;
+    }
+
+    return applyFilter(attendance);
+  }, [
+    attendance,
+    attendanceNoPagination,
+    filters,
+    filterText,
+    selectedColumns,
+  ]);
 
   // Função para abrir o modal de edição
   const handleOpenEditModal = (person: EmployeeAttendanceTimes) => {
@@ -315,7 +467,7 @@ export const NclockAll = () => {
                 <SelectFilter
                   column={field.key}
                   setFilters={setFilters}
-                  data={filteredAttendances}
+                  data={attendance}
                 />
               </>
             ),
@@ -521,7 +673,7 @@ export const NclockAll = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-calendar-event"
-                    onClick={fetchMovementsToday}
+                    onClick={fetchAllToday}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -548,7 +700,7 @@ export const NclockAll = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-left-circle"
-                    onClick={fetchMovementsForPreviousDay}
+                    onClick={fetchAllForPreviousDay}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -575,7 +727,7 @@ export const NclockAll = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-right-circle"
-                    onClick={fetchMovementsForNextDay}
+                    onClick={fetchAllForNextDay}
                     iconSize="1.1em"
                     disabled={
                       new Date(endDate) >=
@@ -643,11 +795,7 @@ export const NclockAll = () => {
                     pagination
                     paginationComponentOptions={paginationOptions}
                     selectableRows
-                    paginationPerPage={perPage}
                     paginationRowsPerPageOptions={[20, 50]}
-                    onChangeRowsPerPage={(newPerPage, page) => {
-                      setPerPage(newPerPage);
-                    }}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
@@ -658,6 +806,29 @@ export const NclockAll = () => {
                     persistTableHead={true}
                     defaultSortAsc={true}
                     defaultSortFieldId="attendanceTime"
+                    paginationIconFirstPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(1)}
+                      >
+                        <i className="bi bi-chevron-double-left" />
+                      </span>
+                    }
+                    paginationIconLastPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(attendanceTotalPages)}
+                      >
+                        <i className="bi bi-chevron-double-right" />
+                      </span>
+                    }
+                    progressPending={loading}
+                    onChangePage={handlePageChange}
+                    onChangeRowsPerPage={handleRowsPerPageChange}
+                    paginationServer
+                    paginationTotalRows={totalRows}
+                    paginationDefaultPage={currentPage}
+                    paginationPerPage={perPage}
                   />
                 )}
               </div>
@@ -778,7 +949,7 @@ export const NclockAll = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-calendar-event"
-                    onClick={fetchMovementsToday}
+                    onClick={fetchAllToday}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -805,7 +976,7 @@ export const NclockAll = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-left-circle"
-                    onClick={fetchMovementsForPreviousDay}
+                    onClick={fetchAllForPreviousDay}
                     iconSize="1.1em"
                   />
                 </OverlayTrigger>
@@ -832,7 +1003,7 @@ export const NclockAll = () => {
                 >
                   <CustomOutlineButton
                     icon="bi bi-arrow-right-circle"
-                    onClick={fetchMovementsForNextDay}
+                    onClick={fetchAllForNextDay}
                     iconSize="1.1em"
                     disabled={
                       new Date(endDate) >=
@@ -900,11 +1071,7 @@ export const NclockAll = () => {
                     pagination
                     paginationComponentOptions={paginationOptions}
                     selectableRows
-                    paginationPerPage={perPage}
                     paginationRowsPerPageOptions={[20, 50]}
-                    onChangeRowsPerPage={(newPerPage, page) => {
-                      setPerPage(newPerPage);
-                    }}
                     onSelectedRowsChange={handleRowSelected}
                     clearSelectedRows={clearSelectionToggle}
                     selectableRowsHighlight
@@ -915,6 +1082,29 @@ export const NclockAll = () => {
                     persistTableHead={true}
                     defaultSortAsc={true}
                     defaultSortFieldId="attendanceTime"
+                    paginationIconFirstPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(1)}
+                      >
+                        <i className="bi bi-chevron-double-left" />
+                      </span>
+                    }
+                    paginationIconLastPage={
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handlePageChange(attendanceTotalPages)}
+                      >
+                        <i className="bi bi-chevron-double-right" />
+                      </span>
+                    }
+                    progressPending={loading}
+                    onChangePage={handlePageChange}
+                    onChangeRowsPerPage={handleRowsPerPageChange}
+                    paginationServer
+                    paginationTotalRows={totalRows}
+                    paginationDefaultPage={currentPage}
+                    paginationPerPage={perPage}
                   />
                 )}
               </div>

@@ -35,7 +35,7 @@ import {
   EmployeeVisitor,
   KioskTransactionCard,
 } from "../../../types/Types";
-import { useAttendance } from "../../../context/MovementContext";
+import { useAttendance } from "../../../context/AttendanceContext";
 import { usePersons } from "../../../context/PersonsContext";
 
 ChartJS.register(

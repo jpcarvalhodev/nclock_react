@@ -932,3 +932,65 @@ export type AttendanceUpdates = {
   startDate: Date;
   endDate: Date;
 }
+
+export type AttendanceTime = {
+  [key: string]: any;
+  id: string;
+  sigla: string;
+  codigo: string;
+  nome: string;
+  cor: string;
+  horaInicio: Date;
+  diaInicio: number
+  horaFim: Date;
+  diaFim: number;
+  objectivo: Date;
+  idCodTrab: number;
+  idCodExtra: number;
+  idCodFalta: number;
+  idCodNaoDefinido: number;
+  idCodTol: number;
+  idCodServ: number;
+  arredondaTrab: string;
+  arredondaExtra: string;
+  arredondaFalta: string;
+  arredondaNaoDefinido: string;
+  arredondaTol: string;
+  arredondaServ: string;
+  tipo: boolean;
+  opc: number;
+  createdDate: Date;
+  rem: boolean;
+  minMov: number;
+  tipoAutoMovs: number;
+  movIgnorarReal: boolean;
+  intervaloDescTudo: boolean;
+  idCodExtra2: number;
+  mdfcee: boolean;
+  faltaDiaTol: boolean;
+  faltaDiaMesTol: boolean;
+  faltaDiaMesTolMax: string;
+  oConfig: string;
+  horariosPeriodos: AttendanceTimePeriod[];
+  horariosTrabalho: string[];
+}
+
+export type AttendanceTimePeriod = {
+  [key: string]: any;
+  id: string;
+  idHorario: string;
+  activo: boolean;
+  nome: string;
+  tipo: number;
+  inicio: Date;
+  fim: Date;
+  diaProcessa: number;
+  objectivo: Date;
+  tolEntrada: Date;
+  tolSaida: Date;
+  arredonda: Date;
+  autoTipo: number;
+  createdDate: Date;
+  rem: boolean;
+  horario: string;
+}

@@ -10,7 +10,7 @@ import {
 import "../css/TreeView.css";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-import { AttendanceProvider } from "../context/MovementContext";
+import { AttendanceProvider } from "../context/AttendanceContext";
 import { usePersons } from "../context/PersonsContext";
 import { Department, Employee, Group } from "../types/Types";
 
@@ -104,7 +104,7 @@ export function TreeViewDataNclock({
       if (emp.departmentId && deptIdToCodeMapActive.has(emp.departmentId)) {
         const deptCode = deptIdToCodeMapActive.get(emp.departmentId);
         departmentMapActive.get(deptCode).employees.push({
-          id: `emp-active-${emp.employeeID}`,
+          id: `emp-active-${emp.enrollNumber}`,
           label: `${emp.enrollNumber} - ${emp.shortName}`,
         });
       }
@@ -132,7 +132,7 @@ export function TreeViewDataNclock({
             .filter((emp: Employee) => emp.departmentId === dept.departmentID)
             .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
             .map((emp: Employee) => ({
-              id: `dept-active-${dept.departmentID}-emp-${emp.employeeID}`,
+              id: `dept-active-${dept.departmentID}-emp-${emp.enrollNumber}`,
               label: `${emp.enrollNumber} - ${emp.shortName}`,
             })),
         ],
@@ -147,7 +147,7 @@ export function TreeViewDataNclock({
       (emp) => emp.departmentId === null
     );
     const unassignedDepartmentItemsActive = unassignedDeptActive.map((emp) => ({
-      id: `unassigned-active-dept-${emp.employeeID}`,
+      id: `unassigned-active-dept-${emp.enrollNumber}`,
       label: `${emp.enrollNumber} - ${emp.shortName}`,
     }));
 
@@ -160,7 +160,7 @@ export function TreeViewDataNclock({
           .filter((emp) => emp.groupId === group.groupID)
           .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
           .map((emp: Employee) => ({
-            id: `group-active-${group.groupID}-emp-${emp.employeeID}`,
+            id: `group-active-${group.groupID}-emp-${emp.enrollNumber}`,
             label: `${emp.enrollNumber} - ${emp.shortName}`,
           })),
       }));
@@ -169,7 +169,7 @@ export function TreeViewDataNclock({
       (emp) => emp.groupId === null
     );
     const unassignedGroupItemsActive = unassignedGroupActive.map((emp) => ({
-      id: `unassigned-active-group-${emp.employeeID}`,
+      id: `unassigned-active-group-${emp.enrollNumber}`,
       label: `${emp.enrollNumber} - ${emp.shortName}`,
     }));
 
@@ -189,7 +189,7 @@ export function TreeViewDataNclock({
       if (emp.departmentId && deptIdToCodeMapInactive.has(emp.departmentId)) {
         const deptCode = deptIdToCodeMapInactive.get(emp.departmentId);
         departmentMapInactive.get(deptCode).employees.push({
-          id: `emp-inactive-${emp.employeeID}`,
+          id: `emp-inactive-${emp.enrollNumber}`,
           label: `${emp.enrollNumber} - ${emp.shortName}`,
         });
       }
@@ -217,7 +217,7 @@ export function TreeViewDataNclock({
             .filter((emp: Employee) => emp.departmentId === dept.departmentID)
             .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
             .map((emp: Employee) => ({
-              id: `dept-inactive-${dept.departmentID}-emp-${emp.employeeID}`,
+              id: `dept-inactive-${dept.departmentID}-emp-${emp.enrollNumber}`,
               label: `${emp.enrollNumber} - ${emp.shortName}`,
             })),
         ],
@@ -233,7 +233,7 @@ export function TreeViewDataNclock({
     );
     const unassignedDepartmentItemsInactive = unassignedDeptInactive.map(
       (emp) => ({
-        id: `unassigned-inactive-dept-${emp.employeeID}`,
+        id: `unassigned-inactive-dept-${emp.enrollNumber}`,
         label: `${emp.enrollNumber} - ${emp.shortName}`,
       })
     );
@@ -247,7 +247,7 @@ export function TreeViewDataNclock({
           .filter((emp) => emp.groupId === group.groupID)
           .sort((a, b) => Number(a.enrollNumber) - Number(b.enrollNumber))
           .map((emp: Employee) => ({
-            id: `group-inactive-${group.groupID}-emp-${emp.employeeID}`,
+            id: `group-inactive-${group.groupID}-emp-${emp.enrollNumber}`,
             label: `${emp.enrollNumber} - ${emp.shortName}`,
           })),
       }));
@@ -256,7 +256,7 @@ export function TreeViewDataNclock({
       (emp) => emp.groupId === null
     );
     const unassignedGroupItemsInactive = unassignedGroupInactive.map((emp) => ({
-      id: `unassigned-inactive-group-${emp.employeeID}`,
+      id: `unassigned-inactive-group-${emp.enrollNumber}`,
       label: `${emp.enrollNumber} - ${emp.shortName}`,
     }));
 

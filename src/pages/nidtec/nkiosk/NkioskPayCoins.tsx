@@ -289,6 +289,13 @@ export const NkioskPayCoins = () => {
     fetchPaginationPayCoins(String(currentPage), String(perPage));
   }, [currentPage, perPage]);
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchPaymentsCoinBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Função para atualizar os pagamentos no moedeiro
   const refreshPayCoins = () => {
     fetchAllPayCoins("2", undefined, undefined, undefined, "1", "20");

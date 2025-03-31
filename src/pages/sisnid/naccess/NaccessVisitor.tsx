@@ -231,6 +231,13 @@ export const NaccessVisitor = () => {
     setClearSelectionToggle((prev) => !prev);
   };
 
+  // Busca os dados conforme o filtro de data mudar
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchVisitorsBetweenDates();
+    }
+  }, [startDate, endDate]); 
+
   // Busca os dados se a paginação mudar
   useEffect(() => {
     fetchPaginationEmployeeVisitor(String(currentPage), String(perPage));
