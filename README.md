@@ -1,6 +1,6 @@
 # NSOFTWARES Software
 
-NSOFTWARES software project using React and Typescript for SISNID
+Old NSOFTWARES software project using React and Typescript
 
 ## Prerequisites
 
