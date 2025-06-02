@@ -1,6 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 import './index.css';
 import App from './App';
 import { AdsProvider } from './context/AdsContext';
